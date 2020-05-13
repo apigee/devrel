@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -e
+
+REPORT_FAIL=
+
+echo "Checking license headers"
+../tools/go/bin/addlicense -check . || REPORT_FAIL=$REPORT_FAIL"LIC "
+
+echo "Java linting"
+JAVA_FILES=`find . -type f -name "*.java"`
+[ -z "$JAVA_FILES" ] || java -jar ../tools/java/google-java-format-1.8-all-deps.jar --dry-run --set-exit-if-changed $JAVA_FILES || REPORT_FAIL=$REPORT_FAIL"JAVA "
+
+npm i --silent
+
+echo "Starting markdown linting"
+npx remark . -f || REPORT_FAIL=$REPORT_FAIL"MD "
+
+echo "JS linting"
+APIGEE_JS_FILES=`find . -type f -wholename "*resources/jsc/*.js"`
+npx -q eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
+
+NODE_JS_FILES=`find . -type d \( -path "*resources/jsc/*" -o -path "*/node_modules/*" \) -prune -o -name '*.js' -print`
+npx -q eslint -c .eslintrc-node.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
+
+for DIR in `ls demos`
+do
+  echo "Running nightly on /demos/"$DIR
+  (cd ./demos/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
+done
+
+for DIR in `ls labs`
+do
+  echo "Running nightly on /labs/"$DIR
+  (cd ./labs/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
+done
+
+for DIR in `ls tools`
+do
+  echo "Running nightly on /tools/"$DIR
+  (cd ./tools/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
+done
+
+echo "Failures="$REPORT_FAIL
+
+[ -z "$REPORT_FAIL" ] || exit 1
