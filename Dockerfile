@@ -34,4 +34,5 @@ RUN (cd tools/java && curl -sSL https://github.com/google/google-java-format/rel
 USER devrel
 ADD --chown=devrel . /home/devrel/src
 
-CMD (cd src && ./run-nightly)
+WORKDIR src
+CMD ./run-nightly

@@ -4,43 +4,52 @@ set -e
 set -x
 
 REPORT_FAIL=
+DIR="${1:-$PWD}"
+
+echo "Running under "$DIR
 
 echo "Checking license headers"
-../tools/go/bin/addlicense -check . || REPORT_FAIL=$REPORT_FAIL"LIC "
+../tools/go/bin/addlicense -check $DIR || REPORT_FAIL=$REPORT_FAIL"LIC "
 
 echo "Java linting"
-JAVA_FILES=`find . -type f -name "*.java"`
+JAVA_FILES=`find $DIR -type f -name "*.java"`
 [ -z "$JAVA_FILES" ] || java -jar ../tools/java/google-java-format-1.8-all-deps.jar --dry-run --set-exit-if-changed $JAVA_FILES || REPORT_FAIL=$REPORT_FAIL"JAVA "
 
 npm i --silent
 
 echo "Starting markdown linting"
-npx remark . -f || REPORT_FAIL=$REPORT_FAIL"MD "
+npx remark $DIR -f || REPORT_FAIL=$REPORT_FAIL"MD "
 
 echo "JS linting"
-APIGEE_JS_FILES=`find . -type f -wholename "*resources/jsc/*.js" | grep -v "node_modules"`
-npx -q eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
+APIGEE_JS_FILES=`find $DIR -type f -wholename "*resources/jsc/*.js"`
+[ -z "$APIGEE_JS_FILES" ] || npx -q eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
 
-NODE_JS_FILES=`find . -type d \( -path "*resources/jsc/*" -o -path "*/node_modules/*" \) -prune -o -name '*.js' -print`
-npx -q eslint $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
+NODE_JS_FILES=`find . -type f -wholename "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
+[ -z "$NODE_JS_FILES" ] || npx -q eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
-for DIR in `ls demos`
-do
-  echo "Running nightly on /demos/"$DIR
-  (cd ./demos/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
-done
+if test -f "$DIR/nightly"; then
+  # we are running under a single solution
+  (cd $DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$D" "
+else
+  # we are running for the entire devrel
+  for D in `ls $DIR/demos`
+  do
+    echo "Running nightly on /demos/"$D
+    (cd ./demos/$D && ./nightly) || REPORT_FAIL=$REPORT_FAIL$D" "
+  done
 
-for DIR in `ls labs`
-do
-  echo "Running nightly on /labs/"$DIR
-  (cd ./labs/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
-done
+  for D in `ls $DIR/labs`
+  do
+    echo "Running nightly on /labs/"$D
+    (cd ./labs/$D && ./nightly) || REPORT_FAIL=$REPORT_FAIL$D" "
+  done
 
-for DIR in `ls tools`
-do
-  echo "Running nightly on /tools/"$DIR
-  (cd ./tools/$DIR && ./nightly) || REPORT_FAIL=$REPORT_FAIL$DIR" "
-done
+  for D in `ls $DIR/tools`
+  do
+    echo "Running nightly on /tools/"$D
+    (cd ./tools/$D && ./nightly) || REPORT_FAIL=$REPORT_FAIL$D" "
+  done
+fi
 
 echo "Failures="$REPORT_FAIL
 
