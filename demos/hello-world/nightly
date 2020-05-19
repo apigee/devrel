@@ -1,0 +1,5 @@
+set -e
+
+npm run deploy
+npm test
+npm run docs

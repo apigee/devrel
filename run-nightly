@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+set -x
 
 REPORT_FAIL=
 
@@ -17,11 +18,11 @@ echo "Starting markdown linting"
 npx remark . -f || REPORT_FAIL=$REPORT_FAIL"MD "
 
 echo "JS linting"
-APIGEE_JS_FILES=`find . -type f -wholename "*resources/jsc/*.js"`
+APIGEE_JS_FILES=`find . -type f -wholename "*resources/jsc/*.js" | grep -v "node_modules"`
 npx -q eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
 
 NODE_JS_FILES=`find . -type d \( -path "*resources/jsc/*" -o -path "*/node_modules/*" \) -prune -o -name '*.js' -print`
-npx -q eslint -c .eslintrc-node.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
+npx -q eslint $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
 for DIR in `ls demos`
 do
