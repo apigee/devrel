@@ -13,11 +13,12 @@
     "nightly": "docker run -it apigee/devrel"
   },
   "dependencies": {
+    "apigeelint": "^0.4.3",
+    "eslint": "^7.0.0",
+    "eslint-config-google": "^0.14.0",
     "remark-cli": "^8.0.0",
     "remark-lint": "^7.0.0",
-    "remark-preset-lint-recommended": "^4.0.0",
-    "eslint": "^7.0.0",
-    "eslint-config-google": "^0.14.0"
+    "remark-preset-lint-recommended": "^4.0.0"
   },
   "remarkConfig": {
     "plugins": [

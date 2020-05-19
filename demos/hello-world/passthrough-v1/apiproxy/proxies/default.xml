@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+  <PreFlow name="PreFlow" />
+  <PostFlow name="PostFlow"/>
+  <HTTPProxyConnection>
+    <BasePath>/apigee/v1</BasePath>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+  <RouteRule name="no-target" />
+</ProxyEndpoint>

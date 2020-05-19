@@ -12,19 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  es6: true
-  node: true
 extends:
   - google
-parserOptions:
-  ecmaVersion: 11
-  sourceType: module
-globals:
-  context: false
-  Request: false
-  httpClient: false
 rules: {
-  require-jsdoc: 0
+  no-var: 0
 }
-
