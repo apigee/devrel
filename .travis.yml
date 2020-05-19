@@ -16,9 +16,9 @@ language: minimal
 services:
 - docker
 before_install:
-- docker build -t apigee/devrel .
+- npm run build-nightly
 script:
-- docker run -it apigee/devrel
+- npm run nightly
 env:
   global:
   - secure: mRgLVUDBOeYoKie/8hMtzFxjzfNWCRgW6gwNwNAiLZlRdzTG9G1y8M6L9xDvAhaD13RVBjr6Q+GuLUK9QEblL3fILyiM8qKV4pBrDYF7Qc3o5b38UoWl3Y8vwgEVgXCusEzJjpVeXH9myn4sTuvZEFepy6dP/2uAMjv+KD0cbft4ryN/D8/FHzQBU2gjnBI67AHWoIXvxAzHf4zDIS2ebBTSqhqA1xUEgiIAOHYCAj6OwzHzjGljwhOaR8RYy2swTo1wuPM0RK/CnkMrMMrG3CGYsyo6SqoeU7u0Xxzr/c/qzZ0RXIeTIjQns3N+IHL9EgfYfrOS3yorfv0x6wco0nhDSP1kj74U6HnlX7znoW2r/8jSgm/1MphI5fTaBty/2Mj/caPoUAV51WFon5ofOHz1KNfjrsNsNaVYmv4HUwjUWq0VnYf24CdOsVTeqysfUzWEeuJWOYdd8Z3Im8167vMbAWf5YtviNdRiXpLVkyT52o0aygW8hYpIfz/hOlCZI02AGBqZ/IfelrWVqhn1xEFfBawHeQqR4u3ZEo+426jmWwNdART+y0YROoTz3d/3YWVQkP+SLm9X4YvasMbnSGZ3jF5hb2kp3nqvGb4O4bidP2hNZ7u+GqCS5+sRe2fmtTSSRiEf/8G6RTN9+RNgy1h2IvC2KEWy2ILnbW50cbQ=
