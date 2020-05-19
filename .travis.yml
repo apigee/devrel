@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: minimal
+language: node_js
+node_js:
+  - node
 services:
 - docker
 before_install:
