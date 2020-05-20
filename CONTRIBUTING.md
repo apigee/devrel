@@ -35,7 +35,46 @@ just a few small guidelines you need to follow.
         1.  For Google-authored source files, paste the Apache header text in
             the comments at the top. (If you're using different license,
             include the full text of that license.)
+1.  Place an executable called `nightly` on the root of your solution folder
+    which builds, deploy and tests your solution. This file will be executed by
+    our automation daily.
 1.  Submit a pull request.
+
+## DevRel Automation
+
+Apigee DevRel uses automation that runs daily to ensure all solutions build successfully with all tests passing. It is recommended to run the same checks locally at least once before every pull request to ensure your code won't fail in our automation.
+
+In order to run this process locally for your solution:
+
+```
+npm run build-nightly
+npm run nightly -- <path-to-your-solution-folder>
+
+E.g. npm run nightly -- ./demos/hello-world
+```
+
+In order to run this process locally for all solutions within DevRel, execute the following commands:
+
+```
+npm run build-nightly
+npm run nightly
+```
+
+### Apigee Org Variables
+
+If your solution contains any Apigee proxies, you are required to deploy them to an
+Apigee org and run tests within your nightly process. This is to ensure that
+your proxies can deploy without any failures and tests are passing.
+
+In order to help with this, Apigee DevRel Automation will populate the following
+environment variables which you can use in your deploy scripts:
+
+| Variable    | Description                               |
+| ---         | ---                                       |
+| APIGEE_ORG  | The name of the Apigee organization       |
+| APIGEE_ENV  | The name of the Apigee environment        |
+| APIGEE_USER | The username of an admin user in this org |
+| APIGEE_PASS | The password for the admin user           |
 
 ## Contributor License Agreement
 
