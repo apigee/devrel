@@ -76,6 +76,9 @@ environment variables which you can use in your deploy scripts:
 | APIGEE_USER | The username of an admin user in this org |
 | APIGEE_PASS | The password for the admin user           |
 
+Please note that only `test` and `prod` environments are available and `test`
+environment is the default value for `APIGEE_ENV`.
+
 ## Contributor License Agreement
 
 Contributions to this project must be accompanied by a Contributor License
