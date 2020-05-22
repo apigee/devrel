@@ -48,6 +48,9 @@ just a few small guidelines you need to follow.
 
 Apigee DevRel uses automation that runs daily to ensure all solutions build successfully with all tests passing. It is recommended for the contributors to run the same checks locally at least once before every pull request to ensure build won't fail in our automation.
 
+We use docker to setup the environment to run the full pipeline so ensure you
+have docker installed and configured on your development environment.
+
 In order to run this process locally for your solution:
 
 ```
