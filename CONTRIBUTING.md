@@ -4,7 +4,7 @@ We'd love to accept your patches and contributions to this project. There are
 just a few small guidelines you need to follow.
 
 1.  Sign a Contributor License Agreement (see below).
-1.  Fork the repo, develop and test your changes
+1.  Fork the repo, develop and test your changes.
 1.  Develop using the following guidelines to help expedite your review:
     1.  Ensure that your code adheres to the existing
         [style](https://google.github.io/styleguide).
@@ -13,8 +13,8 @@ just a few small guidelines you need to follow.
         [awesome-readme](https://github.com/matiassingers/awesome-readme) for
         good examples of high-quality READMEs. Please include the following
         information in your README:
-        1.  What problem(s) does the solution solve.
-        1.  Functionalities offered and instructions on how to use them.
+        1.  What problem(s) does your solution solve.
+        1.  What functionalities are implemented and instructions on how to use them.
     1.  Add a link to your contribution in the top-level
         [README](https://github.com/Apigee/DevRel/blob/master/README.md)
         (alpha-order).
@@ -22,9 +22,9 @@ just a few small guidelines you need to follow.
         need to include an additional license since all repository submissions
         are covered by the top-level Apache 2.0
         [license](https://github.com/Apigee/DevRel/blob/master/LICENSE).
-    1.  Ensure all files copied or derived from a third party library is housed
+    1.  Ensure all files copied or derived from a third party library are stored
         in the `/third_party` directory. Also ensure that every directory
-        inside the third_party directory has a LICENSE file that includes the
+        inside the third_party directory has a LICENSE file that contains the
         full license text and copyright notice for the library.
     1.  Ensure each file (that take the format of a source file and supports
         file comments) has license headers with an up-to-date copyright date
@@ -37,7 +37,11 @@ just a few small guidelines you need to follow.
             include the full text of that license.)
 1.  Place an executable called `pipeline` on the root of your solution folder
     which builds, deploy and tests your solution. This file will be executed by
-    our automation daily.
+    our automation daily. Make sure that you use an appropriate
+    [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) if you want the automation
+    to execute a text file. See
+    [this example pipeline](https://github.com/apigee/DevRel/blob/master/demos/hello-world/pipeline)
+    implementation.
 1.  Submit a pull request.
 
 ## DevRel Automation
@@ -47,16 +51,21 @@ Apigee DevRel uses automation that runs daily to ensure all solutions build succ
 In order to run this process locally for your solution:
 
 ```
+# build a docker image that will run the automation pipeline
 npm run build-pipeline-runner
-npm run pipeline -- <path-to-your-solution-folder>
 
+# run the pipeline for a single solution folder
+npm run pipeline -- <path-to-your-solution-folder>
 E.g. npm run pipeline -- ./demos/hello-world
 ```
 
-In order to run this process locally for all solutions within DevRel, execute the following commands:
+In order to run the pipeline for all solutions within DevRel, execute the following commands:
 
 ```
+# build a docker image that will run the automation pipeline
 npm run build-pipeline-runner
+
+# run the pipeline for all solution folders
 npm run pipeline
 ```
 
@@ -76,7 +85,7 @@ environment variables which you can use in your deploy scripts:
 | APIGEE_USER | The username of an admin user in this org |
 | APIGEE_PASS | The password for the admin user           |
 
-Please note that only `test` and `prod` environments are available and `test`
+Please note that only `test` and `prod` environments are available. `test`
 environment is the default value for `APIGEE_ENV`.
 
 ## Contributor License Agreement
