@@ -4,7 +4,10 @@ We'd love to accept your patches and contributions to this project. There are
 just a few small guidelines you need to follow.
 
 1.  Sign a Contributor License Agreement (see below).
-1.  Fork the repo, develop and test your changes.
+1.  Fork the repo, develop and test your changes. Here are some recommendations:
+    1.  Go for a simple, minimalist, lean, [suckless](https://en.wikipedia.org/wiki/Suckless.org) implementation - solve the problem with no fanfare around it.
+    1.  Go for ease of maintenance as the primary goal.
+    1.  A bash of 10 lines is sometimes much better than an express app!
 1.  Develop using the following guidelines to help expedite your review:
     1.  Ensure that your code adheres to the existing
         [style](https://google.github.io/styleguide).
