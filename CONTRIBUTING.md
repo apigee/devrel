@@ -72,6 +72,10 @@ npm run build-pipeline-runner
 npm run pipeline
 ```
 
+Check out the
+[Dockerfile](https://github.com/apigee/DevRel/blob/master/Dockerfile) to see how
+the pipeline is implemented.
+
 ### Apigee Org Variables
 
 If your solution contains any Apigee proxies, you are required to deploy them to an
