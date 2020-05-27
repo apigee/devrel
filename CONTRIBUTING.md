@@ -45,12 +45,12 @@ just a few small guidelines you need to follow.
         1.  For Google-authored source files, paste the Apache header text in
             the comments at the top. (If you're using different license, include
             the full text of that license.)
-1.  Place an executable called `pipeline` on the root of your solution folder
+1.  Place an executable called `pipeline.sh` on the root of your solution folder
     which builds, deploy and tests your solution. This file will be executed by
     our automation daily. Make sure that you use an appropriate
-    [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) if you want the automation
-    to execute a text file. See
-    [this example pipeline](https://github.com/apigee/DevRel/blob/master/demos/hello-world/pipeline)
+    [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) if you want the
+    automation to execute a text file. See [this example
+    pipeline](https://github.com/apigee/DevRel/blob/master/demos/hello-world/pipeline.sh)
     implementation.
 1.  Submit a pull request.
 

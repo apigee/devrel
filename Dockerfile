@@ -35,4 +35,4 @@ USER devrel
 ADD --chown=devrel . /home/devrel/src
 
 WORKDIR src
-CMD ./run-pipeline
+CMD ./run-pipeline.sh
