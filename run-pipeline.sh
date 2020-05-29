@@ -11,14 +11,16 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# See the License for the specific language governing permissions and # limitations under the License.
 
 set -e
 set -x
 
 REPORT_FAIL=
 DIR="${1:-$PWD}"
+mkdir -p target/docs/demos
+mkdir -p target/docs/labs
+mkdir -p target/docs/tools
 
 echo "Running under "$DIR
 
@@ -50,18 +52,21 @@ else
   do
     echo "Running pipeline on /demos/"$D
     (cd ./demos/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    cp -r ./demos/$D/target/docs ./target/docs/demos/$D
   done
 
   for D in `ls $DIR/labs`
   do
     echo "Running pipeline on /labs/"$D
     (cd ./labs/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    cp -r ./labs/$D/target/docs ./target/docs/labs/$D
   done
 
   for D in `ls $DIR/tools`
   do
     echo "Running pipeline on /tools/"$D
     (cd ./tools/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    cp -r ./tools/$D/target/docs ./target/docs/tools/$D
   done
 fi
 
