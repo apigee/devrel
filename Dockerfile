@@ -14,8 +14,7 @@
 
 FROM debian:stable
 
-RUN useradd -ms /bin/bash devrel
-WORKDIR /home/devrel
+WORKDIR /home
 
 RUN apt-get update
 RUN apt-get install -y curl golang openjdk-11-jre git
@@ -25,14 +24,13 @@ RUN apt-get install -y nodejs
 RUN mkdir -p tools/go
 RUN mkdir -p tools/java
 
-ENV GOPATH /home/devrel/tools/go
+ENV GOPATH /home/tools/go
 RUN go get github.com/googlecodelabs/tools/claat
 RUN go get github.com/google/addlicense
 
 RUN (cd tools/java && curl -sSL https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar -O)
 
-USER devrel
-ADD --chown=devrel . /home/devrel/src
+ADD . /home/src
 
 WORKDIR src
 CMD ./run-pipeline.sh

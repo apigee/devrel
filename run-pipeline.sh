@@ -20,7 +20,6 @@ set -x
 REPORT_FAIL=
 DIR="${1:-$PWD}"
 
-rm -rf ./generated
 mkdir -p ./generated/demos
 mkdir -p ./generated/labs
 mkdir -p ./generated/tools
