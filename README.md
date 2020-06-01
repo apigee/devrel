@@ -9,7 +9,8 @@ implementations across a variety of Apigee products. It is expected that these
 solutions are used as a reference or extended further to fit a particular use
 case.
 
-*   [Test](demos/test) - A reference implementation to do x,y and z.
+*   [Hello World](demos/hello-world) - A reference implementation to demonstrate 
+a DevRel project.
 
 ## Tools
 
