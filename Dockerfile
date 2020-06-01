@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM debian:stable
+FROM alpine:3
 
 WORKDIR /home
 
-RUN apt-get update
-RUN apt-get install -y curl golang openjdk-11-jre git
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
+RUN apk add --no-cache curl go openjdk11-jre git nodejs npm
 
 RUN mkdir -p tools/go
 RUN mkdir -p tools/java
