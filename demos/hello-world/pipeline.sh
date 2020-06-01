@@ -16,6 +16,7 @@
 
 set -e
 
+npm install
 npm run deploy
 npm test
 npm run docs

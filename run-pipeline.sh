@@ -36,14 +36,14 @@ JAVA_FILES=`find $DIR -type f -name "*.java"`
 npm i --silent
 
 echo "Starting markdown linting"
-npx remark $DIR -f || REPORT_FAIL=$REPORT_FAIL"MD "
+./node_modules/.bin/remark $DIR -f || REPORT_FAIL=$REPORT_FAIL"MD "
 
 echo "JS linting"
-APIGEE_JS_FILES=`find $DIR -type f -wholename "*resources/jsc/*.js"`
-[ -z "$APIGEE_JS_FILES" ] || npx -q eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
+APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
 
-NODE_JS_FILES=`find . -type f -wholename "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ -z "$NODE_JS_FILES" ] || npx -q eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
+NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
 if test -f "$DIR/pipeline.sh"; then
   # we are running under a single solution
