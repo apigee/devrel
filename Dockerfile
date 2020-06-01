@@ -30,8 +30,6 @@ RUN go get github.com/google/addlicense
 
 RUN (cd tools/java && curl -sSL https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar -O)
 
-#USER devrel
-#ADD --chown=devrel . /home/devrel/src
 ADD . /home/src
 
 WORKDIR src
