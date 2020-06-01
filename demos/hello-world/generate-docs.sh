@@ -16,6 +16,6 @@
 
 set -e
 
-rm -rf target/docs
-mkdir -p target/docs/
-echo "<html><body>Hello World</body></html>" > target/docs/index.html
+rm -rf ./generated/docs
+mkdir -p ./generated/docs
+echo "<html><body>Hello World</body></html>" > ./generated/docs/index.html

@@ -32,4 +32,4 @@ deploy:
   keep_history: true
   on:
     branch: master
-  local_dir: ./target/docs
+  local_dir: ./generated
