@@ -1,0 +1,25 @@
+{
+  "name": "cicd-demo-v1",
+  "version": "1.0.0",
+  "description": "",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "scripts": {
+    "test": "npm run unit-test && npm run integration-test",
+    "unit-test": "nyc --reporter=text mocha --recursive \"./test/unit/*.js\"",
+    "integration-test": "cucumber-js ./test/integration"
+  },
+  "dependencies": {
+    "apickli": "^2.3.3",
+    "apigeelint": "^0.4.3",
+    "cucumber": "^6.0.5",
+    "mocha": "^7.2.0",
+    "nyc": "^15.0.1",
+    "sinon": "^9.0.2"
+  }
+}

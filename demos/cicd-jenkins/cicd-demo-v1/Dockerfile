@@ -14,20 +14,6 @@
 
 FROM alpine:3
 
-WORKDIR /home
+RUN apk add --no-cache git nodejs npm maven
 
-RUN apk add --no-cache curl go openjdk11-jre git nodejs npm maven
-
-RUN mkdir -p tools/go
-RUN mkdir -p tools/java
-
-ENV GOPATH /home/tools/go
-RUN go get github.com/googlecodelabs/tools/claat
-RUN go get github.com/google/addlicense
-
-RUN (cd tools/java && curl -sSL https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar -O)
-
-ADD . /home/src
-
-WORKDIR src
-CMD ./run-pipeline.sh
+ENTRYPOINT ["sh", "-c"]

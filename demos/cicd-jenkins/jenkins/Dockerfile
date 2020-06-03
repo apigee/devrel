@@ -12,22 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM alpine:3
+FROM jenkins/jenkins:2.235-alpine
 
-WORKDIR /home
+USER root
 
-RUN apk add --no-cache curl go openjdk11-jre git nodejs npm maven
+RUN apk update && apk add --no-cache docker
 
-RUN mkdir -p tools/go
-RUN mkdir -p tools/java
-
-ENV GOPATH /home/tools/go
-RUN go get github.com/googlecodelabs/tools/claat
-RUN go get github.com/google/addlicense
-
-RUN (cd tools/java && curl -sSL https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar -O)
-
-ADD . /home/src
-
-WORKDIR src
-CMD ./run-pipeline.sh
+USER jenkins

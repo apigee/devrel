@@ -1,0 +1,108 @@
+pipeline {
+
+    agent {
+      dockerfile {
+        dir 'demos/cicd-jenkins/cicd-demo-v1'
+      }
+    }
+
+    environment {
+        APIGEE_CREDS = credentials('apigee')
+        HOME = '.'
+        DEMO_SUB_DIR = 'demos/cicd-jenkins/cicd-demo-v1'
+        // APIGEE_ORG = 'apigee-org-name' // set org name here or in the jenkins global property at ${JENKINS_URL}/configure
+    }
+
+    stages {
+        stage('Clean') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              script{
+                if (env.GIT_BRANCH == "master") {
+                    env.APIGEE_DEPLOYMENT_SUFFIX = ""
+                    env.APIGEE_PROFILE = "test"
+                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-test.apigee.net"
+                } else if (env.GIT_BRANCH == "prod") {
+                    env.APIGEE_DEPLOYMENT_SUFFIX = ""
+                    env.APIGEE_PROFILE = "prod"
+                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-prod.apigee.net"
+                } else { //feature branches
+                    env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH : "-jenkins"
+                    env.APIGEE_PROFILE = "test"
+                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-test.apigee.net"
+                }
+              }
+              sh "mvn clean"
+            }
+          }
+        }
+        stage('Static Code Analysis, Unit Test and Coverage') {
+          steps {
+            script {
+                AUTHOR_EMAIL = sh (
+                    script: 'git --no-pager show -s --format=\'%ae\'',
+                    returnStdout: true
+              ).trim()
+            }
+            dir(env.DEMO_SUB_DIR) {
+              sh "mvn -ntp test -P${env.APIGEE_PROFILE} \
+                    -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX} \
+                    -Dcommit=${env.GIT_COMMIT} \
+                    -Dbranch=${env.GIT_BRANCH} -Duser.name=${AUTHOR_EMAIL} \
+                    -Dapi.northbound.domain=${env.NORTH_BOUND_API}"
+            }
+          }
+        }
+        stage('Package proxy bundle') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              sh "mvn -ntp apigee-enterprise:configure -P${env.APIGEE_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+            }
+          }
+        }
+        stage('Deploy proxy bundle') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              sh "mvn -ntp apigee-enterprise:deploy -P${env.APIGEE_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW}"
+            }
+          }
+        }
+        stage('Functional Test') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              sh "node ./node_modules/cucumber/bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
+            }
+          }
+        }
+    }
+
+    post {
+      always {
+        dir(env.DEMO_SUB_DIR) {
+          publishHTML(target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: false,
+                                reportDir: "coverage",
+                                reportFiles: 'index.html',
+                                reportName: 'HTML Report'
+                              ]
+                      )
+
+          step([
+                  $class: 'CucumberReportPublisher',
+                  fileExcludePattern: '',
+                  fileIncludePattern: "**/reports.json",
+                  ignoreFailedTests: false,
+                  jenkinsBasePath: '',
+                  jsonReportDirectory: "target",
+                  missingFails: false,
+                  parallelTesting: false,
+                  pendingFails: false,
+                  skippedFails: false,
+                  undefinedFails: false
+                  ])
+        }
+      }
+    }
+}
