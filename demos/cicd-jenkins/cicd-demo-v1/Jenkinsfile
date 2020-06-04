@@ -14,29 +14,52 @@ pipeline {
     }
 
     stages {
+        stage('Set Apigee Env and Proxy Suffix') {
+          steps {
+            script{
+              // Master branch for Apigee test environment
+              if (env.GIT_BRANCH == "master") {
+                  env.APIGEE_DEPLOYMENT_SUFFIX = ""
+                  env.MAVEN_PROFILE = "test"
+              // Prod branch for Apigee prod environment
+              } else if (env.GIT_BRANCH == "prod") {
+                  env.APIGEE_DEPLOYMENT_SUFFIX = ""
+                  env.MAVEN_PROFILE = "prod"
+              // All other branches are deployed as separate proxies with suffix in the test environment
+              } else {
+                  env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-jenkins"
+                  env.MAVEN_PROFILE = "test"
+              }
+              println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
+            }
+          }
+        }
+
         stage('Clean') {
           steps {
             dir(env.DEMO_SUB_DIR) {
-              script{
-                if (env.GIT_BRANCH == "master") {
-                    env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                    env.APIGEE_PROFILE = "test"
-                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-test.apigee.net"
-                } else if (env.GIT_BRANCH == "prod") {
-                    env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                    env.APIGEE_PROFILE = "prod"
-                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-prod.apigee.net"
-                } else { //feature branches
-                    env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH : "-jenkins"
-                    env.APIGEE_PROFILE = "test"
-                    env.NORTH_BOUND_API = env.APIGEE_ORG + "-test.apigee.net"
-                }
-              }
               sh "mvn clean"
             }
           }
         }
-        stage('Static Code Analysis, Unit Test and Coverage') {
+
+        stage('Static Code Analysis') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              sh "mvn validate"
+            }
+          }
+        }
+
+        stage('Unit Test') {
+          steps {
+            dir(env.DEMO_SUB_DIR) {
+              sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
+            }
+          }
+        }
+
+        stage('Env Config') {
           steps {
             script {
                 AUTHOR_EMAIL = sh (
@@ -45,28 +68,31 @@ pipeline {
               ).trim()
             }
             dir(env.DEMO_SUB_DIR) {
-              sh "mvn -ntp test -P${env.APIGEE_PROFILE} \
-                    -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX} \
+              sh "mvn -ntp process-resources -P${env.MAVEN_PROFILE} \
                     -Dcommit=${env.GIT_COMMIT} \
-                    -Dbranch=${env.GIT_BRANCH} -Duser.name=${AUTHOR_EMAIL} \
-                    -Dapi.northbound.domain=${env.NORTH_BOUND_API}"
+                    -Dbranch=${env.GIT_BRANCH} \
+                    -Dauthor=${AUTHOR_EMAIL} \
+                    -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
             }
           }
         }
+
         stage('Package proxy bundle') {
           steps {
             dir(env.DEMO_SUB_DIR) {
-              sh "mvn -ntp apigee-enterprise:configure -P${env.APIGEE_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+              sh "mvn -ntp apigee-enterprise:configure -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
             }
           }
         }
+
         stage('Deploy proxy bundle') {
           steps {
             dir(env.DEMO_SUB_DIR) {
-              sh "mvn -ntp apigee-enterprise:deploy -P${env.APIGEE_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW}"
+              sh "mvn -ntp apigee-enterprise:deploy -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
             }
           }
         }
+
         stage('Functional Test') {
           steps {
             dir(env.DEMO_SUB_DIR) {

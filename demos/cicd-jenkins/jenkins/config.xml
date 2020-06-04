@@ -45,7 +45,7 @@ limitations under the License.
     <data>
       <jenkins.branch.BranchSource>
         <source class="jenkins.plugins.git.GitSCMSource" plugin="git@4.2.2">
-          <remote>https://github.com/danistrebel/devrel</remote>
+          <remote>https://github.com/apigee/devrel</remote>
           <credentialsId></credentialsId>
           <traits>
             <jenkins.plugins.git.traits.BranchDiscoveryTrait/>

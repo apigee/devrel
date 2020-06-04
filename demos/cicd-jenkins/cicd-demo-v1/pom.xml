@@ -20,7 +20,7 @@ limitations under the License.
 	<groupId>apigee-devrel</groupId>
 	<artifactId>cicd-demo</artifactId>
 	<version>v1</version>
-	<name>cicd-demo</name>
+	<name>cicd-demo${deployment.suffix}</name>
 	<packaging>pom</packaging>
 	<!-- Test -->
 	<pluginRepositories>
@@ -54,7 +54,8 @@ limitations under the License.
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
 		<project.root.dir>${basedir}</project.root.dir>
-		<target.root.dir>${basedir}/target</target.root.dir>
+        <target.root.dir>${basedir}/target</target.root.dir>
+        <deployment.suffix></deployment.suffix>
 	</properties>
 
 	<!-- This is where you add the environment specific properties under various profile names -->
@@ -71,8 +72,6 @@ limitations under the License.
 				<apigee.username>${env.APIGEE_USER}</apigee.username>
 				<apigee.password>${env.APIGEE_PASS}</apigee.password>
 				<apigee.options>update</apigee.options>
-				<apigee.config.options>update</apigee.config.options>
-				<apigee.config.dir>target/resources/edge</apigee.config.dir>
 			</properties>
 		</profile>
 		<profile>
@@ -87,8 +86,6 @@ limitations under the License.
 				<apigee.password>${env.APIGEE_PASS}</apigee.password>
 				<apigee.options>override</apigee.options>
 				<apigee.override.delay>5</apigee.override.delay>
-				<apigee.config.options>update</apigee.config.options>
-				<apigee.config.dir>target/resources/edge</apigee.config.dir>
 			</properties>
 		</profile>
 	</profiles>
@@ -105,7 +102,6 @@ limitations under the License.
 		</pluginManagement>
 
 		<plugins>
-
 			<!-- run jslint -->
 			<plugin>
 				<groupId>com.cj.jshintmojo</groupId>
@@ -166,7 +162,7 @@ limitations under the License.
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<executions>
 					<execution>
 						<phase>process-resources</phase>
@@ -178,12 +174,22 @@ limitations under the License.
 				<configuration>
 					<basedir>${target.root.dir}</basedir>
 					<includes>
-						<include>test/integration/support/init.js</include>
+                        <include>test/integration/support/init.js</include>
+                        <include>apiproxy/cicd-demo-v1.xml</include>
+                        <include>apiproxy/proxies/default.xml</include>
 					</includes>
 					<replacements>
 						<replacement>
 							<token>org-env.apigee.net</token>
 							<value>${apigee.org}-${apigee.env}.apigee.net</value>
+                        </replacement>
+                        <replacement>
+							<token>/cicd-demo/v1</token>
+							<value>/cicd-demo${deployment.suffix}/v1</value>
+						</replacement>
+						<replacement>
+							<token>@description</token>
+							<value>Commit: ${commit}, Branch: ${branch}, Author: ${author}</value>
 						</replacement>
 					</replacements>
 				</configuration>
@@ -277,7 +283,7 @@ limitations under the License.
 			</plugin>
 
 			<!-- cleaning dirs -->
-			<!-- <plugin>
+			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.5</version>
 
@@ -297,7 +303,7 @@ limitations under the License.
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</build>
 

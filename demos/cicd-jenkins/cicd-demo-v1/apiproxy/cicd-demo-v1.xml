@@ -17,5 +17,5 @@
 
 <APIProxy revision="1" name="cicd-demo-v1">
     <ConfigurationVersion minorVersion="0" majorVersion="4"/>
-	<Description>Apigee DevRel - CI/CD Demo</Description>
+	<Description>@description</Description>
 </APIProxy>
