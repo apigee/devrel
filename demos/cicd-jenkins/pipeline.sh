@@ -14,4 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mvn install -f ./cicd-demo-v1/pom.xml -Ptest
+mvn -ntp install -f ./cicd-demo-v1/pom.xml -Ptest -Dcommit='N/A' -Dbranch='N/A' -Dauthor=devrel -Ddeployment.suffix='-devrel'

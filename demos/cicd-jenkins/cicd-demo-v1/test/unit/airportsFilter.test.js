@@ -75,7 +75,6 @@ describe('Airports Filter', function() {
   });
 
   describe('Size Limit Filter', function() {
-
     it('should only return a limited count of airports', function() {
       const mocks = mockFactory.getMock();
       mocks.contextGetVariableMethod

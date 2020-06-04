@@ -10,15 +10,18 @@ docker build -t apigee/jenkins .
 
 ## Run Jenkins with a mounted home folder
 
-Although the volume mount for the jenkins_home directory is optional, it is highly encouraged to avoid having to do the manual jenkins configuration multiple times.
+Although the volume mount for the jenkins_home directory is optional, it is highly encouraged.
+A mounted jenkins_home avoids having to do the manual Jenkins configuration even if the container is stopped or restarted.
 
 ```sh
-sudo mkdir /var/jenkins_home
-sudo chmod 777 /var/jenkins_home
+CICD_JENKINS_HOME=/var/tmp/cicd_jenkins_home
+
+mkdir $CICD_JENKINS_HOME
+sudo chown -R 1000:1000 $CICD_JENKINS_HOME
 
 docker run -d -it -p 8080:8080 -p 50000:50000 --name jenkins \
     --group-add $(stat -c '%g' /var/run/docker.sock) \
-    -v /var/jenkins_home:/var/jenkins_home \
+    -v $CICD_JENKINS_HOME:/var/jenkins_home \
     -v /var/run/docker.sock:/var/run/docker.sock \
     --restart unless-stopped \
     apigee/jenkins:latest
@@ -28,48 +31,22 @@ docker run -d -it -p 8080:8080 -p 50000:50000 --name jenkins \
 
 To obtain an API key for configuring Jenkins via the provided API, follow these steps:
 
+1.  Open a browser window at http://localhost:8080
 1.  Once the Jenkins UI has loaded and prompts you for the admin key, supply the inital admin key which you can obtain from running `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword`
-1.  Click the button to install the default plugins
-1.  Create an admin user with the username `admin` (Password and Email can be arbitrary)
-1.  Navigate to `localhost:8080/me/configure`, create an API token, and store it in an `JENKINS_KEY` variable: `export JENKINS_KEY=<key goes here>`
+1.  Click the button `install suggested plugins` to install the default plugins
+1.  In the case of errors, click `retry` and restart Jenkins (http://localhost:8080/restart) after you created your admin user.
+1.  Create an admin user with the username `admin` (Password and Email can be anything)
+1.  Navigate to `http://localhost:8080/me/configure`and generate an API token (token name is irrelevant), and store it in an `JENKINS_KEY` variable: `export JENKINS_KEY=<key goes here>`
+
+![API Token](../img/api-token.png)
 
 
-### Install the reporting plugins
+## Install the required plugins
 
 ```sh
 curl -u admin:$JENKINS_KEY -X POST -d '<jenkins><install plugin="htmlpublisher@1.22" /></jenkins>' --header 'Content-Type: text/xml' "http://localhost:8080/pluginManager/installNecessaryPlugins"
+
 curl -u admin:$JENKINS_KEY -X POST -d '<jenkins><install plugin="cucumber-reports@5.0.2" /></jenkins>' --header 'Content-Type: text/xml' "http://localhost:8080/pluginManager/installNecessaryPlugins"
-```
 
-## Setup Jenkins Credentials
-
-This assumes you have the environment variables `APIGEE_USERNAME` and `APIGEE_PASSWORD` populated with your Apigee credentials.
-
-```sh
-curl -X POST \
-    -u admin:$JENKINS_KEY \
-    -H 'content-type:application/xml' \
-    -d "
-<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
-  <scope>GLOBAL</scope>
-  <id>apigee</id>
-  <description>Apigee CICD Credentials</description>
-  <username>$APIGEE_USERNAME</username>
-  <password>$APIGEE_PASSWORD</password>
-</com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
-" "http://localhost:8080/credentials/store/system/domain/_/createCredentials"
-```
-
-## Create a Multibrach Jenkins Job
-
-Use the UI to configure the Jenkins Job for multibranch pipelines:
-
-1.  Point to the SCM Jenkinsfile
-1.  Set the Git repo accordingly
-1.  Set the build trigger / polling frequency
-
-The `config.xml` contains a readily configured pipeline which may or may not be applicable given the detached versioning of the jenkins plugins:
-
-```sh
-curl -X POST -u admin:$JENKINS_KEY --header "Content-Type: application/xml" -d '@config.xml' http://localhost:8080/createItem?name=CurrencyAPI
+curl -u admin:$JENKINS_KEY -X POST -d '<jenkins><install plugin="docker-workflow@1.23" /></jenkins>' --header 'Content-Type: text/xml' "http://localhost:8080/pluginManager/installNecessaryPlugins"
 ```

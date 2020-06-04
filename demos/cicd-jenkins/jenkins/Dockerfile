@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jenkins/jenkins:2.235-alpine
+FROM jenkins/jenkins:2.239-alpine
 
 USER root
 

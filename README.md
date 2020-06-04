@@ -9,7 +9,9 @@ implementations across a variety of Apigee products. It is expected that these
 solutions are used as a reference or extended further to fit a particular use
 case.
 
-*   [Hello World](demos/hello-world) - A reference implementation to demonstrate 
+*   [CICD Jenkins](demos/cicd-jenkins) - CICD Pipeline using Jenkins and the
+Apigee deploy maven plugin.
+*   [Hello World](demos/hello-world) - A reference implementation to demonstrate
 a DevRel project.
 
 ## Tools
