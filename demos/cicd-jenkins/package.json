@@ -1,0 +1,14 @@
+{
+  "name": "cicd-jenkins",
+  "version": "1.0.0",
+  "description": "Apigee CICD Demo",
+  "main": "index.js",
+  "scripts": {
+    "docs": "sh generate-docs.sh"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "showdown": "^1.9.1"
+  }
+}
