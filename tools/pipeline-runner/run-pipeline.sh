@@ -44,19 +44,22 @@ APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
 [ -z "$NODE_JS_FILES" ] || eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
-if test -f "$DIR/pipeline.sh"; then
-# we are running under a single solution
-  (cd $DIR && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
-else
-# we are running for the entire devrel
-  for TYPE in demos labs tools; do
-    for D in `ls $DIR/$TYPE`
-    do
-      echo "Running pipeline on /"$TYPE"/"$D
-      (cd ./$TYPE/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
-      cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || true
+# Don't run pipelines on pull requests
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+  if test -f "$DIR/pipeline.sh"; then
+  # we are running under a single solution
+    (cd $DIR && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+  else
+  # we are running for the entire devrel
+    for TYPE in demos labs tools; do
+      for D in `ls $DIR/$TYPE`
+      do
+        echo "Running pipeline on /"$TYPE"/"$D
+        (cd ./$TYPE/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+        cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || true
+      done
     done
-  done
+  fi
 fi
 
 echo "Failures="$REPORT_FAIL
