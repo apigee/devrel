@@ -44,8 +44,10 @@ APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
 [ -z "$NODE_JS_FILES" ] || eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
-# Don't run pipelines on pull requests
-if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+# Don't run pipelines if credentials aren't available
+if [ -z "$APIGEE_USER" -a -z "$APIGEE_PASS" ]; then
+  echo "No credentials - skipping pipelines"
+else
   if test -f "$DIR/pipeline.sh"; then
   # we are running under a single solution
     (cd $DIR && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
