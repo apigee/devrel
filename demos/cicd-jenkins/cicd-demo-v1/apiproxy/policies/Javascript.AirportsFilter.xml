@@ -15,6 +15,5 @@
  limitations under the License.
 -->
 <Javascript name="Javascript.AirportsFilter">
-    <Properties/>
     <ResourceURL>jsc://airportsFilter.js</ResourceURL>
 </Javascript>

@@ -14,7 +14,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee-devrel</groupId>
@@ -22,40 +23,39 @@ limitations under the License.
 	<version>v1</version>
 	<name>cicd-demo${deployment.suffix}</name>
 	<packaging>pom</packaging>
-	<!-- Test -->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>central</id>
 			<name>Maven Plugin Repository</name>
 			<url>https://repo.maven.apache.org/maven2</url>
 			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
-        <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
 		<project.root.dir>${basedir}</project.root.dir>
-        <target.root.dir>${basedir}/target</target.root.dir>
-        <deployment.suffix></deployment.suffix>
+		<target.root.dir>${basedir}/target</target.root.dir>
+		<deployment.suffix></deployment.suffix>
+		<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+		<apigee.apiversion>v1</apigee.apiversion>
+		<apigee.org>${env.APIGEE_ORG}</apigee.org>
+		<apigee.username>${env.APIGEE_USER}</apigee.username>
+		<apigee.password>${env.APIGEE_PASS}</apigee.password>
+		<apigee.authtype>oauth</apigee.authtype>
 	</properties>
 
 	<!-- This is where you add the environment specific properties under various profile names -->
@@ -64,26 +64,14 @@ limitations under the License.
 		<profile>
 			<id>test</id>
 			<properties>
-				<apigee.profile>test</apigee.profile>
 				<apigee.env>test</apigee.env>
-				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.apiversion>v1</apigee.apiversion>
-				<apigee.org>${env.APIGEE_ORG}</apigee.org>
-				<apigee.username>${env.APIGEE_USER}</apigee.username>
-				<apigee.password>${env.APIGEE_PASS}</apigee.password>
 				<apigee.options>update</apigee.options>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
-				<apigee.profile>prod</apigee.profile>
 				<apigee.env>prod</apigee.env>
-				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.apiversion>v1</apigee.apiversion>
-				<apigee.org>${env.APIGEE_ORG}</apigee.org>
-				<apigee.username>${env.APIGEE_USER}</apigee.username>
-				<apigee.password>${env.APIGEE_PASS}</apigee.password>
 				<apigee.options>override</apigee.options>
 				<apigee.override.delay>5</apigee.override.delay>
 			</properties>
@@ -102,30 +90,6 @@ limitations under the License.
 		</pluginManagement>
 
 		<plugins>
-			<!-- run jslint -->
-			<plugin>
-				<groupId>com.cj.jshintmojo</groupId>
-				<artifactId>jshint-maven-plugin</artifactId>
-				<version>1.6.0</version>
-				<executions>
-					<execution>
-						<id>jslint</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>lint</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<version>2.5.6</version>
-					<options>esnext</options>
-					<directories>
-						<directory>apiproxy/resources/jsc</directory>
-					</directories>
-					<reporter>checkstyle</reporter>
-					<reportFile>target/jshint.html</reportFile>
-				</configuration>
-			</plugin>
 
 			<!-- copy the full apiproxy folder to target folder -->
 			<plugin>
@@ -142,7 +106,6 @@ limitations under the License.
 							<overwrite>true</overwrite>
 							<resources>
 								<resource>
-									<!--source -->
 									<directory>${project.root.dir}</directory>
 									<filtering>true</filtering>
 									<includes>
@@ -152,7 +115,6 @@ limitations under the License.
 									</includes>
 								</resource>
 							</resources>
-							<!--target -->
 							<outputDirectory>${target.root.dir}</outputDirectory>
 						</configuration>
 					</execution>
@@ -174,16 +136,16 @@ limitations under the License.
 				<configuration>
 					<basedir>${target.root.dir}</basedir>
 					<includes>
-                        <include>test/integration/support/init.js</include>
-                        <include>apiproxy/cicd-demo-v1.xml</include>
-                        <include>apiproxy/proxies/default.xml</include>
+						<include>test/integration/support/init.js</include>
+						<include>apiproxy/cicd-demo-v1.xml</include>
+						<include>apiproxy/proxies/default.xml</include>
 					</includes>
 					<replacements>
 						<replacement>
 							<token>org-env.apigee.net</token>
 							<value>${apigee.org}-${apigee.env}.apigee.net</value>
-                        </replacement>
-                        <replacement>
+						</replacement>
+						<replacement>
 							<token>/cicd-demo/v1</token>
 							<value>/cicd-demo${deployment.suffix}/v1</value>
 						</replacement>
@@ -237,6 +199,20 @@ limitations under the License.
 							</commandlineArgs>
 						</configuration>
 					</execution>
+					<!-- eslint -->
+					<execution>
+						<id>eslint</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>node</executable>
+							<commandlineArgs>
+								node_modules/eslint/bin/eslint.js -c ./.eslintrc-jsc.yml .
+							</commandlineArgs>
+						</configuration>
+					</execution>
 					<!-- apigeelint -->
 					<execution>
 						<id>apigeelint</id>
@@ -247,7 +223,7 @@ limitations under the License.
 						<configuration>
 							<executable>node</executable>
 							<commandlineArgs>
-								node_modules/apigeelint/cli.js -s ./apiproxy -f table.js -e TD001 -e PO013
+								node_modules/apigeelint/cli.js -s ./apiproxy -f table.js -e PO013
 							</commandlineArgs>
 						</configuration>
 					</execution>

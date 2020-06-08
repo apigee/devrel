@@ -23,6 +23,7 @@ const {Before} = require('cucumber');
 
 Before(function() {
   const host = process.env.TEST_HOST || 'org-env.apigee.net';
-  this.apickli = new apickliModule.Apickli('https', `${host}/cicd-demo/v1`);
+  const basePath = process.env.TEST_BASE_PATH || '/cicd-demo/v1';
+  this.apickli = new apickliModule.Apickli('https', `${host}${basePath}`);
   this.apickli.addRequestHeader('Cache-Control', 'no-cache');
 });

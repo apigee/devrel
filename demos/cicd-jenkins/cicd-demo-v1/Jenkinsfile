@@ -10,7 +10,11 @@ pipeline {
         APIGEE_CREDS = credentials('apigee')
         HOME = '.'
         DEMO_SUB_DIR = 'demos/cicd-jenkins/cicd-demo-v1'
-        // APIGEE_ORG = 'apigee-org-name' // set org name here or in the jenkins global property at ${JENKINS_URL}/configure
+        // Mutliple options for setting the Apigee target org:
+        // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
+        // 2. As a environment variable for all branches (see below)
+        // 3. As a branch specific environment variable in the first pipeline stage
+        // APIGEE_ORG = 'apigee-org-name'
     }
 
     stages {
@@ -21,14 +25,17 @@ pipeline {
               if (env.GIT_BRANCH == "master") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
                   env.MAVEN_PROFILE = "test"
+                  // env.APIGEE_ORG = 'apigee-org-name'
               // Prod branch for Apigee prod environment
               } else if (env.GIT_BRANCH == "prod") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
                   env.MAVEN_PROFILE = "prod"
+                  // env.APIGEE_ORG = 'apigee-org-name'
               // All other branches are deployed as separate proxies with suffix in the test environment
               } else {
                   env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-jenkins"
                   env.MAVEN_PROFILE = "test"
+                  // env.APIGEE_ORG = 'apigee-org-name'
               }
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
             }

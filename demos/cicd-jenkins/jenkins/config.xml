@@ -14,42 +14,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
-  <actions/>
-  <description></description>
-  <properties>
-    <org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig plugin="docker-workflow@1.23">
-      <dockerLabel></dockerLabel>
-      <registry plugin="docker-commons@1.16"/>
-    </org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig>
-  </properties>
-  <folderViews class="jenkins.branch.MultiBranchProjectViewHolder" plugin="branch-api@2.5.6">
-    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
-  </folderViews>
-  <healthMetrics>
-    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@6.12">
-      <nonRecursive>false</nonRecursive>
-    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
-  </healthMetrics>
-  <icon class="jenkins.branch.MetadataActionFolderIcon" plugin="branch-api@2.5.6">
-    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
-  </icon>
-  <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@6.12">
-    <pruneDeadBranches>true</pruneDeadBranches>
-    <daysToKeep>-1</daysToKeep>
-    <numToKeep>-1</numToKeep>
-  </orphanedItemStrategy>
-  <triggers/>
-  <disabled>false</disabled>
-  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@2.5.6">
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
+  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList">
     <data>
       <jenkins.branch.BranchSource>
-        <source class="jenkins.plugins.git.GitSCMSource" plugin="git@4.2.2">
+        <source class="jenkins.plugins.git.GitSCMSource">
+          <!-- Apigee CI/CD Demo: Set Git repo here -->
           <remote>https://github.com/apigee/devrel</remote>
-          <credentialsId></credentialsId>
-          <traits>
-            <jenkins.plugins.git.traits.BranchDiscoveryTrait/>
-          </traits>
         </source>
         <strategy class="jenkins.branch.DefaultBranchPropertyStrategy">
           <properties class="empty-list"/>
@@ -60,6 +31,7 @@ limitations under the License.
   </sources>
   <factory class="org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory">
     <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <!-- Apigee CI/CD Demo: Set Path to Jenkinsfile here -->
     <scriptPath>demos/cicd-jenkins/cicd-demo-v1/Jenkinsfile</scriptPath>
   </factory>
 </org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>

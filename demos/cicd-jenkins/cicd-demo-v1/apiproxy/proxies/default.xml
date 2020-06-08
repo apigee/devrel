@@ -17,18 +17,12 @@
 
 <ProxyEndpoint name="default">
   <PreFlow name="PreFlow">
-      <Request>
-        <Step>
-          <Condition>NOT((proxy.pathsuffix Matches "/airports*") AND (request.verb = "GET"))</Condition>
-          <Name>RaiseFault.404</Name>
-        </Step>
-      </Request>
-      <Response>
-        <Step>
-          <Condition>(proxy.pathsuffix Matches "/airports*") AND (request.verb = "GET")</Condition>
-          <Name>AssignMessage.AirportsMock</Name>
-        </Step>
-      </Response>
+    <Response>
+      <Step>
+        <Condition>(proxy.pathsuffix Matches "/airports*") AND (request.verb = "GET")</Condition>
+        <Name>AssignMessage.AirportsMock</Name>
+      </Step>
+    </Response>
   </PreFlow>
   <Flows>
     <Flow name="airports-all">
@@ -46,6 +40,13 @@
           <Name>Javascript.AirportByIataCode</Name>
         </Step>
       </Response>
+    </Flow>
+    <Flow name="unknown-path-suffix">
+      <Request>
+        <Step>
+          <Name>RaiseFault.404</Name>
+        </Step>
+      </Request>
     </Flow>
   </Flows>
   <PostFlow name="PostFlow"/>

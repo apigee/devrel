@@ -25,13 +25,13 @@ const limitParam = context.getVariable('request.queryparam.limit');
 
 var filtered = allAirports;
 
-if (countryParam) {
+if (countryParam && countryParam.length > 0) {
   filtered = filtered.filter((airport) =>
     airport.country.toLowerCase() === countryParam
   );
 }
 
-if (limitParam) {
+if (limitParam && limitParam > 0) {
   filtered = filtered.slice(0, parseInt(limitParam, 10));
 }
 

@@ -6,8 +6,13 @@
   "scripts": {
     "docs": "sh generate-docs.sh"
   },
-  "author": "",
   "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
   "dependencies": {
     "showdown": "^1.9.1"
   }
