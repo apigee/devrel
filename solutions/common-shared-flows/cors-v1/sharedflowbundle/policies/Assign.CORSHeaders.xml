@@ -1,0 +1,11 @@
+<AssignMessage name="Assign.CORSHeaders">
+    <Set>
+        <Headers>
+            <Header name="Access-Control-Allow-Origin">*</Header>
+            <Header name="Access-Control-Allow-Headers">*</Header>
+            <Header name="Access-Control-Max-Age">3628800</Header>
+            <Header name="Access-Control-Allow-Methods">*</Header>
+        </Headers>
+    </Set>
+    <AssignTo type="response" transport="http" createNew="false">response</AssignTo>
+</AssignMessage>

@@ -1,0 +1,40 @@
+<TargetEndpoint name="default">
+
+  <DefaultFaultRule>
+    <Step>
+      <Name>Shared.AddCORSHeaders</Name>
+    </Step>
+    <Step>
+      <Name>Shared.ErrorHandling</Name>
+    </Step>
+    <AlwaysEnforce>true</AlwaysEnforce>	
+  </DefaultFaultRule>
+
+    <PreFlow>
+        <Request/>
+        <Response/>
+    </PreFlow>
+
+    <Flows>
+      <Flow name="GET /status">
+        <!-- add steps to build healthcheck request -->
+        <Condition>
+          request.verb = "GET" and proxy.pathsuffix MatchesPath "/status"
+        </Condition>
+      </Flow>
+    </Flows>
+
+    <PostFlow>
+        <Request>
+          <Step>
+            <Name>Shared.CorrelationId</Name>
+          </Step>
+        </Request>
+        <Response/>
+    </PostFlow>
+
+    <HTTPTargetConnection>
+        <URL>@TargetURL@</URL>
+    </HTTPTargetConnection>
+
+</TargetEndpoint>

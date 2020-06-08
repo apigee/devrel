@@ -1,0 +1,5 @@
+<SharedFlow name="default">
+    <Step>
+        <Name>OAuthV2.VerifyAccessToken</Name>
+    </Step>
+</SharedFlow>

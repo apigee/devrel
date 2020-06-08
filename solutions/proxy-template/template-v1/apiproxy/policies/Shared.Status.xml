@@ -1,0 +1,3 @@
+<FlowCallout name="Shared.Status">
+    <SharedFlowBundle>status-v1</SharedFlowBundle>
+</FlowCallout>

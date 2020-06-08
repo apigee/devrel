@@ -1,0 +1,5 @@
+<SharedFlow name="default">
+    <Step>
+        <Name>Callout.Logging</Name>
+    </Step>
+</SharedFlow>

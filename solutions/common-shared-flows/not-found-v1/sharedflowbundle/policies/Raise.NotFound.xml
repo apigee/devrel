@@ -1,0 +1,8 @@
+<RaiseFault name="Raise.NotFound">
+  <FaultResponse>
+     <Set>
+      <StatusCode>404</StatusCode>
+      <ReasonPhrase>Resource Not Found</ReasonPhrase>
+    </Set>
+  </FaultResponse>
+</RaiseFault>

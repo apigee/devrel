@@ -1,0 +1,5 @@
+<SharedFlow name="default">
+    <Step>
+        <Name>Assign.CorrelationId</Name>
+    </Step>
+</SharedFlow>

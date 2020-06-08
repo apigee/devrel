@@ -1,0 +1,35 @@
+<!--                                                                            
+Copyright 2019 Google LLC                                                       
+                                                                                
+Licensed under the Apache License, Version 2.0 (the "License");                 
+you may not use this file except in compliance with the License.                
+You may obtain a copy of the License at                                         
+                                                                                
+    https://www.apache.org/licenses/LICENSE-2.0                                 
+                                                                                
+Unless required by applicable law or agreed to in writing, software             
+distributed under the License is distributed on an "AS IS" BASIS,               
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.        
+See the License for the specific language governing permissions and             
+limitations under the License.                                                  
+                                                                                
+-->
+<SharedFlowBundle revision="1" name="verifyaccesstoken">
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1557476900377</CreatedAt>
+    <CreatedBy>davissean@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Shared-Flow</DisplayName>
+    <LastModifiedAt>1557476900377</LastModifiedAt>
+    <LastModifiedBy>davissean@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:410faa0d494395e157e6b61f97e023ba0572f8936b408c085892acd6e96cdc8d7f4de60fd8e98026ce26f9c64b69fbc01ea7ded69a485d0bda06522c6001a801:eu-west-1</ManifestVersion>
+    <Policies>
+        <Policy>VerifyAccessToken</Policy>
+    </Policies>
+    <Resources/>
+    <Spec></Spec>
+    <subType>SharedFlow</subType>
+    <SharedFlows>
+        <SharedFlow>default</SharedFlow>
+    </SharedFlows>
+</SharedFlowBundle>

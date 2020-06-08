@@ -1,0 +1,6 @@
+<FlowCallout name="Shared.ErrorHandling">
+    <SharedFlowBundle>error-handling-v1</SharedFlowBundle>
+    <Parameters>
+      <Parameter name="custom.apiNo">00</Parameter>
+    </Parameters>
+</FlowCallout>

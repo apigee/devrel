@@ -1,0 +1,3 @@
+<Javascript timeLimit="500" name="JS.PopulateDefaultErrorVariables">
+  <ResourceURL>jsc://PopulateDefaultErrorVariables.js</ResourceURL>
+</Javascript>

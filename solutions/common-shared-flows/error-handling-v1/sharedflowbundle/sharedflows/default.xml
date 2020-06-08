@@ -1,0 +1,8 @@
+<SharedFlow name="default">
+    <Step>
+        <Name>JS.PopulateDefaultErrorVariables</Name>
+    </Step>
+    <Step>
+        <Name>Raise.JSONError</Name>
+    </Step>
+</SharedFlow>

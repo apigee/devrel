@@ -1,0 +1,97 @@
+<ProxyEndpoint name="default">
+
+  <DefaultFaultRule>
+    <Step>
+      <Name>Shared.AddCORSHeaders</Name>
+    </Step>
+    <Step>
+      <Name>Shared.ErrorHandling</Name>
+    </Step>
+    <AlwaysEnforce>true</AlwaysEnforce>	
+  </DefaultFaultRule>
+  <FaultRules>
+    <FaultRule name="Proxy Faults">
+      <Step>
+        <Name>JS.PopulateProxyErrorVariables</Name>
+      </Step>
+    </FaultRule>
+  </FaultRules>
+
+  <PreFlow>
+    <Request>
+      <Step>
+        <Name>Shared.TrafficManagement</Name>
+      </Step>
+      <Step>
+        <Name>Shared.VerifyToken</Name>
+        <Condition>request.verb != "OPTIONS" and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/status")</Condition>
+      </Step>
+      <!-- check your scopes here -->
+    </Request>
+  </PreFlow>
+
+  <Flows>
+
+    <Flow name="GET /ping">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>Shared.Ping</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+    <Flow name="GET /status">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/status"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>Shared.Status</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+    <!-- insert your flows here -->
+
+    <Flow name="not found">
+      <Response>
+        <Step>
+          <Name>Shared.NotFound</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+  </Flows>
+
+  <PostFlow>
+    <Response>
+      <Step>
+        <Name>Shared.AddCORSHeaders</Name>
+      </Step>
+    </Response>
+  </PostFlow>
+
+  <PostClientFlow>
+    <Response>
+      <Step>
+        <Name>Shared.Logging</Name>
+      </Step>
+    </Response>
+  </PostClientFlow>
+
+  <HTTPProxyConnection>
+    <BasePath>/@Basepath@/@Version@</BasePath>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
+    <Condition>request.verb != "OPTIONS" and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping")</Condition>
+  </RouteRule>
+
+  <RouteRule name="no target"/>
+
+</ProxyEndpoint>

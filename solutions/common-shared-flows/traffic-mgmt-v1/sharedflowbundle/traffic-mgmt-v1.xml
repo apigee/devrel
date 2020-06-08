@@ -1,0 +1,35 @@
+<!--                                                                            
+Copyright 2019 Google LLC                                                       
+                                                                                
+Licensed under the Apache License, Version 2.0 (the "License");                 
+you may not use this file except in compliance with the License.                
+You may obtain a copy of the License at                                         
+                                                                                
+    https://www.apache.org/licenses/LICENSE-2.0                                 
+                                                                                
+Unless required by applicable law or agreed to in writing, software             
+distributed under the License is distributed on an "AS IS" BASIS,               
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.        
+See the License for the specific language governing permissions and             
+limitations under the License.                                                  
+                                                                                
+-->
+<SharedFlowBundle revision="1" name="traffic-mgmt-v1">
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1557476891576</CreatedAt>
+    <CreatedBy>davissean@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Shared-Flow</DisplayName>
+    <LastModifiedAt>1557476891576</LastModifiedAt>
+    <LastModifiedBy>davissean@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:477167efd4f8cbb50a2c0cfb0f2220395283c9414eadb9d1f2bad18f227c96c90a9014d64e809559a72deaebefeeaaca046252139e4cce4f9f04007323da1121:eu-west-1</ManifestVersion>
+    <Policies>
+        <Policy>Spike-Arrest-1</Policy>
+    </Policies>
+    <Resources/>
+    <Spec></Spec>
+    <subType>SharedFlow</subType>
+    <SharedFlows>
+        <SharedFlow>default</SharedFlow>
+    </SharedFlows>
+</SharedFlowBundle>

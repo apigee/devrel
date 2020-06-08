@@ -1,0 +1,3 @@
+<FlowCallout name="Shared.AddCORSHeaders">
+    <SharedFlowBundle>cors-v1</SharedFlowBundle>
+</FlowCallout>

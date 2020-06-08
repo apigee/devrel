@@ -1,0 +1,5 @@
+<SharedFlow name="default">
+    <Step>
+        <Name>KVM.GetConfig</Name>
+    </Step>
+</SharedFlow>
