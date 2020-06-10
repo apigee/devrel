@@ -17,8 +17,37 @@
 set -e
 set -x
 
-REPORT_FAIL=
+PIPELINE_REPORT=
+
 DIR="${1:-$PWD}"
+
+repeat() {
+  printf "%0.s$1" $(seq 1 $2)
+}
+
+stepHeader() {
+  set +x
+  printf "\n\n$(repeat - 80)\n"
+  printf "  $1"
+  printf "\n$(repeat - 80)\n"
+  set -x
+}
+
+runPipeline() {
+  #####################################
+  stepHeader "Pipeline $1"
+  #####################################
+  echo "running single pipeline on $1"
+  cd $1
+  if ./pipeline.sh; then
+    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
+  else
+    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
+  fi
+  cd $DIR
+}
+
+
 
 mkdir -p ./generated/demos
 mkdir -p ./generated/labs
@@ -26,52 +55,126 @@ mkdir -p ./generated/tools
 
 echo "Running under "$DIR
 
-echo "Checking license headers"
-../tools/go/bin/addlicense -check $DIR || REPORT_FAIL=$REPORT_FAIL"LIC "
+#####################################
+stepHeader "Checking license headers"
+#####################################
 
-echo "Java linting"
+if ../tools/go/bin/addlicense -check $DIR; then
+  PIPELINE_REPORT="LICENSE_CHECK,global,pass"
+else
+  PIPELINE_REPORT="LICENSE_CHECK,global,fail"
+fi
+
+#####################################
+stepHeader "Java linting"
+#####################################
+
 JAVA_FILES=`find $DIR -type f -name "*.java"`
-[ -z "$JAVA_FILES" ] || java -jar ../tools/java/google-java-format-1.8-all-deps.jar --dry-run --set-exit-if-changed $JAVA_FILES || REPORT_FAIL=$REPORT_FAIL"JAVA "
+if [ -z "$JAVA_FILES" ]; then
+  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,n/a"
+elif [ java -jar ../tools/java/google-java-format-1.8-all-deps.jar --dry-run --set-exit-if-changed $JAVA_FILES ]; then
+  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,pass"
+else
+  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,fail"
+fi
 
+#####################################
+stepHeader "Installing Node Dependencies"
+#####################################
 npm i --silent
 
-echo "Starting markdown linting"
-./node_modules/.bin/remark $DIR -f || REPORT_FAIL=$REPORT_FAIL"MD "
+#####################################
+stepHeader "Starting markdown linting"
+#####################################
 
-echo "JS linting"
+if ./node_modules/.bin/remark $DIR -f; then
+  PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,pass"
+else
+  PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,fail"
+fi
+
+#####################################
+stepHeader "Apigee JS linting"
+#####################################
+
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
-[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
+
+if [ -z "$APIGEE_JS_FILES" ]; then
+  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,n/a"
+elif ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES; then
+  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,pass"
+else
+  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,fail"
+fi
+
+#####################################
+stepHeader "NODE linting"
+#####################################
 
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
-if test -f "$DIR/pipeline.sh"; then
+if [ -z "$NODE_JS_FILES" ]; then
+  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,n/a"
+elif ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES; then
+  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,pass"
+else
+  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,fail"
+fi
+
+if [ test -f "$DIR/pipeline.sh" ]; then
   # we are running under a single solution
-  (cd $DIR && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+  runPipeline $DIR
 else
   # we are running for the entire devrel
   for D in `ls $DIR/demos`
   do
-    echo "Running pipeline on /demos/"$D
-    (cd ./demos/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    runPipeline "./demos/$D"
     cp -r ./demos/$D/generated/docs ./generated/demos/$D || true
   done
 
   for D in `ls $DIR/labs`
   do
-    echo "Running pipeline on /labs/"$D
-    (cd ./labs/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    runPipeline "./labs/$D"
     cp -r ./labs/$D/generated/docs ./generated/labs/$D || true
   done
 
   for D in `ls $DIR/tools`
   do
-    echo "Running pipeline on /tools/"$D
-    (cd ./tools/$D && ./pipeline.sh) || REPORT_FAIL=$REPORT_FAIL$D" "
+    runPipeline "./tools/$D"
     cp -r ./tools/$D/generated/docs ./generated/tools/$D || true
   done
 fi
 
-echo "Failures="$REPORT_FAIL
 
-[ -z "$REPORT_FAIL" ] || exit 1
+# Check for failure and format results table
+set +x
+FAILURE_COUNT=0
+RED='\033[0;31m'
+GREEN='\033[0;92m'
+NORMAL='\033[00m'
+
+printf "\n\n"
+printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
+printf "|%-30s|%-30s|%-10s|\n" "Check" "Scope" "Result"
+printf "+$(repeat = 30)+$(repeat = 30)+$(repeat = 10)+\n"
+for entry in $PIPELINE_REPORT
+do
+  CHECK_RESULT=$(echo $entry | cut -d "," -f 3)
+  STATUS_COLOR=$GREEN
+  if [ $CHECK_RESULT = "fail" ]; then 
+    FAILURE_COUNT=$((FAILURE_COUNT+1))
+    STATUS_COLOR=$RED
+  fi
+  echo $entry | awk -F ',' "{printf \"|%-30s|%-30s|$STATUS_COLOR%-10s$NORMAL|\\n\",\$1,\$2, \$3}"
+  printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
+done
+
+
+# Final exit status and message 
+if [ "$FAILURE_COUNT" -gt 0 ]; then 
+  printf "\n\n$RED$FAILURE_COUNT FAILURE(S) OCCURRED\n"
+  exit 1
+else
+  printf "\n\n${GREEN}SUCCESS${NORMAL}\n"
+fi
+
