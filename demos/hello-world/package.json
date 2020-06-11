@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint -c ../../.eslintrc-node.yml .",
-    "deploy" : "./node_modules/.bin/apigeetool deployproxy -d passthrough-v1 -o $APIGEE_ORG -e $APIGEE_ENV -u $APIGEE_USER -p $APIGEE_PASS -n 'passthrough-v1' -V",
+    "deploy": "./node_modules/.bin/apigeetool deployproxy -d passthrough-v1 -o $APIGEE_ORG -e $APIGEE_ENV -u $APIGEE_USER -p $APIGEE_PASS -n 'passthrough-v1' -V",
     "docs": "sh generate-docs.sh",
     "test": "echo 'running tests...'"
   },
