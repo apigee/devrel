@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+set -x
 
-trap "rm -rf example-v1" EXIT
+rm -rf example-v1
 
 # deploy shared flows 
 sh ../common-shared-flows/deploy-all.sh
