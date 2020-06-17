@@ -16,10 +16,13 @@
 set -e
 set -x
 
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+# clean up
 rm -rf example-v1
 
 # deploy shared flows 
-sh ../common-shared-flows/deploy-all.sh
+sh $SCRIPTPATH/../common-shared-flows/deploy-all.sh
 
 # generate proxy
 PROXY=example VERSION=v1 VHOST=secure TARGETURL=https://httpbin.org/get sh ./generate-proxy.sh
