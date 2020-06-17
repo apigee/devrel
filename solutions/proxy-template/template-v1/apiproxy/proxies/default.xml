@@ -20,13 +20,16 @@
   <PreFlow>
     <Request>
       <Step>
-        <Name>Shared.TrafficManagement</Name>
+        <Condition>
+          request.verb != "OPTIONS" and 
+          !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and 
+          !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/status") 
+        </Condition>
+        <Name>Shared.VerifyToken</Name>
       </Step>
       <Step>
-        <Name>Shared.VerifyToken</Name>
-        <Condition>request.verb != "OPTIONS" and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/status")</Condition>
+        <Name>Shared.TrafficManagement</Name>
       </Step>
-      <!-- check your scopes here -->
     </Request>
   </PreFlow>
 
@@ -54,7 +57,7 @@
       </Response>
     </Flow>
 
-    <!-- insert your flows here -->
+    <!-- insert your flows here and check scopes -->
 
     <Flow name="not found">
       <Response>
@@ -89,7 +92,10 @@
 
   <RouteRule name="default">
     <TargetEndpoint>default</TargetEndpoint>
-    <Condition>request.verb != "OPTIONS" and !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping")</Condition>
+    <Condition> 
+      request.verb != "OPTIONS" and 
+      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping")
+    </Condition>
   </RouteRule>
 
   <RouteRule name="no target"/>

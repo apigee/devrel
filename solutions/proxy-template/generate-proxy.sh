@@ -7,16 +7,12 @@ set -e
 
 [ -z "$PROXY" ] && read -p "Proxy Name: " PROXY
 [ -z "$VERSION" ] && read -p "Proxy Version: " VERSION
-[ -z "$VHOST" ] && read -p "Virtual Host: " VERSION
+[ -z "$VHOST" ] && read -p "Virtual Host: " VHOST
 [ -z "$TARGETURL" ] && read -p "Target URL: " TARGETURL
-
-
 
 # Abort if directory exists
 
 [[ -d ./$PROXY-$VERSION ]] && echo "Proxy exists - aborting." && exit
-
-
 
 # Copy template and replace variables
 

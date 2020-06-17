@@ -1,7 +1,7 @@
 Feature:
-  Given I am Web Developer
-  When I consume an API from my own domain
-  Then I shouldn't receive any CORS errors
+  Given I am a browser
+  When I consume an API
+  Then I receive CORS headers
 
 Scenario: Successfully obtain CORS headers on Preflight call
   When I request OPTIONS for /
