@@ -1,24 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<APIProxy revision="1" name="apigee-v1">
-    <Basepaths>/v1/apigee</Basepaths>
-    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
-    <CreatedAt>1551979085401</CreatedAt>
-    <CreatedBy>davissean@google.com</CreatedBy>
-    <Description></Description>
-    <DisplayName>apigee-v1</DisplayName>
-    <LastModifiedAt>1551979085401</LastModifiedAt>
-    <LastModifiedBy>davissean@google.com</LastModifiedBy>
-    <ManifestVersion>SHA-512:984033ea7724fb260a695143039c7786171dc11ea96b495becbc632eb45baf893fbcf2d367faca0ab375ea64fe83e2d5f7beabc74b6105799b6a7753190e674b</ManifestVersion>
-    <Policies>
-        <Policy>add-cors</Policy>
-    </Policies>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources/>
-    <Spec></Spec>
-    <TargetServers/>
-    <TargetEndpoints>
-        <TargetEndpoint>default</TargetEndpoint>
-    </TargetEndpoints>
-</APIProxy>
+<APIProxy revision="1" name="apigee-v1"/>

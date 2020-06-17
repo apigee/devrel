@@ -11,11 +11,9 @@ function setFault(status, phrase, code, message, url) {
 
 switch (context.getVariable("fault.name")) {
   case "access_token_expired":  
-    setFault(401, "Unauthorized", "401.98", "Unauthorized - Token Expired");
-    break;
   case "invalid_access_token": 
   case "InvalidAccessToken": 
-    setFault(401, "Unauthorized", "401.99", "Unauthorized - Token Invalid");
+    setFault(401, "Unauthorized", "401.99", "Unauthorized - Token Invalid or Expired");
     break;
   case "ErrorResponseCode":
     switch (context.getVariable("response.status.code")) {

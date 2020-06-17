@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "LaughingBiscuit",
-  "license": "NONE",
+  "license": "Apache-2.0",
   "dependencies": {
     "apigeetool": "^0.10.0"
   }

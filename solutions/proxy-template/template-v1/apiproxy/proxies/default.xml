@@ -1,13 +1,13 @@
 <ProxyEndpoint name="default">
 
   <DefaultFaultRule>
+    <AlwaysEnforce>true</AlwaysEnforce>	
     <Step>
       <Name>Shared.AddCORSHeaders</Name>
     </Step>
     <Step>
       <Name>Shared.ErrorHandling</Name>
     </Step>
-    <AlwaysEnforce>true</AlwaysEnforce>	
   </DefaultFaultRule>
   <FaultRules>
     <FaultRule name="Proxy Faults">
@@ -84,7 +84,7 @@
 
   <HTTPProxyConnection>
     <BasePath>/@Basepath@/@Version@</BasePath>
-    <VirtualHost>secure</VirtualHost>
+    <VirtualHost>@VirtualHost@</VirtualHost>
   </HTTPProxyConnection>
 
   <RouteRule name="default">

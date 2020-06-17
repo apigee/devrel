@@ -1,3 +1,3 @@
-<Javascript timeLimit="500" name="JS.PopulateProxyErrorVariables">
+<Javascript timeLimit="200" name="JS.PopulateProxyErrorVariables">
   <ResourceURL>jsc://PopulateProxyErrorVariables.js</ResourceURL>
 </Javascript>

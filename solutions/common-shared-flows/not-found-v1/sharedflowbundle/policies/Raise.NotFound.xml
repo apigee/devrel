@@ -2,7 +2,7 @@
   <FaultResponse>
      <Set>
       <StatusCode>404</StatusCode>
-      <ReasonPhrase>Resource Not Found</ReasonPhrase>
+      <ReasonPhrase>Not Found</ReasonPhrase>
     </Set>
   </FaultResponse>
 </RaiseFault>
