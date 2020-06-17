@@ -20,6 +20,7 @@ set -x
 DIR="${1:-$PWD}"
 
 read -p "This action will edit your local files. Press Ctrl-C and a make a backup or press Enter to continue."
+npm i
 
 # Fix License Files
 SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated"`
@@ -27,11 +28,11 @@ addlicense $SRC_FILES
 
 # Fix Markdown Files
 SRC_FILES=`find $DIR -type f -path "*.md" | grep -v "node_modules" | grep -v "generated"`
-remark $SRC_FILES -r .remarkrc.yml -o
+./node_modules/.bin/remark $SRC_FILES -r .remarkrc.yml -o
 
 # Fix JS Files
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
-[ -z "$APIGEE_JS_FILES" ] || eslint --fix -c .eslintrc-jsc.yml $APIGEE_JS_FILES
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml $APIGEE_JS_FILES || true
 
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ -z "$NODE_JS_FILES" ] || eslint --fix -c .eslintrc.yml $NODE_JS_FILES
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml $NODE_JS_FILES || true
