@@ -16,6 +16,7 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-for SF in `ls $SCRIPTPATH -d */`; do
+cd $SCRIPTPATH
+for SF in `ls -d */`; do
   npm run deploy --prefix $SCRIPTPATH/$SF
 done

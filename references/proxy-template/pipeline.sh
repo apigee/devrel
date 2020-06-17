@@ -23,7 +23,7 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 rm -rf example-v1
 
 # deploy shared flows 
-sh $SCRIPTPATH/../common-shared-flows/deploy-all.sh
+(cd $SCRIPTPATH/../common-shared-flows && sh deploy-all.sh)
 
 # generate proxy
 PROXY=example VERSION=v1 VHOST=secure TARGETURL=https://httpbin.org/get sh ./generate-proxy.sh
