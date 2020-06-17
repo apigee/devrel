@@ -1,3 +1,0 @@
-<SpikeArrest name="SpikeArrest">
-    <Rate ref="custom.rate"/>
-</SpikeArrest>

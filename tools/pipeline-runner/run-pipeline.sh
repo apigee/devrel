@@ -20,14 +20,17 @@ set -x
 REPORT_FAIL=
 DIR="${1:-$PWD}"
 
-mkdir -p ./generated/demos
+mkdir -p ./generated/references
 mkdir -p ./generated/labs
 mkdir -p ./generated/tools
 
 echo "Running under "$DIR
 
+echo "Getting dependencies"
+npm install
+
 echo "Checking license headers"
-SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated"`
+SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated" | grep -v ".git"`
 addlicense -check $SRC_FILES || REPORT_FAIL=$REPORT_FAIL"LIC "
 
 echo "Java linting"
@@ -35,14 +38,14 @@ JAVA_FILES=`find $DIR -type f -name "*.java"`
 [ -z "$JAVA_FILES" ] || java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES || REPORT_FAIL=$REPORT_FAIL"JAVA "
 
 echo "Starting markdown linting"
-remark $DIR -f -r .remarkrc.yml || REPORT_FAIL=$REPORT_FAIL"MD "
+./node_modules/.bin/remark $DIR -f -r .remarkrc.yml || REPORT_FAIL=$REPORT_FAIL"MD "
 
 echo "JS linting"
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
-[ -z "$APIGEE_JS_FILES" ] || eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"JS "
 
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ -z "$NODE_JS_FILES" ] || eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES || REPORT_FAIL=$REPORT_FAIL"NODE "
 
 if test -f "$DIR/pipeline.sh"; then
   # we are running under a single solution
@@ -52,7 +55,7 @@ else
   if [ -z "$APIGEE_USER" -a -z "$APIGEE_PASS" ]; then
     echo "No credentials - skipping pipelines"
   else
-    for TYPE in demos labs tools; do
+    for TYPE in references labs tools; do
       for D in `ls $DIR/$TYPE`
       do
         echo "Running pipeline on /"$TYPE"/"$D

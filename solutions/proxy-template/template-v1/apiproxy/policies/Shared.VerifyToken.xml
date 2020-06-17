@@ -1,3 +1,0 @@
-<FlowCallout name="Shared.VerifyToken">
-    <SharedFlowBundle>verify-token-v1</SharedFlowBundle>
-</FlowCallout>

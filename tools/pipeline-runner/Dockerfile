@@ -16,7 +16,6 @@ FROM golang:alpine
 
 # Install our tools
 RUN apk add --no-cache curl git maven nodejs npm 
-RUN npm install -g eslint eslint-config-google remark-cli remark-preset-lint-recommended
 RUN go get github.com/google/addlicense
 RUN go get github.com/googlecodelabs/tools/claat
 RUN curl -sSL \

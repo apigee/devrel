@@ -1,5 +1,0 @@
-<SharedFlow name="default">
-    <Step>
-        <Name>Assign.Ping</Name>
-    </Step>
-</SharedFlow>

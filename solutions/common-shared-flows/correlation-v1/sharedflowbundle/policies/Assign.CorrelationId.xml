@@ -1,8 +1,0 @@
-<AssignMessage name="Assign.CorrelationId">
-    <Set>
-        <Headers>
-            <Header name="X-Correlation-Id">{messageid}</Header>
-        </Headers>
-    </Set>
-    <AssignTo type="request" transport="http" createNew="false">request</AssignTo>
-</AssignMessage>

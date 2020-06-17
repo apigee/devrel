@@ -1,8 +1,0 @@
-<KeyValueMapOperations mapIdentifier="EnvironmentConfig" name="KVM.GetConfig">
-  <Scope>environment</Scope>
-  <Get assignTo="custom.env.loggingUrl">
-    <Key>
-      <Parameter>LoggingUrl</Parameter>
-    </Key>
-  </Get>
-</KeyValueMapOperations>

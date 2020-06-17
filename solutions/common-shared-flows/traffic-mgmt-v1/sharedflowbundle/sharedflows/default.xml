@@ -1,5 +1,0 @@
-<SharedFlow name="default">
-    <Step>
-        <Name>SpikeArrest</Name>
-    </Step>
-</SharedFlow>

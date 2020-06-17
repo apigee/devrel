@@ -1,6 +1,0 @@
-<AssignMessage name="Assign.Ping">
-    <Set>
-      <Payload contentType="application/json">{"success": true}</Payload>
-    </Set>
-    <AssignTo type="response" transport="http" createNew="false">response</AssignTo>
-</AssignMessage>

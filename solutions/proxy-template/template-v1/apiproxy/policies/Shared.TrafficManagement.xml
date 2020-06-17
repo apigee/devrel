@@ -1,6 +1,0 @@
-<FlowCallout name="Shared.TrafficManagement">
-    <SharedFlowBundle>traffic-mgmt-v1</SharedFlowBundle>
-    <Parameters>
-      <Parameter name="custom.rate">5ps</Parameter>
-    </Parameters>
-</FlowCallout>
