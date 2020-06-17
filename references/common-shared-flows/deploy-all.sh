@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
 
-for SF in `ls -d */`; do
-  echo "npm run deploy --prefix $SF"
+for SF in `ls $SCRIPTPATH -d */`; do
+  npm run deploy --prefix $SCRIPTPATH/$SF
 done
