@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JavaCallout async="false" continueOnError="false" enabled="true" name="Java.Test">
+    <DisplayName>Java.Test</DisplayName>
+    <Properties/>
+    <ClassName>com.callout.api.App</ClassName>
+    <ResourceURL>java://java-callout-1.0-SNAPSHOT.jar</ResourceURL>
+</JavaCallout>

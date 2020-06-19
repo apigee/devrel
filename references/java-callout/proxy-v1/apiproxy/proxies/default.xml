@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+  <PreFlow>
+    <Request>
+      <Step>
+        <Name>Java.Test</Name>
+      </Step>
+    </Request>
+  </PreFlow>
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
+  </RouteRule>
+  <HTTPProxyConnection>
+    <BasePath>/apigee-java/v1</BasePath>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+</ProxyEndpoint>
