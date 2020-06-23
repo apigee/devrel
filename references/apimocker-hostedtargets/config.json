@@ -1,0 +1,15 @@
+{
+    "mockDirectory": "./mock",
+    "quiet": true,
+    "latency": 5,
+    "logRequestHeaders": false,
+    "webServices": {
+        "dogs": {
+            "latency": 20,
+            "verbs": ["get"],
+            "responses": {
+                "get": {"httpStatus": 200, "mockFile": "dogs.json"}
+            }
+        }
+    }
+}
