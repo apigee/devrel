@@ -26,9 +26,13 @@ npm i
 SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated"`
 addlicense $SRC_FILES
 
+# Fix Java Files
+JAVA_FILES=`find $DIR -type f -name "*.java"`
+java -jar /opt/google-java-format.jar -i $JAVA_FILES
+
 # Fix Markdown Files
-SRC_FILES=`find $DIR -type f -path "*.md" | grep -v "node_modules" | grep -v "generated"`
-./node_modules/.bin/remark $SRC_FILES -r .remarkrc.yml -o
+MD_FILES=`find $DIR -type f -path "*.md" | grep -v "node_modules" | grep -v "generated"`
+./node_modules/.bin/remark $MD_FILES -r .remarkrc.yml -o
 
 # Fix JS Files
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
