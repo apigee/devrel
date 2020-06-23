@@ -34,7 +34,7 @@ public class AppTest extends TestCase {
     return new TestSuite(AppTest.class);
   }
 
-  /** Rigourous Test :-) */
+  /** Add our unit tests */
   public void testApp() {
     assertTrue(true);
   }
