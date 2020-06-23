@@ -38,13 +38,12 @@ runPipeline() {
   stepHeader "Pipeline $1"
   #####################################
   echo "running single pipeline on $1"
-  cd $1
+  (cd $1 && \
   if ./pipeline.sh; then
     PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
   else
     PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
-  fi
-  cd $DIR
+  fi)
 }
 
 
@@ -124,7 +123,7 @@ else
   PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,fail"
 fi
 
-if [ test -f "$DIR/pipeline.sh" ]; then
+if test -f "$DIR/pipeline.sh"; then
   # we are running under a single solution
   runPipeline $DIR
 else
