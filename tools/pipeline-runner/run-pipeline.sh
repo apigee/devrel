@@ -74,7 +74,7 @@ JAVA_FILES=`find $DIR -type f -name "*.java"`
 
 if [ -z "$JAVA_FILES" ]; then
   PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,n/a"
-elif [ java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES ]; then
+elif java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES ; then
   PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,pass"
 else
   PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,fail"

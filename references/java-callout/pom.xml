@@ -1,0 +1,60 @@
+<!--
+ Copyright 2020 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<project xmlns="https://maven.apache.org/POM/4.0.0"
+xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>apigee</groupId>
+  <artifactId>java-project-v1</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0</version>
+  <name>Currency Parent Project</name>
+  <modules>
+    <module>java-callout</module>
+    <module>proxy-v1</module>
+  </modules>
+  <profiles>
+    <profile>
+      <id>test</id>
+      <properties>
+        <apigee.profile>test</apigee.profile>
+        <apigee.env>test</apigee.env>
+        <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+        <apigee.apiversion>v1</apigee.apiversion>
+        <apigee.org>${env.APIGEE_ORG}</apigee.org>
+        <apigee.username>${env.APIGEE_USER}</apigee.username>
+        <apigee.password>${env.APIGEE_PASS}</apigee.password>
+        <apigee.options>update</apigee.options>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <apigee.profile>prod</apigee.profile>
+        <apigee.env>prod</apigee.env>
+        <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+        <apigee.apiversion>v1</apigee.apiversion>
+        <apigee.org>${env.APIGEE_ORG}</apigee.org>
+        <apigee.username>${env.APIGEE_USERNAME}</apigee.username>
+        <apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
+        <apigee.options>override</apigee.options>
+        <apigee.override.delay>5</apigee.override.delay>
+      </properties>
+    </profile>
+  </profiles>
+</project>
