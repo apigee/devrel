@@ -17,5 +17,5 @@
 set -x 
 set -e
 
-mvn install -Ptest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+mvn install -Ptest -B
 npm test --prefix proxy-v1
