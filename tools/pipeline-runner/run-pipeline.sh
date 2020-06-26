@@ -30,7 +30,7 @@ echo "---CHECKING LICENSE HEADERS---"
 
 SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/"`
 addlicense -check $SRC_FILES
-PIPELINE_REPORT="$PIPELINE_REPORT;License Check,$?"
+PIPELINE_REPORT="License Check,$?"
 
 #####
 echo "---CHECKING README PROJECT LIST---"
@@ -123,10 +123,10 @@ fi
 # print report
 echo
 echo "FINAL RESULT"
-echo "$PIPELINE_REPORT" | tr ";" "\n" | tail -n +2 | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
+echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
 echo
 
 # set exit code
-echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q "fail"
+[ -z `echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q -v "0"` ]
 exit $?
 
