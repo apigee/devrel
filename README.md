@@ -1,5 +1,7 @@
 # Apigee DevRel
 
+[![Build Status](https://travis-ci.org/apigee/devrel.svg?branch=master)](https://travis-ci.org/apigee/devrel)
+
 Common solutions and tools developed by Apigee.
 
 ## References
