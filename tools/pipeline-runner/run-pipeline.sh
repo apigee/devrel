@@ -21,42 +21,13 @@ PIPELINE_REPORT=
 
 DIR="${1:-$PWD}"
 
-repeat() {
-  printf "%0.s$1" $(seq 1 $2)
-}
-
-stepHeader() {
-  set +x
-  printf "\n\n$(repeat - 80)\n"
-  printf "  $1"
-  printf "\n$(repeat - 80)\n"
-  set -x
-}
-
-runPipeline() {
-  #####################################
-  stepHeader "Pipeline $1"
-  #####################################
-  echo "running single pipeline on $1"
-  (cd $1 && \
-  if ./pipeline.sh; then
-    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
-  else
-    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
-  fi)
-}
-
-
-
 mkdir -p ./generated/references
 mkdir -p ./generated/labs
 mkdir -p ./generated/tools
 
 echo "Running under "$DIR
 
-#####################################
-stepHeader "Checking license headers"
-#####################################
+echo "CHECKING LICENSE HEADERS"
 
 SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated" | grep -v ".git"`
 
@@ -66,9 +37,11 @@ else
   PIPELINE_REPORT="LICENSE_CHECK,global,fail"
 fi
 
-#####################################
-stepHeader "Java linting"
-#####################################
+echo "CHECKING README PROJECT LIST"
+
+echo "CHECKING CODEOWNERS PROJECT LIST"
+
+echo "JAVA LINTING"
 
 JAVA_FILES=`find $DIR -type f -name "*.java"`
 
@@ -80,14 +53,11 @@ else
   PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,fail"
 fi
 
-#####################################
-stepHeader "Installing Node Dependencies"
-#####################################
+echo "INSTALLING NODE DEPENDENCIES"
+
 npm i --silent
 
-#####################################
-stepHeader "Starting markdown linting"
-#####################################
+echo "STARTING MARKDOWN LINTING"
 
 if ./node_modules/.bin/remark $DIR -f -r .remarkrc.yml; then
   PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,pass"
@@ -95,9 +65,7 @@ else
   PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,fail"
 fi
 
-#####################################
-stepHeader "Apigee JS linting"
-#####################################
+echo "APIGEE JS LINTING"
 
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
 
@@ -109,9 +77,7 @@ else
   PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,fail"
 fi
 
-#####################################
-stepHeader "NODE linting"
-#####################################
+echo "NODE LINTING"
 
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
 
@@ -125,7 +91,15 @@ fi
 
 if test -f "$DIR/pipeline.sh"; then
   # we are running under a single solution
-  runPipeline $DIR
+
+  echo "running single pipeline on $1"
+  (cd $1 && \
+  if ./pipeline.sh; then
+    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
+  else
+    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
+  fi)
+
 else
   # we are running for the entire devrel
   if [ -z "$APIGEE_USER" -a -z "$APIGEE_PASS" ]; then
@@ -135,43 +109,22 @@ else
       for D in `ls $DIR/$TYPE`
       do
         echo "Running pipeline on /"$TYPE"/"$D
-        runPipeline "./$TYPE/$D"
+
+        (cd $1 && \
+        if ./pipeline.sh; then
+          PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
+        else
+          PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
+        fi)
+
         cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || true
       done
     done
   fi
 fi
 
+echo $PIPELINE_REPORT | tr " " "\n" | column -t -s ","
 
-# Check for failure and format results table
-set +x
-FAILURE_COUNT=0
-RED='\033[0;31m'
-GREEN='\033[0;92m'
-NORMAL='\033[00m'
-
-printf "\n\n"
-printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
-printf "|%-30s|%-30s|%-10s|\n" "Check" "Scope" "Result"
-printf "+$(repeat = 30)+$(repeat = 30)+$(repeat = 10)+\n"
-for entry in $PIPELINE_REPORT
-do
-  CHECK_RESULT=$(echo $entry | cut -d "," -f 3)
-  STATUS_COLOR=$GREEN
-  if [ $CHECK_RESULT = "fail" ]; then 
-    FAILURE_COUNT=$((FAILURE_COUNT+1))
-    STATUS_COLOR=$RED
-  fi
-  echo $entry | awk -F ',' "{printf \"|%-30s|%-30s|$STATUS_COLOR%-10s$NORMAL|\\n\",\$1,\$2, \$3}"
-  printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
-done
-
-
-# Final exit status and message 
-if [ "$FAILURE_COUNT" -gt 0 ]; then 
-  printf "\n\n$RED$FAILURE_COUNT FAILURE(S) OCCURRED\n"
-  exit 1
-else
-  printf "\n\n${GREEN}SUCCESS${NORMAL}\n"
-fi
+grep -q -v "fail" $PIPELINE_REPORT
+exit $?
 
