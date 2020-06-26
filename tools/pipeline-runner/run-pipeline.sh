@@ -126,6 +126,6 @@ echo "FINAL RESULT"
 echo "$PIPELINE_REPORT" | tr ";" "\n" | tail -n +2 | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
 
 # set exit code
-echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q -v "fail"
+echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q "fail"
 exit $?
 
