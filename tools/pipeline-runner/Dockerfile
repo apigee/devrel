@@ -15,7 +15,7 @@
 FROM golang:alpine
 
 # Install our tools
-RUN apk add --no-cache curl git maven nodejs npm openjdk11-jre
+RUN apk add --no-cache curl git maven nodejs npm openjdk11-jre util-linux
 RUN go get github.com/google/addlicense
 RUN go get github.com/googlecodelabs/tools/claat
 RUN curl -sSL \
