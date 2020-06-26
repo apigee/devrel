@@ -59,7 +59,7 @@ echo "---JAVA LINTING---"
 ######
 
 JAVA_FILES=`find $DIR -type f -name "*.java"`
-[ ! -z "$JAVAFILES" ] && java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
+[ ! -z "$JAVA_FILES" ] && java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
 PIPELINE_REPORT="$PIPELINE_REPORT;Java Lint,$?"
 
 #####
