@@ -14,39 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-set -x
-
 PIPELINE_REPORT=
 
 DIR="${1:-$PWD}"
-
-repeat() {
-  printf "%0.s$1" $(seq 1 $2)
-}
-
-stepHeader() {
-  set +x
-  printf "\n\n$(repeat - 80)\n"
-  printf "  $1"
-  printf "\n$(repeat - 80)\n"
-  set -x
-}
-
-runPipeline() {
-  #####################################
-  stepHeader "Pipeline $1"
-  #####################################
-  echo "running single pipeline on $1"
-  (cd $1 && \
-  if ./pipeline.sh; then
-    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,pass"
-  else
-    PIPELINE_REPORT="$PIPELINE_REPORT PIPELINE,$1,fail"
-  fi)
-}
-
-
 
 mkdir -p ./generated/references
 mkdir -p ./generated/labs
@@ -54,124 +24,109 @@ mkdir -p ./generated/tools
 
 echo "Running under "$DIR
 
-#####################################
-stepHeader "Checking license headers"
-#####################################
+#####
+echo "---CHECKING LICENSE HEADERS---"
+#####
 
-SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated" | grep -v ".git"`
+SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/"`
+addlicense -check $SRC_FILES
+PIPELINE_REPORT="License Check,$?"
 
-if addlicense -check $SRC_FILES; then
-  PIPELINE_REPORT="LICENSE_CHECK,global,pass"
-else
-  PIPELINE_REPORT="LICENSE_CHECK,global,fail"
-fi
+#####
+echo "---CHECKING README PROJECT LIST---"
+#####
 
-#####################################
-stepHeader "Java linting"
-#####################################
+for TYPE in references labs tools; do
+  for D in `ls $TYPE`; do
+    cat README.md | grep "^-" | grep "$TYPE/$D" -q
+    PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D listed in README,$?"
+  done
+done
+
+#####
+echo "---CHECKING CODEOWNERS PROJECT LIST---"
+#####
+
+for TYPE in references labs tools; do
+  for D in `ls $TYPE`; do
+    cat CODEOWNERS | grep "$TYPE/$D" -q
+    PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D listed in CODEOWNERS,$?"
+  done
+done
+
+#####
+echo "---JAVA LINTING---"
+######
 
 JAVA_FILES=`find $DIR -type f -name "*.java"`
+[ ! -z "$JAVA_FILES" ] && java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
+PIPELINE_REPORT="$PIPELINE_REPORT;Java Lint,$?"
 
-if [ -z "$JAVA_FILES" ]; then
-  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,n/a"
-elif java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES ; then
-  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,pass"
-else
-  PIPELINE_REPORT="$PIPELINE_REPORT JAVA_LINT,global,fail"
-fi
+#####
+echo "---INSTALLING NODE DEPENDENCIES---"
+#####
 
-#####################################
-stepHeader "Installing Node Dependencies"
-#####################################
-npm i --silent
+npm i --no-fund --silent
 
-#####################################
-stepHeader "Starting markdown linting"
-#####################################
+#####
+echo "---STARTING MARKDOWN LINTING---"
+#####
 
-if ./node_modules/.bin/remark $DIR -f -r .remarkrc.yml; then
-  PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,pass"
-else
-  PIPELINE_REPORT="$PIPELINE_REPORT MD_LINT,global,fail"
-fi
+./node_modules/.bin/remark $DIR -f -r .remarkrc.yml
+PIPELINE_REPORT="$PIPELINE_REPORT;Markdown Lint,$?"
 
-#####################################
-stepHeader "Apigee JS linting"
-#####################################
+#####
+echo "---APIGEE JS LINTING---"
+#####
 
 APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
+./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES
+PIPELINE_REPORT="$PIPELINE_REPORT;Apigee JS Lint,$?"
 
-if [ -z "$APIGEE_JS_FILES" ]; then
-  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,n/a"
-elif ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES; then
-  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,pass"
-else
-  PIPELINE_REPORT="$PIPELINE_REPORT APIGEE_JS_LINT,global,fail"
-fi
-
-#####################################
-stepHeader "NODE linting"
-#####################################
+#####
+echo "---NODE LINTING---"
+#####
 
 NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-
-if [ -z "$NODE_JS_FILES" ]; then
-  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,n/a"
-elif ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES; then
-  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,pass"
-else
-  PIPELINE_REPORT="$PIPELINE_REPORT NODE_JS_LINT,global,fail"
-fi
+./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
+PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 
 if test -f "$DIR/pipeline.sh"; then
-  # we are running under a single solution
-  runPipeline $DIR
+
+  #####
+  echo "---RUNNING PIPELINE FOR $DIR ONLY---"
+  #####
+
+  (cd $DIR && ./pipeline.sh;)
+  PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
+
 else
-  # we are running for the entire devrel
   if [ -z "$APIGEE_USER" -a -z "$APIGEE_PASS" ]; then
-    echo "No credentials - skipping pipelines"
+    echo "NO CREDENTIALS - SKIPPING PIPELINES"
   else
     for TYPE in references labs tools; do
-      for D in `ls $DIR/$TYPE`
-      do
-        echo "Running pipeline on /"$TYPE"/"$D
-        runPipeline "./$TYPE/$D"
-        cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || true
+      for D in `ls $DIR/$TYPE`; do
+
+        #####
+        echo "---RUNNING PIPELINE FOR "$TYPE"/$D---"
+        #####
+
+        (cd $TYPE/$D && ./pipeline.sh;) 
+        PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
+        cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
+
       done
     done
   fi
 fi
 
+# print report
+echo
+echo "FINAL RESULT"
+echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
+echo
 
-# Check for failure and format results table
-set +x
-FAILURE_COUNT=0
-RED='\033[0;31m'
-GREEN='\033[0;92m'
-NORMAL='\033[00m'
-
-printf "\n\n"
-printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
-printf "|%-30s|%-30s|%-10s|\n" "Check" "Scope" "Result"
-printf "+$(repeat = 30)+$(repeat = 30)+$(repeat = 10)+\n"
-for entry in $PIPELINE_REPORT
-do
-  CHECK_RESULT=$(echo $entry | cut -d "," -f 3)
-  STATUS_COLOR=$GREEN
-  if [ $CHECK_RESULT = "fail" ]; then 
-    FAILURE_COUNT=$((FAILURE_COUNT+1))
-    STATUS_COLOR=$RED
-  fi
-  echo $entry | awk -F ',' "{printf \"|%-30s|%-30s|$STATUS_COLOR%-10s$NORMAL|\\n\",\$1,\$2, \$3}"
-  printf "+$(repeat - 30)+$(repeat - 30)+$(repeat - 10)+\n"
-done
-
-
-# Final exit status and message 
-if [ "$FAILURE_COUNT" -gt 0 ]; then 
-  printf "\n\n$RED$FAILURE_COUNT FAILURE(S) OCCURRED\n"
-  exit 1
-else
-  printf "\n\n${GREEN}SUCCESS${NORMAL}\n"
-fi
+# set exit code
+[ -z `echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q -v "0"` ]
+exit $?
 

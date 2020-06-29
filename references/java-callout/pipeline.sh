@@ -17,5 +17,5 @@
 set -x 
 set -e
 
-mvn install -Ptest
+mvn install -Ptest -B
 npm test --prefix proxy-v1

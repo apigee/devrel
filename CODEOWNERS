@@ -1,3 +1,7 @@
 *       @seymen @laughingbiscuit @dknezicd
 
-/demos/hello-world   @seymen @laughingbiscuit
+/references/apimocker-hostedtargets   @laughingbiscuit
+/references/common-shared-flows       @laughingbiscuit
+/references/java-callout              @laughingbiscuit
+/references/proxy-template            @laughingbiscuit
+/tools/pipeline-runner                @laughingbiscuit @seymen
