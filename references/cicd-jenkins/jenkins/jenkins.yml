@@ -1,0 +1,25 @@
+jenkins:
+  numExecutors: 3
+  systemMessage: "Jenkins Setup for Apigee CI/CD\n\n"
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+        - id: admin
+          password: ${JENKINS_ADMIN_PASS}
+  authorizationStrategy: loggedInUsersCanDoAnything
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: APIGEE_ORG
+        value: ${APIGEE_ORG}
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "apigee"
+              username: ${APIGEE_USER}
+              password: ${APIGEE_PASS}

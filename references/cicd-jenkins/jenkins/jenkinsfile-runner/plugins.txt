@@ -1,0 +1,8 @@
+git:latest
+script-security:latest
+matrix-project:latest
+workflow-step-api:latest
+htmlpublisher:1.23
+cucumber-reports:5.3.0
+junit:latest
+token-macro:latest

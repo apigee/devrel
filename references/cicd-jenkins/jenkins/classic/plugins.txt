@@ -1,0 +1,11 @@
+configuration-as-code:latest
+cucumber-reports:5.3.0
+git:latest
+htmlpublisher:1.23
+junit:latest
+matrix-project:latest
+script-security:latest
+token-macro:latest
+workflow-aggregator:2.6
+workflow-multibranch:2.21
+workflow-step-api:latest
