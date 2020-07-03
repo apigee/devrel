@@ -1,0 +1,318 @@
+{
+  "type": "array",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "minItems": 1,
+  "uniqueItems": true,
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "clientId",
+      "rootUrl",
+      "adminUrl",
+      "surrogateAuthRequired",
+      "enabled",
+      "alwaysDisplayInConsole",
+      "clientAuthenticatorType",
+      "redirectUris",
+      "webOrigins",
+      "notBefore",
+      "bearerOnly",
+      "consentRequired",
+      "standardFlowEnabled",
+      "implicitFlowEnabled",
+      "directAccessGrantsEnabled",
+      "serviceAccountsEnabled",
+      "authorizationServicesEnabled",
+      "publicClient",
+      "frontchannelLogout",
+      "protocol",
+      "attributes",
+      "authenticationFlowBindingOverrides",
+      "fullScopeAllowed",
+      "nodeReRegistrationTimeout",
+      "protocolMappers",
+      "defaultClientScopes",
+      "optionalClientScopes",
+      "access"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "clientId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "rootUrl": {
+        "type": "string",
+        "minLength": 1
+      },
+      "adminUrl": {
+        "type": "string",
+        "minLength": 1
+      },
+      "surrogateAuthRequired": {
+        "type": "boolean"
+      },
+      "enabled": {
+        "type": "boolean"
+      },
+      "alwaysDisplayInConsole": {
+        "type": "boolean"
+      },
+      "clientAuthenticatorType": {
+        "type": "string",
+        "minLength": 1
+      },
+      "redirectUris": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "webOrigins": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "notBefore": {
+        "type": "number"
+      },
+      "bearerOnly": {
+        "type": "boolean"
+      },
+      "consentRequired": {
+        "type": "boolean"
+      },
+      "standardFlowEnabled": {
+        "type": "boolean"
+      },
+      "implicitFlowEnabled": {
+        "type": "boolean"
+      },
+      "directAccessGrantsEnabled": {
+        "type": "boolean"
+      },
+      "serviceAccountsEnabled": {
+        "type": "boolean"
+      },
+      "authorizationServicesEnabled": {
+        "type": "boolean"
+      },
+      "publicClient": {
+        "type": "boolean"
+      },
+      "frontchannelLogout": {
+        "type": "boolean"
+      },
+      "protocol": {
+        "type": "string",
+        "minLength": 1
+      },
+      "attributes": {
+        "type": "object",
+        "properties": {
+          "saml.assertion.signature": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.force.post.binding": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.multivalued.roles": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.encrypt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "login_theme": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.server.signature": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.server.signature.keyinfo.ext": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exclude.session.state.from.auth.response": {
+            "type": "string",
+            "minLength": 1
+          },
+          "consent.screen.text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml_force_name_id_format": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.client.signature": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tls.client.certificate.bound.access.tokens": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.authnstatement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "display.on.consent.screen": {
+            "type": "string",
+            "minLength": 1
+          },
+          "saml.onetimeuse.condition": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "saml.assertion.signature",
+          "saml.force.post.binding",
+          "saml.multivalued.roles",
+          "saml.encrypt",
+          "login_theme",
+          "saml.server.signature",
+          "saml.server.signature.keyinfo.ext",
+          "exclude.session.state.from.auth.response",
+          "consent.screen.text",
+          "saml_force_name_id_format",
+          "saml.client.signature",
+          "tls.client.certificate.bound.access.tokens",
+          "saml.authnstatement",
+          "display.on.consent.screen",
+          "saml.onetimeuse.condition"
+        ]
+      },
+      "authenticationFlowBindingOverrides": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "fullScopeAllowed": {
+        "type": "boolean"
+      },
+      "nodeReRegistrationTimeout": {
+        "type": "number"
+      },
+      "protocolMappers": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "required": [
+            "id",
+            "name",
+            "protocol",
+            "protocolMapper",
+            "consentRequired"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "protocol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "protocolMapper": {
+              "type": "string",
+              "minLength": 1
+            },
+            "consentRequired": {
+              "type": "boolean"
+            },
+            "config": {
+              "type": "object",
+              "properties": {
+                "user.session.note": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "userinfo.token.claim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "id.token.claim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "access.token.claim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "claim.name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "jsonType.label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "user.session.note",
+                "userinfo.token.claim",
+                "id.token.claim",
+                "access.token.claim",
+                "claim.name",
+                "jsonType.label"
+              ]
+            }
+          }
+        }
+      },
+      "defaultClientScopes": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "optionalClientScopes": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "access": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "boolean"
+          },
+          "configure": {
+            "type": "boolean"
+          },
+          "manage": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "view",
+          "configure",
+          "manage"
+        ]
+      }
+    }
+  }
+}

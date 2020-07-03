@@ -1,0 +1,15 @@
+{
+  "name": "mock-iam-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/cucumber-js"
+  },
+  "author": "DevRel",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "apickli": "^2.3.3",
+    "cucumber": "^6.0.5"
+  }
+}

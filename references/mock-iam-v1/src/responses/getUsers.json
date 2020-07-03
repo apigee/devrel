@@ -1,0 +1,20 @@
+[
+  {
+    "id": "60b5d787-66bf-4480-b72b-29253bc9b778",
+    "createdTimestamp": 1593759293736,
+    "username": "someone",
+    "enabled": true,
+    "totp": false,
+    "emailVerified": false,
+    "disableableCredentialTypes": [],
+    "requiredActions": [],
+    "notBefore": 0,
+    "access": {
+      "manageGroupMembership": true,
+      "view": true,
+      "mapRoles": true,
+      "impersonate": true,
+      "manage": true
+    }
+  }
+]

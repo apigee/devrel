@@ -1,0 +1,88 @@
+{
+  "type": "array",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "minItems": 1,
+  "uniqueItems": true,
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "createdTimestamp",
+      "username",
+      "enabled",
+      "totp",
+      "emailVerified",
+      "disableableCredentialTypes",
+      "requiredActions",
+      "notBefore",
+      "access"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "createdTimestamp": {
+        "type": "number"
+      },
+      "username": {
+        "type": "string",
+        "minLength": 1
+      },
+      "enabled": {
+        "type": "boolean"
+      },
+      "totp": {
+        "type": "boolean"
+      },
+      "emailVerified": {
+        "type": "boolean"
+      },
+      "disableableCredentialTypes": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "requiredActions": {
+        "type": "array",
+        "items": {
+          "required": [],
+          "properties": {}
+        }
+      },
+      "notBefore": {
+        "type": "number"
+      },
+      "access": {
+        "type": "object",
+        "properties": {
+          "manageGroupMembership": {
+            "type": "boolean"
+          },
+          "view": {
+            "type": "boolean"
+          },
+          "mapRoles": {
+            "type": "boolean"
+          },
+          "impersonate": {
+            "type": "boolean"
+          },
+          "manage": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "manageGroupMembership",
+          "view",
+          "mapRoles",
+          "impersonate",
+          "manage"
+        ]
+      }
+    }
+  }
+}

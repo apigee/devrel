@@ -1,0 +1,19 @@
+{
+  "id": "bff1247c-62c5-4c61-bca1-61d922c4c9fd",
+  "createdTimestamp": 1574522519088,
+  "username": "someone",
+  "enabled": true,
+  "totp": false,
+  "emailVerified": false,
+  "disableableCredentialTypes": [],
+  "requiredActions": [
+  ],
+  "notBefore": 0,
+  "access": {
+    "manageGroupMembership": true,
+    "view": true,
+    "mapRoles": true,
+    "impersonate": true,
+    "manage": true
+  }
+}

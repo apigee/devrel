@@ -1,0 +1,99 @@
+{
+  "mockDirectory": "./responses",
+  "quiet": true,
+  "latency": 5,
+  "logRequestHeaders": false,
+  "webServices": {
+    "clients": {
+      "verbs": [
+        "post",
+        "get"
+      ],
+      "responses": {
+        "post": {
+          "httpStatus": 201
+        },
+        "get": {
+          "httpStatus": 200,
+          "mockFile": "getClients.json"
+        }
+      }
+    },
+    "clients/:id/client-secret": {
+      "verbs": [
+        "get"
+      ],
+      "responses": {
+        "get": {
+          "httpStatus": 200,
+          "mockFile": "getClientSecret.json"
+        }
+      }
+    },
+    "users": {
+      "verbs": [
+        "post",
+        "get"
+      ],
+      "responses": {
+        "post": {
+          "httpStatus": 201
+        },
+        "get": {
+          "httpStatus": 200,
+          "mockFile": "getUsers.json"
+        }
+      }
+    },
+    "users/:id/reset-password": {
+      "verbs": [
+        "put"
+      ],
+      "responses": {
+        "put": {
+          "httpStatus": 204
+        }
+      }
+    },
+    "auth": {
+      "verbs": [
+        "get"
+      ],
+      "headers": {
+        "location": "https://httpbin.org/get?code=4e7a548a-7638-4f25-bdc6-4cd216ed89bb.c16b094b-7b71-4d34-91dc-6d9273d7d0ad.d2ecca8a-3301-4693-b19e-c8102f0759a5&session_state=c16b094b-7b71-4d34-91dc-6d9273d7d0ad&state=abc"
+      },
+      "responses": {
+        "get": {
+          "httpStatus": 302
+        }
+      }
+    },
+    "token": {
+      "verbs": [
+        "post"
+      ],
+      "switch": [
+        "grant_type",
+        "client_id"
+      ],
+      "switchResponses": {
+        "grant_typepasswordclient_idadmin-cli": {
+          "httpStatus": 200,
+          "mockFile": "adminToken.json"
+        },
+        "grant_typeclient_credentials": {
+          "httpStatus": 200,
+          "mockFile": "clientCredentialsToken.json"
+        },
+        "grant_typepassword": {
+          "httpStatus": 200,
+          "mockFile": "passwordToken.json"
+        },
+        "grant_typeauthorization_code": {
+          "httpStatus": 200,
+          "mockFile": "authCodeToken.json"
+        }
+      }
+    }
+  }
+}
