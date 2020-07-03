@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker run -v $(pwd):/root -it alpine "ls /root"
+docker run -v $(pwd):/root -it alpine ls /root
