@@ -1,6 +1,7 @@
 *       @seymen @laughingbiscuit @dknezicd
 
 /references/apimocker-hostedtargets   @laughingbiscuit
+/references/cicd-jenkins              @danistrebel
 /references/common-shared-flows       @laughingbiscuit
 /references/java-callout              @laughingbiscuit
 /references/proxy-template            @laughingbiscuit

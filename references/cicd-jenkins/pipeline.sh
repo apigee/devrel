@@ -18,7 +18,7 @@ set -e
 
 docker build -f jenkins/Dockerfile-jenkinsfile-runner -t apigee-cicd/jenkinsfile-runner ./jenkins
 
-docker run -v ${PWD}/airports-cicd:/workspace -e CASC_JENKINS_CONFIG=/workspace/jenkins.yml \
+docker run -v ${PWD}/airports-cicd-v1:/workspace \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
@@ -28,3 +28,8 @@ docker run -v ${PWD}/airports-cicd:/workspace -e CASC_JENKINS_CONFIG=/workspace/
 
 npm install
 npm run docs
+
+API_NAME=airports-cicd-travis
+
+curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/environments/test/apis/$API_NAME/revisions/1/deployments"
+curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/apis/$API_NAME"
