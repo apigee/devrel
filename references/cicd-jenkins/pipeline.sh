@@ -16,20 +16,30 @@
 
 set -e
 
-docker build -f jenkins/Dockerfile-jenkinsfile-runner -t apigee-cicd/jenkinsfile-runner ./jenkins
+docker build -f jenkins/jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner ./jenkins
 
-docker run -v ${PWD}/airports-cicd-v1:/workspace \
+# because volume mounts don't work inside docker in docker without reference to the host file system
+cat << EOF >> /tmp/Dockerfile-jenkins-cicd
+FROM apigee-cicd/jenkinsfile-runner
+COPY ./airports-cicd-v1 /workspace
+EOF
+docker build -f /tmp/Dockerfile-jenkins-cicd -t apigee-cicd/jenkinsfile-runner-airports .
+rm /tmp/Dockerfile-jenkins-cicd
+
+docker run \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
   -e GIT_BRANCH=travis \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
-  -it apigee-cicd/jenkinsfile-runner
+  -it apigee-cicd/jenkinsfile-runner-airports
 
 npm install --no-fund
 npm run docs
 
 API_NAME=airports-cicd-travis
 
+echo "Undeploying Proxy $API_NAME:"
 curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/environments/test/apis/$API_NAME/revisions/1/deployments"
+echo "Deleting Proxy $API_NAME:"
 curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/apis/$API_NAME"
