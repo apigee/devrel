@@ -13,6 +13,7 @@ further to fit a particular use case.
 -   [API Mocker on Apigee Hosted Targets](references/apimocker-hostedtargets) - API Mocks hosted on Apigee SaaS
 -   [Common Shared Flows](references/common-shared-flows) - Reusable API Policies including Security, Traffic Management, Error Handling and CORS
 -   [Custom Java Extensions in Apigee](references/java-callout) - A reference project that includes a Java Extension
+-   [Identity Mock](references/mock-iam) - A mocked Identity Provider hosted in Apigee
 -   [Proxy Template](references/proxy-template) - An extensible templating tool to bootstrap API proxies containing Security, Traffic Management, Error Handling
 
 ## Tools
