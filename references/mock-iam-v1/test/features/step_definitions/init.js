@@ -28,21 +28,19 @@ const host = mock ? org + '-' + env + '.apigee.net' : 'localhost:8888';
 
 before(function() {
   this.apickli = new apickli.Apickli(mock ? 'https' : 'http',
-      host + basepath)
-  if(!mock) {
+      host + basepath);
+  if (!mock) {
     this.apickli.scenarioVariables = {
-      oidcPrefix: "/auth/realms/master/protocol/openid-connect",
-      adminPrefix: "/auth/admin/realms/master"
-    }
-  }
-  else {
+      oidcPrefix: '/auth/realms/master/protocol/openid-connect',
+      adminPrefix: '/auth/admin/realms/master',
+    };
+  } else {
     this.apickli.scenarioVariables = {
-      oidcPrefix: "",
-      adminPrefix: ""
-    }
+      oidcPrefix: '',
+      adminPrefix: '',
+    };
   }
 });
-
 
 
 setDefaultTimeout(60 * 1000);
