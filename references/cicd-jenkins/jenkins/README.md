@@ -3,8 +3,8 @@
 This document explains how to set up and configure a Jenkins CI server to run an Apigee deployment pipeline.
 
 You can choose between two different setups:
-*  `Jenkins Web`: Builds an image for running Jenkins with a web UI.
-*  `Jenkinsfile Runner` Builds an ephemeral runtime for running a specific Jenkinsfile without having to configure the full UI. We use this version for our continuous testing in Apigee DevRel.
+*   `Jenkins Web`: Builds an image for running Jenkins with a web UI.
+*   `Jenkinsfile Runner` Builds an ephemeral runtime for running a specific Jenkinsfile without having to configure the full UI. We use this version for our continuous testing in Apigee DevRel.
 
 ## Jenkins Web
 

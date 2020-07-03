@@ -6,15 +6,15 @@ Common solutions and tools developed by Apigee.
 
 ## References
 
-This folder contains reference solutions across a variety of Apigee products. 
-It is expected that these solutions are used as an illustration or extended 
+This folder contains reference solutions across a variety of Apigee products.
+It is expected that these solutions are used as an illustration or extended
 further to fit a particular use case.
 
 -   [API Mocker on Apigee Hosted Targets](references/apimocker-hostedtargets) - API Mocks hosted on Apigee SaaS
 -   [Common Shared Flows](references/common-shared-flows) - Reusable API Policies including Security, Traffic Management, Error Handling and CORS
 -   [Custom Java Extensions in Apigee](references/java-callout) - A reference project that includes a Java Extension
+-   [Jenkins CI/CD Pipeline](references/cicd-jenkins) - Reference implementation for a CI/CD Pipeline using Jenkins and the Apigee Deploy Maven Plugin
 -   [Proxy Template](references/proxy-template) - An extensible templating tool to bootstrap API proxies containing Security, Traffic Management, Error Handling
-
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
