@@ -26,7 +26,7 @@ docker run -v ${PWD}/airports-cicd-v1:/workspace \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -it apigee-cicd/jenkinsfile-runner
 
-npm install
+npm install --no-fund
 npm run docs
 
 API_NAME=airports-cicd-travis

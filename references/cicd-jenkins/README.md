@@ -26,7 +26,7 @@ The CICD pipeline includes:
 
 ### Jenkins
 
-The setup described in this reference implementation is based in Jenkins. You can either use the the included instructions to configure a new Jenkins server or use your existing infrastructure. The `jenkins` folder contains instructions on how to setup a dockerized Jenkins environment with all the necessary tooling and plugins required.
+The setup described in this reference implementation is based in Jenkins. You can either use the included instructions to configure a new Jenkins server or use your existing infrastructure. The `jenkins` folder contains instructions on how to set up a dockerized Jenkins environment with all the necessary tooling and plugins required.
 
 #### Option A: Configure Jenkins Docker Container
 

@@ -3,7 +3,7 @@ steps:
     args:
     - build
     - "--tag=gcr.io/$PROJECT_ID/apigee-cicd/jenkins"
-    - "--file=./classic/Dockerfile"
+    - "--file=./jenkins-web/Dockerfile"
     - .
 images:
   - "gcr.io/$PROJECT_ID/apigee-cicd/jenkins"

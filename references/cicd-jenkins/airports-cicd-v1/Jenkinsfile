@@ -4,8 +4,6 @@ pipeline {
 
     environment {
         APIGEE_CREDS = credentials('apigee')
-        HOME = '.'
-        DEMO_SUB_DIR = '.'
         // Mutliple options for setting the Apigee target org:
         // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
         // 2. As a environment variable for all branches (see below)
@@ -40,34 +38,28 @@ pipeline {
 
         stage('Clean') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "mvn clean"
-            }
+            sh "mvn clean"
           }
         }
 
         stage('Static Code Analysis') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "mvn validate"
-            }
+            sh "mvn validate"
           }
         }
 
         stage('Unit Test') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
+            sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
 
-              publishHTML(target: [
-                allowMissing: false,
-                alwaysLinkToLastBuild: false,
-                keepAll: false,
-                reportDir: "coverage",
-                reportFiles: 'index.html',
-                reportName: 'HTML Report'
-              ])
-            }
+            publishHTML(target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: false,
+              reportDir: "coverage",
+              reportFiles: 'index.html',
+              reportName: 'HTML Report'
+            ])
           }
         }
 
@@ -83,50 +75,40 @@ pipeline {
                   ).trim()
                 }
             }
-            dir(env.DEMO_SUB_DIR) {
-              sh "mvn process-resources -P${env.MAVEN_PROFILE} \
-                    -Dcommit=${env.GIT_COMMIT} \
-                    -Dbranch=${env.GIT_BRANCH} \
-                    -Dauthor=${AUTHOR_EMAIL} \
-                    -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-            }
+            sh "mvn process-resources -P${env.MAVEN_PROFILE} \
+                  -Dcommit=${env.GIT_COMMIT} \
+                  -Dbranch=${env.GIT_BRANCH} \
+                  -Dauthor=${AUTHOR_EMAIL} \
+                  -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
           }
         }
 
         stage('Package proxy bundle') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "mvn apigee-enterprise:configure -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-            }
+            sh "mvn apigee-enterprise:configure -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
           }
         }
 
         stage('Deploy proxy bundle') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "mvn apigee-enterprise:deploy -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-            }
+            sh "mvn apigee-enterprise:deploy -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
           }
         }
 
         stage('Functional Test') {
           steps {
-            dir(env.DEMO_SUB_DIR) {
-              sh "node ./node_modules/cucumber/bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
-            }
+            sh "node ./node_modules/cucumber/bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
           }
         }
     }
 
     post {
       always {
-        dir(env.DEMO_SUB_DIR) {
-          cucumber reportTitle: 'Apickli test report',
-                fileIncludePattern: '**/reports.json',
-                jsonReportDirectory: "target",
-                sortingMethod: 'ALPHABETICAL',
-                trendsLimit: 10
-        }
+        cucumber reportTitle: 'Apickli test report',
+              fileIncludePattern: '**/reports.json',
+              jsonReportDirectory: "target",
+              sortingMethod: 'ALPHABETICAL',
+              trendsLimit: 10
       }
     }
 }

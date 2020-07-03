@@ -1,12 +1,12 @@
-# CI/CD Demo V1 Proxy
+# Airports CI/CD V1 Proxy
 
-This contains an example proxy for the CI/CD pipeline demo.
+This contains an example proxy for the CI/CD pipeline reference using Jenkins and Maven.
 
 ## Development
 
 *   Install dependencies: `npm install`
 *   Unit testing: `npm run unit-test`
-*   Integration testing against host `my-org-env.apigee.net` and default basepath `cicd-demo/v1`: 
-    `TEST_HOST=my-org-env.apigee.net npm run integration-test`
-*   Integration testing against feature branch deployment on `cicd-demo-feature-ABC/v1`:
-    `TEST_HOST=my-org-env.apigee.net TEST_BASE_PATH='/cicd-demo-feature-ABC/v1' npm run integration-test`
+*   Integration testing against host `$APIGEE_ORG-$APIGEE_ENV.apigee.net` and default basepath `airports-cicd/v1`:
+    `TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net npm run integration-test`
+*   Integration testing against feature branch deployment on `airports-cicd-feature-ABC/v1`:
+    `TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test`

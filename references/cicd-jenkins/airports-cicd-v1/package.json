@@ -1,7 +1,7 @@
 {
   "name": "cicd-v1",
   "version": "1.0.0",
-  "description": "Sample Proxy for CI/CD Demo",
+  "description": "Sample Proxy for CI/CD Reference",
   "author": "danistrebel",
   "license": "Apache-2.0",
   "licenses": [

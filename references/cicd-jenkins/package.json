@@ -1,7 +1,7 @@
 {
   "name": "cicd-jenkins",
   "version": "1.0.0",
-  "description": "Apigee CICD Demo",
+  "description": "Apigee CICD using Jenkins and Maven",
   "main": "index.js",
   "scripts": {
     "docs": "sh generate-docs.sh"

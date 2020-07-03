@@ -50,7 +50,7 @@ limitations under the License.
 		<project.root.dir>${basedir}</project.root.dir>
 		<target.root.dir>${basedir}/target</target.root.dir>
 		<deployment.suffix></deployment.suffix>
-		<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+		<apigee.hosturl>${env.APIGEE_HOSTURL}</apigee.hosturl>
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${env.APIGEE_ORG}</apigee.org>
 		<apigee.username>${env.APIGEE_USER}</apigee.username>

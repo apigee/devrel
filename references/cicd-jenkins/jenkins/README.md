@@ -3,10 +3,10 @@
 This document explains how to set up and configure a Jenkins CI server to run an Apigee deployment pipeline.
 
 You can choose between two different setups:
-*  `Classic Jenkins`: Builds an image for running Jenkins with the classic web UI.
+*  `Jenkins Web`: Builds an image for running Jenkins with a web UI.
 *  `Jenkinsfile Runner` Builds an ephemeral runtime for running a specific Jenkinsfile without having to configure the full UI. We use this version for our continuous testing in Apigee DevRel.
 
-## Classic Jenkins
+## Jenkins Web
 
 Follow these instructions to build and run a fully configured Jenkins UI instance.
 
@@ -15,14 +15,14 @@ Follow these instructions to build and run a fully configured Jenkins UI instanc
 #### Option A: Local Build
 
 ```bash
-docker build -f classic/Dockerfile -t apigee-cicd/jenkins:latest .
+docker build -f jenkins-web/Dockerfile -t apigee-cicd/jenkins:latest .
 ```
 
 #### Option B: Cloud Build on GCP
 
 ```bash
 PROJECT_ID=$(gcloud config get-value project)
-gcloud builds submit --config ./classic/cloudbuild.yml
+gcloud builds submit --config ./jenkins-web/cloudbuild.yml
 docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest
 docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest apigee-cicd/jenkins:latest
 ```
@@ -56,7 +56,7 @@ docker run \
   apigee-cicd/jenkins:latest
 ```
 
-After the initialization is completed, you can login in the Jenkins web UI `http://localhost:8080` using the `admin` user and the password you specified before.
+After the initialization is completed, you can login with the Jenkins web UI `http://localhost:8080` using the `admin` user and the password you specified before.
 
 ## Jenkinsfile-Runner
 
