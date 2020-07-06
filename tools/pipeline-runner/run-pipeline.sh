@@ -91,6 +91,13 @@ NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "
 ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
 PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 
+#####
+echo "---CHECKING FOR PREFERRED TERM REPLACEMENT---"
+#####
+
+[ ! `grep -ir "blacklist\|whitelist\|master\|slave" .` ]
+PIPELINE_REPORT="$PIPELINE_REPORT;Preferred Term Replacement,$?"
+
 if test -f "$DIR/pipeline.sh"; then
 
   #####
