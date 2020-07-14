@@ -17,7 +17,7 @@
 set -e
 
 # Tear down
-docker rm -f aac-tests
+docker rm -f aac-tests || true
 
 # Set up
 docker run -itd --name aac-tests alpine 
