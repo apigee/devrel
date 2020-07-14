@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 set -e
 
 # Tear down
@@ -37,3 +36,5 @@ docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
 # Expired refresh token
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/test/inject-expired-token.sh refresh
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
+
+echo "Tests passed"
