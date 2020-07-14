@@ -11,4 +11,3 @@ NodeJS and apigeetool are also popular, but a container with Alpine, Node JS and
 
 The above methods don't teach you how the underlying Management API works. By simple templating `curl`, we 
 can learn the Management API and run in an Alpine container that is just 3.09MB. 
-
