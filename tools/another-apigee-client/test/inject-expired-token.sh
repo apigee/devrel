@@ -25,4 +25,4 @@ elif [ "$1" == "refresh" ]; then
   cp $HOME/aac/test/expired > $HOME/.aac/token
 else
   exit 1
-done
+fi
