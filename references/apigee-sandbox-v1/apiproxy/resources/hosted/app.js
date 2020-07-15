@@ -1,3 +1,19 @@
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const app = require('connect')()
 const http = require('http')
 const swaggerTools = require('swagger-tools')
@@ -5,15 +21,14 @@ const serverPort = process.env.PORT || 9000
 
 // swaggerRouter configuration
 const options = {
-  useStubs: true
+  useStubs: true,
 }
 
-// The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
+// The Swagger document
 const swaggerDoc = require('./swagger.json')
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
-  // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
   app.use(middleware.swaggerMetadata())
 
   // Validate Swagger requests
@@ -23,7 +38,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
   app.use((err, req, res, next) => {
     res.statusCode = 400
     res.end(JSON.stringify({
-      error: err.paramName + ': ' + err.code
+      error: err.paramName + ': ' + err.code,
     }))
   })
 

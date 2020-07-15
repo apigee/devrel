@@ -1,4 +1,4 @@
-# Apigee Sandbox 
+# Apigee Sandbox
 
 ## Description
 
@@ -13,12 +13,9 @@ An API Mock generated from a Swagger 2 specification and hosted in Apigee
 
 Replace `apiproxy/resources/node/swagger.json` with your specification file.
 
-```
-export APIGEE_ORG=xxx
-export APIGEE_ENV=xxx
-export APIGEE_USER=xxx
-export APIGEE_PASS=xxx
-npm run deploy
-npm test
-```
-
+    export APIGEE_ORG=xxx
+    export APIGEE_ENV=xxx
+    export APIGEE_USER=xxx
+    export APIGEE_PASS=xxx
+    npm run deploy
+    npm test
