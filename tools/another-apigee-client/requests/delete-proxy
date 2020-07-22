@@ -5,6 +5,6 @@
 
 curl \
   -X DELETE \
-  -H "Authorization: Bearer `./token`" \
+  -H "Authorization: Bearer $TOKEN" \
   "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/apis/$APIGEE_PROXY"
 

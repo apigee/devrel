@@ -1,9 +1,11 @@
 *       @seymen @laughingbiscuit @dknezicd
 
+/references/apigee-sandbox-v1         @laughingbiscuit
 /references/apimocker-hostedtargets   @laughingbiscuit
 /references/cicd-jenkins              @danistrebel
 /references/common-shared-flows       @laughingbiscuit
 /references/java-callout              @laughingbiscuit
 /references/proxy-template            @laughingbiscuit
+/tools/organization-cleanup           @laughingbiscuit
 /tools/pipeline-runner                @laughingbiscuit @seymen
 /tools/another-apigee-client          @laughingbiscuit

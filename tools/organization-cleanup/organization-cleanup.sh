@@ -15,15 +15,19 @@
 
 
 set -e
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
 
-if [ "$1" == "access" ]; then 
-  OLD_TOKEN=$(echo "eyJhbGciOiJSUzI1NiJ9."`echo -n '{"exp":1593773053}' | base64`".o8EC22VBvh7Q5S1M3MQLAgMtfoo1OdXC")
-  cat /root/.aac/token | jq --arg OLD_TOKEN $OLD_TOKEN '.access_token=$OLD_TOKEN' > /tmp/token
-  mv /tmp/token $HOME/.aac/token
-elif [ "$1" == "refresh" ]; then
-  cp $SCRIPTPATH/expired $HOME/.aac/token
-else
-  exit 1
-fi
+DEPLOYMENTS=`aac get-proxy-deployments`
+
+# Undeploy all
+for ENV in `echo $DEPLOYMENTS | jq -r '.environment[].name'`; do
+  PROXIES=`aac get-proxy-deployments | jq -r ".environment[] | select(.name | contains(\"$ENV\")) | .aPIProxy"`
+  for PROXY in `echo $PROXIES | jq -r ".[].name"`; do
+    REVISION=`echo $PROXIES | jq -r ".[] | select(.name | contains(\"$PROXY\")) | .revision[0].name"`
+    APIGEE_PROXY=$PROXY APIGEE_REV=$REVISION aac undeploy-proxy
+  done
+done
+
+# Delete all
+for PROXY in `aac list-proxies | jq -r '.[]'`; do 
+  APIGEE_PROXY=$PROXY aac delete-proxy
+done

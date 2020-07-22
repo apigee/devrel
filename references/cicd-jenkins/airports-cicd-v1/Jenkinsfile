@@ -15,8 +15,8 @@ pipeline {
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
             script{
-              // Master branch for Apigee test environment
-              if (env.GIT_BRANCH == "master") {
+              // Main branch for Apigee test environment
+              if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
                   env.MAVEN_PROFILE = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'

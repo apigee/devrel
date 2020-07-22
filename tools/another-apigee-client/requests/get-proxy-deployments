@@ -5,5 +5,5 @@
 
 curl \
   -H "Authorization: Bearer $TOKEN" \
-  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/apis"
+  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/deployments?includeServerStatus=false&includeApiConfig=false"
 

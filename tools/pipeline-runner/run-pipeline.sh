@@ -95,7 +95,7 @@ PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 echo "---CHECKING FOR PREFERRED TERM REPLACEMENT---"
 #####
 
-! grep -ir --exclude-dir={node_modules,.git} "blacklist\|whitelist\|master\|slave" .
+! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules" | grep -v ".git" | grep -v "run-pipeline.sh"
 PIPELINE_REPORT="$PIPELINE_REPORT;Preferred Term Replacement,$?"
 
 if test -f "$DIR/pipeline.sh"; then
@@ -113,6 +113,12 @@ else
   else
     for TYPE in references labs tools; do
       for D in `ls $DIR/$TYPE`; do
+
+        #####
+        echo "---CLEANING ORG---"
+        #####
+
+	PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
 
         #####
         echo "---RUNNING PIPELINE FOR "$TYPE"/$D---"
@@ -134,5 +140,5 @@ echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass
 echo
 
 # set exit code
-[ -z `echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q -v "0"` ]
-exit $?
+! echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '{ print $2 }' | grep -v -q "0"
+
