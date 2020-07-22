@@ -118,7 +118,7 @@ else
         echo "---CLEANING ORG---"
         #####
 
-        cd ./tools/another-apigee-client && for PROXY in `./aac list-proxies | jq -r '.[]'`; do APIGEE_PROXY=$PROXY ./aac delete-proxy; done
+        for PROXY in `./tools/aac list-proxies | jq -r '.[]'`; do APIGEE_PROXY=$PROXY ./aac delete-proxy; done
 
         #####
         echo "---RUNNING PIPELINE FOR "$TYPE"/$D---"
