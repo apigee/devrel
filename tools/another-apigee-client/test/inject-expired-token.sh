@@ -22,7 +22,7 @@ if [ "$1" == "access" ]; then
   cat /root/.aac/token | jq --arg OLD_TOKEN $OLD_TOKEN '.access_token=$OLD_TOKEN' > /tmp/token
   mv /tmp/token $HOME/.aac/token
 elif [ "$1" == "refresh" ]; then
-  cp $HOME/aac/test/expired > $HOME/.aac/token
+  cp $HOME/aac/test/expired $HOME/.aac/token
 else
   exit 1
 fi
