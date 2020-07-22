@@ -26,12 +26,12 @@ just a few small guidelines you need to follow.
         2.  What functionalities are implemented and instructions on how to use
             them.
     4.  Add a link to your contribution in the top-level
-        [README](https://github.com/Apigee/DevRel/blob/master/README.md)
+        [README](https://github.com/Apigee/DevRel/blob/main/README.md)
         (alpha-order).
     5.  Ensure that your submission does not include a LICENSE file. There's no
         need to include an additional license since all repository submissions
         are covered by the top-level Apache 2.0
-        [license](https://github.com/Apigee/DevRel/blob/master/LICENSE).
+        [license](https://github.com/Apigee/DevRel/blob/main/LICENSE).
     6.  Ensure all files copied or derived from a third party library are stored
         in the `/third_party` directory. Also ensure that every directory inside
         the third_party directory has a LICENSE file that contains the full
@@ -50,7 +50,7 @@ just a few small guidelines you need to follow.
     our automation daily. Make sure that you use an appropriate
     [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) if you want the
     automation to execute a text file. See [this example
-    pipeline](https://github.com/apigee/DevRel/blob/master/demos/hello-world/pipeline.sh)
+    pipeline](https://github.com/apigee/DevRel/blob/main/demos/hello-world/pipeline.sh)
     implementation.
 5.  Submit a pull request.
 
@@ -83,7 +83,7 @@ following commands:
     npm run pipeline
 
 Check out the
-[Dockerfile](https://github.com/apigee/DevRel/blob/master/Dockerfile) to see how
+[Dockerfile](https://github.com/apigee/DevRel/blob/main/Dockerfile) to see how
 the pipeline is implemented.
 
 ### Apigee Org Variables

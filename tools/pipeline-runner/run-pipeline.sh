@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Copyright 2020 Google LLC
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # <http://www.apache.org/licenses/LICENSE-2.0>
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,7 +59,7 @@ echo "---JAVA LINTING---"
 ######
 
 JAVA_FILES=`find $DIR -type f -name "*.java"`
-[ ! -z "$JAVA_FILES" ] && java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
+[ -z "$JAVA_FILES" ] || java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
 PIPELINE_REPORT="$PIPELINE_REPORT;Java Lint,$?"
 
 #####
@@ -95,7 +95,7 @@ PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 echo "---CHECKING FOR PREFERRED TERM REPLACEMENT---"
 #####
 
-[ ! `grep -ir "blacklist\|whitelist\|master\|slave" .` ]
+! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules" | grep -v ".git" | grep -v "run-pipeline.sh"
 PIPELINE_REPORT="$PIPELINE_REPORT;Preferred Term Replacement,$?"
 
 if test -f "$DIR/pipeline.sh"; then
@@ -115,10 +115,16 @@ else
       for D in `ls $DIR/$TYPE`; do
 
         #####
+        echo "---CLEANING ORG---"
+        #####
+
+	PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
+
+        #####
         echo "---RUNNING PIPELINE FOR "$TYPE"/$D---"
         #####
 
-        (cd $TYPE/$D && ./pipeline.sh;) 
+        (cd $TYPE/$D && ./pipeline.sh;)
         PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
         cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
 
@@ -134,6 +140,5 @@ echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass
 echo
 
 # set exit code
-[ -z `echo "$PIPELINE_REPORT" | awk -F"," '{ print $2 }' | grep -q -v "0"` ]
-exit $?
+! echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '{ print $2 }' | grep -v -q "0"
 
