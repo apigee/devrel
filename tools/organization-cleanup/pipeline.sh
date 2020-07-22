@@ -14,4 +14,4 @@
 # limitations under the License.
 
 
-echo "no pipeline required, as this is testing in pipeline-runner"
+# no pipeline required, as this is tested in pipeline-runner
