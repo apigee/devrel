@@ -16,6 +16,8 @@ further to fit a particular use case.
 -   [Custom Java Extensions in Apigee](references/java-callout) - A reference project that includes a Java Extension
 -   [Jenkins CI/CD Pipeline](references/cicd-jenkins) - Reference implementation for a CI/CD Pipeline using Jenkins and the Apigee Deploy Maven Plugin
 -   [Proxy Template](references/proxy-template) - An extensible templating tool to bootstrap API proxies containing Security, Traffic Management, Error Handling
+-   [Writing JavaScript in Apigee](references/js-callout) - to demonstrate best
+    practices in writing JavaScript code in Apigee context.
 
 ## Tools
 
