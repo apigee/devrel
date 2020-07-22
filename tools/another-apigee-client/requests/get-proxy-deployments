@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# List API Proxies
+# https://apidocs.apigee.com/management/apis/get/organizations/%7Borg_name%7D/apis
+
+curl \
+  -H "Authorization: Bearer $TOKEN" \
+  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/deployments?includeServerStatus=false&includeApiConfig=false"
+

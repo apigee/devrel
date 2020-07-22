@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Undeploy API Proxy
+# https://apidocs.apigee.com/management/apis/post/organizations/%7Borg_name%7D/apis/%7Bapi_name%7D/revisions/%7Brevision_number%7D/deployments
+
+curl \
+  -X DELETE \
+  -H "Authorization: Bearer $TOKEN" \
+  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/apis/$APIGEE_PROXY/revisions/$APIGEE_REV/deployments"
+

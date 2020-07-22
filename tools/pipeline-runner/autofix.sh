@@ -15,7 +15,6 @@
 # limitations under the License.
 
 set -e
-set -x 
 
 DIR="${1:-$PWD}"
 
