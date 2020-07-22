@@ -6,5 +6,6 @@
 /references/common-shared-flows       @laughingbiscuit
 /references/java-callout              @laughingbiscuit
 /references/proxy-template            @laughingbiscuit
+/tools/organization-cleanup           @laughingbiscuit
 /tools/pipeline-runner                @laughingbiscuit @seymen
 /tools/another-apigee-client          @laughingbiscuit
