@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2020 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<AssignMessage name="AssignMessage.AirportsMock">
+    <Set>
+        <!-- Source: https://en.wikipedia.org/wiki/List_of_busiest_airports_by_passenger_traffic (2019) -->
+        <Payload contentType="application/json">
+            [
+              {
+                "rank": 1,
+                "airport": "United States Hartsfield–Jackson Atlanta International Airport",
+                "location": "Atlanta, Georgia",
+                "country": "United States",
+                "iata": "ATL",
+                "icao": "KATL"
+              },
+              {
+                "rank": 2,
+                "airport": "China Beijing Capital International Airport",
+                "location": "Chaoyang-Shunyi, Beijing",
+                "country": "China",
+                "iata": "PEK",
+                "icao": "ZBAA"
+              },
+              {
+                "rank": 3,
+                "airport": "United States Los Angeles International Airport",
+                "location": "Los Angeles, California",
+                "country": "United States",
+                "iata": "LAX",
+                "icao": "KLAX"
+              },
+              {
+                "rank": 4,
+                "airport": "Japan Tokyo Haneda Airport",
+                "location": "Ōta, Tokyo",
+                "country": "Japan",
+                "iata": "HND",
+                "icao": "RJTT"
+              },
+              {
+                "rank": 5,
+                "airport": "United Arab Emirates Dubai International Airport",
+                "location": "Garhoud, Dubai",
+                "country": "United Arab Emirates",
+                "iata": "DXB",
+                "icao": "OMDB"
+              },
+              {
+                "rank": 6,
+                "airport": "United States O'Hare International Airport",
+                "location": "Chicago, Illinois",
+                "country": "United States",
+                "iata": "ORD",
+                "icao": "KORD"
+              },
+              {
+                "rank": 7,
+                "airport": "United Kingdom London Heathrow Airport",
+                "location": "Hillingdon, London",
+                "country": "United Kingdom",
+                "iata": "LHR",
+                "icao": "EGLL"
+              },
+              {
+                "rank": 8,
+                "airport": "China Shanghai Pudong International Airport",
+                "location": "Pudong, Shanghai",
+                "country": "China",
+                "iata": "PVG",
+                "icao": "ZSPD"
+              },
+              {
+                "rank": 9,
+                "airport": "France Charles de Gaulle Airport",
+                "location": "Roissy-en-France, Île-de-France",
+                "country": "France",
+                "iata": "CDG",
+                "icao": "LFPG"
+              },
+              {
+                "rank": 10,
+                "airport": "United States Dallas/Fort Worth International Airport",
+                "location": "Dallas-Fort Worth, Texas",
+                "country": "United States",
+                "iata": "DFW",
+                "icao": "KDFW"
+              },
+              {
+                "rank": 11,
+                "airport": "China Guangzhou Baiyun International Airport",
+                "location": "Baiyun-Huadu, Guangzhou, Guangdong",
+                "country": "China",
+                "iata": "CAN",
+                "icao": "ZGGG"
+              },
+              {
+                "rank": 12,
+                "airport": "Netherlands Amsterdam Airport Schiphol",
+                "location": "Haarlemmermeer, North Holland",
+                "country": "Netherlands",
+                "iata": "AMS",
+                "icao": "EHAM"
+              },
+              {
+                "rank": 13,
+                "airport": "Hong Kong Hong Kong International Airport",
+                "location": "Chek Lap Kok, Islands, New Territories",
+                "country": "Hong Kong SAR, China",
+                "iata": "HKG",
+                "icao": "VHHH"
+              },
+              {
+                "rank": 14,
+                "airport": "Germany Frankfurt Airport",
+                "location": "Frankfurt, Hesse",
+                "country": "Germany",
+                "iata": "FRA",
+                "icao": "EDDF"
+              },
+              {
+                "rank": 15,
+                "airport": "United States Denver International Airport",
+                "location": "Denver, Colorado",
+                "country": "United States",
+                "iata": "DEN",
+                "icao": "KDEN"
+              },
+              {
+                "rank": 16,
+                "airport": "South Korea Seoul Incheon International Airport",
+                "location": "Incheon",
+                "country": "South Korea",
+                "iata": "ICN",
+                "icao": "RKSI"
+              },
+              {
+                "rank": 17,
+                "airport": "Singapore Singapore Changi Airport",
+                "location": "Changi, East Region",
+                "country": "Singapore",
+                "iata": "SIN",
+                "icao": "WSSS"
+              },
+              {
+                "rank": 18,
+                "airport": "India Indira Gandhi International Airport",
+                "location": "Delhi",
+                "country": "India",
+                "iata": "DEL",
+                "icao": "VIDP"
+              },
+              {
+                "rank": 19,
+                "airport": "Thailand Suvarnabhumi Airport",
+                "location": "Bang Phli, Samut Prakan",
+                "country": "Thailand",
+                "iata": "BKK",
+                "icao": "VTBS"
+              },
+              {
+                "rank": 20,
+                "airport": "Indonesia Soekarno–Hatta International Airport",
+                "location": "Tangerang, Banten",
+                "country": "Indonesia",
+                "iata": "CGK",
+                "icao": "WIII"
+              },
+              {
+                "rank": 21,
+                "airport": "United States John F. Kennedy International Airport",
+                "location": "Queens, New York, New York",
+                "country": "United States",
+                "iata": "JFK",
+                "icao": "KJFK"
+              },
+              {
+                "rank": 22,
+                "airport": "Malaysia Kuala Lumpur International Airport",
+                "location": "Sepang, Selangor",
+                "country": "Malaysia",
+                "iata": "KUL",
+                "icao": "WMKK"
+              },
+              {
+                "rank": 23,
+                "airport": "Spain Madrid Barajas Airport",
+                "location": "Barajas, Madrid",
+                "country": "Spain",
+                "iata": "MAD",
+                "icao": "LEMD"
+              },
+              {
+                "rank": 24,
+                "airport": "United States San Francisco International Airport",
+                "location": "San Mateo County, California",
+                "country": "United States",
+                "iata": "SFO",
+                "icao": "KSFO"
+              },
+              {
+                "rank": 25,
+                "airport": "China Chengdu Shuangliu International Airport",
+                "location": "Shuangliu-Wuhou, Chengdu, Sichuan",
+                "country": "China",
+                "iata": "CTU",
+                "icao": "ZUUU"
+              },
+              {
+                "rank": 26,
+                "airport": "China Shenzhen Bao'an International Airport",
+                "location": "Bao'an, Shenzhen, Guangdong",
+                "country": "China",
+                "iata": "SZX",
+                "icao": "ZGSZ"
+              },
+              {
+                "rank": 27,
+                "airport": "Spain Barcelona–El Prat Airport",
+                "location": "Barcelona",
+                "country": "Spain",
+                "iata": "BCN",
+                "icao": "LEBL"
+              },
+              {
+                "rank": 28,
+                "airport": "Turkey Istanbul Airport",
+                "location": "Arnavutköy, Istanbul",
+                "country": "Turkey",
+                "iata": "IST",
+                "icao": "LTBA"
+              },
+              {
+                "rank": 29,
+                "airport": "United States Seattle-Tacoma International Airport",
+                "location": "SeaTac, Washington",
+                "country": "United States",
+                "iata": "SEA",
+                "icao": "KSEA"
+              },
+              {
+                "rank": 30,
+                "airport": "United States McCarran International Airport",
+                "location": "Las Vegas, Nevada",
+                "country": "United States",
+                "iata": "LAS",
+                "icao": "KLAS"
+              },
+              {
+                "rank": 31,
+                "airport": "United States Orlando International Airport",
+                "location": "Orlando, Florida",
+                "country": "United States",
+                "iata": "MCO",
+                "icao": "KMCO"
+              },
+              {
+                "rank": 32,
+                "airport": "Canada Toronto Pearson International Airport",
+                "location": "Mississauga, Ontario",
+                "country": "Canada",
+                "iata": "YYZ",
+                "icao": "CYYZ"
+              },
+              {
+                "rank": 33,
+                "airport": "Mexico Benito Juárez International Airport",
+                "location": "Venustiano Carranza, Mexico City",
+                "country": "Mexico",
+                "iata": "MEX",
+                "icao": "MMMX"
+              },
+              {
+                "rank": 34,
+                "airport": "United States Charlotte Douglas International Airport",
+                "location": "Charlotte, North Carolina",
+                "country": "United States",
+                "iata": "CLT",
+                "icao": "KCLT"
+              },
+              {
+                "rank": 35,
+                "airport": "India Chhatrapati Shivaji International Airport",
+                "location": "Mumbai, Maharashtra",
+                "country": "India",
+                "iata": "BOM",
+                "icao": "VABB"
+              },
+              {
+                "rank": 36,
+                "airport": "Taiwan Taiwan Taoyuan International Airport",
+                "location": "Dayuan, Taoyuan",
+                "country": "Taiwan",
+                "iata": "TPE",
+                "icao": "RCTP"
+              },
+              {
+                "rank": 37,
+                "airport": "China Kunming Changshui International Airport",
+                "location": "Guandu, Kunming, Yunnan",
+                "country": "China",
+                "iata": "KMG",
+                "icao": "ZPPP"
+              },
+              {
+                "rank": 38,
+                "airport": "Germany Munich Airport",
+                "location": "Freising, Bavaria",
+                "country": "Germany",
+                "iata": "MUC",
+                "icao": "EDDM"
+              },
+              {
+                "rank": 39,
+                "airport": "Philippines Ninoy Aquino International Airport",
+                "location": "Pasay/Parañaque, Metro Manila",
+                "country": "Philippines",
+                "iata": "MNL",
+                "icao": "RPLL"
+              },
+              {
+                "rank": 40,
+                "airport": "China Xi'an Xianyang International Airport",
+                "location": "Weicheng, Xianyang, Shaanxi",
+                "country": "China",
+                "iata": "XIY",
+                "icao": "ZLXY"
+              },
+              {
+                "rank": 41,
+                "airport": "United Kingdom London Gatwick Airport",
+                "location": "Crawley, West Sussex",
+                "country": "United Kingdom",
+                "iata": "LGW",
+                "icao": "EGKK"
+              },
+              {
+                "rank": 42,
+                "airport": "United States Newark Liberty International Airport",
+                "location": "Newark, New Jersey",
+                "country": "United States",
+                "iata": "EWR",
+                "icao": "KEWR"
+              },
+              {
+                "rank": 43,
+                "airport": "United States Phoenix Sky Harbor International Airport",
+                "location": "Phoenix, Arizona",
+                "country": "United States",
+                "iata": "PHX",
+                "icao": "KPHX"
+              },
+              {
+                "rank": 44,
+                "airport": "Russia Sheremetyevo International Airport",
+                "location": "Khimki, Moscow Oblast",
+                "country": "Russia",
+                "iata": "SVO",
+                "icao": "UUEE"
+              },
+              {
+                "rank": 45,
+                "airport": "United States Miami International Airport",
+                "location": "Miami-Dade County, Florida",
+                "country": "United States",
+                "iata": "MIA",
+                "icao": "KMIA"
+              },
+              {
+                "rank": 46,
+                "airport": "China Shanghai Hongqiao International Airport",
+                "location": "Changning-Minhang, Shanghai",
+                "country": "China",
+                "iata": "SHA",
+                "icao": "ZSSS"
+              },
+              {
+                "rank": 47,
+                "airport": "United States George Bush Intercontinental Airport",
+                "location": "Houston, Texas",
+                "country": "United States",
+                "iata": "IAH",
+                "icao": "KIAH"
+              },
+              {
+                "rank": 48,
+                "airport": "China Chongqing Jiangbei International Airport",
+                "location": "Yubei, Chongqing",
+                "country": "China",
+                "iata": "CKG",
+                "icao": "ZUCK"
+              },
+              {
+                "rank": 49,
+                "airport": "Australia Sydney Airport",
+                "location": "Mascot, New South Wales",
+                "country": "Australia",
+                "iata": "SYD",
+                "icao": "YSSY"
+              },
+              {
+                "rank": 50,
+                "airport": "Italy Rome–Fiumicino International Airport \"Leonardo da Vinci",
+                "location": "Rome-Fiumicino, Lazio",
+                "country": "Italy",
+                "iata": "FCO",
+                "icao": "LIRF"
+              }
+            ]
+        </Payload>
+        <StatusCode>200</StatusCode>
+    </Set>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+</AssignMessage>

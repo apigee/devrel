@@ -12,20 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: node_js
-node_js:
-- node
-services:
-- docker
-before_install:
-- npm run build-pipeline-runner
-script:
-- npm run pipeline
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN 
-  keep_history: true
-  on:
-    branch: main
-  local_dir: ./generated
+apigeetool deployhostedtarget -u davissean@google.com -o apidude-eval -e test -n atm-sandbox-v1 -d . -b /atm-sandbox/v1 -V
