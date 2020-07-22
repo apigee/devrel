@@ -24,17 +24,17 @@ docker exec -it aac-tests apk add curl jq
 docker cp . aac-tests:/root
 
 # First time token
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
+docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 
 # Second time token
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
+docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 
 # Expired access token
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/test/inject-expired-token.sh access
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
+docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 
 # Expired refresh token
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/test/inject-expired-token.sh refresh
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/aac-token
+docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 
 echo "Tests passed"
