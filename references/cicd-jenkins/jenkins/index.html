@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <title>Jenkins Example Setup</title>
+  <style>
+    code {
+      font-family: monospace;
+      padding: 0 4px;
+      background-color: #111;
+      color: white;
+    }
+
+    code.bash, code.sh {
+      display: block;
+      padding: 20px;
+    }
+
+    .doc-content {
+      border-radius: 2px;
+      padding: 80px 56px;
+      margin: 20px 0;
+    }
+
+    h2 {
+      font-size: 32px;
+      line-height: 36px;
+      margin: 24px 0;
+    }
+
+    h3 {
+      font-size: 22px;
+      line-height: 26px;
+      margin: 14px 0;
+    }
+
+    h4 {
+      font-size: 18px;
+      line-height: 18px;
+    }
+  </style>
+</head>
+<body>
+<header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary-dark mdl-color-text--grey-200">
+  <div class="mdl-layout__header-row">
+    <span class="mdl-layout-title">Jenkins Example Setup</span>
+  </div>
+</header>
+<div class="mdl-grid mdl-color--grey-100">
+  <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+  <div class="doc-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
+    <h1 id="jenkinsexamplesetup">Jenkins Example Setup</h1>
+<p>This document explains how to set up and configure a Jenkins CI server to run an Apigee deployment pipeline.</p>
+<p>You can choose between two different setups:</p>
+<ul>
+<li><code>Jenkins Web</code>: Builds an image for running Jenkins with a web UI.</li>
+<li><code>Jenkinsfile Runner</code> Builds an ephemeral runtime for running a specific Jenkinsfile without having to configure the full UI. We use this version for our continuous testing in Apigee DevRel.</li>
+</ul>
+<h2 id="jenkinsweb">Jenkins Web</h2>
+<p>Follow these instructions to build and run a fully configured Jenkins UI instance.</p>
+<h3 id="build">Build</h3>
+<h4 id="optionalocalbuild">Option A: Local Build</h4>
+<pre><code class="bash language-bash">docker build -f jenkins-web/Dockerfile -t apigee-cicd/jenkins:latest .
+</code></pre>
+<h4 id="optionbcloudbuildongcp">Option B: Cloud Build on GCP</h4>
+<pre><code class="bash language-bash">PROJECT_ID=$(gcloud config get-value project)
+gcloud builds submit --config ./jenkins-web/cloudbuild.yml
+docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest
+docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest apigee-cicd/jenkins:latest
+</code></pre>
+<h3 id="runthejenkinscontainer">Run the Jenkins Container</h3>
+<p>Ensure you have your Apigee credentials set:</p>
+<pre><code class="bash language-bash">export APIGEE_USER=XXX
+export APIGEE_PASS=XXX
+export APIGEE_ORG=XXX
+</code></pre>
+<p>Add a password for the Jenkins admin user:</p>
+<pre><code class="bash language-bash">export JENKINS_ADMIN_PASS=password
+</code></pre>
+<p>And start the Docker container:</p>
+<pre><code class="bash language-bash">docker run \
+  -p 8080:8080 \
+  -p 5000:5000 \
+  -e APIGEE_USER \
+  -e APIGEE_PASS \
+  -e APIGEE_ORG \
+  -e JENKINS_ADMIN_PASS \
+  apigee-cicd/jenkins:latest
+</code></pre>
+<p>After the initialization is completed, you can login with the Jenkins web UI <code>http://localhost:8080</code> using the <code>admin</code> user and the password you specified before.</p>
+<h2 id="jenkinsfilerunner">Jenkinsfile-Runner</h2>
+<p>Follow these instructions to build and run an ephemeral Jenkinsfile runtime.</p>
+<h3 id="build-1">Build</h3>
+<h4 id="optionalocalbuild-1">Option A: Local Build</h4>
+<pre><code class="bash language-bash">docker build -f jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner .
+</code></pre>
+<h4 id="optionbcloudbuildongcp-1">Option B: Cloud Build on GCP</h4>
+<pre><code class="bash language-bash">PROJECT_ID=$(gcloud config get-value project)
+gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml
+docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest
+docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest apigee-cicd/jenkinsfile-runner:latest
+</code></pre>
+<h3 id="examplerun">Example Run</h3>
+<pre><code class="bash language-bash">docker run \
+  -v ${PWD}/../airports-cicd-v1:/workspace \
+  -e APIGEE_USER \
+  -e APIGEE_PASS \
+  -e APIGEE_ORG \
+  -e GIT_BRANCH=travis \
+  -e AUTHOR_EMAIL="cicd@apigee.google.com" \
+  -it apigee-cicd/jenkinsfile-runner
+</code></pre>
+  </div>
+</div>
+</body>
+</html>
