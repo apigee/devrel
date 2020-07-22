@@ -87,8 +87,8 @@ PIPELINE_REPORT="$PIPELINE_REPORT;Apigee JS Lint,$?"
 echo "---NODE LINTING---"
 #####
 
-NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
+NODE_JS_FILES=`find $DIR -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
+[ ! - z NODE_JS_FILES ] && ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
 PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 
 if test -f "$DIR/pipeline.sh"; then
