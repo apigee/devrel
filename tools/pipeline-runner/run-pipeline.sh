@@ -29,7 +29,7 @@ echo "---CHECKING LICENSE HEADERS---"
 #####
 
 SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/"`
-addlicense -check $SRC_FILES
+[ ! -z "$SRC_FILES" ] && addlicense -check $SRC_FILES
 PIPELINE_REPORT="License Check,$?"
 
 #####
