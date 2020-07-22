@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# check variables
+
+# read required APIGEE_ vars from aac-token, chosen request 
+
+REQUEST_TYPE=$1
+
+[ -z $REQUEST_TYPE ] && read -p "Request type: " REQUEST_TYPE
+
+# get token
+TOKEN=$(./token)
+
+# make request
+sh ./requests/$REQUEST_TYPE
+  

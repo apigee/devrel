@@ -22,6 +22,7 @@ This folder contains ready-made utilities which simplify and assist the usage of
 Apigee products.
 
 -   [Pipeline Runner](tools/pipeline-runner) - A tool to lint, build and test groups of Apigee projects
+-   [Another Apigee Client](tools/another-apigee-client) - A lightweight Apigee Management CLI
 
 ## Labs
 
