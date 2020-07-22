@@ -95,7 +95,7 @@ PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 echo "---CHECKING FOR PREFERRED TERM REPLACEMENT---"
 #####
 
-! grep -ir "blacklist\|whitelist\|master\|slave" . | grep -v "node_modules" | grep -v ".git"
+! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules" | grep -v ".git"
 PIPELINE_REPORT="$PIPELINE_REPORT;Preferred Term Replacement,$?"
 
 if test -f "$DIR/pipeline.sh"; then
