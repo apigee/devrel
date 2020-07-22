@@ -90,5 +90,5 @@ Use the UI to configure the Jenkins Job for multibranch pipelines:
 ### Promote to different stages and environments (feature/test/prod)
 
 1.  Explore the newly created api-proxy in the test environment that corresponds to the feature branch
-2.  Merge the feature branch into `master` branch and explore the promotion into the Apigee test environment
-3.  Merge the `master` branch into the `prod` branch and explore the promotion into the Apigee prod environment
+2.  Merge the feature branch into `main` branch and explore the promotion into the Apigee test environment
+3.  Merge the `main` branch into the `prod` branch and explore the promotion into the Apigee prod environment
