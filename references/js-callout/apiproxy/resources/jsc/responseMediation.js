@@ -16,6 +16,8 @@
 
 const responseBody = JSON.parse(context.getVariable('response.content'));
 
-delete responseBody.headers['X-Amzn-Trace-Id'];
+if (responseBody.headers['X-Amzn-Trace-Id']) {
+  delete responseBody.headers['X-Amzn-Trace-Id'];
+}
 
 context.setVariable('response.content', JSON.stringify(responseBody, null, 2));
