@@ -1,0 +1,17 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2020-07-22T10:25:12Z",
+  "id": "best-practices-hackathon",
+  "duration": 0,
+  "title": "Apigee Best Practices Hackathon",
+  "summary": "",
+  "source": "./lab.md",
+  "theme": "",
+  "status": null,
+  "category": null,
+  "tags": [],
+  "url": "best-practices-hackathon"
+}
