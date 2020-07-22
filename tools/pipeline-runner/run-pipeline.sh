@@ -115,6 +115,12 @@ else
       for D in `ls $DIR/$TYPE`; do
 
         #####
+        echo "---CLEANING ORG---"
+        #####
+
+        cd ./tools/another-apigee-client && for PROXY in `./aac list-proxies | jq -r '.[]'`; do APIGEE_PROXY=$PROXY ./aac delete-proxy; done
+
+        #####
         echo "---RUNNING PIPELINE FOR "$TYPE"/$D---"
         #####
 
