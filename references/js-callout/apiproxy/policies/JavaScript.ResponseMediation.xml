@@ -15,6 +15,5 @@
 -->
 
 <Javascript name="JavaScript.ResponseMediation">
-  <DisplayName>ResponseMediation</DisplayName>
   <ResourceURL>jsc://responseMediation.js</ResourceURL>
 </Javascript>
