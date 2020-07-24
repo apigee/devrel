@@ -10,21 +10,33 @@ This folder contains reference solutions across a variety of Apigee products.
 It is expected that these solutions are used as an illustration or extended
 further to fit a particular use case.
 
--   [Swagger 2 based Mocks on Apigee Hosted Targets](references/apigee-sandbox-v1) - Swagger 2 based Mocks on Apigee SaaS
--   [API Mocker on Apigee Hosted Targets](references/apimocker-hostedtargets) - API Mocks hosted on Apigee SaaS
--   [Common Shared Flows](references/common-shared-flows) - Reusable API Policies including Security, Traffic Management, Error Handling and CORS
--   [Custom Java Extensions in Apigee](references/java-callout) - A reference project that includes a Java Extension
--   [Jenkins CI/CD Pipeline](references/cicd-jenkins) - Reference implementation for a CI/CD Pipeline using Jenkins and the Apigee Deploy Maven Plugin
--   [Proxy Template](references/proxy-template) - An extensible templating tool to bootstrap API proxies containing Security, Traffic Management, Error Handling
+-   [Swagger 2 based Mocks on Apigee Hosted
+-   Targets](references/apigee-sandbox-v1) - Swagger 2 based Mocks on Apigee
+-   SaaS [API Mocker on Apigee Hosted
+-   Targets](references/apimocker-hostedtargets) - API Mocks hosted on Apigee
+-   SaaS [Common Shared Flows](references/common-shared-flows) - Reusable API
+-   Policies including Security, Traffic Management, Error Handling and CORS
+-   [Custom Java Extensions in Apigee](references/java-callout) - A reference
+-   project that includes a Java Extension [Jenkins CI/CD
+-   Pipeline](references/cicd-jenkins) - Reference implementation for a CI/CD
+-   Pipeline using Jenkins and the Apigee Deploy Maven Plugin [Proxy
+-   Template](references/proxy-template) - An extensible templating tool to
+-   bootstrap API proxies containing Security, Traffic Management, Error
+-   Handling [Writing JavaScript in Apigee](references/js-callout) - to
+-   demonstrate best
+    practices in writing JavaScript code in Apigee context.
 
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
 Apigee products.
 
--   [Organization Cleanup](tools/organization-cleanup) - A tool to cleanup proxies in an Apigee organization, leveraging [Another Apigee Client](tools/another-apigee-client)
--   [Pipeline Runner](tools/pipeline-runner) - A tool to lint, build and test groups of Apigee projects
--   [Another Apigee Client](tools/another-apigee-client) - A lightweight Apigee Management CLI
+-   [Organization Cleanup](tools/organization-cleanup) - A tool to cleanup
+-   proxies in an Apigee organization, leveraging [Another Apigee
+-   Client](tools/another-apigee-client) [Pipeline
+-   Runner](tools/pipeline-runner) - A tool to lint, build and test groups of
+-   Apigee projects [Another Apigee Client](tools/another-apigee-client) - A
+-   lightweight Apigee Management CLI
 
 ## Labs
 
