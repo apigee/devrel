@@ -88,7 +88,7 @@ echo "---NODE LINTING---"
 #####
 
 NODE_JS_FILES=`find $DIR -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ ! - z NODE_JS_FILES ] && ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
+./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
 PIPELINE_REPORT="$PIPELINE_REPORT;Node JS Lint,$?"
 
 #####
