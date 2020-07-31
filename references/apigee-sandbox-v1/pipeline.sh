@@ -16,4 +16,11 @@
 
 npm install
 npm run deploy
+
+# wait for hosted target to be up
+until $(curl -o /dev/null -s -f https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/apigee-sandbox/v1/pet/1); do
+    echo -n '.'
+    sleep 2
+done
+
 npm test
