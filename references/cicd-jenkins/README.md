@@ -58,8 +58,10 @@ You are responsible to ensure you have the following plugins enabled:
 The folder `airports-cicd-v1` includes a simple API proxy bundle as well as the
 following resources:
 
--   [Jenkinsfile](./airports-cicd-v1/Jenkinsfile) to define a Jenkins multi-branch pipeline.
--   [Test Folder](./airports-cicd-v1/test) to hold the unit and integration tests.
+-   [Jenkinsfile](./airports-cicd-v1/Jenkinsfile) to define a Jenkins 
+multi-branch pipeline.
+-   [Test Folder](./airports-cicd-v1/test) to hold the unit and integration 
+tests.
 
 ## CI/CD Configuration Instructions
 
