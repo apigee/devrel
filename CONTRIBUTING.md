@@ -88,8 +88,8 @@ the pipeline is implemented.
 
 ### Apigee Org Variables
 
-If your solution contains any Apigee proxies, you are required to deploy them to an
-Apigee org and run tests within your pipeline. This is to ensure that
+If your solution contains any Apigee proxies, you are required to deploy them 
+to an Apigee org and run tests within your pipeline. This is to ensure that
 your proxies can deploy without any failures and tests are passing.
 
 In order to help with this, Apigee DevRel Automation will populate the following

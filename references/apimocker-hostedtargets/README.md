@@ -1,6 +1,7 @@
 # API Mocker on Apigee Hosted Targets
 
-This reference project leverages [apimocker](https://npmjs.com/package/apimocker) to provide dynamic mocks, deployed to Apigee.
+This reference project leverages [apimocker](https://npmjs.com/package/apimocker)
+to provide dynamic mocks, deployed to Apigee.
 
 ## Dependencies
 

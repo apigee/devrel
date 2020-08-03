@@ -1,15 +1,19 @@
 # Jenkins Example Setup
 
-This document explains how to set up and configure a Jenkins CI server to run an Apigee deployment pipeline.
+This document explains how to set up and configure a Jenkins CI server to run 
+an Apigee deployment pipeline.
 
 You can choose between two different setups:
 
 -   `Jenkins Web`: Builds an image for running Jenkins with a web UI.
--   `Jenkinsfile Runner` Builds an ephemeral runtime for running a specific Jenkinsfile without having to configure the full UI. We use this version for our continuous testing in Apigee DevRel.
+-   `Jenkinsfile Runner` Builds an ephemeral runtime for running a specific 
+Jenkinsfile without having to configure the full UI. We use this version for 
+our continuous testing in Apigee DevRel.
 
 ## Jenkins Web
 
-Follow these instructions to build and run a fully configured Jenkins UI instance.
+Follow these instructions to build and run a fully configured Jenkins UI 
+instance.
 
 ### Build
 
@@ -57,7 +61,9 @@ docker run \
   apigee-cicd/jenkins:latest
 ```
 
-After the initialization is completed, you can login with the Jenkins web UI `http://localhost:8080` using the `admin` user and the password you specified before.
+After the initialization is completed, you can login with the Jenkins web UI 
+`http://localhost:8080` using the `admin` user and the password you specified
+before.
 
 ## Jenkinsfile-Runner
 

@@ -13,4 +13,5 @@
 # limitations under the License.
 
 plugins: 
--   preset-lint-recommended
+- preset-lint-recommended
+- lint-maximum-line-length
