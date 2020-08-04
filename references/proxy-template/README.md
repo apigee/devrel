@@ -16,7 +16,8 @@ It also has the following features:
 
 - Deploys with Node JS using `apigeetool`
 - Includes BDD integration tests using `apickli`
-- Easily extensible by editing the `template-v1` proxy or `generate-proxy` script
+- Easily extensible by editing the `template-v1` proxy or `generate-proxy` 
+script
 
 ## Dependencies
 
