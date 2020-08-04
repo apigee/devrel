@@ -16,14 +16,14 @@
 
 /* eslint-disable no-invalid-this */ // See usage in apickli Documentation
 /* eslint-disable new-cap */
-'use strict';
+"use strict";
 
-const apickliModule = require('apickli');
-const {Before} = require('cucumber');
+const apickliModule = require("apickli");
+const { Before } = require("cucumber");
 
-Before(function() {
-  const host = process.env.TEST_HOST || 'org-env.apigee.net';
-  const basePath = process.env.TEST_BASE_PATH || '/airports-cicd/v1';
-  this.apickli = new apickliModule.Apickli('https', `${host}${basePath}`);
-  this.apickli.addRequestHeader('Cache-Control', 'no-cache');
+Before(function () {
+  const host = process.env.TEST_HOST || "org-env.apigee.net";
+  const basePath = process.env.TEST_BASE_PATH || "/airports-cicd/v1";
+  this.apickli = new apickliModule.Apickli("https", `${host}${basePath}`);
+  this.apickli.addRequestHeader("Cache-Control", "no-cache");
 });

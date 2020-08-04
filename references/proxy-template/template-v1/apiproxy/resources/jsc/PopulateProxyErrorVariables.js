@@ -24,18 +24,19 @@
  * @param {string} url - Payload Info URL
  */
 function setFault(status, phrase, code, message, url) {
-  context.setVariable('custom.error.code', code);
-  context.setVariable('custom.error.message', message);
-  context.setVariable('custom.error.url',
-    url ? url : 'https://developers.example.com');
-  context.setVariable('custom.error.status', status);
-  context.setVariable('custom.error.phrase', phrase);
+  context.setVariable("custom.error.code", code);
+  context.setVariable("custom.error.message", message);
+  context.setVariable(
+    "custom.error.url",
+    url ? url : "https://developers.example.com"
+  );
+  context.setVariable("custom.error.status", status);
+  context.setVariable("custom.error.phrase", phrase);
 }
 
 // custom error handling here
-switch (context.getVariable('fault.name')) {
-  case 'my.error':
-    setFault(418, 'Im a teapot', '418.99',
-        'My Custom Error Message');
+switch (context.getVariable("fault.name")) {
+  case "my.error":
+    setFault(418, "Im a teapot", "418.99", "My Custom Error Message");
     break;
 }

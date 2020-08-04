@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-const sinon = require('sinon');
+const sinon = require("sinon");
 
 let contextGetVariableMethod;
 let contextSetVariableMethod;
 
-beforeEach(function() {
+beforeEach(function () {
   global.context = {
-    getVariable: function(s) { },
-    setVariable: function(s, a) { },
+    getVariable: function (s) {},
+    setVariable: function (s, a) {},
   };
-  contextGetVariableMethod = sinon.stub(global.context, 'getVariable');
-  contextSetVariableMethod = sinon.spy(global.context, 'setVariable');
+  contextGetVariableMethod = sinon.stub(global.context, "getVariable");
+  contextSetVariableMethod = sinon.spy(global.context, "setVariable");
 });
 
-afterEach(function() {
+afterEach(function () {
   contextGetVariableMethod.restore();
   contextSetVariableMethod.restore();
 });
 
-exports.getMock = function() {
+exports.getMock = function () {
   return {
     contextGetVariableMethod: contextGetVariableMethod,
     contextSetVariableMethod: contextSetVariableMethod,

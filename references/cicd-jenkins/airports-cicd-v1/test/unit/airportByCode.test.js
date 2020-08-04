@@ -13,87 +13,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const assert = require('assert');
-const mockFactory = require('./common/mockFactory');
+const assert = require("assert");
+const mockFactory = require("./common/mockFactory");
 
-const top10Airports = require('./common/testAirports');
-const requireUncached = require('./common/requireUncached');
-const jsFile = __dirname + '/../../apiproxy/resources/jsc/airportByCode.js';
+const top10Airports = require("./common/testAirports");
+const requireUncached = require("./common/requireUncached");
+const jsFile = __dirname + "/../../apiproxy/resources/jsc/airportByCode.js";
 
-
-describe('Airport By IATA Code', function() {
-  describe('Code Match', function() {
-    it('should return an airport object with matching IATA code', function() {
+describe("Airport By IATA Code", function () {
+  describe("Code Match", function () {
+    it("should return an airport object with matching IATA code", function () {
       const mocks = mockFactory.getMock();
 
       mocks.contextGetVariableMethod
-          .withArgs('response.content')
-          .returns(JSON.stringify(top10Airports));
+        .withArgs("response.content")
+        .returns(JSON.stringify(top10Airports));
 
       mocks.contextGetVariableMethod
-          .withArgs('proxy.pathsuffix')
-          .returns('/airports/ATL');
+        .withArgs("proxy.pathsuffix")
+        .returns("/airports/ATL");
 
       let errorThrown = false;
       try {
         requireUncached(jsFile);
       } catch (e) {
-        console.error(e); errorThrown = true;
+        console.error(e);
+        errorThrown = true;
       }
-      assert(errorThrown === false, 'ran without error');
+      assert(errorThrown === false, "ran without error");
       const spyResponse = mocks.contextSetVariableMethod.getCall(0).args[1];
       const response = JSON.parse(spyResponse);
-      assert.equal(response.iata, 'ATL', 'Response has the correct IATA code');
+      assert.equal(response.iata, "ATL", "Response has the correct IATA code");
     });
 
-
-    it('should match airport codes case insensitively', function() {
+    it("should match airport codes case insensitively", function () {
       const mocks = mockFactory.getMock();
       mocks.contextGetVariableMethod
-          .withArgs('response.content')
-          .returns(JSON.stringify(top10Airports));
+        .withArgs("response.content")
+        .returns(JSON.stringify(top10Airports));
       mocks.contextGetVariableMethod
-          .withArgs('proxy.pathsuffix')
-          .returns('/airports/atl');
+        .withArgs("proxy.pathsuffix")
+        .returns("/airports/atl");
 
       let errorThrown = false;
       try {
         requireUncached(jsFile);
       } catch (e) {
-        console.error(e); errorThrown = true;
+        console.error(e);
+        errorThrown = true;
       }
-      assert(errorThrown === false, 'ran without error');
+      assert(errorThrown === false, "ran without error");
       const spyResponse = mocks.contextSetVariableMethod.getCall(0).args[1];
       const response = JSON.parse(spyResponse);
 
-      assert.equal(response.iata, 'ATL', 'Response has the correct IATA code');
+      assert.equal(response.iata, "ATL", "Response has the correct IATA code");
     });
   });
 
-
-  describe('No Code Match', function() {
-    it('should return a 404 error code if no match is found.', function() {
+  describe("No Code Match", function () {
+    it("should return a 404 error code if no match is found.", function () {
       const mocks = mockFactory.getMock();
       mocks.contextGetVariableMethod
-          .withArgs('response.content')
-          .returns(JSON.stringify(top10Airports));
+        .withArgs("response.content")
+        .returns(JSON.stringify(top10Airports));
       mocks.contextGetVariableMethod
-          .withArgs('proxy.pathsuffix')
-          .returns('/airports/XXX');
-
+        .withArgs("proxy.pathsuffix")
+        .returns("/airports/XXX");
 
       let errorThrown = false;
       try {
         requireUncached(jsFile);
       } catch (e) {
-        console.error(e); errorThrown = true;
+        console.error(e);
+        errorThrown = true;
       }
-      assert(errorThrown === false, 'ran without error');
+      assert(errorThrown === false, "ran without error");
 
       assert(
-          mocks.contextSetVariableMethod
-              .calledWith('response.status.code', 404),
-          'response.status.code set to 404'
+        mocks.contextSetVariableMethod.calledWith("response.status.code", 404),
+        "response.status.code set to 404"
       );
     });
   });

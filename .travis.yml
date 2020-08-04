@@ -14,17 +14,17 @@
 
 language: node_js
 node_js:
-- node
+  - node
 services:
-- docker
+  - docker
 before_install:
-- npm run build-pipeline-runner
+  - npm run build-pipeline-runner
 script:
-- npm run pipeline
+  - npm run pipeline
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN 
+  github_token: $GITHUB_TOKEN
   keep_history: true
   on:
     branch: main

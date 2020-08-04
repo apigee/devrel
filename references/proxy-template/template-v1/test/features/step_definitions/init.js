@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-const apickli = require('apickli');
-const {
-  Before: before,
-  setDefaultTimeout,
-} = require('cucumber');
+const apickli = require("apickli");
+const { Before: before, setDefaultTimeout } = require("cucumber");
 
-before(function() {
+before(function () {
   this.apickli = new apickli.Apickli(
-      'https',
-      process.env.APIGEE_ORG + '-' +
-    process.env.APIGEE_ENV + '.apigee.net/@Proxy@/@Version@'
+    "https",
+    process.env.APIGEE_ORG +
+      "-" +
+      process.env.APIGEE_ENV +
+      ".apigee.net/@Proxy@/@Version@"
   );
 });
 

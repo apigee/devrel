@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-const apickli = require('apickli');
-const {Before: before} = require('cucumber');
+const apickli = require("apickli");
+const { Before: before } = require("cucumber");
 
-before(function() {
-  this.apickli = new apickli.Apickli('https',
-      process.env.APIGEE_ORG + '-' +
-      process.env.APIGEE_ENV + '.apigee.net/apigee-java/v1');
+before(function () {
+  this.apickli = new apickli.Apickli(
+    "https",
+    process.env.APIGEE_ORG +
+      "-" +
+      process.env.APIGEE_ENV +
+      ".apigee.net/apigee-java/v1"
+  );
 
-  this.apickli.addRequestHeader('Cache-Control', 'no-cache');
+  this.apickli.addRequestHeader("Cache-Control", "no-cache");
 });
