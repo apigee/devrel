@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const responseBody = JSON.parse(context.getVariable('response.content'));
+const responseBody = JSON.parse(context.getVariable("response.content"));
 
-if (responseBody.headers['X-Amzn-Trace-Id']) {
-  delete responseBody.headers['X-Amzn-Trace-Id'];
+if (responseBody.headers["X-Amzn-Trace-Id"]) {
+  delete responseBody.headers["X-Amzn-Trace-Id"];
 }
 
-context.setVariable('response.content', JSON.stringify(responseBody, null, 2));
+context.setVariable("response.content", JSON.stringify(responseBody, null, 2));

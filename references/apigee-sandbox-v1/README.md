@@ -6,8 +6,8 @@ An API Mock generated from a Swagger 2 specification and hosted in Apigee
 
 ## Dependencies
 
--   [NodeJS](https://nodejs.org/en/) LTS version or above
--   Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- [NodeJS](https://nodejs.org/en/) LTS version or above
+- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Quick start
 

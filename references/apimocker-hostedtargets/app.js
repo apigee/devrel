@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const ApiMocker = require('apimocker');
+const ApiMocker = require("apimocker");
 
 ApiMocker.createServer({
   port: process.env.PORT || 9000,
 })
-    .setConfigFile('config.json')
-    .start();
+  .setConfigFile("config.json")
+  .start();

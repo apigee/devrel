@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = require('../../../node_modules/apickli/apickli-gherkin');
+module.exports = require("../../../node_modules/apickli/apickli-gherkin");

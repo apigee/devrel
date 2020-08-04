@@ -48,7 +48,7 @@ just a few small guidelines you need to follow.
 4.  Place an executable called `pipeline.sh` on the root of your solution folder
     which builds, deploy and tests your solution. This file will be executed by
     our automation daily. Make sure that you use an appropriate
-    [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) if you want the
+    [shebang](<https://en.wikipedia.org/wiki/Shebang_(Unix)>) if you want the
     automation to execute a text file. See [this example
     pipeline](https://github.com/apigee/DevRel/blob/main/demos/hello-world/pipeline.sh)
     implementation.
@@ -88,7 +88,7 @@ the pipeline is implemented.
 
 ### Apigee Org Variables
 
-If your solution contains any Apigee proxies, you are required to deploy them 
+If your solution contains any Apigee proxies, you are required to deploy them
 to an Apigee org and run tests within your pipeline. This is to ensure that
 your proxies can deploy without any failures and tests are passing.
 
