@@ -15,3 +15,4 @@
 plugins:
   - preset-lint-recommended
   - lint-maximum-line-length
+  - preset-prettier
