@@ -46,7 +46,8 @@ Apigee products.
 This folder contains raw assets used to generate content to teach a particular
 technical or non-technical topic.
 
-- [Test](labs/test) - A lab to do x,y and z.
+- [Best Practices Hackathon](labs/best-practices-hackathon) -
+  A 300 level lab to learn Apigee Best Practices
 
 ## Contributing
 
