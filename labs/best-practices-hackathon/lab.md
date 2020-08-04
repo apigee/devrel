@@ -117,7 +117,7 @@ Apigee SaaS has the following constraints:
 - Application developers use the Developer Portal to register and retrieve API credentials.
 - Client applications accessing public API hosted on Apigee will use HTTPS and API keys, OAuth 2.0 access tokens, or signed JSON Web Tokens (JWT).
 - Apigee communicates with target applications over TLS / Mutual TLS encrypted connection.
-- Target applications use IP Whitelisting of Apigee Message Processors.
+- Target applications use Access Control policies of Apigee Message Processor IPs.
 - Apigee can also proxy Pub/Sub publish APIs for async processing
 
 ## Developer Environment Setup
