@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-const allAirports = JSON.parse(context.getVariable('response.content'));
+const allAirports = JSON.parse(context.getVariable("response.content"));
 
-var countryParam = context.getVariable('request.queryparam.country');
+var countryParam = context.getVariable("request.queryparam.country");
 if (countryParam) {
   countryParam = countryParam.toLowerCase();
 }
 
-const limitParam = context.getVariable('request.queryparam.limit');
+const limitParam = context.getVariable("request.queryparam.limit");
 
 var filtered = allAirports;
 
 if (countryParam && countryParam.length > 0) {
-  filtered = filtered.filter((airport) =>
-    airport.country.toLowerCase() === countryParam
+  filtered = filtered.filter(
+    (airport) => airport.country.toLowerCase() === countryParam
   );
 }
 
@@ -35,4 +35,4 @@ if (limitParam && limitParam > 0) {
   filtered = filtered.slice(0, parseInt(limitParam, 10));
 }
 
-context.setVariable('response.content', JSON.stringify(filtered));
+context.setVariable("response.content", JSON.stringify(filtered));

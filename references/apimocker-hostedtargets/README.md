@@ -5,8 +5,8 @@ to provide dynamic mocks, deployed to Apigee.
 
 ## Dependencies
 
--   [NodeJS](https://nodejs.org/en/) LTS version or above
--   Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- [NodeJS](https://nodejs.org/en/) LTS version or above
+- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Quick Start
 
@@ -19,5 +19,5 @@ to provide dynamic mocks, deployed to Apigee.
 
 ## Further Reading
 
--   <https://community.apigee.com/articles/27779/how-to-mock-a-target-backend-with-a-nodejs-api-pro.html>
--   <https://www.npmjs.com/package/apimocker>
+- <https://community.apigee.com/articles/27779/how-to-mock-a-target-backend-with-a-nodejs-api-pro.html>
+- <https://www.npmjs.com/package/apimocker>

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-const iataCode = context.getVariable('proxy.pathsuffix')
-    .split('/')[2]
-    .toUpperCase();
+const iataCode = context
+  .getVariable("proxy.pathsuffix")
+  .split("/")[2]
+  .toUpperCase();
 
-const allAirports = JSON.parse(context.getVariable('response.content'));
+const allAirports = JSON.parse(context.getVariable("response.content"));
 const matching = allAirports.find((a) => a.iata == iataCode);
 
 if (matching) {
-  context.setVariable('response.content', JSON.stringify(matching));
+  context.setVariable("response.content", JSON.stringify(matching));
 } else {
   setNotFoundError();
 }
@@ -32,19 +33,21 @@ if (matching) {
  */
 function setNotFoundError() {
   const errorStatus = 404;
-  const errorReason = 'Not Found';
+  const errorReason = "Not Found";
   const errrorContent = {
     errror: {
-      errors: [{
-        message: errorReason,
-      }],
+      errors: [
+        {
+          message: errorReason,
+        },
+      ],
       code: errorStatus,
       message: errorReason,
     },
   };
 
-  context.setVariable('response.status.code', errorStatus);
-  context.setVariable('response.reason.phrase', errorReason);
-  context.setVariable('response.header.Content-Type', 'application/json');
-  context.setVariable('response.content', JSON.stringify(errrorContent));
+  context.setVariable("response.status.code", errorStatus);
+  context.setVariable("response.reason.phrase", errorReason);
+  context.setVariable("response.header.Content-Type", "application/json");
+  context.setVariable("response.content", JSON.stringify(errrorContent));
 }

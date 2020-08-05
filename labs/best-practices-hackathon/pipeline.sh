@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-extends:
-  - google
-rules: { no-var: 0 }
+
+# build labs
+claat export ./lab.md
+
+# move to generated
+rm -rf ./generated
+mkdir -p ./generated/docs
+mv ./best-practices-hackathon ./generated/docs/best-practices-hackathon

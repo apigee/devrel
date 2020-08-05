@@ -24,12 +24,12 @@ jenkins:
           password: ${JENKINS_ADMIN_PASS}
   authorizationStrategy: loggedInUsersCanDoAnything
   globalNodeProperties:
-  - envVars:
-      env:
-      - key: APIGEE_ORG
-        value: ${APIGEE_ORG}
-      - key: APIGEE_HOSTURL
-        value: ${APIGEE_HOSTURL}
+    - envVars:
+        env:
+          - key: APIGEE_ORG
+            value: ${APIGEE_ORG}
+          - key: APIGEE_HOSTURL
+            value: ${APIGEE_HOSTURL}
 credentials:
   system:
     domainCredentials:
