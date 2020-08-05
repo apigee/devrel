@@ -82,7 +82,7 @@ following commands:
     # run the pipeline for all solution folders
     npm run pipeline
 
-Check out the [Dockerfile](https://github.com/apigee/devrel/blob/main/tools/pipeline-runner/Dockerfile) 
+Check out the [Dockerfile](https://github.com/apigee/devrel/blob/main/tools/pipeline-runner/Dockerfile)
 to see how the pipeline is implemented.
 
 ### Apigee Org Variables

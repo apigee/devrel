@@ -4,23 +4,21 @@ A set of useful shared flows for Apigee.
 
 ## Dependencies
 
--   [NodeJS](https://nodejs.org/en/) LTS version or above
--   Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- [NodeJS](https://nodejs.org/en/) LTS version or above
+- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Quick Start
 
-```
-export APIGEE_ORG=xxx
-export APIGEE_ENV=xxx
-export APIGEE_USER=xxx
-export APIGEE_PASS=xxx
+    export APIGEE_ORG=xxx
+    export APIGEE_ENV=xxx
+    export APIGEE_USER=xxx
+    export APIGEE_PASS=xxx
 
-./deploy-all.sh
-```
+    ./deploy-all.sh
 
 ## Shared Flows
 
-### Correlation 
+### Correlation
 
 Sets a header called `X-Correlation-Id` that can be used for logging and application monitoring
 
@@ -37,7 +35,7 @@ across API Proxies.
 
 Read Key Value Map configuration values for an environment in one step to reduce database reads
 
-### Logging 
+### Logging
 
 Set a standardised logging payload which can be sent over HTTP to any logging platform
 
@@ -56,5 +54,3 @@ A configurable Spike Arrest policy
 ### Verify Token
 
 Checks if an OAuth token is valid against its expiry, list of API Products and Developer App approval
-
-

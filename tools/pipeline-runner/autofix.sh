@@ -41,4 +41,4 @@ NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "
 [ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml $NODE_JS_FILES || true
 
 # Prettier
-npx prettier --write
+npx prettier --write $DIR
