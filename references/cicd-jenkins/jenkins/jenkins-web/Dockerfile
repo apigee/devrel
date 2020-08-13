@@ -26,6 +26,6 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 COPY --chown=jenkins jenkins.yml /var/jenkins_home/casc_configs/jenkins.yaml
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
 
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false ${JAVA_OPTS}"
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-same-origin allow-scripts; default-src 'self'; script-src * 'unsafe-inline' ; img-src *; style-src * 'unsafe-inline'; font-src *\" ${JAVA_OPTS}"
 ENV JENKINS_ADMIN_PASS=admin
 ENV APIGEE_HOSTURL=https://api.enterprise.apigee.com
