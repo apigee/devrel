@@ -79,6 +79,7 @@ steps:
 cd airports-cicd-v1
 git init
 git remote add origin git@github.com:my-user/my-api-proxy.git
+git checkout -b feature/cicd-pipeline
 git add .
 git commit -m "initial commit"
 git push -u origin feature/cicd-pipeline
