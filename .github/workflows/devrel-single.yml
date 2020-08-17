@@ -1,0 +1,80 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DevRel Single Project Pipeline
+on: pull_request
+env: 
+  APIGEE_USER: ${{ secrets.APIGEE_USER }}
+  APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
+  APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
+  APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
+jobs:
+  quality-check:
+    name: DevRel Workflow Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: list-changed
+        id: list-changed
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: list-changed-projects.sh
+
+      - name: print-current-project
+        run: echo "${{ steps.list-changed.outputs.project }}"
+
+      - name: check-license
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-license.sh
+          project: ${{ steps.list-changed.outputs.project }}
+
+      - name: check-java
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-java.sh 
+          project: ${{ steps.list-changed.outputs.project }}
+
+
+      - name: check-js
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-js.sh
+          project: ${{ steps.list-changed.outputs.project }}
+
+      - name: check-markdown
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-markdown.sh
+          project: ${{ steps.list-changed.outputs.project }}
+
+      - name: check-preferred-terms
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-preferred-terms.sh
+          project: ${{ steps.list-changed.outputs.project }}
+
+      - name: check-readme
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-readme.sh
+          project: ${{ steps.list-changed.outputs.project }}
+
+      - name: run-pipeline
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: run-pipelines.sh
+          project: ${{ steps.list-changed.outputs.project }}
