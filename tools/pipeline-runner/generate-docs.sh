@@ -20,7 +20,7 @@ mkdir -p ./generated/tools
 
 for TYPE in references labs tools; do
   for D in `ls $TYPE`; do
-    (cd ./$TYPE/$D && ./docs.sh;)
+    (cd ./$TYPE/$D && ./generate-docs.sh;)
     cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
   done
 done

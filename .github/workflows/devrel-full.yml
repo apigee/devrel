@@ -24,7 +24,7 @@ env:
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
 jobs:
   quality-check:
-    name: Quality Checks
+    name: DevRel Workflow Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
