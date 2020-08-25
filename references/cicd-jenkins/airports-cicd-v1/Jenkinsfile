@@ -42,9 +42,39 @@ pipeline {
           }
         }
 
+        stage('Install dependencies') {
+          steps {
+            sh "npm install --silent --no-fund"
+          }
+        }
+
         stage('Static Code Analysis') {
           steps {
-            sh "mvn validate"
+            sh "./node_modules/eslint/bin/eslint.js -c ./.eslintrc-jsc.yml --format html . > eslint-out.html"
+
+            publishHTML(target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: false,
+              reportDir: ".",
+              reportFiles: 'eslint-out.html',
+              reportName: 'ESLint Report'
+            ]);
+
+            sh "rm eslint-out.html"
+
+            sh "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO013 > apigeelint-out.html"
+
+            publishHTML(target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: false,
+              reportDir: ".",
+              reportFiles: 'apigeelint-out.html',
+              reportName: 'Apigeelint Report'
+            ]);
+
+            sh "rm apigeelint-out.html"
           }
         }
 
@@ -58,7 +88,7 @@ pipeline {
               keepAll: false,
               reportDir: "coverage",
               reportFiles: 'index.html',
-              reportName: 'HTML Report'
+              reportName: 'Unit Test Report'
             ])
           }
         }

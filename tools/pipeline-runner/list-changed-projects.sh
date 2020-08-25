@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+set -e
+
+git fetch
+PROJECTS=$(git diff --name-only origin/main | grep "labs/\|references/\|tools/" \
+  | awk -F '/' '{ print $1 "/" $2}' | uniq)
+
+[ $(echo $PROJECTS | wc -w) -le 1 ] && echo "::set-output name=project::$PROJECTS" || \
+  (echo "Please only work on one project per Pull Request" && exit 1)
+

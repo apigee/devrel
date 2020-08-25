@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+set -e 
+DIR="${1:-$PWD}"
+
+SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/"`
+addlicense -check $SRC_FILES

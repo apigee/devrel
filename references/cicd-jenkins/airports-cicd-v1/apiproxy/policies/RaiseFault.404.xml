@@ -19,13 +19,13 @@
         <Set>
             <StatusCode>404</StatusCode>
             <ReasonPhrase>The requested resource {proxy.pathsuffix} was not found.</ReasonPhrase>
-            <payload contentType="application/json">
+            <Payload contentType="application/json">
                 {
                     "error":"404.01.001",
                     "msg": "The requested resource {proxy.pathsuffix} was not found.",
                     "link": "https://developer.example.com/404.01.001"
                 }
-            </payload>
+            </Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>

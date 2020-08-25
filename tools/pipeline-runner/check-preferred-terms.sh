@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+set -e
+DIR="${1:-$PWD}"
+
+! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules"\
+  | grep -v ".git" | grep -v "run-pipeline.sh"

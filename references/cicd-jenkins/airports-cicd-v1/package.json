@@ -22,6 +22,8 @@
     "cucumber": "^6.0.5",
     "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.11.0",
+    "prettier": "^2.0.5",
     "mocha": "^7.2.0",
     "nyc": "^15.0.1",
     "sinon": "^9.0.2"
