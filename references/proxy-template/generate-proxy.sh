@@ -31,13 +31,18 @@ set -e
 # Copy template and replace variables
 
 cp -r ./template-v1 ./$PROXY-$VERSION
-sed -i "s|@Basepath@|$PROXY|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i "s|@VirtualHost@|$VHOST|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/package.json
-sed -i "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
-sed -i "s|@Version@|$VERSION|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i "s|@Version@|$VERSION|" ./$PROXY-$VERSION/package.json
-sed -i "s|@Version@|$VERSION|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
-sed -i "s|@TargetURL@|$TARGETURL|" ./$PROXY-$VERSION/apiproxy/targets/default.xml
+sed -i.bak "s|@Basepath@|$PROXY|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
+sed -i.bak "s|@VirtualHost@|$VHOST|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
+sed -i.bak "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/package.json
+sed -i.bak "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
+sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
+sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/package.json
+sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
+sed -i.bak "s|@TargetURL@|$TARGETURL|" ./$PROXY-$VERSION/apiproxy/targets/default.xml
+
+rm ./$PROXY-$VERSION/apiproxy/proxies/default.xml.bak
+rm ./$PROXY-$VERSION/package.json.bak
+rm ./$PROXY-$VERSION/test/features/step_definitions/init.js.bak
+rm ./$PROXY-$VERSION/apiproxy/targets/default.xml.bak
 
 echo "Complete Proxy Generation for $PROXY-$VERSION"
