@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+mkdir -p ./generated/references
+mkdir -p ./generated/labs
+mkdir -p ./generated/tools
+
+for TYPE in references labs tools; do
+  for D in `ls $TYPE`; do
+    (cd ./$TYPE/$D && ./generate-docs.sh;)
+    cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
+  done
+done

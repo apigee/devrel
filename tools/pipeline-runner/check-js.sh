@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+set -e
+DIR="${1:-$PWD}"
+
+npm install -no-fund --silent
+
+# Lint Apigee Javascript Callouts
+APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
+./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES
+
+# Lint other Node JS
+NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
+./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
+

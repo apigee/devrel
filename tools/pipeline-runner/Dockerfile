@@ -23,8 +23,8 @@ RUN curl -sSL \
   -o /opt/google-java-format.jar
 
 # install our dependencies
-ADD run-pipeline.sh /usr/bin/run-pipeline
-ADD autofix.sh /usr/bin/autofix
+ADD *.sh /usr/bin/
+
 
 # Run script
 WORKDIR /home

@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-env:
-  node: true
-  es6: true
-extends:
-  - google
-  - prettier
-root: true
+
+set -e
+
+for TYPE in references labs tools; do
+  for D in `ls $TYPE`; do
+    cat README.md | grep "^-" | grep "$TYPE/$D" -q
+    cat CODEOWNERS | grep "$TYPE/$D" -q
+  done
+done

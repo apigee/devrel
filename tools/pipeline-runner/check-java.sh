@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: node_js
-node_js:
-  - node
-services:
-  - docker
-before_install:
-  - npm run build-pipeline-runner
-script:
-  - npm run pipeline
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  keep_history: true
-  on:
-    branch: main
-  local_dir: ./generated
+
+set -e
+DIR="${1:-$PWD}"
+
+JAVA_FILES=`find $DIR -type f -name "*.java"`
+[ -z "$JAVA_FILES" ] || java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
