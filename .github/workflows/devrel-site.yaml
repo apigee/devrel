@@ -1,0 +1,42 @@
+name: DevRel Github Pages Pipeline
+on:
+  push:
+    branches:
+    - master
+    - feature/action-devrel-site
+jobs:
+  generate-docs:
+    name: DevRel Workflow Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: generate-docs
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: generate-docs.sh
+      - name: Archive Generated Docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: generated-docs
+          path: generated/
+  publish-gh-pages:
+    name: DevRel Workflow Checks
+    runs-on: ubuntu-latest
+    needs: generate-docs
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+            ref: gh-pages
+      - name: Download Generated Docs
+        uses: actions/download-artifact@v2
+        with:
+          name: generated-docs
+      - name: Push GH Pages
+        run: |
+          git config --global user.name "DevRel GH Pages Publish Action"
+          git config --global user.email "bot-action@devrel.apigee.com"
+          git add . 
+          git commit -m "Update GH Pages - $GITHUB_SHA"
+          git push

@@ -19,6 +19,7 @@ set -e
 rm -rf ./generated/docs
 mkdir -p ./generated/docs
 
+npm install --silent --no-fund
 node_modules/showdown/bin/showdown.js makehtml -i README.md -o ./generated/docs/index.html
 
 mkdir -p ./generated/docs/jenkins
