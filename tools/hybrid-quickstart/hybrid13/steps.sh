@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 set_config_params() {
     echo "📝 Setting Config Parameters (Provide your own or defaults will be applied)"
 
@@ -15,8 +29,10 @@ set_config_params() {
     export DNS_NAME=${DNS_NAME:=apigee.example.com}
     export CLUSTER_NAME=${CLUSTER_NAME:=apigee-hybrid}
     export ISTIO_ASM_CLI=${ISTIO_ASM_CLI:='istio-1.5.9-asm.0-osx.tar.gz'}
-    export APIGEE_CTL_VERSION=${APIGEE_CTL_VERSION:='1.3.0'}
+    export APIGEE_CTL_VERSION=${APIGEE_CTL_VERSION:='1.3.2'}
     export APIGEE_CTL=${APIGEE_CTL:='apigeectl_mac_64.tar.gz'}
+    export KPT_VERSION=${KPT_VERSION:='v0.33.0'}
+    export KPT_BINARY=${KPT_BINARY:='kpt_darwin_amd64_0.33.0.tar.gz'}
 
     echo "🔧 Setting derrived config parameters"
     export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
@@ -24,8 +40,8 @@ set_config_params() {
     export MESH_ID="proj-${PROJECT_NUMBER}"
 
     # these will be set if the steps are run in order
-    export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=api" --format="get(address)")
-    export NAME_SERVER=$(gcloud dns managed-zones describe hybridlab --format="json" --format="get(nameServers[0])")
+    export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+    export NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
     export APIGEECTL_HOME=$PWD/tools/apigeectl/apigeectl_$APIGEE_CTL_VERSION
     export HYBRID_HOME=$PWD/hybrid-files
 }
@@ -88,22 +104,23 @@ enable_all_apis() {
   echo -n "⏳ Waiting for APIs to be enabled"
 
   gcloud services enable \
-    dns.googleapis.com \
+    anthos.googleapis.com \
     apigee.googleapis.com \
     apigeeconnect.googleapis.com \
-    container.googleapis.com \
-    compute.googleapis.com \
-    monitoring.googleapis.com \
-    logging.googleapis.com \
+    cloudresourcemanager.googleapis.com \
     cloudtrace.googleapis.com \
-    meshca.googleapis.com \
-    meshtelemetry.googleapis.com \
-    meshconfig.googleapis.com \
-    iamcredentials.googleapis.com \
-    anthos.googleapis.com \
+    compute.googleapis.com \
+    container.googleapis.com \
+    dns.googleapis.com \
     gkeconnect.googleapis.com \
     gkehub.googleapis.com \
-    cloudresourcemanager.googleapis.com --project $PROJECT_ID
+    iamcredentials.googleapis.com \
+    logging.googleapis.com \
+    meshca.googleapis.com \
+    meshconfig.googleapis.com \
+    meshtelemetry.googleapis.com \
+    monitoring.googleapis.com \
+    --project $PROJECT_ID
 }
 
 create_apigee_org() {
@@ -121,6 +138,7 @@ create_apigee_org() {
         \"displayName\":\"$PROJECT_ID\",
         \"description\":\"Apigee Hybrid Org\",
         \"analyticsRegion\":\"$REGION\",
+        \"runtimeType\":\"HYBRID\",
         \"properties\" : {
           \"property\" : [ {
             \"name\" : \"features.hybrid.enabled\",
@@ -184,26 +202,42 @@ create_apigee_envgroup() {
     echo "✅ Created Env Group '$ENV_GROUP_NAME'"
 }
 
+add_env_to_envgroup() {
+  ENV_NAME=$1
+  ENV_GROUP_NAME=$2
+
+  echo "🚀 Adding Env $ENV_NAME to Env Group $ENV_GROUP_NAME"
+
+  curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
+   -d '{
+     "environment": "'"$ENV_NAME"'",
+   }' \
+   "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME/attachments"
+  
+  echo "✅ Added Env $ENV_NAME to Env Group $ENV_GROUP_NAME"
+
+
+}
 
 configure_network() {
     echo "🌐 Setup Networking"
 
-    gcloud compute addresses create api --region $REGION
+    gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
 
-    gcloud dns managed-zones create hybridlab --dns-name=$DNS_NAME --description=hybridlab
+    gcloud dns managed-zones create apigee-dns-zone --dns-name=$DNS_NAME --description=apigee-dns-zone
 
-    export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=api" --format="get(address)")
+    export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
 
-    gcloud dns record-sets transaction start --zone=hybridlab
+    gcloud dns record-sets transaction start --zone=apigee-dns-zone
 
     gcloud dns record-sets transaction add "$INGRESS_IP" \
         --name=api.$DNS_NAME. --ttl=600 \
-        --type=A --zone=hybridlab
+        --type=A --zone=apigee-dns-zone
 
-    gcloud dns record-sets transaction describe --zone=hybridlab
-    gcloud dns record-sets transaction execute --zone=hybridlab
+    gcloud dns record-sets transaction describe --zone=apigee-dns-zone
+    gcloud dns record-sets transaction execute --zone=apigee-dns-zone
 
-    export NAME_SERVER=$(gcloud dns managed-zones describe hybridlab --format="json" --format="get(nameServers[0])")
+    export NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
     echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
     echo "✅ Networking set up"
 }
@@ -217,7 +251,7 @@ create_gke_cluster() {
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
       --labels mesh_id=${MESH_ID} \
-      # --workload-pool ${WORKLOAD_POOL}
+      --workload-pool ${WORKLOAD_POOL} \
       --enable-stackdriver-kubernetes
 
 
@@ -240,10 +274,10 @@ install_asm_and_certmanager() {
    curl --request POST \
     --header "Authorization: Bearer $(token)" \
     --data '' \
-    https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize
+    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize"
 
   echo "🔌 Registering Cluster with Anthos Hub"
-  SERVICE_ACCOUNT_NAME="$CLUSTER_NAME-anthos-connect"
+  SERVICE_ACCOUNT_NAME="$CLUSTER_NAME-anthos"
   gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME}
 
   gcloud projects add-iam-policy-binding ${PROJECT_ID} \
@@ -259,7 +293,7 @@ install_asm_and_certmanager() {
     --gke-cluster=${ZONE}/${CLUSTER_NAME} \
     --service-account-key-file=${SERVICE_ACCOUNT_KEY_PATH}
 
-  rm SERVICE_ACCOUNT_KEY_PATH
+  rm $SERVICE_ACCOUNT_KEY_PATH
 
   echo "🏗️ Installing Anthos Service Mesh"
   mkdir -p ./tools/istio-asm
@@ -267,22 +301,39 @@ install_asm_and_certmanager() {
   tar xzf ./tools/istio-asm/istio-asm.tar.gz -C ./tools/istio-asm
   mv ./tools/istio-asm/istio-*/* ./tools/istio-asm/.
 
-  cat <<EOF >> ./tools/istio-asm/asm-overrides.yaml
-# This file was originally created using ASM tools. It was then modified manually to accommodate Apigee's config.
-#
-# sudo apt-get install google-cloud-sdk-kpt
-# mkdir asm-install && cd asm-install
-# kpt pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.5-asm .
-#
-# This file is generated by "kpt" based on gcloud config (which is not accurate for our install). It is
-# located @ asm-install/asm/cluster/istio-operator.yaml after using "kpt".
-#
+  mkdir -p ./tools/kpt
+  curl -L -o ./tools/kpt/kpt.tar.gz "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERION}/${KPT_BINARY}"
+  tar xzf ./tools/kpt/kpt.tar.gz -C ./tools/kpt
+
+  echo "🩹 Patching the ASM Config"
+
+  cd ./tools/kpt
+  kpt pkg get \
+https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.5-asm .
+
+  kpt cfg set asm gcloud.container.cluster ${CLUSTER_NAME}
+  kpt cfg set asm gcloud.core.project ${PROJECT_ID} 
+  kpt cfg set asm gcloud.compute.location ${ZONE}
+
+  # Apply Apigee config to ASM Config
+  
+  sed 's/clusterName: \(.*\)/clusterName: \1\
+  name: asm-istio-operator/' ./asm/cluster/istio-operator.yaml > ./asm/cluster/istio-operator-with-name.yaml
+
+  cat <<EOF > kustomization.yaml 
+resources:
+- ./asm/cluster/istio-operator-with-name.yaml
+patchesStrategicMerge:
+- apigee-asm-mesh-config.yaml
+- apigee-asm-ingress-ip.yaml
+EOF
+
+cat <<EOF > apigee-asm-mesh-config.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
+metadata:
+  name: asm-istio-operator
 spec:
-  profile: asm
-  hub: gcr.io/gke-release/asm
-  tag: 1.5.4-asm.2
   meshConfig:
     # This disables Istio from configuring workloads for mTLS if TLSSettings are not specified. 1.4 defaulted to false.
     enableAutoMtls: false
@@ -291,12 +342,16 @@ spec:
     # This is Apigee's custom access log format. Changes should not be made to this
     # unless first working with the Data and AX teams as they parse these logs for
     # SLOs.
-    accessLogFormat: '{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'
-    defaultConfig:
-      proxyMetadata:
-        GCP_METADATA: "$PROJECT_ID|$PROJECT_NUMBER|$CLUSTER_NAME|$REGION"
-        TRUST_DOMAIN: "$PROJECT_ID"
-        GKE_CLUSTER_URL: "https://container.googleapis.com/v1/projects/$PROJECT_ID/locations/$REGION/clusters/$CLUSTER_NAME"
+    accessLogFormat: '{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)%
+      %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'
+EOF
+
+cat <<EOF > apigee-asm-ingress-ip.yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: asm-istio-operator
+spec:
   components:
     pilot:
       k8s:
@@ -329,28 +384,14 @@ spec:
                 targetPort: 15443
           hpaSpec:
             maxReplicas: 3
-  values:
-    gateways:
-      istio-ingressgateway:
-        env:
-          GCP_METADATA: "$PROJECT_ID|$PROJECT_NUMBER|$CLUSTER_NAME|$REGION"
-          TRUST_DOMAIN: "$PROJECT_ID"
-          GKE_CLUSTER_URL: "https://container.googleapis.com/v1/projects/$PROJECT_ID/locations/$REGION/clusters/$CLUSTER_NAME"
-    prometheus:
-      sidecarEnv:
-        GCP_METADATA: "$PROJECT_ID|$PROJECT_NUMBER|$CLUSTER_NAME|$REGION"
-        TRUST_DOMAIN: "$PROJECT_ID"
-        GKE_CLUSTER_URL: "https://container.googleapis.com/v1/projects/$PROJECT_ID/locations/$REGION/clusters/$CLUSTER_NAME"
-    global:
-      meshID: $MESH_ID
-      trustDomain: "$PROJECT_ID"
-      sds:
-        token:
-          aud: "$PROJECT_ID"
-
 EOF
 
-  ./tools/istio-asm/bin/istioctl manifest apply -f ./tools/istio-asm/asm-overrides.yaml
+  kubectl kustomize ./ > ./asm/cluster/istio-operator-patched.yaml
+
+  ../istio-asm/bin/istioctl manifest apply --set profile=asm \
+    -f asm/cluster/istio-operator-patched.yaml
+
+  cd ../..
 
   echo "✅ ASM installed"
 

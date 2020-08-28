@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Copyright 2020 Google LLC
 #
@@ -14,32 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ./steps.sh
-
-set_config_params
-
-enable_all_apis
-
-create_apigee_org
-
-create_apigee_env "test"
-
-create_apigee_envgroup "default"
-
-add_env_to_envgroup "test" "default"
-
-configure_network
-
-create_gke_cluster
-
-install_asm_and_certmanager
-
-download_apigee_ctl
-
-prepare_resources
-
-create_sa
-
-install_runtime
-
-deploy_example_proxy
+echo "Apigee hybrid Quickstart Script"
