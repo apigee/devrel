@@ -19,5 +19,5 @@ claat export ./lab.md
 
 # move to generated
 rm -rf ./generated
-mkdir -p ./generated/docs
-mv ./best-practices-hackathon ./generated/docs/best-practices-hackathon
+mkdir -p ./generated
+mv ./best-practices-hackathon ./generated/docs

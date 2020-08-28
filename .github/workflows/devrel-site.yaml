@@ -3,7 +3,6 @@ on:
   push:
     branches:
     - master
-    - feature/action-devrel-site
 jobs:
   generate-docs:
     name: DevRel Workflow Checks
@@ -38,5 +37,5 @@ jobs:
           git config --global user.name "DevRel GH Pages Publish Action"
           git config --global user.email "bot-action@devrel.apigee.com"
           git add . 
-          git commit -m "Update GH Pages - $GITHUB_SHA"
+          git commit -m "Update GH Pages - $GITHUB_SHA" || echo "No Changes in docs"
           git push

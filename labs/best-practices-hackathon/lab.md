@@ -193,7 +193,7 @@ It is possible to build mocks with the following methods:
             "JPY": 132.19,
             "USD": 1.23
         },
-        "internal-traceidid": "123e4567-e89b-12d3-a456-426614174000"
+        "internal-traceid": "123e4567-e89b-12d3-a456-426614174000"
     }
 
 #### Convert Currency Mock
@@ -214,7 +214,7 @@ It is possible to build mocks with the following methods:
         },
         "date": "2020-07-01",
         "result": 110,
-        "internal-traceidid": "123e4567-e89b-12d3-a456-679914174111"
+        "internal-traceid": "123e4567-e89b-12d3-a456-679914174111"
     }
 
 We have 10 minutes to complete the task - [timer](https://www.google.com/search?q=timer&oq=timer).
