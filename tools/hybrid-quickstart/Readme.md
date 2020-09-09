@@ -8,4 +8,3 @@ For tooling related to production setup and operation of Apigee hybrid, please v
 ## Installation Instructions
 
 * [See here for Apigee hybrid 1.3](./hybrid13/Readme.md)
-* [See here for Apigee hybrid 1.2](./hybrid12/Readme.md)

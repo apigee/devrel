@@ -28,11 +28,25 @@ set_config_params() {
     echo "🔧 Configuring Apigee hybrid"
     export DNS_NAME=${DNS_NAME:=apigee.example.com}
     export CLUSTER_NAME=${CLUSTER_NAME:=apigee-hybrid}
-    export ISTIO_ASM_CLI=${ISTIO_ASM_CLI:='istio-1.5.9-asm.0-osx.tar.gz'}
-    export APIGEE_CTL_VERSION=${APIGEE_CTL_VERSION:='1.3.2'}
-    export APIGEE_CTL=${APIGEE_CTL:='apigeectl_mac_64.tar.gz'}
-    export KPT_VERSION=${KPT_VERSION:='v0.33.0'}
-    export KPT_BINARY=${KPT_BINARY:='kpt_darwin_amd64_0.33.0.tar.gz'}
+
+    export APIGEE_CTL_VERSION='1.3.2'
+    export KPT_VERSION='v0.33.0'
+
+    OS_NAME=$(uname -s)
+    if [[ "$OS_NAME" == "Linux" ]]; then
+      echo "🐧 Using Linux binaries"
+      export APIGEE_CTL='apigeectl_linux_64.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.5.9-asm.0-linux.tar.gz'
+      export KPT_BINARY='kpt_linux_amd64_0.33.0.tar.gz'
+    elif [[ "$OS_NAME" == "Darwin" ]]; then
+      echo "🍏 Using macOS binaries"
+      export APIGEE_CTL='apigeectl_mac_64.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.5.9-asm.0-osx.tar.gz'
+      export KPT_BINARY='kpt_darwin_amd64_0.33.0.tar.gz'
+    else
+      echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
+      exit 2
+    fi
 
     echo "🔧 Setting derrived config parameters"
     export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")

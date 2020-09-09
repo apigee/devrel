@@ -25,11 +25,6 @@ export REGION='europe-west1'
 export ZONE='europe-west1-b'
 export DNS_NAME=apigee.example.com
 export CLUSTER_NAME=apigee-hybrid
-export ISTIO_ASM_CLI='istio-1.5.9-asm.0-osx.tar.gz' # linux: istio-1.5.9-asm.0-linux.tar.gz
-export APIGEE_CTL_VERSION=1.3.2
-export APIGEE_CTL='apigeectl_mac_64.tar.gz' # linux: apigeectl_linux_64.tar.gz
-export KPT_VERSION='v0.33.0'
-export KPT_BINARY='kpt_darwin_amd64_0.33.0.tar.gz' # kpt_linux_amd64_0.33.0.tar.gz
 ```
 
 ## Initialize GKE cluster
