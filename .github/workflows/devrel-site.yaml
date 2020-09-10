@@ -2,7 +2,8 @@ name: DevRel Github Pages Pipeline
 on:
   push:
     branches:
-    - master
+    - main
+    - feature/action-devrel-site
 jobs:
   generate-docs:
     name: DevRel Workflow Checks
@@ -13,7 +14,7 @@ jobs:
       - name: generate-docs
         uses: ./tools/pipeline-runner
         with:
-          pipeline-action: generate-docs.sh
+          pipeline-action: generate-all-docs.sh
       - name: Archive Generated Docs
         uses: actions/upload-artifact@v2
         with:

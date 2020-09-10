@@ -72,12 +72,16 @@ cat << EOF > ./generated/index.html
 EOF
 
 for TYPE in references labs tools; do
-  echo "<h1>$TYPE</h1>" >> ./generated/index.html
+  echo "<h2>$TYPE</h2>" >> ./generated/index.html
   echo "<ul>" >> ./generated/index.html
   for D in `ls $TYPE`; do
-    (cd ./$TYPE/$D && ./generate-docs.sh;)
-    cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
-    echo "<li><a href=\"./$TYPE/$D\">$D</a>" >> ./generated/index.html
+    if [ -d  ./$TYPE/$D ]; then
+      (cd ./$TYPE/$D && ./generate-docs.sh;)
+      cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
+      echo "<li><a href=\"./$TYPE/$D\">$D</a>" >> ./generated/index.html
+    else 
+      echo "<li><a href=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$GITHUB_REF/$TYPE/$D/Readme.md\">$D</a>" >> ./generated/index.html
+    fi
   done
   echo "</ul>" >> ./generated/index.html
 done
