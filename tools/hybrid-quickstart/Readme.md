@@ -4,7 +4,6 @@ The aim of this project is to facilitate a fully automated quickstart setup of A
 
 For tooling related to production setup and operation of Apigee hybrid, please visit the [AHR project on Github](https://github.com/yuriylesyuk/ahr).
 
-
 ## Installation Instructions
 
-* [See here for Apigee hybrid 1.3](./hybrid13/Readme.md)
+- [See here for Apigee hybrid 1.3](./hybrid13/Readme.md)

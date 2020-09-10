@@ -34,6 +34,7 @@ export CLUSTER_NAME=apigee-hybrid
 ```
 
 ## (Optional) Provision Trusted TLS/SSL Certificates
+
 See the [this](https://community.apigee.com/articles/86322/free-trusted-ssl-certificates-for-apigee-hybrid-in.html) blog post in the Apigee community.
 
 ## Clean up
