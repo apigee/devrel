@@ -16,9 +16,9 @@
 
 source ./steps.sh
 
-set_config_params
-
 enable_all_apis
+
+set_config_params
 
 create_apigee_org
 

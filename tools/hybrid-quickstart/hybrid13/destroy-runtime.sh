@@ -28,7 +28,7 @@ echo "✅ Apigee hybrid cluster deleted"
 
 echo "🗑️ Clean up Networking"
 
-yes | gcloud compute addresses delete apigee-ingress-loadbalancer --region $REGION
+gcloud compute addresses delete apigee-ingress-loadbalancer --region $REGION -q
 
 touch empty-file
 gcloud dns record-sets import -z apigee-dns-zone \
@@ -36,12 +36,12 @@ gcloud dns record-sets import -z apigee-dns-zone \
    empty-file
 rm empty-file
 
-yes | gcloud dns managed-zones delete apigee-dns-zone
+gcloud dns managed-zones delete apigee-dns-zone -q
 
 echo "✅ Apigee networking cleaned up"
 
-rm -rd ./tools
-rm -rd ./hybrid-files
+rm -r ./tools
+rm -r ./hybrid-files
 
 echo "✅ Tooling and Config removed"
 

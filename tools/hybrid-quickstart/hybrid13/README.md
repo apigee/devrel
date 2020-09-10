@@ -10,6 +10,12 @@ For tooling related to production setup and operation of Apigee hybrid, please v
 #installed kubectl
 kubectl version
 
+#installed tar
+tar --help
+
+#installed openssl
+openssl version
+
 #installed gcloud
 gcloud auth list
 
@@ -18,6 +24,9 @@ gcloud init
 ```
 
 ## Override Default Config (if desired)
+
+If the following environment variables are not defined, the script
+automatically sets them based on the default values in steps.sh.
 
 ```bash
 export PROJECT_ID=xxx
@@ -42,5 +51,5 @@ See the [this](https://community.apigee.com/articles/86322/free-trusted-ssl-cert
 Delete the runtime resources to avoid paying for unused GKE clusters.
 
 ```bash
-./cleanup.sh
+./destroy-runtime.sh
 ```

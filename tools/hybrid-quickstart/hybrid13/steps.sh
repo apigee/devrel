@@ -26,7 +26,7 @@ set_config_params() {
     gcloud config set compute/zone $ZONE
 
     echo "🔧 Configuring Apigee hybrid"
-    export DNS_NAME=${DNS_NAME:=apigee.example.com}
+    export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export CLUSTER_NAME=${CLUSTER_NAME:=apigee-hybrid}
 
     export APIGEE_CTL_VERSION='1.3.2'
@@ -48,14 +48,14 @@ set_config_params() {
       exit 2
     fi
 
-    echo "🔧 Setting derrived config parameters"
+    echo "🔧 Setting derived config parameters"
     export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
     export WORKLOAD_POOL=${PROJECT_ID}.svc.id.goog
     export MESH_ID="proj-${PROJECT_NUMBER}"
 
     # these will be set if the steps are run in order
     export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
-    export NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
+    export NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null)
     export APIGEECTL_HOME=$PWD/tools/apigeectl/apigeectl_$APIGEE_CTL_VERSION
     export HYBRID_HOME=$PWD/hybrid-files
 }
@@ -292,7 +292,9 @@ install_asm_and_certmanager() {
 
   echo "🔌 Registering Cluster with Anthos Hub"
   SERVICE_ACCOUNT_NAME="$CLUSTER_NAME-anthos"
-  gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME}
+
+  # fail silently if the account already exists
+  gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} 2>/dev/null
 
   gcloud projects add-iam-policy-binding ${PROJECT_ID} \
    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
@@ -316,18 +318,18 @@ install_asm_and_certmanager() {
   mv ./tools/istio-asm/istio-*/* ./tools/istio-asm/.
 
   mkdir -p ./tools/kpt
-  curl -L -o ./tools/kpt/kpt.tar.gz "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERION}/${KPT_BINARY}"
+  curl -L -o ./tools/kpt/kpt.tar.gz "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf ./tools/kpt/kpt.tar.gz -C ./tools/kpt
 
   echo "🩹 Patching the ASM Config"
 
   cd ./tools/kpt
-  kpt pkg get \
+  ./kpt pkg get \
 https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.5-asm .
 
-  kpt cfg set asm gcloud.container.cluster ${CLUSTER_NAME}
-  kpt cfg set asm gcloud.core.project ${PROJECT_ID} 
-  kpt cfg set asm gcloud.compute.location ${ZONE}
+  ./kpt cfg set asm gcloud.container.cluster ${CLUSTER_NAME}
+  ./kpt cfg set asm gcloud.core.project ${PROJECT_ID} 
+  ./kpt cfg set asm gcloud.compute.location ${ZONE}
 
   # Apply Apigee config to ASM Config
   
@@ -560,6 +562,6 @@ delete_sa_keys() {
   SA=$1
   for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account=${SA}@${PROJECT_ID}.iam.gserviceaccount.com --format="get(name)")
   do
-    yes | gcloud iam service-accounts keys delete $SA_KEY_NAME --iam-account=$SA@$PROJECT_ID.iam.gserviceaccount.com
+    gcloud iam service-accounts keys delete $SA_KEY_NAME --iam-account=$SA@$PROJECT_ID.iam.gserviceaccount.com -q
   done
 }
