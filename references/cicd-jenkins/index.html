@@ -53,7 +53,7 @@
   <div class="doc-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
     <h1 id="apigeecicdusingjenkinsandmaven">Apigee CI/CD using Jenkins and Maven</h1>
 <h2 id="goal">Goal</h2>
-<p>Reference implementation for a CI/CD pipeline for Apigee using 
+<p>Reference implementation for a CI/CD pipeline for Apigee using
 <a href="https://www.jenkins.io/">Jenkins</a> and the <a href="https://github.com/apigee/apigee-deploy-maven-plugin">Apigee Deploy Maven Plugin</a>.</p>
 <p>The CICD pipeline includes:</p>
 <ul>
@@ -61,9 +61,9 @@
 deployment of feature branches as separate proxies in the same environment</li>
 <li>Static code analysis using <a href="https://eslint.org/">eslint</a></li>
 <li>Unit testing using <a href="https://mochajs.org/">mocha</a></li>
-<li>Integration testing of the deployed proxy using 
+<li>Integration testing of the deployed proxy using
 <a href="https://github.com/apickli/apickli">apickli</a></li>
-<li>Packaging and deployment of the API proxy bundle using 
+<li>Packaging and deployment of the API proxy bundle using
 <a href="https://github.com/apigee/apigee-deploy-maven-plugin">Apigee Deploy Maven Plugin</a></li>
 </ul>
 <h2 id="targetaudience">Target Audience</h2>
@@ -74,21 +74,21 @@ deployment of feature branches as separate proxies in the same environment</li>
 </ul>
 <h2 id="limitationsrequirements">Limitations &amp; Requirements</h2>
 <ul>
-<li>The authentication to the Apigee management API is done using OAuth2. If 
+<li>The authentication to the Apigee management API is done using OAuth2. If
 you require MFA, please see the <a href="https://github.com/apigee/apigee-deploy-maven-plugin#oauth-and-two-factor-authentication">documentation</a>
 for the Maven deploy plugin for how to configure MFA.</li>
 </ul>
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="jenkins">Jenkins</h3>
-<p>The setup described in this reference implementation is based in Jenkins. You 
-can either use the included instructions to configure a new Jenkins server or 
-use your existing infrastructure. The <code>jenkins</code> folder contains instructions 
-on how to set up a dockerized Jenkins environment with all the necessary 
+<p>The setup described in this reference implementation is based in Jenkins. You
+can either use the included instructions to configure a new Jenkins server or
+use your existing infrastructure. The <code>jenkins</code> folder contains instructions
+on how to set up a dockerized Jenkins environment with all the necessary
 tooling and plugins required.</p>
 <h4 id="optionaconfigurejenkinsdockercontainer">Option A: Configure Jenkins Docker Container</h4>
 <p>See the instructions in <a href="./jenkins/index.html">./jenkins/index.html</a>.</p>
 <h4 id="optionbuseanexistingjenkinssetup">Option B: Use an existing Jenkins Setup</h4>
-<p>If you already have a current (version 2.200+) Jenkins instance you can also 
+<p>If you already have a current (version 2.200+) Jenkins instance you can also
 use that one.</p>
 <p>You are responsible to ensure you have the following plugins enabled:</p>
 <ul>
@@ -100,9 +100,9 @@ use that one.</p>
 <p>The folder <code>airports-cicd-v1</code> includes a simple API proxy bundle as well as the
 following resources:</p>
 <ul>
-<li><a href="./airports-cicd-v1/Jenkinsfile">Jenkinsfile</a> to define a Jenkins 
+<li><a href="./airports-cicd-v1/Jenkinsfile">Jenkinsfile</a> to define a Jenkins
 multi-branch pipeline.</li>
-<li><a href="./airports-cicd-v1/test">Test Folder</a> to hold the unit and integration 
+<li><a href="./airports-cicd-v1/test">Test Folder</a> to hold the unit and integration
 tests.</li>
 </ul>
 <h2 id="cicdconfigurationinstructions">CI/CD Configuration Instructions</h2>
@@ -110,11 +110,12 @@ tests.</li>
 <p>Start or configure your Jenkins server as described above.</p>
 <h3 id="initializeagitrepository">Initialize a Git Repository</h3>
 <p>Create a Git repository to hold your API Proxy. To use the <code>airports-cicd-v1</code>
-in a Github repository <code>github.com/my-user/my-api-proxy-repo</code> follow these 
+in a Github repository <code>github.com/my-user/my-api-proxy-repo</code> follow these
 steps:</p>
 <pre><code class="bash language-bash">cd airports-cicd-v1
 git init
 git remote add origin git@github.com:my-user/my-api-proxy.git
+git checkout -b feature/cicd-pipeline
 git add .
 git commit -m "initial commit"
 git push -u origin feature/cicd-pipeline
@@ -130,7 +131,7 @@ git push -u origin feature/cicd-pipeline
 <h3 id="runthepipeline">Run the pipeline</h3>
 <ol>
 <li>Open the multi-branch pipeline you just created.</li>
-<li>Click <code>Scan Multibranch Pipeline Now</code> to detect branches with a 
+<li>Click <code>Scan Multibranch Pipeline Now</code> to detect branches with a
 Jenkinsfile.</li>
 <li>Explore the build(s) that get triggered.</li>
 <li>Explore the final build success.</li>
@@ -138,11 +139,11 @@ Jenkinsfile.</li>
 <p><img src="./img/jenkins-success.png" alt="Jenkins Successful Pipeline" /></p>
 <h3 id="promotetodifferentstagesandenvironmentsfeaturetestprod">Promote to different stages and environments (feature/test/prod)</h3>
 <ol>
-<li>Explore the newly created api-proxy in the test environment that 
+<li>Explore the newly created api-proxy in the test environment that
 corresponds to the feature branch</li>
-<li>Merge the feature branch into <code>main</code> branch and explore the promotion into 
+<li>Merge the feature branch into <code>main</code> branch and explore the promotion into
 the Apigee test environment</li>
-<li>Merge the <code>main</code> branch into the <code>prod</code> branch and explore the promotion 
+<li>Merge the <code>main</code> branch into the <code>prod</code> branch and explore the promotion
 into the Apigee prod environment</li>
 </ol>
   </div>

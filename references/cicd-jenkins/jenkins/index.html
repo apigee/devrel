@@ -52,17 +52,17 @@
   <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
   <div class="doc-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
     <h1 id="jenkinsexamplesetup">Jenkins Example Setup</h1>
-<p>This document explains how to set up and configure a Jenkins CI server to run 
+<p>This document explains how to set up and configure a Jenkins CI server to run
 an Apigee deployment pipeline.</p>
 <p>You can choose between two different setups:</p>
 <ul>
 <li><code>Jenkins Web</code>: Builds an image for running Jenkins with a web UI.</li>
-<li><code>Jenkinsfile Runner</code> Builds an ephemeral runtime for running a specific 
-Jenkinsfile without having to configure the full UI. We use this version for 
+<li><code>Jenkinsfile Runner</code> Builds an ephemeral runtime for running a specific
+Jenkinsfile without having to configure the full UI. We use this version for
 our continuous testing in Apigee DevRel.</li>
 </ul>
 <h2 id="jenkinsweb">Jenkins Web</h2>
-<p>Follow these instructions to build and run a fully configured Jenkins UI 
+<p>Follow these instructions to build and run a fully configured Jenkins UI
 instance.</p>
 <h3 id="build">Build</h3>
 <h4 id="optionalocalbuild">Option A: Local Build</h4>
@@ -93,7 +93,7 @@ export APIGEE_ORG=XXX
   -e JENKINS_ADMIN_PASS \
   apigee-cicd/jenkins:latest
 </code></pre>
-<p>After the initialization is completed, you can login with the Jenkins web UI 
+<p>After the initialization is completed, you can login with the Jenkins web UI
 <code>http://localhost:8080</code> using the <code>admin</code> user and the password you specified
 before.</p>
 <h2 id="jenkinsfilerunner">Jenkinsfile-Runner</h2>

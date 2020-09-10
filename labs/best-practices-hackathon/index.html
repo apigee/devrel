@@ -1,0 +1,347 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Apigee Best Practices Hackathon</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="best-practices-hackathon"
+                  title="Apigee Best Practices Hackathon"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Introduction" duration="0">
+        <p>Welcome to the <strong>Apigee Best Practices Hackathon</strong>!</p>
+<p class="image-container"><img alt="I Love APIs" src="img/235f989201668f5b.png"></p>
+<p>The main goal of this hackathon is to arm you with Apigee development best practices and to help you build better solutions for your clients.</p>
+<p>It is hands on session which focuses on the Apigee best practices and practical examples for day to day projects.</p>
+<p>We assume the basic knowledge of Apigee platform and you will get the most from this hackathon if you do.</p>
+<p>Ideally you will have completed the Coursera Apigee <a href="https://www.coursera.org/learn/api-design-apigee-gcp" target="_blank">Design</a>, <a href="https://www.coursera.org/learn/api-development-apigee-gcp" target="_blank">Development</a> and <a href="https://www.coursera.org/learn/api-security-apigee-gcp" target="_blank">Security</a> Courses.</p>
+<p>Alternatively, completing the Apigee <a href="https://github.com/apigee/apijam" target="_blank">API Jam</a> will cover the same topics in less depth.</p>
+<p>Lets get started!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Prerequisites" duration="0">
+        <h2 is-upgraded>Structure</h2>
+<p>During this hackathon we will follow the practical business use case for building a publicly-facing API endpoint on Google&#39;s Apigee platform.</p>
+<ul>
+<li>We have several timeboxed, practical API design and development tasks for attendees to complete</li>
+<li>Instructor will follow up with with example implementation</li>
+<li>We discuss the best practices for task specifics before moving to the next topic</li>
+</ul>
+<h2 is-upgraded>Tools</h2>
+<p>Here are the prerequisites for completing the tasks:</p>
+<ul>
+<li>Web Browser (recent version of <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> or <a href="https://www.mozilla.org/en-GB/firefox/new/" target="_blank">Firefox</a>)</li>
+<li>Access to Apigee Account. It can be free Apigee <a href="https://login.apigee.com/sign__up" target="_blank">Evaluation Account</a></li>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git" target="_blank">Git</a>, <a href="https://maven.apache.org/" target="_blank">Maven</a> (3.0.2+), <a href="https://java.com/en/download/manual.jsp" target="_blank">Java JDK</a> (8+) and <a href="https://nodejs.org/" target="_blank">NodeJS</a> (10+)</li>
+<li>A REST Client - <a href="https://www.postman.com/" target="_blank">Postman</a> or <a href="https://curl.haxx.se/" target="_blank">Curl</a></li>
+<li>Favourite text editor - Visual Studio <a href="https://code.visualstudio.com/" target="_blank">Code</a>, <code>vim</code>, etc.</li>
+</ul>
+<h2 is-upgraded>Best Practices</h2>
+<h3 is-upgraded>Web UI</h3>
+<p>Apigee has Web UI Development Environment. It is great for visual representation of Apigee APIs, configuration and real time tracing, but it isn&#39;t the only way to manage the platform.</p>
+<p class="image-container"><img alt="UI" src="img/e4a60a4873ae62e6.png"></p>
+<h3 is-upgraded>Apigee Management APIs</h3>
+<p>The Best Practices of the API Development Lifecycle utilise the Apigee Management APIs for API development and operations. This enables:</p>
+<ul>
+<li>Source Control Management</li>
+<li>Use Continuous Integration and TDD / BDD patterns</li>
+<li>Multiple developers / team environments</li>
+</ul>
+<p>In this hackathon we will use the tools and lifecycle commonly met in production grade Apigee projects.</p>
+<p class="image-container"><img alt="UI" src="img/7cdd7875a2947be7.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Scenario" duration="0">
+        <p>We will developer APIs for a startup in today&#39;s hackathon.</p>
+<h2 is-upgraded>Global Fintech Startup</h2>
+<p class="image-container"><img alt="We Move Your Money Fast" src="img/ca68a63f5d19d51f.png"></p>
+<ul>
+<li><em>We Move Your Money Fast</em> is a global fintech startup</li>
+<li>They providing their enterprise customers with a set of Public APIs</li>
+<li>They want to introduce a Currency Exchange API. This API must provide a real time currency exchange rates as well as facilitate the actual currency exchange transactions.</li>
+<li>Due to a rapidly growing number of customers, API security, performance and uptime are essential</li>
+</ul>
+<h3 is-upgraded>Considerations</h3>
+<ul>
+<li>How will they apply the best API security practices to new Currency Exchange API hosted on Google Apigee?</li>
+<li>How will they achieve the best Currency Exchange API performance?</li>
+<li>How will customers be onboarded to use the Currency Exchange API?</li>
+</ul>
+<p>In addition, in order to fit <em>We Move Your Money Fast</em> technology standards:</p>
+<ul>
+<li>What are the best architecture patterns while using the Apigee platform?</li>
+<li>How can they automate the API deployment lifecycle using existing Continuous Integration systems?</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Architecture" duration="0">
+        <p class="image-container"><img alt="API Gateway Architecture Apigee" src="img/df36e3241b9c9296.png"></p>
+<h2 is-upgraded>Architecture Constraints</h2>
+<p>Apigee SaaS has the following constraints:</p>
+<ul>
+<li>Apigee SaaS is hosted on Google Cloud Platform. All client applications and backend targets must also be accessible on the public internet.</li>
+<li>VPNs and network peering are not supported between Apigee and backends</li>
+<li>At the transport layer, Mutual TLS is supported and recommend to secure target communications</li>
+<li>At the application layer, OAuth 2, JWTs or Basic Authentication can also be used</li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Draw your own Architecture diagram indicating connections between architecture components. Focus on the data flows and communication security.</li>
+<li>For a good starting point, please use: <a href="https://tinyurl.com/yak9vox2" target="_blank">https://tinyurl.com/yak9vox2</a></li>
+<li>We have 5 minutes to complete the task <a href="https://www.google.com/search?q=timer&oq=timer" target="_blank">timer</a>.</li>
+</ul>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Architecture - Solution" duration="0">
+        <p class="image-container"><img alt="API gateway architecture Apigee" src="img/d440e1d4e2be2c4c.png"></p>
+<h2 is-upgraded>Flows</h2>
+<ul>
+<li>Application developers use the Developer Portal to register and retrieve API credentials.</li>
+<li>Client applications accessing public API hosted on Apigee will use HTTPS and API keys, OAuth 2.0 access tokens, or signed JSON Web Tokens (JWT).</li>
+<li>Apigee communicates with target applications over TLS / Mutual TLS encrypted connection.</li>
+<li>Target applications use Access Control policies of Apigee Message Processor IPs.</li>
+<li>Apigee can also proxy Pub/Sub publish APIs for async processing</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Developer Environment Setup" duration="0">
+        <h2 is-upgraded>Apigee API Development Lifecycle</h2>
+<p class="image-container"><img alt="API gateway architecture Apigee" src="img/4bdcc6104a0bfdd4.png"></p>
+<h2 is-upgraded>Setup considerations</h2>
+<ul>
+<li>An API Proxy or Environment Resources is just XML that is sent to the Management APIs. We can use our own favourite tools to help with this.</li>
+<li>Rather than creating API Proxies from scratch, templates can be used to encourage consistency across teams</li>
+<li>Environment Configuration can also be stored in source control rather than being managed in the UI</li>
+<li>There are many Open Source examples of tooling to help  <ul>
+<li>Apigee <a href="https://github.com/apigee/apigeelint" target="_blank">Linting</a></li>
+<li>Maven <a href="https://github.com/apigee/apigee-deploy-maven-plugin" target="_blank">Proxy</a> and <a href="https://github.com/apigee/apigee-config-maven-plugin" target="_blank">Environment Configuration</a> Deployment</li>
+<li>NodeJS <a href="https://www.npmjs.com/package/apigeetool" target="_blank">Proxy and Environment Configuration</a> Deployment</li>
+<li><a href="https://github.com/popularowl/apigeebootstrap" target="_blank">Java</a> or <a href="https://github.com/apigee/devrel/tree/main/references/proxy-template" target="_blank">NodeJS</a> based bootstrap projects</li>
+</ul>
+</li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Clone the Sample Project suggested by your instructor</li>
+<li>Follow the Quick Start instructions to bootstrap an API proxy named <code>currency-v1</code></li>
+<li>Open the proxy in your favourite text editor and look around</li>
+<li>Deploy to your free organization</li>
+</ul>
+<p>We have 10 minutes to complete the task - <a href="https://www.google.com/search?q=timer&oq=timer" target="_blank">timer</a>.</p>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Backend Mocking" duration="0">
+        <h2 is-upgraded>Problem</h2>
+<p>It is fast to create new APIs, but we have dependencies on backend systems.</p>
+<p>Generally these are:</p>
+<ul>
+<li>Slower to develop</li>
+<li>Challenging to set up connectivity</li>
+<li>More difficult to manage test data</li>
+</ul>
+<p>By creating and hosting mocks in Apigee, we can isolate the API management functionality and remove this dependencies.</p>
+<h2 is-upgraded>Approach</h2>
+<p>It is possible to build mocks with the following methods:</p>
+<ul>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/assign-message-policy" target="_blank">Assign Message</a> policy - allows you to simply setup single mocked API response</li>
+<li>Javascript extension <a href="https://community.apigee.com/articles/80296/simple-mocking-with-javascript-callout.html" target="_blank">Policy</a></li>
+<li>NodeJS mocks via <a href="https://docs.apigee.com/api-platform/hosted-targets/hosted-targets-overview" target="_blank">Hosted Targets</a> - multiple open source projects can be used for building more advanced API mocks on Apigee: <a href="https://github.com/nock/nock" target="_blank">Nock</a>, <a href="https://www.npmjs.com/package/swagger-tools" target="_blank">Swagger tools</a>, <a href="https://github.com/laughingbiscuit/lbdk/tree/master/projects/apimocker-hostedtargets" target="_blank">API Mocker</a>, <a href="https://github.com/sauliuz/amokjs" target="_blank">amockjs</a> and others. Here is an <a href="https://github.com/apigee/devrel/tree/main/references/apimocker-hostedtargets" target="_blank">example reference code</a></li>
+<li>Standalone mocking servers can also be used for more advanced API mocking setup hosted outside of Apigee, such as <a href="http://wiremock.org/" target="_blank">WireMock</a></li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Create a Mock using one of the methods for the API Requests/Responses below.</li>
+</ul>
+<h3 is-upgraded>Currency rates Mock</h3>
+<pre><code>GET /mock/v1/currency/latest
+
+200 OK
+{
+    &#34;success&#34;: true,
+    &#34;base&#34;: &#34;GBP&#34;,
+    &#34;date&#34;: &#34;2020-07-01&#34;,
+    &#34;rates&#34;: {
+        &#34;AUD&#34;: 1.86,
+        &#34;CAD&#34;: 1.69,
+        &#34;CHF&#34;: 1.17,
+        &#34;CNY&#34;: 8.73,
+        &#34;EUR&#34;: 1.10,
+        &#34;JPY&#34;: 132.19,
+        &#34;USD&#34;: 1.23
+    },
+    &#34;internal-traceid&#34;: &#34;123e4567-e89b-12d3-a456-426614174000&#34;
+}
+</code></pre>
+<h3 is-upgraded>Convert Currency Mock</h3>
+<pre><code>GET /mock/v1/currency/convert?from=GBP&amp;to=EUR&amp;amount=100
+
+200 OK
+{
+    &#34;success&#34;: true,
+    &#34;query&#34;: {
+        &#34;from&#34;: &#34;GBP&#34;,
+        &#34;to&#34;: &#34;EUR&#34;,
+        &#34;amount&#34;: 100
+    },
+    &#34;info&#34;: {
+        &#34;timestamp&#34;: 1519328414,
+        &#34;rate&#34;: 1.10
+    },
+    &#34;date&#34;: &#34;2020-07-01&#34;,
+    &#34;result&#34;: 110,
+    &#34;internal-traceid&#34;: &#34;123e4567-e89b-12d3-a456-679914174111&#34;
+}
+</code></pre>
+<p>We have 10 minutes to complete the task - <a href="https://www.google.com/search?q=timer&oq=timer" target="_blank">timer</a>.</p>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Traffic Management and Caching" duration="0">
+        <h2 is-upgraded>Caching</h2>
+<p>Apigee API response caching capabilities. It allows reduced API response latency by avoiding the request to backend server and sending a cached response.</p>
+<h3 is-upgraded>Considerations</h3>
+<ul>
+<li>Backend data source TTL must be well understood</li>
+<li>Apigee has flexible TTL management for cached objects and the ability to revoke cache</li>
+</ul>
+<h2 is-upgraded>Traffic Management Policies</h2>
+<ul>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/quota-policy" target="_blank">Quata policy</a> allows to configure the number of request messages that an API proxy allows over a period of time, such as a minute, hour, day, week, or month.</li>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/spike-arrest-policy" target="_blank">Spike Arrest</a> policy protects against suden traffic surges and can be configured with per second counter.</li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Add a new Spike Arrest policy to your project with 1ps rate.</li>
+<li>Add a new <a href="https://docs.apigee.com/api-platform/reference/policies/response-cache-policy" target="_blank">Response Cache</a> policy to improve response times.</li>
+</ul>
+<p>Please note the following:</p>
+<ul>
+<li>We should create our own <code>CacheResource</code> rather than using the default. This will allow us to clear the cache from the UI</li>
+<li>We should be able to set a different cache TTL for each environment</li>
+<li>We have 10 minutes to complete the task - <a href="https://www.google.com/search?q=timer&oq=timer" target="_blank">timer</a>.</li>
+</ul>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Response Transformation" duration="0">
+        <h2 is-upgraded>Problem</h2>
+<p>You may have noticed that our Currency conversion microservice response contains <em>internal data</em> related to transaction tracing pattern used in <em>We Move Your Money Fast</em> technology stack.</p>
+<p>This is an internal transaction trace information used for auditing and transaction correlation. We do not want it to be present in the public API response.</p>
+<pre><code>GET /mock/v1/currency/latest
+
+200 OK
+{
+    &#34;success&#34;: true,
+    &#34;base&#34;: &#34;GBP&#34;,
+    &#34;date&#34;: &#34;2020-07-01&#34;,
+    &#34;rates&#34;: {
+        &#34;AUD&#34;: 1.86,
+        &#34;CAD&#34;: 1.69,
+        &#34;CHF&#34;: 1.17,
+        &#34;CNY&#34;: 8.73,
+        &#34;EUR&#34;: 1.10,
+        &#34;JPY&#34;: 132.19,
+        &#34;USD&#34;: 1.23
+    },
+    &#34;internal-traceid&#34;: &#34;123e4567-e89b-12d3-a456-426614174000&#34;
+}
+</code></pre>
+<p>Apigee provides several inbuilt message transformation policies:</p>
+<ul>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/json-xml-policy" target="_blank">JSON to XML policy</a></li>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/xml-json-policy" target="_blank">XML to JSON policy</a></li>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/xsl-transform-policy" target="_blank">XSL Transform policy</a></li>
+<li><a href="https://docs.apigee.com/api-platform/reference/policies/javascript-policy" target="_blank">JavaScript policy</a> - great for JSON object transformation.</li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Use JavaScript extension remove the <code>internal-traceid</code> element from public API response payloads.</li>
+<li>Follow quality best practices: unit testing.</li>
+<li>Ensure code is consistent with linting.</li>
+<li>Follow the BDD best practices for integration testing.</li>
+<li>We have 10 minutes to complete the task - <a href="https://www.google.com/search?q=timer&oq=timer" target="_blank">timer</a>.</li>
+</ul>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="BONUS Deploying to Production" duration="0">
+        <h2 is-upgraded>Production Considerations</h2>
+<ul>
+<li>Separation of production environments. Possible logical separation with separate Apigee organizations or physical separation with the dedicated infrastructure. API lifecycle infrastructure (like CI) might have to be also handled on the separate prod environment.</li>
+<li>Ensure that Configuration such as Cache and KVM are in source control, in order to allow migration between organizations and backup/recovery.</li>
+<li>Ensure the environment scoped elements are used for Target URLs, Caches and KVMs to allow dynamic values.</li>
+</ul>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Move 1ps Spike Arrest value to be dynamically extracted from KVM.</li>
+<li>Move from Hardcoded Target Urls to Target Servers.</li>
+<li>Setup Prod smoke tests with CucumberJS tags.</li>
+<li>Deploy API bundles to the production environment.</li>
+</ul>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="HOMEWORK Publishing in a Developer Portal" duration="0">
+        <h2 is-upgraded>Developer portal considerations</h2>
+<p>Developer portals allow to publish your APIs to developer community. They allow for external developers to self onboard, get API credentials, read API documentation and download related code samples.</p>
+<p>Apigee has developed open source Drupal modules to allw Drupal CMS be used as powerful API developer portal.</p>
+<h2 is-upgraded>Task</h2>
+<ul>
+<li>Create a POC of <a href="https://docs.apigee.com/api-platform/publish/drupal/open-source-drupal-8" target="_blank">Developer Portal</a> by using<a href="https://github.com/apigee/docker-apigee-drupal-kickstart" target="_blank">Apigee Drupal Kickstarter</a> instance to demonstrate the extensibility of the portal to the marketing teams.</li>
+</ul>
+<p class="image-container"><img alt="Timer" src="img/1d3715af93b82546.png"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
