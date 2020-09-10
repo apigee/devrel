@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-rm -rd ./generated
+rm -rf ./generated
 
 mkdir -p ./generated/references
 mkdir -p ./generated/labs
@@ -75,9 +75,9 @@ for TYPE in references labs tools; do
   echo "<h2>$TYPE</h2>" >> ./generated/index.html
   echo "<ul>" >> ./generated/index.html
   for D in `ls $TYPE`; do
-    if [ -d  ./$TYPE/$D ]; then
+    if [ -d  ./$TYPE/$D/generated/docs ]; then
       (cd ./$TYPE/$D && ./generate-docs.sh;)
-      cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
+      cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D  2>/dev/null || echo "NO DOCS FOR $TYPE/$D"
       echo "<li><a href=\"./$TYPE/$D\">$D</a>" >> ./generated/index.html
     else 
       echo "<li><a href=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$GITHUB_REF/$TYPE/$D/Readme.md\">$D</a>" >> ./generated/index.html
