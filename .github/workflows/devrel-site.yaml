@@ -17,7 +17,6 @@ on:
   push:
     branches:
       - main
-      - feature/action-devrel-site
 jobs:
   generate-docs:
     name: DevRel Workflow Checks

@@ -80,7 +80,7 @@ for TYPE in references labs tools; do
       cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D  2>/dev/null || echo "NO DOCS FOR $TYPE/$D"
       echo "<li><a href=\"./$TYPE/$D\">$D</a>" >> ./generated/index.html
     else 
-      echo "<li><a href=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$GITHUB_REF/$TYPE/$D/Readme.md\">$D</a>" >> ./generated/index.html
+      echo "<li><a href=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/main/$TYPE/$D\">$D</a>" >> ./generated/index.html
     fi
   done
   echo "</ul>" >> ./generated/index.html
