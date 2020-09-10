@@ -14,13 +14,10 @@
 # limitations under the License.
 
 
-mkdir -p ./generated/references
-mkdir -p ./generated/labs
-mkdir -p ./generated/tools
+# build labs
+claat export ./lab.md
 
-for TYPE in references labs tools; do
-  for D in `ls $TYPE`; do
-    (cd ./$TYPE/$D && ./generate-docs.sh;)
-    cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
-  done
-done
+# move to generated
+rm -rf ./generated
+mkdir -p ./generated
+mv ./best-practices-hackathon ./generated/docs
