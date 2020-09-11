@@ -30,14 +30,14 @@ docker run \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
-  -e GIT_BRANCH=travis \
+  -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
+  -e JENKINS_ADMIN_PASS=password \
   -it apigee-cicd/jenkinsfile-runner-airports
 
 npm install --no-fund
-npm run docs
 
-API_NAME=airports-cicd-travis
+API_NAME=airports-cicd-nightly
 
 echo "Undeploying Proxy $API_NAME:"
 curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/environments/test/apis/$API_NAME/revisions/1/deployments"

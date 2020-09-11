@@ -137,7 +137,7 @@ limitations under the License.
 					<basedir>${target.root.dir}</basedir>
 					<includes>
 						<include>test/integration/support/init.js</include>
-						<include>apiproxy/cicd-v1.xml</include>
+						<include>apiproxy/airports-cicd-v1.xml</include>
 						<include>apiproxy/proxies/default.xml</include>
 					</includes>
 					<replacements>
