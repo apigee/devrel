@@ -27,6 +27,9 @@ further to fit a particular use case.
   Traffic Management, Error Handling
 - [Writing JavaScript in Apigee](references/js-callout) -
   Demonstrate best practices in writing JavaScript code in Apigee context
+- [Southbound mTLS](references/southbound-mtls) -
+  Reference for using mTLS client authentication for securely connecting Apigee to
+  backend services
 
 ## Tools
 

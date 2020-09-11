@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
 
-mkdir -p ./generated/references
-mkdir -p ./generated/labs
-mkdir -p ./generated/tools
+mkdir -p ./tmp
+curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12
 
-for TYPE in references labs tools; do
-  for D in `ls $TYPE`; do
-    (cd ./$TYPE/$D && ./generate-docs.sh;)
-    cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D || echo "NO DOCS FOR $TYPE/$D"
-  done
-done
+mvn install -Ptest -Dapigee.config.options=update 
+
+npm i
+npm run test

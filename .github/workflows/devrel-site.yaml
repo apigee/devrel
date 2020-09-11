@@ -1,0 +1,55 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DevRel Github Pages Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  generate-docs:
+    name: DevRel Workflow Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: generate-docs
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: generate-all-docs.sh
+      - name: Archive Generated Docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: generated-docs
+          path: generated/
+  publish-gh-pages:
+    name: DevRel Workflow Checks
+    runs-on: ubuntu-latest
+    needs: generate-docs
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+      - name: Download Generated Docs
+        uses: actions/download-artifact@v2
+        with:
+          name: generated-docs
+      - name: Push GH Pages
+        run: |
+          git config --global user.name "DevRel GH Pages Publish Action"
+          git config --global user.email "bot-action@devrel.apigee.com"
+          git add . 
+          git commit -m "Update GH Pages - $GITHUB_SHA" || echo "No Changes in docs"
+          git push
