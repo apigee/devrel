@@ -94,7 +94,8 @@ docker run \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
-  -e GIT_BRANCH=travis \
+  -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
+  -e JENKINS_ADMIN_PASS="password" \
   -it apigee-cicd/jenkinsfile-runner
 ```
