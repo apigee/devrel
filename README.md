@@ -43,6 +43,8 @@ Apigee products.
   A tool to lint, build and test groups of Apigee projects
 - [Another Apigee Client](tools/another-apigee-client) -
   A lightweight Apigee Management CLI
+- [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
+  A quickstart setup configuration for Apigee hybrid on GKE
 
 ## Labs
 
