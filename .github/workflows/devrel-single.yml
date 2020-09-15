@@ -40,14 +40,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: list-changed
-        id: list-changed
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: list-changed-projects.sh
+#      - name: list-changed
+#        id: list-changed
+#        uses: ./tools/pipeline-runner
+#        with:
+#          pipeline-action: list-changed-projects.sh
 
       - name: run check
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: ${{ matrix.steps }}
-          project: ${{ steps.list-changed.outputs.project }}
+#          project: ${{ steps.list-changed.outputs.project }}
