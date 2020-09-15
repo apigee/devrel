@@ -19,7 +19,7 @@ on:
       - main
 jobs:
   generate-docs:
-    name: DevRel Workflow Checks
+    name: DevRel Generate Docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -34,7 +34,7 @@ jobs:
           name: generated-docs
           path: generated/
   publish-gh-pages:
-    name: DevRel Workflow Checks
+    name: DevRel Publish Docs
     runs-on: ubuntu-latest
     needs: generate-docs
     steps:

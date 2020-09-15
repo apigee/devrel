@@ -1,0 +1,13 @@
+{
+  "steps": [
+    "list-changed.sh",
+    "check-license",
+    "check-shell.sh",
+    "check-java.sh",
+    "check-js.sh",
+    "check-markdown.sh",
+    "check-preferred-terms.sh",
+    "check-readme.sh",
+    "run-pipelines.sh"
+  ]
+}
