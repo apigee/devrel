@@ -18,8 +18,8 @@ set -e
 set -x
 
 for TYPE in references labs tools; do
-  for D in ./$TYPE; do
-    grep "^-.*$TYPE/$D" README.md -q
-    grep "$TYPE/$D" CODEOWNERS -q
+  for D in ./$TYPE/*/; do
+    grep "^-.*$D" README.md -q
+    grep "$D" CODEOWNERS -q
   done
 done
