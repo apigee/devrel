@@ -34,7 +34,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - id: set-matrix
-      run: echo "::set-output name=matrix::$(cat steps.json)"
+      run: echo "::set-output name=matrix::$(cat ./tools/pipeline-runner/steps.json)"
 
   quality-check:
     name: DevRel Workflow Checks
