@@ -1,6 +1,6 @@
 {
   "steps": [
-    "list-changed.sh",
+    "list-changed-projects.sh",
     "check-license",
     "check-shell.sh",
     "check-java.sh",
