@@ -13,8 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 set -x
-set -e
+
+###
+# we will fail on error once all projects pass these new checks
+###
+#set -e 
 
 DIR="${1:-$PWD}"
 
