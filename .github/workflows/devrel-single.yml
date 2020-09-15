@@ -33,6 +33,9 @@ jobs:
   quality-check:
     name: DevRel Workflow Checks
     runs-on: ubuntu-latest
+    needs: get-steps
+    strategy:
+      matrix: ${{needs.get-steps.outputs.matrix}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
