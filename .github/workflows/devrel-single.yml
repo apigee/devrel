@@ -30,20 +30,10 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$(cat ./tools/pipeline-runner/steps.json | tr -d '\n')"
 
-  build-pipeline-runner:
-    name: Build Pipeline Runner
-      - name: list-changed
-        id: list-changed
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: echo "Success"
-
   quality-check:
     name: DevRel Workflow Checks
     runs-on: ubuntu-latest
-    needs: 
-      - get-steps
-      - build-pipeline-runner
+    needs: get-steps
     strategy:
       matrix: ${{fromJSON(needs.get-steps.outputs.matrix)}}
     steps:
