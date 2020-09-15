@@ -28,9 +28,9 @@ jobs:
   get-steps:
     name: Get DevRel Steps
     runs-on: ubuntu-latest
-  outputs:
+    outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-  steps:
+    steps:
     - uses: actions/checkout@v2
 
     - id: set-matrix
