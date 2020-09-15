@@ -17,5 +17,5 @@
 set -e
 DIR="${1:-$PWD}"
 
-SHELL_FILES=`find $DIR -type f -path "*.sh"`
-shellcheck $SHELL_FILES
+SHELL_FILES=$(find "$DIR" -type f -path "*.sh")
+shellcheck "$SHELL_FILES"

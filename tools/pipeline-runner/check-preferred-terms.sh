@@ -17,5 +17,5 @@
 set -e
 DIR="${1:-$PWD}"
 
-! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules"\
+! grep -ir "blacklist\|whitelist\|master\|slave" "$DIR" | grep -v "node_modules"\
   | grep -v ".git" | grep -v "run-pipeline.sh"

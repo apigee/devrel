@@ -19,5 +19,5 @@ DIR="${1:-$PWD}"
 
 npm install --no-fund-silent
 
-./node_modules/.bin/remark $DIR -f -r .remarkrc.yml
+./node_modules/.bin/remark "$DIR" -f -r .remarkrc.yml
 PIPELINE_REPORT="$PIPELINE_REPORT;Markdown Lint,$?"

@@ -14,7 +14,7 @@
 
 name: DevRel Single Project Pipeline
 on: pull_request
-env: 
+env:
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
@@ -26,9 +26,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    - uses: actions/checkout@v2
-    - id: set-matrix
-      run: echo "::set-output name=matrix::$(cat ./tools/pipeline-runner/steps.json | tr -d '\n')"
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: echo "::set-output name=matrix::$(cat ./tools/pipeline-runner/steps.json | tr -d '\n')"
 
   quality-check:
     name: DevRel Workflow Checks
@@ -51,4 +51,3 @@ jobs:
         with:
           pipeline-action: ${{ matrix.steps }}
           project: ${{ steps.list-changed.outputs.project }}
-

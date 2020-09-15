@@ -19,7 +19,7 @@ set_config_params() {
 
     echo "🔧 Configuring GCP Project"
     export PROJECT_ID=${PROJECT_ID:=$(gcloud config get-value "project")}
-    gcloud config set project $PROJECT_ID
+    gcloud config set project "$PROJECT_ID"
     export REGION=${REGION:='europe-west1'}
     gcloud config set compute/region $REGION
     export ZONE=${ZONE:='europe-west1-b'}
@@ -49,7 +49,7 @@ set_config_params() {
     fi
 
     echo "🔧 Setting derived config parameters"
-    export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
+    export PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
     export WORKLOAD_POOL=${PROJECT_ID}.svc.id.goog
     export MESH_ID="proj-${PROJECT_NUMBER}"
 
@@ -75,7 +75,7 @@ function wait_for_ready(){
         ((iterations++))
 
         local signal=$(eval "$action")
-        if [ $(echo $expected_status) = "$signal" ]; then
+        if [ $(echo "$expected_status") = "$signal" ]; then
             echo -e "\n$message"
             break
         fi
@@ -95,7 +95,7 @@ check_existing_apigee_resource() {
 
   echo "🤔 Checking if the Apigee resource '$RESOURCE_URI' already exists".
 
-  RESPONSE=$(curl -H "Authorization: Bearer $(token)" --silent $RESOURCE_URI)
+  RESPONSE=$(curl -H "Authorization: Bearer $(token)" --silent "$RESOURCE_URI")
 
   if [[ $RESPONSE == *"error"* ]]; then
     echo "🤷‍♀️ Apigee resource '$RESOURCE_URI' does not exist yet"
@@ -134,7 +134,7 @@ enable_all_apis() {
     meshconfig.googleapis.com \
     meshtelemetry.googleapis.com \
     monitoring.googleapis.com \
-    --project $PROJECT_ID
+    --project "$PROJECT_ID"
 }
 
 create_apigee_org() {
@@ -184,7 +184,7 @@ create_apigee_env() {
 
     curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
       -d "{\"name\":\"$ENV_NAME\"}" \
-      https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments
+      https://apigee.googleapis.com/v1/organizations/"$PROJECT_ID"/environments
 
     echo -n "⏳ Waiting for Apigeectl Env Creation "
     wait_for_ready "0" 'curl --silent -H "Authorization: Bearer $(token)" -H "Content-Type: application/json"  https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments/$ENV_NAME | grep "$ENV_NAME" > /dev/null  2>&1; echo $?' "Environment $ENV_NAME of Organization $PROJECT_ID is created."
@@ -208,7 +208,7 @@ create_apigee_envgroup() {
         \"name\":\"$ENV_GROUP_NAME\", 
         \"hostnames\":[\"api.$DNS_NAME\"], 
       }" \
-      https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups
+      https://apigee.googleapis.com/v1/organizations/"$PROJECT_ID"/envgroups
 
     echo -n "⏳ Waiting for Apigeectl Env Creation "
     wait_for_ready "0" 'curl --silent -H "Authorization: Bearer $(token)" -H "Content-Type: application/json"  https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME | grep $ENV_GROUP_NAME > /dev/null  2>&1; echo $?' "Environment Group $ENV_GROUP_NAME of Organization $PROJECT_ID is created."
@@ -238,14 +238,14 @@ configure_network() {
 
     gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
 
-    gcloud dns managed-zones create apigee-dns-zone --dns-name=$DNS_NAME --description=apigee-dns-zone
+    gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
 
     export INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
 
     gcloud dns record-sets transaction start --zone=apigee-dns-zone
 
     gcloud dns record-sets transaction add "$INGRESS_IP" \
-        --name=api.$DNS_NAME. --ttl=600 \
+        --name=api."$DNS_NAME". --ttl=600 \
         --type=A --zone=apigee-dns-zone
 
     gcloud dns record-sets transaction describe --zone=apigee-dns-zone
@@ -264,8 +264,8 @@ create_gke_cluster() {
       --machine-type "e2-standard-4" \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
-      --labels mesh_id=${MESH_ID} \
-      --workload-pool ${WORKLOAD_POOL} \
+      --labels mesh_id="${MESH_ID}" \
+      --workload-pool "${WORKLOAD_POOL}" \
       --enable-stackdriver-kubernetes
 
 
@@ -296,14 +296,14 @@ install_asm_and_certmanager() {
   # fail silently if the account already exists
   gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} 2>/dev/null
 
-  gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
    --role="roles/gkehub.connect"
 
   SERVICE_ACCOUNT_KEY_PATH=/tmp/$SERVICE_ACCOUNT_NAME.json
 
   gcloud iam service-accounts keys create ${SERVICE_ACCOUNT_KEY_PATH} \
-   --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+   --iam-account=${SERVICE_ACCOUNT_NAME}@"${PROJECT_ID}".iam.gserviceaccount.com
 
   gcloud container hub memberships register $CLUSTER_NAME \
     --gke-cluster=${ZONE}/${CLUSTER_NAME} \
@@ -323,12 +323,12 @@ install_asm_and_certmanager() {
 
   echo "🩹 Patching the ASM Config"
 
-  cd ./tools/kpt
+  cd ./tools/kpt || exit
   ./kpt pkg get \
 https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.5-asm .
 
   ./kpt cfg set asm gcloud.container.cluster ${CLUSTER_NAME}
-  ./kpt cfg set asm gcloud.core.project ${PROJECT_ID} 
+  ./kpt cfg set asm gcloud.core.project "${PROJECT_ID}" 
   ./kpt cfg set asm gcloud.compute.location ${ZONE}
 
   # Apply Apigee config to ASM Config
@@ -423,8 +423,8 @@ download_apigee_ctl() {
 
     tar xvzf ./tools/apigeectl/apigeectl.tar.gz -C ./tools/apigeectl
     rm ./tools/apigeectl/apigeectl.tar.gz
-    mkdir -p $APIGEECTL_HOME
-    mv ./tools/apigeectl/apigeectl_*_64/* $APIGEECTL_HOME
+    mkdir -p "$APIGEECTL_HOME"
+    mv ./tools/apigeectl/apigeectl_*_64/* "$APIGEECTL_HOME"
     rm -d ./tools/apigeectl/apigeectl_*_64
     echo "✅ Apigeectl set up in $APIGEECTL_HOME"
 }
@@ -433,25 +433,25 @@ prepare_resources() {
     echo "🛠️ Configure Apigee hybrid"
 
     if [ -d "hybrid-files" ]; then rm -Rf hybrid-files; fi
-    mkdir -p $HYBRID_HOME && cd $HYBRID_HOME
+    mkdir -p "$HYBRID_HOME" && cd "$HYBRID_HOME" || exit
 
     mkdir -p overrides
     mkdir  -p service-accounts
     mkdir  -p certs
-    ln -s $APIGEECTL_HOME/tools tools
-    ln -s $APIGEECTL_HOME/config config
-    ln -s $APIGEECTL_HOME/templates templates
-    ln -s $APIGEECTL_HOME/plugins plugins
+    ln -s "$APIGEECTL_HOME"/tools tools
+    ln -s "$APIGEECTL_HOME"/config config
+    ln -s "$APIGEECTL_HOME"/templates templates
+    ln -s "$APIGEECTL_HOME"/plugins plugins
 
     echo "🙈 Creating self-signed certs"
-    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout ./certs/$DNS_NAME.key -out ./certs/$DNS_NAME.crt
-    openssl req -out ./certs/api.$DNS_NAME.csr -newkey rsa:2048 -nodes -keyout ./certs/api.$DNS_NAME.key -subj "/CN=api.$DNS_NAME/O=Apigee Quickstart"
-    openssl x509 -req -days 365 -CA ./certs/$DNS_NAME.crt -CAkey ./certs/$DNS_NAME.key -set_serial 0 -in ./certs/api.$DNS_NAME.csr -out ./certs/api.$DNS_NAME.crt
-    cat ./certs/api.$DNS_NAME.crt ./certs/$DNS_NAME.crt > ./certs/api.$DNS_NAME.fullchain.crt
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout ./certs/"$DNS_NAME".key -out ./certs/"$DNS_NAME".crt
+    openssl req -out ./certs/api."$DNS_NAME".csr -newkey rsa:2048 -nodes -keyout ./certs/api."$DNS_NAME".key -subj "/CN=api.$DNS_NAME/O=Apigee Quickstart"
+    openssl x509 -req -days 365 -CA ./certs/"$DNS_NAME".crt -CAkey ./certs/"$DNS_NAME".key -set_serial 0 -in ./certs/api."$DNS_NAME".csr -out ./certs/api."$DNS_NAME".crt
+    cat ./certs/api."$DNS_NAME".crt ./certs/"$DNS_NAME".crt > ./certs/api."$DNS_NAME".fullchain.crt
     
-    kubectl create -n istio-system secret generic $PROJECT_ID-default  \
-      --from-file=key=./certs/api.$DNS_NAME.key \
-      --from-file=cert=./certs/api.$DNS_NAME.fullchain.crt
+    kubectl create -n istio-system secret generic "$PROJECT_ID"-default  \
+      --from-file=key=./certs/api."$DNS_NAME".key \
+      --from-file=cert=./certs/api."$DNS_NAME".fullchain.crt
 
     echo "✅ Hybrid Config Setup"
 }
@@ -459,13 +459,13 @@ prepare_resources() {
 create_sa() {
     for SA in mart cassandra udca metrics synchronizer logger watcher
     do
-      yes | $APIGEECTL_HOME/tools/create-service-account apigee-$SA $HYBRID_HOME/service-accounts
+      yes | "$APIGEECTL_HOME"/tools/create-service-account apigee-$SA "$HYBRID_HOME"/service-accounts
     done
 }
 
 install_runtime() {
     echo "Configure Overrides"
-    cd $HYBRID_HOME
+    cd "$HYBRID_HOME" || exit
     cat << EOF > ./overrides/overrides.yaml
 gcp:
   projectID: $PROJECT_ID
@@ -504,13 +504,13 @@ watcher:
 EOF
 
     mkdir -p generated
-    $APIGEECTL_HOME/apigeectl init -f overrides/overrides.yaml --print-yaml > ./generated/apigee-init.yaml
+    "$APIGEECTL_HOME"/apigeectl init -f overrides/overrides.yaml --print-yaml > ./generated/apigee-init.yaml
     echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" '$APIGEECTL_HOME/apigeectl check-ready -f overrides/overrides.yaml > /dev/null  2>&1; echo $?' "apigeectl init: done."
 
 
-    $APIGEECTL_HOME/apigeectl apply -f overrides/overrides.yaml --dry-run=true 
-    $APIGEECTL_HOME/apigeectl apply -f overrides/overrides.yaml --print-yaml > ./generated/apigee-runtime.yaml
+    "$APIGEECTL_HOME"/apigeectl apply -f overrides/overrides.yaml --dry-run=true 
+    "$APIGEECTL_HOME"/apigeectl apply -f overrides/overrides.yaml --print-yaml > ./generated/apigee-runtime.yaml
 
     echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" '$APIGEECTL_HOME/apigeectl check-ready -f overrides/overrides.yaml > /dev/null  2>&1; echo $?' "apigeectl apply: done."
@@ -560,8 +560,8 @@ delete_apigee_keys() {
 
 delete_sa_keys() {
   SA=$1
-  for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account=${SA}@${PROJECT_ID}.iam.gserviceaccount.com --format="get(name)")
+  for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="${SA}"@"${PROJECT_ID}".iam.gserviceaccount.com --format="get(name)")
   do
-    gcloud iam service-accounts keys delete $SA_KEY_NAME --iam-account=$SA@$PROJECT_ID.iam.gserviceaccount.com -q
+    gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA"@"$PROJECT_ID".iam.gserviceaccount.com -q
   done
 }

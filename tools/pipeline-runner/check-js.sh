@@ -20,10 +20,10 @@ DIR="${1:-$PWD}"
 npm install -no-fund --silent
 
 # Lint Apigee Javascript Callouts
-APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
-./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES
+APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
+./node_modules/.bin/eslint -c .eslintrc-jsc.yml "$APIGEE_JS_FILES"
 
 # Lint other Node JS
-NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
+NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
+./node_modules/.bin/eslint -c .eslintrc.yml "$NODE_JS_FILES"
 

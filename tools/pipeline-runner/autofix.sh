@@ -14,38 +14,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-
 DIR="${1:-$PWD}"
 
 read -p "This action will edit your local files. Press Ctrl-C and a make a backup or press Enter to continue."
 npm i
 
 # Fix License Files
-SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules" | grep -v "generated"`
-addlicense $SRC_FILES
+SRC_FILES=$(find "$DIR" -type f -path "*" | grep -v "node_modules" | grep -v "generated")
+addlicense "$SRC_FILES"
 
 # Fix Java Files
-JAVA_FILES=`find $DIR -type f -name "*.java"`
-java -jar /opt/google-java-format.jar -i $JAVA_FILES
+JAVA_FILES=$(find "$DIR" -type f -name "*.java")
+java -jar /opt/google-java-format.jar -i "$JAVA_FILES"
 
 # Fix Markdown Files
-MD_FILES=`find $DIR -type f -path "*.md" | grep -v "node_modules" | grep -v "generated"`
-./node_modules/.bin/remark $MD_FILES -r .remarkrc.yml -o
+MD_FILES=$(find "$DIR" -type f -path "*.md" | grep -v "node_modules" | grep -v "generated")
+./node_modules/.bin/remark "$MD_FILES" -r .remarkrc.yml -o
 
 # Fix JS Files
-APIGEE_JS_FILES=`find $DIR -type f -path "*resources/jsc/*.js"`
-[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml $APIGEE_JS_FILES || true
+APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml "$APIGEE_JS_FILES" || true
 
-NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules"`
-[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml $NODE_JS_FILES || true
+NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml "$NODE_JS_FILES" || true
 
 # Prettier
-npx prettier --write $DIR
+npx prettier --write "$DIR"
 
 # Shell
-SHELL_FILES=`find $DIR -type f -name "*.sh"`
-for FILE in SHELL_FILES; done
-  shellcheck $FILE
-  [ $? -ne 0 ] && shellcheck -f diff $FILE | git apply
+SHELL_FILES=$(find "$DIR" -type f -name "*.sh")
+for FILE in $SHELL_FILES; do
+  shellcheck -f quiet "$FILE"
+  [ $? -ne 0 ] && shellcheck -f diff "$FILE" | git -C / apply
 done

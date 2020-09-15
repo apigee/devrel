@@ -20,15 +20,15 @@ set_config_params
 
 echo "🗑️ Delete Apigee hybrid cluster"
 
-gcloud container hub memberships unregister $CLUSTER_NAME --gke-cluster=${ZONE}/${CLUSTER_NAME}
-yes | gcloud container clusters delete $CLUSTER_NAME
+gcloud container hub memberships unregister "$CLUSTER_NAME" --gke-cluster="${ZONE}"/"${CLUSTER_NAME}"
+yes | gcloud container clusters delete "$CLUSTER_NAME"
 
 echo "✅ Apigee hybrid cluster deleted"
 
 
 echo "🗑️ Clean up Networking"
 
-gcloud compute addresses delete apigee-ingress-loadbalancer --region $REGION -q
+gcloud compute addresses delete apigee-ingress-loadbalancer --region "$REGION" -q
 
 touch empty-file
 gcloud dns record-sets import -z apigee-dns-zone \

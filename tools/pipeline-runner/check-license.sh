@@ -17,5 +17,5 @@
 set -e 
 DIR="${1:-$PWD}"
 
-SRC_FILES=`find $DIR -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/"`
-addlicense -check $SRC_FILES
+SRC_FILES=$(find "$DIR" -type f -path "*" | grep -v "node_modules/" | grep -v "generated/" | grep -v ".git/" | grep -v "target/")
+addlicense -check "$SRC_FILES"
