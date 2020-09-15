@@ -24,7 +24,7 @@ RUN curl -sSL \
 
 # install our dependencies
 ADD *.sh /usr/bin/
-
+ADD steps.json /usr/bin/
 
 # Run script
 WORKDIR /home

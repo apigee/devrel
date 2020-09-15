@@ -42,3 +42,7 @@ NODE_JS_FILES=`find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "
 
 # Prettier
 npx prettier --write $DIR
+
+# Shell
+SHELL_FILES=`find $DIR -type f -name "*.sh"`
+shellcheck -f diff $SHELL_FILES | git apply
