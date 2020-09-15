@@ -18,7 +18,7 @@ set -e
 set -x
 
 for TYPE in references labs tools; do
-  for D in $(ls $TYPE); do
+  for D in ./$TYPE; do
     grep "^-" README.md | grep "$TYPE/$D" -q
     grep "$TYPE/$D" CODEOWNERS -q
   done

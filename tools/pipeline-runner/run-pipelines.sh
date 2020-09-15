@@ -16,7 +16,7 @@
 DIR="${1:-$PWD}"
 PIPELINE_REPORT="run-pipelines,0"
 
-if [ -z "$APIGEE_USER" -a -z "$APIGEE_PASS" ]; then
+if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   echo "NO CREDENTIALS - SKIPPING PIPELINES"
 elif test -f "$DIR/pipeline.sh"; then
   PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
@@ -24,7 +24,7 @@ elif test -f "$DIR/pipeline.sh"; then
   PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
 else
   for TYPE in references labs tools; do
-    for D in $(ls "$DIR"/$TYPE); do
+    for D in $DIR/$TYPE; do
       PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
       (cd $TYPE/"$D" && ./pipeline.sh;)
       PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
