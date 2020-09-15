@@ -13,17 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+set -x
 set -e
 DIR="${1:-$PWD}"
 
 npm install -no-fund --silent
 
 # Lint Apigee Javascript Callouts
-APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
-./node_modules/.bin/eslint -c .eslintrc-jsc.yml "$APIGEE_JS_FILES"
+./node_modules/.bin/eslint -c .eslintrc-jsc.yml "$DIR/**/resources/jsc/*.js"
 
 # Lint other Node JS
-NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
-./node_modules/.bin/eslint -c .eslintrc.yml "$NODE_JS_FILES"
+./node_modules/.bin/eslint -c .eslintrc.yml "$DIR/**/*.js"
 

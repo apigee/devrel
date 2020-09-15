@@ -13,14 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -x
 
 DIR="${1:-$PWD}"
 
-read -p "This action will edit your local files. Press Ctrl-C and a make a backup or press Enter to continue."
+echo "This action will edit your local files. Press Ctrl-C and a make a backup or press Enter to continue."
+read -r
 npm i
 
 # Fix License Files
-SRC_FILES=$(find "$DIR" -type f -path "*" | grep -v "node_modules" | grep -v "generated")
+SRC_FILES=$(find "$DIR" -type f -path "*" | grep -v "node_modules" | grep -v "generated" | grep -v ".git")
 addlicense "$SRC_FILES"
 
 # Fix Java Files
@@ -32,11 +34,9 @@ MD_FILES=$(find "$DIR" -type f -path "*.md" | grep -v "node_modules" | grep -v "
 ./node_modules/.bin/remark "$MD_FILES" -r .remarkrc.yml -o
 
 # Fix JS Files
-APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
-[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml "$APIGEE_JS_FILES" || true
+./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml "$DIR/**/resources/jsc/*.js"
 
-NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
-[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml "$NODE_JS_FILES" || true
+./node_modules/.bin/eslint --fix -c .eslintrc.yml "$DIR/**/*.js"
 
 # Prettier
 npx prettier --write "$DIR"
@@ -44,6 +44,7 @@ npx prettier --write "$DIR"
 # Shell
 SHELL_FILES=$(find "$DIR" -type f -name "*.sh")
 for FILE in $SHELL_FILES; do
-  shellcheck -f quiet "$FILE"
-  [ $? -ne 0 ] && shellcheck -f diff "$FILE" | git -C / apply
+  if shellcheck -f quiet "$FILE"; then
+    shellcheck -f diff "$FILE" | git -C / apply
+  fi
 done

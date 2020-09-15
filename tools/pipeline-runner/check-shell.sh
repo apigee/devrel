@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+set -x
 set -e
+
 DIR="${1:-$PWD}"
 
 SHELL_FILES=$(find "$DIR" -type f -path "*.sh")
-shellcheck "$SHELL_FILES"
+for FILE in $SHELL_FILES; do
+  shellcheck "$FILE"
+done

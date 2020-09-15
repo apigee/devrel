@@ -15,6 +15,7 @@
 
 
 set -e
+set -x
 DIR="${1:-$PWD}"
 
 npm install --no-fund-silent

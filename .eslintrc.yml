@@ -18,3 +18,5 @@ env:
 extends:
   - google
   - prettier
+ignorePatterns:
+  - "**/resources/jsc/*.js"

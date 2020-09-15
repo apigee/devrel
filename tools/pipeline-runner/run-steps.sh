@@ -17,11 +17,17 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 PIPELINE_REPORT="run-steps,0"                                         
+STEP="${1}"
 
-for CMD in $(cat "$SCRIPTPATH"/steps.json | jq '.steps[]' -r); do
-  $CMD
-  PIPELINE_REPORT="$PIPELINE_REPORT;$CMD,$?"                     
-done
+if [ -z "$STEP" ]; then
+  for CMD in $(cat "$SCRIPTPATH"/steps.json | jq '.steps[]' -r); do
+    $CMD
+    PIPELINE_REPORT="$PIPELINE_REPORT;$CMD,$?"                     
+  done
+else
+  $STEP
+  PIPELINE_REPORT="$PIPELINE_REPORT;$STEP,$?"                     
+fi
 
 echo                                                                                                                                    
 echo "STEP RESULTS"                                                                                                                     
