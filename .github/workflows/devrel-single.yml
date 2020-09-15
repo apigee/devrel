@@ -31,7 +31,7 @@ jobs:
         run: echo "::set-output name=matrix::$(cat ./tools/pipeline-runner/steps.json | tr -d '\n')"
 
   quality-check:
-    name: DevRel Workflow Checks
+    name: Check
     runs-on: ubuntu-latest
     needs: get-steps
     strategy:
