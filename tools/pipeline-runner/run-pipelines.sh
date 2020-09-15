@@ -24,10 +24,10 @@ elif test -f "$DIR/pipeline.sh"; then
   PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
 else
   for TYPE in references labs tools; do
-    for D in $DIR/$TYPE; do
+    for D in $DIR/$TYPE/*; do
       PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
-      (cd $TYPE/"$D" && ./pipeline.sh;)
-      PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
+      (cd $D && ./pipeline.sh;)
+      PIPELINE_REPORT="$PIPELINE_REPORT;$D Pipeline,$?"
     done
   done
 fi
