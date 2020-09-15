@@ -45,4 +45,7 @@ npx prettier --write $DIR
 
 # Shell
 SHELL_FILES=`find $DIR -type f -name "*.sh"`
-shellcheck -f diff $SHELL_FILES | git apply
+for FILE in SHELL_FILES; done
+  shellcheck $FILE
+  [ $? -ne 0 ] && shellcheck -f diff $FILE | git apply
+done
