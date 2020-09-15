@@ -34,7 +34,7 @@ fi
 
 # print report
 echo
-echo "FINAL RESULT"
+echo "PIPELINE RESULTS"
 echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
 echo
 
