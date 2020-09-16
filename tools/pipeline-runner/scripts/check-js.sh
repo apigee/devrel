@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+set -x
 set -e
 
 echo "DevRel - Javascript Check"
@@ -24,11 +24,10 @@ npm install -no-fund --silent
 # Lint Apigee Javascript Callouts
 APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
 # shellcheck disable=SC2086
-[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml $APIGEE_JS_FILES || true
-
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc-jsc.yml $APIGEE_JS_FILES 
 
 # Lint other Node JS
-NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
+NODE_JS_FILES=$(find "$DIR" -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
 # shellcheck disable=SC2086
-[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml $NODE_JS_FILES || true
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint -c .eslintrc.yml $NODE_JS_FILES
 

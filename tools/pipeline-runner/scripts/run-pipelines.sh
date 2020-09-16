@@ -14,6 +14,7 @@
 # limitations under the License.
 
 echo "DevRel - Project Pipeline Check"
+set -x
 
 DIR="${1:-$PWD}"
 PIPELINE_REPORT="project-pipelines,0"

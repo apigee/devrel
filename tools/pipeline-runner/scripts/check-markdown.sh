@@ -14,7 +14,7 @@
 # limitations under the License.
 
 set -e
-
+set -x
 echo "DevRel - Markdown Check"
 
 DIR="${1:-$PWD}"

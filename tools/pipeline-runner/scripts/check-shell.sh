@@ -17,7 +17,7 @@
 # we will fail on error once all projects pass these new checks
 ###
 #set -e 
-
+set -x
 echo "DevRel - Shell Check"
 
 DIR="${1:-$PWD}"

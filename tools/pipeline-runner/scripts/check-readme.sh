@@ -14,6 +14,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 echo "DevRel - Docs Check"
 
