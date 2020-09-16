@@ -49,4 +49,4 @@ jobs:
       - name: run check
         uses: ./tools/pipeline-runner
         with:
-          pipeline-action: ${{ matrix.steps }}
+          pipeline-action: ./tools/pipeline-runner/scripts/${{ matrix.steps }}
