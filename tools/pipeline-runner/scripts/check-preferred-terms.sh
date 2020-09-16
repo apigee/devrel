@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
 
-set -e 
-set -x
+echo "DevRel - Preferred Terms Check"
+
 DIR="${1:-$PWD}"
 
-addlicense -check "$DIR"
+! grep -ir "blacklist\|whitelist\|master\|slave" "$DIR" | grep -v "node_modules"\
+  | grep -v ".git" | grep -v "run-pipeline.sh"

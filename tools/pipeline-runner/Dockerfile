@@ -15,16 +15,15 @@
 FROM golang:alpine
 
 # Install our tools
-RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre shellcheck util-linux
+RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre \
+  shellcheck tmux util-linux
 RUN go get github.com/google/addlicense
 RUN go get github.com/googlecodelabs/tools/claat
 RUN curl -sSL https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.36.1/checkstyle-8.36.1-all.jar \
   -o /opt/checkstyle.jar
 
-# install our dependencies
-ADD *.sh /usr/bin/
-ADD steps.json /usr/bin/
+RUN mkdir -p /home/workspace
 
 # Run script
-WORKDIR /home
-CMD run-pipeline
+WORKDIR /home/workspace
+CMD sh

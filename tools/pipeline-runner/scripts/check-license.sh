@@ -13,15 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x
-set -e
+set -e 
+
+echo "DevRel - License Check"
+
 DIR="${1:-$PWD}"
-
-npm install -no-fund --silent
-
-# Lint Apigee Javascript Callouts
-./node_modules/.bin/eslint -c .eslintrc-jsc.yml "$DIR/**/resources/jsc/*.js"
-
-# Lint other Node JS
-./node_modules/.bin/eslint -c .eslintrc.yml "$DIR/**/*.js"
-
+SRC_FILES=$(find "$DIR" -type f -path "*" | grep -v "node_modules" | grep -v "generated" | grep -v ".git")
+for FILE in $SRC_FILES; do
+  addlicense -check "$FILE"
+done

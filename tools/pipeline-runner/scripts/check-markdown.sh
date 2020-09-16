@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 set -e
-set -x
+
+echo "DevRel - Markdown Check"
+
 DIR="${1:-$PWD}"
 
-! grep -ir "blacklist\|whitelist\|master\|slave" "$DIR" | grep -v "node_modules"\
-  | grep -v ".git" | grep -v "run-pipeline.sh"
+npm install --no-fund-silent
+
+./node_modules/.bin/remark "$DIR" -f -r .remarkrc.yml
+PIPELINE_REPORT="$PIPELINE_REPORT;Markdown Lint,$?"

@@ -13,8 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x
-set -e
-DIR="${1:-$PWD}"
+set -e 
 
-java -jar /opt/checkstyle.jar -c checkstyle.xml "$DIR"
+echo "DevRel - Java Check"
+
+DIR="${1:-$PWD}"
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+java -jar /opt/checkstyle.jar -c "$SCRIPTPATH/../../../checkstyle.xml" "$DIR"

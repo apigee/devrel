@@ -13,17 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
 
-set -x
+echo "DevRel - Docs Check"
 
-###
-# we will fail on error once all projects pass these new checks
-###
-#set -e 
-
-DIR="${1:-$PWD}"
-
-SHELL_FILES=$(find "$DIR" -type f -path "*.sh")
-for FILE in $SHELL_FILES; do
-  shellcheck "$FILE"
+for TYPE in references labs tools; do
+  for D in $TYPE/*; do
+    grep "^-.*$D" README.md -q
+    grep "$D" CODEOWNERS -q
+  done
 done

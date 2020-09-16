@@ -14,4 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "no pipeline required"
+set -e
+
+docker build -t apigee/devrel-local .
+
+# run for all projects
+docker run -v "$(pwd)../../..:/home/workspace" -it apigee/devrel-local \
+  ./tools/pipeline-runner/pipeline-runner.sh
+
+# run for single project
+docker run -v "$(pwd)../../..:/home/workspace" -it apigee/devrel-local \
+ ./tools/pipeline-runner/pipeline-runner.sh references/js-callout

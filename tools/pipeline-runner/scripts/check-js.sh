@@ -13,12 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 set -e
-set -x
+
+echo "DevRel - Javascript Check"
+
 DIR="${1:-$PWD}"
 
-npm install --no-fund-silent
+npm install -no-fund --silent
 
-./node_modules/.bin/remark "$DIR" -f -r .remarkrc.yml
-PIPELINE_REPORT="$PIPELINE_REPORT;Markdown Lint,$?"
+# Lint Apigee Javascript Callouts
+APIGEE_JS_FILES=$(find "$DIR" -type f -path "*resources/jsc/*.js")
+# shellcheck disable=SC2086
+[ -z "$APIGEE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc-jsc.yml $APIGEE_JS_FILES || true
+
+
+# Lint other Node JS
+NODE_JS_FILES=$(find . -type f -path "*.js" | grep -v "resources/jsc" | grep -v "node_modules")
+# shellcheck disable=SC2086
+[ -z "$NODE_JS_FILES" ] || ./node_modules/.bin/eslint --fix -c .eslintrc.yml $NODE_JS_FILES || true
+
