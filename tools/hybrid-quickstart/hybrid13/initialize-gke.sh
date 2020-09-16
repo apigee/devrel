@@ -14,7 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ./steps.sh
+QUICKSTART_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+export QUICKSTART_ROOT
+
+source "$QUICKSTART_ROOT/steps.sh"
 
 enable_all_apis
 
