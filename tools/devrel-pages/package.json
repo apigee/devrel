@@ -1,0 +1,15 @@
+{
+  "name": "devrel-pages",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "strebel@google.com",
+  "license": "ISC",
+  "dependencies": {
+    "showdown": "^1.9.1"
+  }
+}

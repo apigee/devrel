@@ -46,6 +46,8 @@ Apigee products.
   A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
+- [DevRel Pages](tools/devrel-pages) -
+  Generator for the Apigee DevRel site at [apigee.github.io/devrel](https://apigee.github.io/devrel/)
 
 ## Labs
 
