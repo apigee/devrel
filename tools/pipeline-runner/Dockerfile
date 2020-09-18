@@ -17,7 +17,7 @@ FROM golang:alpine
 # Install our tools
 RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre util-linux
 RUN go get github.com/google/addlicense
-RUN go get github.com/googlecodelabs/tools/claat
+RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
 RUN curl -sSL \
  https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar \
   -o /opt/google-java-format.jar
@@ -28,4 +28,4 @@ ADD *.sh /usr/bin/
 
 # Run script
 WORKDIR /home
-CMD run-pipeline
+CMD run-pipelines.sh
