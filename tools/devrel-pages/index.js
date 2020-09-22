@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-const fsPromise = require("fs").promises;
 const fs = require("fs");
 const path = require("path");
 const showdown = require("showdown");
 
-async function generateDevrelEntryPage() {
-  var readmePath = path.join(__dirname, "..", "..", "README.md");
-  const readmeContent = await fsPromise.readFile(readmePath, "utf8");
+(function generateDevrelEntryPage() {
+  const readmePath = path.join(__dirname, "..", "..", "README.md");
+  const readmeContent = fs.readFileSync(readmePath, "utf8");
 
   const converter = new showdown.Converter();
   const html = converter.makeHtml(readmeContent);
@@ -68,14 +67,13 @@ async function generateDevrelEntryPage() {
             `href="${githubServerName}/${githubRepoName}/tree/main/${relativeLink}"`
           );
         }
-        console.log(linkMatches[1]);
       }
 
       devrelCategories[currentCategory].push(l);
     }
   });
 
-  let pageScaffold = `
+  const overviewPage = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -138,7 +136,5 @@ async function generateDevrelEntryPage() {
     `;
 
   const indexPath = path.join(__dirname, "..", "..", "generated", "index.html");
-  await fsPromise.writeFile(indexPath, pageScaffold, "utf-8");
-}
-
-generateDevrelEntryPage();
+  fs.writeFileSync(indexPath, overviewPage, "utf-8");
+})();
