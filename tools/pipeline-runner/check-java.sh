@@ -16,7 +16,5 @@
 
 set -e
 DIR="${1:-$PWD}"
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
 
-java -jar /opt/checkstyle.jar -c "$SCRIPTPATH/../../../checkstyle.xml" "$DIR"
+java -jar /opt/checkstyle.jar -c "checkstyle.xml" "$DIR"
