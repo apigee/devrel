@@ -16,6 +16,7 @@
 
 set -e
 DIR="${1:-$PWD}"
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
 
-JAVA_FILES=`find $DIR -type f -name "*.java"`
-[ -z "$JAVA_FILES" ] || java -jar /opt/google-java-format.jar --dry-run --set-exit-if-changed $JAVA_FILES
+java -jar /opt/checkstyle.jar -c "$SCRIPTPATH/../../../checkstyle.xml" "$DIR"
