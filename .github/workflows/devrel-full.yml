@@ -50,11 +50,6 @@ jobs:
         with:
           pipeline-action: check-markdown.sh
 
-      - name: check-preferred-terms
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-preferred-terms.sh
-
       - name: check-readme
         uses: ./tools/pipeline-readme
         with:
