@@ -68,12 +68,6 @@ jobs:
           pipeline-action: check-markdown.sh
           project: ${{ steps.list-changed.outputs.project }}
 
-      - name: check-preferred-terms
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-preferred-terms.sh
-          project: ${{ steps.list-changed.outputs.project }}
-
       - name: check-readme
         uses: ./tools/pipeline-runner
         with:
