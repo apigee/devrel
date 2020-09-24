@@ -13,7 +13,7 @@
 # limitations under the License.
 
 name: DevRel Single Project Pipeline
-on: pull_request
+on: [push, pull_request]
 env: 
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
@@ -42,6 +42,13 @@ jobs:
           pipeline-action: check-license.sh
           project: ${{ steps.list-changed.outputs.project }}
 
+
+      - name: check-shell
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-shell.sh 
+          project: ${{ steps.list-changed.outputs.project }}
+
       - name: check-java
         uses: ./tools/pipeline-runner
         with:
@@ -59,12 +66,6 @@ jobs:
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: check-markdown.sh
-          project: ${{ steps.list-changed.outputs.project }}
-
-      - name: check-preferred-terms
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-preferred-terms.sh
           project: ${{ steps.list-changed.outputs.project }}
 
       - name: check-readme

@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-set -e
 DIR="${1:-$PWD}"
 
-! grep -ir "blacklist\|whitelist\|master\|slave" $DIR | grep -v "node_modules"\
-  | grep -v ".git" | grep -v "run-pipeline.sh"
+SHELL_FILES=$(find "$DIR" -type f -path "*.sh")
+for FILE in $SHELL_FILES; do
+  shellcheck "$FILE"
+done
