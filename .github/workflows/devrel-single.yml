@@ -13,7 +13,7 @@
 # limitations under the License.
 
 name: DevRel Single Project Pipeline
-on: pull_request
+on: [push, pull_request]
 env: 
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}

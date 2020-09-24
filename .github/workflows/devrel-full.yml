@@ -14,9 +14,8 @@
 
 name: DevRel All Projects Pipeline
 on:
-  push:
-    branches:
-    - master
+  schedule:
+  - cron: "0 0 * * *"
 env:
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
