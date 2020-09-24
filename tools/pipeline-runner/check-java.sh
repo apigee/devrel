@@ -17,4 +17,4 @@
 set -e
 DIR="${1:-$PWD}"
 
-java -jar /opt/checkstyle.jar -c "checkstyle.xml" "$DIR"
+java -jar /opt/java-checkstyle.jar -c "java-checkstyle.xml" "$DIR"
