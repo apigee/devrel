@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-set -e
 DIR="${1:-$PWD}"
 
-java -jar /opt/java-checkstyle.jar -c "java-checkstyle.xml" "$DIR"
+SHELL_FILES=$(find "$DIR" -type f -path "*.sh")
+for FILE in $SHELL_FILES; do
+  shellcheck "$FILE"
+done
