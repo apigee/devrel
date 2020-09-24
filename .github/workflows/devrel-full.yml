@@ -34,6 +34,11 @@ jobs:
         with:
           pipeline-action: check-license.sh
 
+      - name: check-shell
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-shell.sh
+
       - name: check-java
         uses: ./tools/pipeline-runner
         with:
