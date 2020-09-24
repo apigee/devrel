@@ -15,7 +15,7 @@
 FROM golang:alpine
 
 # Install our tools
-RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre util-linux
+RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre shellcheck util-linux
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
 RUN curl -sSL https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.36.1/checkstyle-8.36.1-all.jar \

@@ -14,9 +14,8 @@
 
 name: DevRel All Projects Pipeline
 on:
-  push:
-    branches:
-    - master
+  schedule:
+  - cron: "0 0 * * *"
 env:
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
@@ -34,6 +33,11 @@ jobs:
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: check-license.sh
+
+      - name: check-shell
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-shell.sh
 
       - name: check-java
         uses: ./tools/pipeline-runner
