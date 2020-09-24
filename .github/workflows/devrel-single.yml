@@ -22,10 +22,16 @@ env:
 jobs:
   quality-check:
     name: DevRel Workflow Checks
+    timeout-minutes: 1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: list-changed
         id: list-changed
