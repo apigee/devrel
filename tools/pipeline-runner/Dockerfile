@@ -18,9 +18,8 @@ FROM golang:alpine
 RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre shellcheck util-linux
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
-RUN curl -sSL \
- https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar \
-  -o /opt/google-java-format.jar
+RUN curl -sSL https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.36.1/checkstyle-8.36.1-all.jar \
+  -o /opt/java-checkstyle.jar
 
 # install our dependencies
 ADD *.sh /usr/bin/
