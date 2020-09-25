@@ -90,7 +90,7 @@ git push -u origin feature/cicd-pipeline
 Use the UI to configure the Jenkins Job for multibranch pipelines:
 
 1.  Set the Git repo e.g. `https://github.com/my-user/my-api-proxy-repo`
-2.  Path to the Jenkinsfile e.g. `Jenkinsfile`
+2.  Path to the Jenkinsfile e.g. `Jenkinsfile-maven`
 3.  (Optional) Set the build trigger / polling frequency
 
 ![Jenkins Config](./img/jenkins-config.png)

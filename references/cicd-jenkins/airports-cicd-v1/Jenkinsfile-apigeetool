@@ -2,6 +2,8 @@ pipeline {
 
     agent any
 
+    options { disableConcurrentBuilds() }
+
     environment {
         APIGEE_CREDS = credentials('apigee')
         // Mutliple options for setting the Apigee target org:
@@ -18,27 +20,21 @@ pipeline {
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.MAVEN_PROFILE = "test"
+                  env.APIGEE_ENV = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'
               // Prod branch for Apigee prod environment
               } else if (env.GIT_BRANCH == "prod") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.MAVEN_PROFILE = "prod"
+                  env.APIGEE_ENV = "prod"
                   // env.APIGEE_ORG = 'apigee-org-name'
               // All other branches are deployed as separate proxies with suffix in the test environment
               } else {
                   env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-jenkins"
-                  env.MAVEN_PROFILE = "test"
+                  env.APIGEE_ENV = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'
               }
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
             }
-          }
-        }
-
-        stage('Clean') {
-          steps {
-            sh "mvn clean"
           }
         }
 
@@ -105,29 +101,28 @@ pipeline {
                   ).trim()
                 }
             }
-            sh "mvn process-resources -P${env.MAVEN_PROFILE} \
-                  -Dcommit=${env.GIT_COMMIT} \
-                  -Dbranch=${env.GIT_BRANCH} \
-                  -Dauthor=${AUTHOR_EMAIL} \
-                  -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+
+            sh "cp apiproxy/proxies/default.xml apiproxy/proxies/default.template.xml"
+            sh "cp apiproxy/airports-cicd-v1.xml apiproxy/airports-cicd-v1.template.xml"
+
+            sh "sed 's|<BasePath>/airports-cicd/v1</BasePath>|<BasePath>/airports-cicd${env.APIGEE_DEPLOYMENT_SUFFIX}/v1</BasePath>|' apiproxy/proxies/default.template.xml > apiproxy/proxies/default.xml"
+            sh "sed 's|<Description>@description</Description>|<Description>Commit: ${env.GIT_COMMIT}, Branch: ${env.GIT_BRANCH}, Author: ${AUTHOR_EMAIL}</Description>|' apiproxy/airports-cicd-v1.template.xml > apiproxy/airports-cicd-v1.xml"
+
+            sh "rm apiproxy/proxies/default.template.xml"
+            sh "rm apiproxy/airports-cicd-v1.template.xml"
           }
         }
 
-        stage('Package proxy bundle') {
-          steps {
-            sh "mvn apigee-enterprise:configure -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-          }
-        }
 
         stage('Deploy proxy bundle') {
           steps {
-            sh "mvn apigee-enterprise:deploy -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+            sh "node_modules/apigeetool/lib/cli.js deployproxy  -u ${APIGEE_CREDS_USR} -p ${APIGEE_CREDS_PSW} -o ${env.APIGEE_ORG}  -e ${env.APIGEE_ENV} -n airports-cicd${env.APIGEE_DEPLOYMENT_SUFFIX} -d ."
           }
         }
 
         stage('Functional Test') {
           steps {
-            sh "node ./node_modules/cucumber/bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
+            sh "TEST_HOST=${env.APIGEE_ORG}-${env.APIGEE_ENV}.apigee.net TEST_BASE_PATH=/airports-cicd${env.APIGEE_DEPLOYMENT_SUFFIX}/v1 node ./node_modules/cucumber/bin/cucumber-js ./test/integration --format json:./reports.json"
           }
         }
     }

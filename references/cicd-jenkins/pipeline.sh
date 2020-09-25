@@ -33,9 +33,18 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS=password \
-  -it apigee-cicd/jenkinsfile-runner-airports
+  -it apigee-cicd/jenkinsfile-runner-airports -f /workspace/Jenkinsfile-maven
 
-npm install --no-fund
+docker run \
+  -e APIGEE_USER \
+  -e APIGEE_PASS \
+  -e APIGEE_ORG \
+  -e GIT_BRANCH=nightly \
+  -e AUTHOR_EMAIL="cicd@apigee.google.com" \
+  -e JENKINS_ADMIN_PASS=password \
+  -it apigee-cicd/jenkinsfile-runner-airports -f /workspace/Jenkinsfile-apigeetool
+
+# Remove proxies after completion
 
 API_NAME=airports-cicd-nightly
 
