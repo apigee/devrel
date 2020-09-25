@@ -20,8 +20,19 @@ env:
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
 jobs:
+  duplicate-check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          github_token: ${{ github.token }} 
   quality-check:
     name: DevRel Workflow Checks
+    needs: duplicate-check
+    if: ${{ needs.duplicate-check.outputs.should_skip == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
