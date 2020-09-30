@@ -122,7 +122,9 @@ check_existing_apigee_resource() {
 
 enable_all_apis() {
 
-  echo "📝 Enabling all required APIs"
+  PROJECT_ID=${PROJECT_ID:=$(gcloud config get-value "project")}
+
+  echo "📝 Enabling all required APIs in GCP project \"$PROJECT_ID\""
   
   # Assuming we already enabled the APIs if the Apigee Org exists
   if check_existing_apigee_resource "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID" ; then
@@ -180,7 +182,7 @@ create_apigee_org() {
     "https://apigee.googleapis.com/v1/organizations?parent=projects/$PROJECT_ID"
 
     echo -n "⏳ Waiting for Apigeectl Org Creation "
-    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID | grep \"subscriptionType\" > /dev/null  2>&1; echo \$?" "Organization $PROJECT_ID is created."
+    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID | grep -q \"subscriptionType\"; echo \$?" "Organization $PROJECT_ID is created."
 
     echo "✅ Created Org '$PROJECT_ID'"
 }
@@ -201,7 +203,7 @@ create_apigee_env() {
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments"
 
     echo -n "⏳ Waiting for Apigeectl Env Creation "
-    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\"  https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments/$ENV_NAME | grep \"$ENV_NAME\" > /dev/null  2>&1; echo \$?" "Environment $ENV_NAME of Organization $PROJECT_ID is created."
+    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\"  https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments/$ENV_NAME | grep -q \"$ENV_NAME\"; echo \$?" "Environment $ENV_NAME of Organization $PROJECT_ID is created."
 
     echo "✅ Created Env '$ENV_NAME'"
 }
@@ -225,7 +227,7 @@ create_apigee_envgroup() {
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups"
 
     echo -n "⏳ Waiting for Apigeectl Env Creation"
-    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME | grep $ENV_GROUP_NAME > /dev/null  2>&1; echo \$?" "Environment Group $ENV_GROUP_NAME of Organization $PROJECT_ID is created."
+    wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME | grep -q $ENV_GROUP_NAME; echo \$?" "Environment Group $ENV_GROUP_NAME of Organization $PROJECT_ID is created."
 
     echo "✅ Created Env Group '$ENV_GROUP_NAME'"
 }
@@ -241,13 +243,13 @@ add_env_to_envgroup() {
 
   
 
-  if [[ $(curl --silent -H "Authorization: Bearer $(token)" -H "content-type:application/json" "$ENV_GROUPS_ATTACHMENT_URI" | grep "\"environment\": \"$ENV_NAME\""  > /dev/null  2>&1) -eq 0 ]]; then
+  if curl --silent -H "Authorization: Bearer $(token)" -H "content-type:application/json" "$ENV_GROUPS_ATTACHMENT_URI" | grep -q "\"environment\": \"$ENV_NAME\""; then
     echo "(skipping, envgroup assignment already exists)"
+    return
   else
     curl -q -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
       -d '{ "environment": "'"$ENV_NAME"'" }' "$ENV_GROUPS_ATTACHMENT_URI"
   fi
-  
   
   echo "✅ Added Env $ENV_NAME to Env Group $ENV_GROUP_NAME"
 }
