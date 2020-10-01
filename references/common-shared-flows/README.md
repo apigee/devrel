@@ -29,7 +29,11 @@ Set `Access-Control-*` headers for Preflight and Standard API Requests
 ### Error Handling
 
 Seperate the throwing of errors, description and formatting of errors for consistency
-across API Proxies.
+across API Proxies
+
+### GCP Service Accounts Authentication
+
+Generate access tokens for GCP service accounts with caching in the default environment cache resource for enhanced performance
 
 ### Get Config
 
