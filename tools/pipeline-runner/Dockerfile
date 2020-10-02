@@ -15,16 +15,23 @@
 FROM golang:alpine
 
 # Install our tools
-RUN apk add --no-cache curl docker git jq maven nodejs npm openjdk11-jre shellcheck util-linux
+RUN apk add --no-cache \
+  curl=7.69.1-r1 \
+  docker=19.03.12-r0 \
+  git=2.26.2-r0 \
+  jq=1.6-r1 \
+  maven=3.6.3-r0 \
+  nodejs=12.18.4-r0 \
+  npm=12.18.4-r0 \
+  openjdk11-jre-headless=11.0.8_p10-r0 \
+  util-linux=2.35.2-r0
+
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
-RUN curl -sSL https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.36.1/checkstyle-8.36.1-all.jar \
-  -o /opt/java-checkstyle.jar
 
 # install our dependencies
-ADD *.sh /usr/bin/
-
+COPY *.sh /usr/bin/
 
 # Run script
 WORKDIR /home
-CMD run-pipelines.sh
+CMD ["run-pipelines.sh"]
