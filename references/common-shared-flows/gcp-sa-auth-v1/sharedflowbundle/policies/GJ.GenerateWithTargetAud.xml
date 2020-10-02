@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<GenerateJWT name="GJ.GenerateSAToken">
+<GenerateJWT name="GJ.GenerateWithTargetAud">
     <Algorithm>RS256</Algorithm>
     <PrivateKey>
         <Value ref="private.gcp.service_account.private_key"/>
@@ -22,7 +22,7 @@
     <Audience ref="private.gcp.service_account.token_uri"/>
     <ExpiresIn>300s</ExpiresIn>
     <AdditionalClaims>
-        <Claim name="scope" type="string" ref="gcp.scopes"/>
+        <Claim name="target_audience" type="string" ref="gcp.target_audience"/>
     </AdditionalClaims>
-    <OutputVariable>sa_jwt</OutputVariable>
+    <OutputVariable>private.gcp.id_token</OutputVariable>
 </GenerateJWT>

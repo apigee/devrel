@@ -16,22 +16,34 @@
 
 <SharedFlow name="default">
     <Step>
-        <Name>JS.ExtractSAKey</Name>
+        <Name>JS.CheckConfigAndExtractSAKey</Name>
+    </Step>
+    <Step>
+        <Name>RF.InvalidConfig</Name>
+        <Condition>gcp.service_account.error_message != null</Condition>
     </Step>
     <Step>
         <Name>LC.LookupGCPAccessToken</Name>
     </Step>
     <Step>
-        <Name>GJ.GenerateSAToken</Name>
-        <Condition>lookupcache.LC.LookupGCPAccessToken.cachehit is false</Condition>
+        <Name>GJ.GenerateWithScope</Name>
+        <Condition>(gcp.scopes != null) and (lookupcache.LC.LookupGCPAccessToken.cachehit is false)</Condition>
     </Step>
     <Step>
-        <Name>SC.ExchangeForAccessToken</Name>
+        <Name>GJ.GenerateWithTargetAud</Name>
+        <Condition>(gcp.target_audience != null) and (lookupcache.LC.LookupGCPAccessToken.cachehit is false)</Condition>
+    </Step>
+    <Step>
+        <Name>SC.ExchangeIdForAccessToken</Name>
         <Condition>lookupcache.LC.LookupGCPAccessToken.cachehit is false</Condition>
     </Step>
     <Step>
         <Name>EV.ParseAccessTokenResponse</Name>
-        <Condition>lookupcache.LC.LookupGCPAccessToken.cachehit is false</Condition>
+        <Condition>(gcp.scopes != null) and (lookupcache.LC.LookupGCPAccessToken.cachehit is false)</Condition>
+    </Step>
+    <Step>
+        <Name>EV.ParseIdTokenResponse</Name>
+        <Condition>(gcp.target_audience != null) and (lookupcache.LC.LookupGCPAccessToken.cachehit is false)</Condition>
     </Step>
     <Step>
         <Name>PC.CacheAccessToken</Name>

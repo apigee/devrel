@@ -13,15 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<PopulateCache name="PC.CacheAccessToken">
-    <CacheKey>
-        <Prefix>gcp.sa.access_token</Prefix>
-        <KeyFragment ref="private.gcp.service_account.client_id"/>
-    </CacheKey>
-    <Scope>Exclusive</Scope>
-    <ExpirySettings>
-        <!-- Cache for 10min -->
-        <TimeoutInSec>600</TimeoutInSec>
-    </ExpirySettings>
-    <Source>private.gcp.access_token</Source>
-</PopulateCache>
+<Javascript timeLimit="200" name="JS.CheckConfigAndExtractSAKey">
+  <ResourceURL>jsc://CheckConfigAndExtractSAKey.js</ResourceURL>
+</Javascript>

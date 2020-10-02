@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 <ExtractVariables name="EV.ParseAccessTokenResponse">
-    <Source>private.gcp.access_token.response</Source>
+    <Source>gcp.access_token.response</Source>
     <JSONPayload>
         <Variable name="access_token" type="string">
             <JSONPath>$.access_token</JSONPath>
