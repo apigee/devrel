@@ -1,14 +1,13 @@
 #!/bin/sh
 
-SCRIPT=`readlink -f "$0"`
-SCRIPTPATH=`dirname "$SCRIPT"`
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
 
 # read required APIGEE_ vars from aac-token, chosen request 
 
 REQUEST_TYPE=$1
 
-[ -z $REQUEST_TYPE ] && read -p "Request type: " REQUEST_TYPE
+[ -z "$REQUEST_TYPE" ] && printf "Request type: " && read -r REQUEST_TYPE
 
 # make request
-TOKEN=`$SCRIPTPATH/token` sh $SCRIPTPATH/requests/$REQUEST_TYPE
-  
+TOKEN=$("$SCRIPTPATH"/token) sh "$SCRIPTPATH"/requests/"$REQUEST_TYPE"  
