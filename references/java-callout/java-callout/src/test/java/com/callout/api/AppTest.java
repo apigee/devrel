@@ -20,22 +20,22 @@ import junit.framework.TestSuite;
 
 /** Unit test for simple App. */
 public class AppTest extends TestCase {
-  /**
-   * Create the test case.
-   *
-   * @param testName name of the test case
-   */
-  public AppTest(final String testName) {
-    super(testName);
-  }
+	/**
+	 * Create the test case.
+	 *
+	 * @param testName name of the test case
+	 */
+	public AppTest(final String testName) {
+		super(testName);
+	}
 
-  /** @return the suite of tests being tested */
-  public static Test suite() {
-    return new TestSuite(AppTest.class);
-  }
+	/** @return the suite of tests being tested */
+	public static Test suite() {
+		return new TestSuite(AppTest.class);
+	}
 
-  /** Add our unit tests. */
-  public void testApp() {
-    assertTrue(true);
-  }
+	/** Add our unit tests. */
+	public void testApp() {
+		assertTrue(true);
+	}
 }
