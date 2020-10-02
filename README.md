@@ -2,8 +2,7 @@
 
 [![DevRel All Projects Pipeline](https://github.com/apigee/devrel/workflows/DevRel%20All%20Projects%20Pipeline/badge.svg)](https://github.com/apigee/devrel/actions?query=workflow%3A%22DevRel+All+Projects+Pipeline%22)
 [![DevRel Github Pages Pipeline](https://github.com/apigee/devrel/workflows/DevRel%20Github%20Pages%20Pipeline/badge.svg)](https://github.com/apigee/devrel/actions?query=workflow%3A%22DevRel+Github+Pages+Pipeline%22)
-[![](https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png)](https://github.com/apps/in-solidarity)
-
+[![In Solidarity](https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png)](https://github.com/apps/in-solidarity)
 
 Common solutions and tools developed by Apigee.
 
@@ -15,13 +14,13 @@ This folder contains reference solutions across a variety of Apigee products.
 It is expected that these solutions are used as an illustration or extended
 further to fit a particular use case.
 
-- [Swagger 2 based Mocks on Apigee Hosted Targets](references/apigee-sandbox-v1) -
-  Swagger 2 based Mocks on Apigee SaaS
+- [Swagger 2 based Mocks on Apigee Hosted Targets](references/apigee-sandbox-v1)
+  - Swagger 2 based Mocks on Apigee SaaS
 - [API Mocker on Apigee Hosted Targets](references/apimocker-hostedtargets) -
   API Mocks hosted on Apigee SaaS
 - [Common Shared Flows](references/common-shared-flows) -
-  Reusable API Policies including Security, Traffic Management, Error Handling and
-  CORS
+  Reusable API Policies including Security, Traffic Management, Error Handling
+  and CORS
 - [Custom Java Extensions in Apigee](references/java-callout) -
   A reference project that includes a Java Extension
 - [Jenkins CI/CD Pipeline](references/cicd-jenkins) -
