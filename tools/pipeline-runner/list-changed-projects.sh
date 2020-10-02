@@ -23,6 +23,6 @@ PROJECTS=$(git diff --name-only origin/main | grep "labs/\|references/\|tools/" 
 if [ "$(echo "$PROJECTS" | wc -w)" -le 1 ]; then
   echo "::set-output name=project::$PROJECTS"
 else
-  1>&2 echo "Please only work on one project per Pull Request"
-  exit 1
+  echo "Multiple projects changed - running all pipelines"
+  echo "::set-output name=project::$PROJECTS"
 fi
