@@ -13,12 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript name="JS.ExtractSAKey">
-    <Source>
-        var c = context.getVariable('private.gcp.service_account.key');
-        c = JSON.parse(c);
-        for (var prop in c) { 
-          context.setVariable('private.gcp.service_account.' + prop, c[prop]);
-        }
-    </Source>
-</Javascript>
+<GenerateJWT name="GJ.GenerateWithScope">
+    <Algorithm>RS256</Algorithm>
+    <PrivateKey>
+        <Value ref="private.gcp.service_account.private_key"/>
+    </PrivateKey>
+    <Issuer ref="private.gcp.service_account.client_email"/>
+    <Audience ref="private.gcp.service_account.token_uri"/>
+    <ExpiresIn>300s</ExpiresIn>
+    <AdditionalClaims>
+        <Claim name="scope" type="string" ref="gcp.scopes"/>
+    </AdditionalClaims>
+    <OutputVariable>private.gcp.id_token</OutputVariable>
+</GenerateJWT>

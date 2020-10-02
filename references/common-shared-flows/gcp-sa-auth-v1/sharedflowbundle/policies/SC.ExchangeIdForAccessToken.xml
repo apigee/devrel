@@ -14,18 +14,17 @@
  limitations under the License.
 -->
 <!--see https://developers.google.com/identity/protocols/oauth2/service-account-->
-<ServiceCallout name="SC.ExchangeForAccessToken">
-    <Properties/>
+<ServiceCallout name="SC.ExchangeIdForAccessToken">
     <Request clearPayload="true" variable="accessTokenRequest">
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
         <Set>
             <FormParams>
-                <FormParam name="assertion">{sa_jwt}</FormParam>
+                <FormParam name="assertion">{private.gcp.id_token}</FormParam>
                 <FormParam name="grant_type">urn:ietf:params:oauth:grant-type:jwt-bearer</FormParam>
             </FormParams>
         </Set>
     </Request>
-    <Response>private.gcp.access_token.response</Response>
+    <Response>gcp.access_token.response</Response>
     <HTTPTargetConnection>
         <Properties/>
         <URL>https://oauth2.googleapis.com/token</URL>

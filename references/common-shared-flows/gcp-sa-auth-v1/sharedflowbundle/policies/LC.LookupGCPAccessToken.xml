@@ -16,8 +16,7 @@
 <LookupCache name="LC.LookupGCPAccessToken">
     <CacheKey>
         <Prefix>gcp.sa.access_token</Prefix>
-        <KeyFragment ref="private.gcp.service_account.client_email"/>
-        <KeyFragment ref="gcp.scopes"/>
+        <KeyFragment ref="private.gcp.service_account.client_id"/>
     </CacheKey>
     <Scope>Exclusive</Scope>
     <AssignTo>private.gcp.access_token</AssignTo>
