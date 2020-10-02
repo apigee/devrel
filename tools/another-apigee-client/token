@@ -39,8 +39,8 @@ elif test ! -f "$HOME"/.aac/token || [ $ACCESS_TOKEN_REMAINING -lt 300 ]; then
     -d "password=$APIGEE_PASS" \
     -d "grant_type=password" \
     "https://login.apigee.com/oauth/token?mfa_token=$MFA_TOKEN" \
-    -o $HOME/.aac/token
+    -o "$HOME"/.aac/token
 fi
 
 # Return access token
-jq -r ".access_token" $HOME/.aac/token 
+jq -r ".access_token" "$HOME"/.aac/token 
