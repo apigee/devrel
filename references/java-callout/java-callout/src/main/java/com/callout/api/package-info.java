@@ -1,6 +1,6 @@
 /**
-* An example Java Callout
-*
-* @author apigee/devrel
-*/
+ * An example Java Callout.
+ *
+ * @author apigee/devrel
+ */
 package com.callout.api;
