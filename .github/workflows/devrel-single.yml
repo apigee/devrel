@@ -53,7 +53,6 @@ jobs:
   project-pipelines:
 
     name: Run Pipelines
-    timeout-minutes: 2
     runs-on: ubuntu-latest
 
     steps:
@@ -74,6 +73,7 @@ jobs:
         with:
           same-branch-only: false
           poll-interval-seconds: 10
+          continue-after-seconds: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
