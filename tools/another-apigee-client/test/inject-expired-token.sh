@@ -14,6 +14,8 @@
 # limitations under the License.
 
 set -e
+set -x
+
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 

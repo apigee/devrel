@@ -14,6 +14,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 # Tear down
 docker rm -f aac-tests || true

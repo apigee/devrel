@@ -26,7 +26,7 @@ else
   for TYPE in references labs tools; do
     for D in "$DIR"/"$TYPE"/*; do
       PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
-      (cd $TYPE/"$D" && ./pipeline.sh;)
+      (cd "$D" && ./pipeline.sh;)
       PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
     done
   done
