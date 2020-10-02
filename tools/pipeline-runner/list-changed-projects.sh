@@ -24,5 +24,5 @@ if [ "$(echo "$PROJECTS" | wc -w)" -le 1 ]; then
   echo "::set-output name=project::$PROJECTS"
 else
   echo "Multiple projects changed - running all pipelines"
-  echo "::set-output name=project::$PROJECTS"
+  echo "::set-output name=project::"
 fi
