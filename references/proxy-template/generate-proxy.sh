@@ -19,14 +19,14 @@ set -e
 
 # Ask for input parameters if they are not set
 
-[ -z "$PROXY" ] && read -p "Proxy Name: " PROXY
-[ -z "$VERSION" ] && read -p "Proxy Version: " VERSION
-[ -z "$VHOST" ] && read -p "Virtual Host: " VHOST
-[ -z "$TARGETURL" ] && read -p "Target URL: " TARGETURL
+[ -z "$PROXY" ]     && printf "Proxy Name: "    && read -r PROXY
+[ -z "$VERSION" ]   && printf "Proxy Version: " && read -r VERSION
+[ -z "$VHOST" ]     && printf "Virtual Host: "  && read -r VHOST
+[ -z "$TARGETURL" ] && printf "Target URL: "    && read -r TARGETURL
 
 # Abort if directory exists
 
-[[ -d ./$PROXY-$VERSION ]] && echo "Proxy exists - aborting." && exit
+[ -d ./"$PROXY"-"$VERSION" ] && echo "Proxy exists - aborting." && exit
 
 # Copy template and replace variables
 

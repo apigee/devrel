@@ -74,6 +74,7 @@ EOF
 for TYPE in references labs tools; do
   echo "<h2>$TYPE</h2>" >> ./generated/index.html
   echo "<ul>" >> ./generated/index.html
+  # shellcheck disable=SC2045
   for D in $(ls $TYPE); do
     (cd ./$TYPE/"$D" && ./generate-docs.sh;)
     cp -r ./$TYPE/"$D"/generated/docs ./generated/$TYPE/"$D"  2>/dev/null || echo "NO DOCS FOR $TYPE/$D"
