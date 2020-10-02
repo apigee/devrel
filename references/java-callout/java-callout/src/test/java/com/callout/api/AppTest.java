@@ -21,11 +21,11 @@ import junit.framework.TestSuite;
 /** Unit test for simple App. */
 public class AppTest extends TestCase {
   /**
-   * Create the test case
+   * Create the test case.
    *
    * @param testName name of the test case
    */
-  public AppTest(String testName) {
+  public AppTest(final String testName) {
     super(testName);
   }
 
@@ -34,7 +34,7 @@ public class AppTest extends TestCase {
     return new TestSuite(AppTest.class);
   }
 
-  /** Add our unit tests */
+  /** Add our unit tests. */
   public void testApp() {
     assertTrue(true);
   }

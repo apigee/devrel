@@ -20,18 +20,27 @@ import com.apigee.flow.execution.spi.Execution;
 import com.apigee.flow.message.MessageContext;
 
 /** Hello world! */
-public class App implements Execution {
-  public ExecutionResult execute(MessageContext messageContext, ExecutionContext executionContext) {
+public final class App implements Execution {
+	
+	 /**
+	   * Create the test case.
+	   *
+	   * @param messageContext Context of the Message
+	   * @param executionContext Context of the Execution
+	   * @return Execution Result
+	   */
+	public ExecutionResult execute(final MessageContext messageContext, 
+			final ExecutionContext executionContext) {
 
-    try {
+		try {
 
-      // Your code here.
-      messageContext.setVariable("request.header.x-debug", "true");
+			// Your code here.
+			messageContext.setVariable("request.header.x-debug", "true");
 
-      return ExecutionResult.SUCCESS;
+			return ExecutionResult.SUCCESS;
 
-    } catch (Exception e) {
-      return ExecutionResult.ABORT;
-    }
-  }
+		} catch (Exception e) {
+			return ExecutionResult.ABORT;
+		}
+	}
 }
