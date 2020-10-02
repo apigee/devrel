@@ -37,8 +37,9 @@ jobs:
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JAVASCRIPT_STANDARD: false
 
-      - name: check-license
+      - name: Check all files are licensed
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: check-license.sh
