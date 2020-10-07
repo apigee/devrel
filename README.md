@@ -56,7 +56,7 @@ Apigee products.
 This folder contains raw assets used to generate content to teach a particular
 technical or non-technical topic.
 
-- [Best Practices Hackathon](labs/best-practices-hackathon) -
+- [Best Practices Hackathon](labs/best-practices-hackathon) [(web)](https://apigee.github.io/devrel/labs/best-practices-hackathon) -
   A 300 level lab to learn Apigee Best Practices
 
 ## Contributing
