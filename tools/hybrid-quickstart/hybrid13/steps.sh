@@ -22,6 +22,8 @@ set_config_params() {
     export PROJECT_ID
     gcloud config set project "$PROJECT_ID"
 
+    export AX_REGION=${AX_REGION:='europe-west1'}
+
     export REGION=${REGION:='europe-west1'}
     gcloud config set compute/region $REGION
 
@@ -41,7 +43,7 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-linux.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-linux-amd64.tar.gz'
       export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "🍏 Using macOS binaries"
@@ -167,7 +169,7 @@ create_apigee_org() {
         \"name\":\"$PROJECT_ID\",
         \"displayName\":\"$PROJECT_ID\",
         \"description\":\"Apigee Hybrid Org\",
-        \"analyticsRegion\":\"$REGION\",
+        \"analyticsRegion\":\"$AX_REGION\",
         \"runtimeType\":\"HYBRID\",
         \"properties\" : {
           \"property\" : [ {
