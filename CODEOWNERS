@@ -4,9 +4,10 @@
 /references/apimocker-hostedtargets   @laughingbiscuit
 /references/cicd-jenkins              @danistrebel
 /references/common-shared-flows       @laughingbiscuit
+/references/gcp-sa-auth-shared-flow    @danistrebel
 /references/java-callout              @laughingbiscuit
-/references/proxy-template            @laughingbiscuit
 /references/js-callout                @seymen
+/references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
 /labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen
 /tools/organization-cleanup           @laughingbiscuit

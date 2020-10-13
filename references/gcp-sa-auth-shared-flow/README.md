@@ -1,4 +1,4 @@
-# GCP Service Account Credentials
+# GCP Service Account Authentication - Shared Flow
 
 This shared flow can be used obtain access tokens for Google Cloud service accounts. Access tokens are cached in the default environment cache resource for 10min.
 
