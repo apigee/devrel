@@ -24,6 +24,8 @@ further to fit a particular use case.
   CORS
 - [Custom Java Extensions in Apigee](references/java-callout) -
   A reference project that includes a Java Extension
+- [GCP Service Account Authentication Shared Flow](references/gcp-sa-auth-shared-flow) -
+  A shared flow to obtain access tokens for GCP service accounts.
 - [Jenkins CI/CD Pipeline](references/cicd-jenkins) -
   Reference implementation for a CI/CD Pipeline using Jenkins and the Apigee
   Deploy Maven Plugin
