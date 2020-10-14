@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<KeyValueMapOperations name="KV.LookupSAKey" mapIdentifier="gcp-sa">
+<KeyValueMapOperations name="KV.LookupSAKey" mapIdentifier="gcp-sa-devrel">
     <ExclusiveCache>false</ExclusiveCache>
     <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
     <Get assignTo="private.gcp.service_account.key">
