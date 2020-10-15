@@ -6,7 +6,8 @@ This shared flow can be used obtain access tokens for Google Cloud service accou
 
 1. Create a service account in Google Cloud and assign it the necessary roles. See GCP [docs](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
 2. Create and download a json key for the service account. See GCP [docs](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
-3. In your Apigee flow, make sure you have the `private.gcp.service_account.key` variable set. It should hold the full json key for the service account. You can do this by e.g. storing it as a value in an encrypted KVM.
+3. In your Apigee flow, make sure you have the `private.gcp.service_account.key` variable set. It should hold the full json key for the service account. The recommended approach is to store this value in an encrypted KVM and populate a private variable using KeyValueMapOperations policy at runtime.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <KeyValueMapOperations async="false" continueOnError="false" enabled="true" name="KV.Lookup-SA-Key" mapIdentifier="MAP_NAME_HERE">
@@ -20,9 +21,10 @@ This shared flow can be used obtain access tokens for Google Cloud service accou
     <Scope>environment</Scope>
 </KeyValueMapOperations>
 ```
-4. Either setting `gcp.scopes` or `gcp.target_audience`. Depending on whether you need a GCP JWT or opague access token.
-  * `gcp.scopes` holds the required OAuth scopes as per the Google [docs](https://developers.google.com/identity/protocols/oauth2/scopes) and leads to an opague access token. This can be used e.g. to access Google services like the Google Translate API.
-  * `gcp.target_audience` holds the target audience claim which should be set as the audience claim on the Google issued JWT. This can be used e.g. to authenticate Apigee against Cloud Run backends.
+4. Set one of the following variables `gcp.scopes` or `gcp.target_audience` depending on whether you need a GCP JWT or opague access token.
+
+  * `gcp.scopes` is used to retrieve an opaque OAuth token and holds the required scopes per the Google [docs](https://developers.google.com/identity/protocols/oauth2/scopes). This access token can be used e.g. to access Google services like the Google Translate API.
+  * `gcp.target_audience` is used when retrieving a JWT token from Google. It holds the target audience claim which will be set as the audience claim on the issued JWT. This can be used e.g. to authenticate Apigee against Cloud Run backends.
 
 ```xml
 <AssignMessage async="false" name="AM.GCPScopes">
@@ -33,4 +35,4 @@ This shared flow can be used obtain access tokens for Google Cloud service accou
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
 </AssignMessage>
 ```
-5. After running this shared flow the access token is populated in the `private.gcp.access_token` flow variable. Use this variable as the bearer token in calls against Google APIs.
+5. After running this shared flow, the `private.gcp.access_token` flow variable will be set with the value of the access token. You can now present this token in the Authorization header in your subsequent requests to other Google APIs.
