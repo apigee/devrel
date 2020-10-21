@@ -13,80 +13,73 @@
 # limitations under the License.
 
 name: DevRel Single Project Pipeline
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
+
 env: 
   APIGEE_USER: ${{ secrets.APIGEE_USER }}
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
+
 jobs:
-  duplicate-check:
+
+  static-analysis:
+
+    name: Lint Codebase
     runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
-        with:
-          github_token: ${{ github.token }} 
-  quality-check:
-    name: DevRel Workflow Checks
-    needs: duplicate-check
-    if: ${{ needs.duplicate-check.outputs.should_skip == 'false' }}
-    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: list-changed
+      - name: Run Super-Linter
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          MARKDOWN_CONFIG_FILE: .markdown-lint.yml
+
+      - name: Check all files are licensed
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-license.sh
+
+      - name: Check README and CODEOWNER index
+        uses: ./tools/pipeline-runner
+        with:
+          pipeline-action: check-readme.sh
+  
+  project-pipelines:
+
+    name: Run Pipelines
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: List Project with Changes
         id: list-changed
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: list-changed-projects.sh
 
-      - name: print-current-project
+      - name: Print Current Project
         run: echo "${{ steps.list-changed.outputs.project }}"
-
-      - name: check-license
-        uses: ./tools/pipeline-runner
+      
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1 
         with:
-          pipeline-action: check-license.sh
-          project: ${{ steps.list-changed.outputs.project }}
+          same-branch-only: false
+          poll-interval-seconds: 10
+          continue-after-seconds: 120
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-      - name: check-shell
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-shell.sh 
-          project: ${{ steps.list-changed.outputs.project }}
-
-      - name: check-java
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-java.sh 
-          project: ${{ steps.list-changed.outputs.project }}
-
-
-      - name: check-js
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-js.sh
-          project: ${{ steps.list-changed.outputs.project }}
-
-      - name: check-markdown
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-markdown.sh
-          project: ${{ steps.list-changed.outputs.project }}
-
-      - name: check-readme
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: check-readme.sh
-          project: ${{ steps.list-changed.outputs.project }}
-
-      - name: run-pipeline
+      - name: Run Pipelines
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: run-pipelines.sh
           project: ${{ steps.list-changed.outputs.project }}
+

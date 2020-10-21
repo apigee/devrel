@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 npm i
 npm run deploy

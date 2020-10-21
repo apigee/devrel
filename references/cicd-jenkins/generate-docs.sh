@@ -33,7 +33,7 @@ cp -r ./img ./generated/docs/img
 
 wrapHTML() {
 
-PAGE_TITLE=$(sed -n 's/<h1.*>\(.*\)<\/h1>/\1/Ip' $1)
+PAGE_TITLE=$(sed -n 's/<h1.*>\(.*\)<\/h1>/\1/Ip' "$1")
 
 echo "processed $PAGE_TITLE"
 
@@ -91,14 +91,14 @@ cat << EOF > ./generated/docs/tmp.html
 <div class="mdl-grid mdl-color--grey-100">
   <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
   <div class="doc-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
-    $(cat $1)
+    $(cat "$1")
   </div>
 </div>
 </body>
 </html>
 EOF
 
-mv ./generated/docs/tmp.html $1
+mv ./generated/docs/tmp.html "$1"
 }
 
 wrapHTML './generated/docs/index.html'

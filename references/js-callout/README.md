@@ -10,11 +10,11 @@ application.
 Project also contains unit tests to test the JavaScript code and mock
 Apigee global functions using [Jest](https://jestjs.io/).
 
-# Prerequisites
+## Prerequisites
 
 - [Node JS](https://nodejs.org/) LTS or above
 - Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
-# Quick Start
+## Quick Start
 
 See [pipeline](./pipeline.sh)

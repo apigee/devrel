@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 docker build -f jenkins/jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner ./jenkins
 

@@ -19,30 +19,30 @@ set -e
 
 # Ask for input parameters if they are not set
 
-[ -z "$PROXY" ] && read -p "Proxy Name: " PROXY
-[ -z "$VERSION" ] && read -p "Proxy Version: " VERSION
-[ -z "$VHOST" ] && read -p "Virtual Host: " VHOST
-[ -z "$TARGETURL" ] && read -p "Target URL: " TARGETURL
+[ -z "$PROXY" ]     && printf "Proxy Name: "    && read -r PROXY
+[ -z "$VERSION" ]   && printf "Proxy Version: " && read -r VERSION
+[ -z "$VHOST" ]     && printf "Virtual Host: "  && read -r VHOST
+[ -z "$TARGETURL" ] && printf "Target URL: "    && read -r TARGETURL
 
 # Abort if directory exists
 
-[[ -d ./$PROXY-$VERSION ]] && echo "Proxy exists - aborting." && exit
+[ -d ./"$PROXY"-"$VERSION" ] && echo "Proxy exists - aborting." && exit
 
 # Copy template and replace variables
 
-cp -r ./template-v1 ./$PROXY-$VERSION
-sed -i.bak "s|@Basepath@|$PROXY|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i.bak "s|@VirtualHost@|$VHOST|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i.bak "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/package.json
-sed -i.bak "s|@Proxy@|$PROXY|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
-sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/apiproxy/proxies/default.xml
-sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/package.json
-sed -i.bak "s|@Version@|$VERSION|" ./$PROXY-$VERSION/test/features/step_definitions/init.js
-sed -i.bak "s|@TargetURL@|$TARGETURL|" ./$PROXY-$VERSION/apiproxy/targets/default.xml
+cp -r ./template-v1 ./"$PROXY"-"$VERSION"
+sed -i.bak "s|@Basepath@|$PROXY|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
+sed -i.bak "s|@VirtualHost@|$VHOST|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
+sed -i.bak "s|@Proxy@|$PROXY|" ./"$PROXY"-"$VERSION"/package.json
+sed -i.bak "s|@Proxy@|$PROXY|" ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js
+sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
+sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/package.json
+sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js
+sed -i.bak "s|@TargetURL@|$TARGETURL|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
 
-rm ./$PROXY-$VERSION/apiproxy/proxies/default.xml.bak
-rm ./$PROXY-$VERSION/package.json.bak
-rm ./$PROXY-$VERSION/test/features/step_definitions/init.js.bak
-rm ./$PROXY-$VERSION/apiproxy/targets/default.xml.bak
+rm ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml.bak
+rm ./"$PROXY"-"$VERSION"/package.json.bak
+rm ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js.bak
+rm ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml.bak
 
 echo "Complete Proxy Generation for $PROXY-$VERSION"
