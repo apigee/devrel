@@ -34,7 +34,7 @@ automatically sets them based on the default values in steps.sh.
 
 ```bash
 export PROJECT_ID=xxx
-export AX_REGION='europe-west1' # Apigee Analytics Region 
+export AX_REGION='europe-west1' # Apigee Analytics Region
 export REGION='europe-west1'
 export ZONE='europe-west1-b'
 export DNS_NAME="$PROJECT_ID.example.com"
