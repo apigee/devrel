@@ -22,10 +22,12 @@ set_config_params() {
     export PROJECT_ID
     gcloud config set project "$PROJECT_ID"
 
+    export AX_REGION=${AX_REGION:='europe-west1'}
+
     export REGION=${REGION:='europe-west1'}
     gcloud config set compute/region $REGION
 
-    export ZONE=${ZONE:='europe-west1-b'}
+    export ZONE=${ZONE:='europe-west1-c'}
     gcloud config set compute/zone $ZONE
 
     echo "🔧 Configuring Apigee hybrid"
@@ -34,20 +36,20 @@ set_config_params() {
     export ENV_GROUP_NAME=${ENV_GROUP_NAME:=default}
     export ENV_NAME=${ENV_NAME:=test}
 
-    export APIGEE_CTL_VERSION='1.3.2'
-    export KPT_VERSION='v0.33.0'
+    export APIGEE_CTL_VERSION='1.3.3'
+    export KPT_VERSION='v0.34.0'
 
     OS_NAME=$(uname -s)
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.5.9-asm.0-linux.tar.gz'
-      export KPT_BINARY='kpt_linux_amd64_0.33.0.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-linux-amd64.tar.gz'
+      export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.5.9-asm.0-osx.tar.gz'
-      export KPT_BINARY='kpt_darwin_amd64_0.33.0.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-osx.tar.gz'
+      export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
       exit 2
@@ -167,7 +169,7 @@ create_apigee_org() {
         \"name\":\"$PROJECT_ID\",
         \"displayName\":\"$PROJECT_ID\",
         \"description\":\"Apigee Hybrid Org\",
-        \"analyticsRegion\":\"$REGION\",
+        \"analyticsRegion\":\"$AX_REGION\",
         \"runtimeType\":\"HYBRID\",
         \"properties\" : {
           \"property\" : [ {
@@ -283,7 +285,6 @@ create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
     gcloud container clusters create $CLUSTER_NAME \
-      --cluster-version "1.16.13-gke.1" \
       --machine-type "e2-standard-4" \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
@@ -339,96 +340,29 @@ install_asm_and_certmanager() {
   tar xzf "$QUICKSTART_TOOLS/istio-asm/istio-asm.tar.gz" -C "$QUICKSTART_TOOLS/istio-asm"
   mv "$QUICKSTART_TOOLS"/istio-asm/istio-*/* "$QUICKSTART_TOOLS/istio-asm/."
 
+  echo "🩹 Patching the ASM Config"
   mkdir -p "$QUICKSTART_TOOLS"/kpt
   curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
 
-  echo "🩹 Patching the ASM Config"
-
   "$QUICKSTART_TOOLS"/kpt/kpt pkg get \
-https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.5-asm "$QUICKSTART_TOOLS"/kpt
+    https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.6-asm "$QUICKSTART_TOOLS"/kpt/asm
 
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster $CLUSTER_NAME
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster "$CLUSTER_NAME"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.core.project "$PROJECT_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.compute.location $ZONE
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.compute.location "$ZONE"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.project.environProjectNumber "$MESH_ID"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm anthos.servicemesh.profile "asm-gcp"
 
-  # Apply Apigee config to ASM Config
-  
-  sed 's/clusterName: \(.*\)/clusterName: \1|  name: asm-istio-operator/' "$QUICKSTART_TOOLS"/kpt/asm/cluster/istio-operator.yaml | tr '|' '\n' > "$QUICKSTART_ROOT"/tools/kpt/asm/cluster/istio-operator-with-name.yaml
-
-  cat <<EOF > "$QUICKSTART_TOOLS"/kpt/kustomization.yaml 
-resources:
-- "asm/cluster/istio-operator-with-name.yaml"
-patchesStrategicMerge:
-- apigee-asm-mesh-config.yaml
-- apigee-asm-ingress-ip.yaml
-EOF
-
-cat <<EOF > "$QUICKSTART_TOOLS"/kpt/apigee-asm-mesh-config.yaml
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-metadata:
-  name: asm-istio-operator
-spec:
-  meshConfig:
-    # This disables Istio from configuring workloads for mTLS if TLSSettings are not specified. 1.4 defaulted to false.
-    enableAutoMtls: false
-    accessLogFile: "/dev/stdout"
-    accessLogEncoding: 1
-    # This is Apigee's custom access log format. Changes should not be made to this
-    # unless first working with the Data and AX teams as they parse these logs for
-    # SLOs.
-    accessLogFormat: '{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)%
-      %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'
-EOF
-
-cat <<EOF > "$QUICKSTART_TOOLS"/kpt/apigee-asm-ingress-ip.yaml
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-metadata:
-  name: asm-istio-operator
-spec:
-  components:
-    pilot:
-      k8s:
-        hpaSpec:
-          maxReplicas: 3
-    ingressGateways:
-      - name: istio-ingressgateway
-        enabled: true
-        k8s:
-          service:
-            type: LoadBalancer
-            loadBalancerIP: $INGRESS_IP
-            ports:
-              - name: status-port
-                port: 15020
-                targetPort: 15020
-              - name: http2
-                port: 80
-                targetPort: 80
-              - name: https
-                port: 443
-              - name: prometheus
-                port: 15030
-                targetPort: 15030
-              - name: tcp
-                port: 31400
-                targetPort: 31400
-              - name: tls
-                port: 15443
-                targetPort: 15443
-          hpaSpec:
-            maxReplicas: 3
-EOF
-
-  kubectl kustomize "$QUICKSTART_TOOLS"/kpt/ > "$QUICKSTART_TOOLS"/kpt/asm/cluster/istio-operator-patched.yaml
-
-  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl manifest apply --set profile=asm \
-    -f "$QUICKSTART_TOOLS"/kpt/asm/cluster/istio-operator-patched.yaml
+  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/kpt/asm/cluster/istio-operator.yaml \
+    --revision=asm-1611-1 \
+    --set values.gateways.istio-ingressgateway.loadBalancerIP="$INGRESS_IP" \
+    --set meshConfig.enableAutoMtls=false \
+    --set meshConfig.accessLogFile=/dev/stdout \
+    --set meshConfig.accessLogEncoding=1 \
+    --set meshConfig.accessLogFormat='{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'
 
   echo "✅ ASM installed"
-
 }
 
 download_apigee_ctl() {
@@ -450,7 +384,7 @@ download_apigee_ctl() {
 prepare_resources() {
     echo "🛠️ Configure Apigee hybrid"
 
-    if [ -d "hybrid-files" ]; then rm -Rf hybrid-files; fi
+    if [ -d "$HYBRID_HOME" ]; then rm -rf "$HYBRID_HOME"; fi
     mkdir -p "$HYBRID_HOME"
 
     mkdir -p "$HYBRID_HOME/overrides"

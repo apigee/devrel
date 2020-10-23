@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Delete Company
+# https://apidocs.apigee.com/management/apis/delete/organizations/%7Borg_name%7D/companies/%7Bcompany_name%7D
+
+curl -sSf \
+  -X DELETE \
+  -H "Authorization: Bearer $TOKEN" \
+  "https://apidude-eval-test.apigee.net/mgmt-proxy/v1/organizations/$APIGEE_ORG/companies/$APIGEE_COMPANY"
+  #"https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/companies/$APIGEE_COMPANY"
+

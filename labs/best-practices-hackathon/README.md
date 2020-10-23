@@ -2,7 +2,7 @@
 
 This project hosts Apigee partner training documentation.
 
-Use [claat](https://github.com/googlecodelabs/tools/tree/master/claat/) to
+Use [claat](https://github.com/googlecodelabs/tools) to
 generate static HTML site from the Markdown document.
 
     go get github.com/googlecodelabs/tools/claat
