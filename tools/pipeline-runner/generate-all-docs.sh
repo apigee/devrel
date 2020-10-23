@@ -20,9 +20,10 @@ mkdir -p ./generated/labs
 mkdir -p ./generated/tools
 
 for TYPE in references labs tools; do
+  # shellcheck disable=SC2045
   for D in $(ls $TYPE); do
-    (cd ./$TYPE/$D && ./generate-docs.sh;)
-    cp -r ./$TYPE/$D/generated/docs ./generated/$TYPE/$D  2>/dev/null || echo "NO DOCS FOR $TYPE/$D"
+    (cd ./$TYPE/"$D" && ./generate-docs.sh;)
+    cp -r ./$TYPE/"$D"/generated/docs ./generated/$TYPE/"$D" 2>/dev/null || echo "NO DOCS FOR $TYPE/$D"
   done
 done
 
