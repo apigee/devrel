@@ -222,7 +222,7 @@ It is possible to build mocks with the following methods:
   - multiple open source projects can be used for building more advanced API
   mocks on Apigee: [Nock](https://github.com/nock/nock),
   [Swagger tools](https://www.npmjs.com/package/swagger-tools),
-  [API Mocker](https://github.com/laughingbiscuit/lbdk/tree/master/projects/apimocker-hostedtargets),
+  [API Mocker](https://github.com/apigee/devrel/tree/main/references/apimocker-hostedtargets),
   [amockjs](https://github.com/sauliuz/amokjs) and others. Here is an
   [example reference code](https://github.com/apigee/devrel/tree/main/references/apimocker-hostedtargets)
 - Standalone mocking servers can also be used for more advanced API mocking
