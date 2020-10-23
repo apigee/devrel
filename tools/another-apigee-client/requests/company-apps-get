@@ -5,6 +5,5 @@
 
 curl -sSf \
   -H "Authorization: Bearer $TOKEN" \
-  "https://apidude-eval-test.apigee.net/mgmt-proxy/v1/organizations/$APIGEE_ORG/companies/$APIGEE_COMPANY/apps"
-#  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/companies/$APIGEE_COMPANY/apps"
+  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/companies/$APIGEE_COMPANY/apps"
 
