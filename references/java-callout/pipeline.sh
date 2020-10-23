@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-set -x 
 set -e
+set -x 
 
 mvn install -Ptest -B
 npm test --prefix proxy-v1

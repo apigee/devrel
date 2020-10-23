@@ -2,24 +2,24 @@
 
 set -e
 
-mkdir -p $HOME/.aac
-NOW=`date +%s`
+mkdir -p "$HOME"/.aac
+NOW=$(date +%s)
 
 # Helper - extract claim from JWT
 alias jwtClaim="tr '.' '\n' | sed -n 2p | sed 's/$/==/' | base64 -d 2>/dev/null | jq -r "
 
 # Calculate expiry times if we have a previous token
-if test -f $HOME/.aac/token; then
-  ACCESS_TOKEN=`cat $HOME/.aac/token | jq -r ".access_token"`
-  ACCESS_TOKEN_EXPIRY=`echo "$ACCESS_TOKEN" | jwtClaim '.exp'`
-  ACCESS_TOKEN_REMAINING=$(($ACCESS_TOKEN_EXPIRY - $NOW))
-  REFRESH_TOKEN=`cat $HOME/.aac/token | jq -r ".refresh_token"`
-  REFRESH_TOKEN_EXPIRY=`echo "$REFRESH_TOKEN" | jwtClaim '.exp'`
-  REFRESH_TOKEN_REMAINING=$(($REFRESH_TOKEN_EXPIRY - $NOW))
+if test -f "$HOME"/.aac/token; then
+  ACCESS_TOKEN=$(jq -r ".access_token" "$HOME"/.aac/token)
+  ACCESS_TOKEN_EXPIRY=$(echo "$ACCESS_TOKEN" | jwtClaim '.exp')
+  ACCESS_TOKEN_REMAINING=$((ACCESS_TOKEN_EXPIRY - NOW))
+  REFRESH_TOKEN=$(jq -r ".refresh_token" "$HOME"/.aac/token)
+  REFRESH_TOKEN_EXPIRY=$(echo "$REFRESH_TOKEN" | jwtClaim '.exp')
+  REFRESH_TOKEN_REMAINING=$((REFRESH_TOKEN_EXPIRY - NOW))
 fi
 
 # Refresh token if necessary
-if test -f $HOME/.aac/token && [ $REFRESH_TOKEN_REMAINING -lt 300 ]; then
+if test -f "$HOME"/.aac/token && [ $REFRESH_TOKEN_REMAINING -lt 300 ]; then
  curl -f -s \
     -X POST \
     -H "Authorization: Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0" \
@@ -27,10 +27,10 @@ if test -f $HOME/.aac/token && [ $REFRESH_TOKEN_REMAINING -lt 300 ]; then
     -d "refresh_token=$REFRESH_TOKEN" \
     -d "grant_type=refresh_token" \
     "https://login.apigee.com/oauth/token" \
-    -o $HOME/.aac/token
+    -o "$HOME"/.aac/token
 
 # Get new token if necessary
-elif test ! -f $HOME/.aac/token || [ $ACCESS_TOKEN_REMAINING -lt 300 ]; then
+elif test ! -f "$HOME"/.aac/token || [ $ACCESS_TOKEN_REMAINING -lt 300 ]; then
   curl -f -s \
     -X POST \
     -H "Authorization: Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0" \
@@ -39,8 +39,8 @@ elif test ! -f $HOME/.aac/token || [ $ACCESS_TOKEN_REMAINING -lt 300 ]; then
     -d "password=$APIGEE_PASS" \
     -d "grant_type=password" \
     "https://login.apigee.com/oauth/token?mfa_token=$MFA_TOKEN" \
-    -o $HOME/.aac/token
+    -o "$HOME"/.aac/token
 fi
 
 # Return access token
-cat $HOME/.aac/token | jq -r ".access_token"
+jq -r ".access_token" "$HOME"/.aac/token 

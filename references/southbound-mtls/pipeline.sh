@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 mkdir -p ./tmp
 curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12

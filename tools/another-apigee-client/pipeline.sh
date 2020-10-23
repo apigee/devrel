@@ -14,5 +14,6 @@
 # limitations under the License.
 
 set -e
+set -x
 
 ./test/test.sh
