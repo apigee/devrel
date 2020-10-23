@@ -18,6 +18,9 @@ PIPELINE_REPORT="run-pipelines,0"
 
 if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   echo "NO CREDENTIALS - SKIPPING PIPELINES"
+elif [ ! -d "$DIR" ]; then
+  echo "$DIR NOT FOUND"
+  exit 1
 elif test -f "$DIR/pipeline.sh"; then
   PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
   (cd "$DIR" && ./pipeline.sh;)

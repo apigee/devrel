@@ -34,8 +34,4 @@ docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/test/inject-expired-token.sh access
 docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
 
-# Expired refresh token
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/test/inject-expired-token.sh refresh
-docker exec -e APIGEE_USER -e APIGEE_PASS -it aac-tests sh /root/token
-
 echo "Tests passed"

@@ -13,10 +13,12 @@
 # limitations under the License.
 
 FROM jenkins4eval/jenkinsfile-runner:1.0-beta-12
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   maven=3.6.0-1 \
-  nodejs=10.21.0~dfsg-1~deb10u1 \
-  npm=5.8.0+ds6-4+deb10u2 \
+  nodejs=12.19.0-1nodesource1 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app/jenkins
