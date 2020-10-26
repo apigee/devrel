@@ -12,4 +12,7 @@ and Maven.
   `TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net npm run integration-test`
 - Integration testing against feature branch deployment on
   `airports-cicd-feature-ABC/v1`:
-  `TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test`
+
+``` sh
+TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test
+```

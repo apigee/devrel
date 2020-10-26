@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 docker build -f jenkins/jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner ./jenkins
 
@@ -33,7 +34,7 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS=password \
-  -it apigee-cicd/jenkinsfile-runner-airports
+  -i apigee-cicd/jenkinsfile-runner-airports
 
 npm install --no-fund
 

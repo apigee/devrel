@@ -6,14 +6,14 @@ Custom Java Callout.
 In this example, the Java code is packaged as a jar, and as such has a separate
 `pom.xml` file.
 
-# Prerequisites
+## Prerequisites
 
 - Java [JDK](https://www.oracle.com/uk/java/technologies/javase-downloads.html)
   1.8+
 - [Node JS](https://nodejs.org/) LTS or above
 - Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
-# Quick Start
+## Quick Start
 
 ```shell
 export APIGEE_USER=xxx

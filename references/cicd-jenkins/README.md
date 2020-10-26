@@ -89,27 +89,27 @@ git push -u origin feature/cicd-pipeline
 
 Use the UI to configure the Jenkins Job for multibranch pipelines:
 
-1.  Set the Git repo e.g. `https://github.com/my-user/my-api-proxy-repo`
-2.  Path to the Jenkinsfile e.g. `Jenkinsfile`
-3.  (Optional) Set the build trigger / polling frequency
+1. Set the Git repo e.g. `https://github.com/my-user/my-api-proxy-repo`
+2. Path to the Jenkinsfile e.g. `Jenkinsfile`
+3. (Optional) Set the build trigger / polling frequency
 
 ![Jenkins Config](./img/jenkins-config.png)
 
 ### Run the pipeline
 
-1.  Open the multi-branch pipeline you just created.
-2.  Click `Scan Multibranch Pipeline Now` to detect branches with a
+1. Open the multi-branch pipeline you just created.
+2. Click `Scan Multibranch Pipeline Now` to detect branches with a
     Jenkinsfile.
-3.  Explore the build(s) that get triggered.
-4.  Explore the final build success.
+3. Explore the build(s) that get triggered.
+4. Explore the final build success.
 
 ![Jenkins Successful Pipeline](./img/jenkins-success.png)
 
 ### Promote to different stages and environments (feature/test/prod)
 
-1.  Explore the newly created api-proxy in the test environment that
+1. Explore the newly created api-proxy in the test environment that
     corresponds to the feature branch
-2.  Merge the feature branch into `main` branch and explore the promotion into
+2. Merge the feature branch into `main` branch and explore the promotion into
     the Apigee test environment
-3.  Merge the `main` branch into the `prod` branch and explore the promotion
+3. Merge the `main` branch into the `prod` branch and explore the promotion
     into the Apigee prod environment
