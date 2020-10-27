@@ -19,25 +19,25 @@ var serviceAccountKeyJson = context.getVariable('private.gcp.service_account.key
 
 // Check if required variables are present
 if (!targetAudience && !scope) {
-    context.setVariable('gcp.service_account.error_message',
-        'Shared Flow requires either "gcp.scopes" or "target_audience" variable to be set. None provided.');
+  context.setVariable('gcp.service_account.error_message',
+    'Shared Flow requires either "gcp.scopes" or "target_audience" variable to be set. None provided.');
 }
 if (!!targetAudience && !!scope) {
-    context.setVariable('gcp.service_account.error_message',
-        'Shared Flow requires either "gcp.scopes" or "target_audience" variable to be set. Provided both.');
+  context.setVariable('gcp.service_account.error_message',
+    'Shared Flow requires either "gcp.scopes" or "target_audience" variable to be set. Provided both.');
 }
 if (!serviceAccountKeyJson || serviceAccountKeyJson.length === 0) {
-    context.setVariable('gcp.service_account.error_message',
-        'Shared Flow required the GCP Service Account JSON key to be stored in a "private.gcp.service_account.key" variable');
+  context.setVariable('gcp.service_account.error_message',
+    'Shared Flow required the GCP Service Account JSON key to be stored in a "private.gcp.service_account.key" variable');
 }
 
 try {
-    var serviceAccountKey = JSON.parse(serviceAccountKeyJson);
-    for (var prop in serviceAccountKey) {
-        if ({}.hasOwnProperty.call(serviceAccountKey, prop)) {
-            context.setVariable('private.gcp.service_account.' + prop, serviceAccountKey[prop]);
-        }
+  var serviceAccountKey = JSON.parse(serviceAccountKeyJson);
+  for (var prop in serviceAccountKey) {
+    if ({}.hasOwnProperty.call(serviceAccountKey, prop)) {
+      context.setVariable('private.gcp.service_account.' + prop, serviceAccountKey[prop]);
     }
+  }
 } catch (e) {
-    context.setVariable('gcp.service_account.error_message', e.message)
+  context.setVariable('gcp.service_account.error_message', e.message);
 }
