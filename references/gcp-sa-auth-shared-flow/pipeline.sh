@@ -14,15 +14,20 @@
 # limitations under the License.
 
 # REQUIREMENT:
-# Populate a service account key into the environment variable "REF_GCP_SA_SF" e.g. by: 
+# Populate a service account key into the environment variable "REF_GCP_SA_SF" e.g. by:
 # $ REF_GCP_SA_SF=$(cat /path/to/gcp-sa-key.json | jq '. | tostring')
 
 deleteKVM() {
     curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$1"
 }
 
-#clean up if the KVM already exists
+deleteCache() {
+    curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches/$1"
+}
+
+#clean up if the KVM or cache already exists
 deleteKVM 'gcp-sa-devrel'
+deleteCache 'gcp-tokens'
 
 sleep 1
 
@@ -44,9 +49,26 @@ curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1
 }
 EOF
 
+curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  --data-binary @- << EOF
+{
+  "name":"gcp-tokens",
+  "description":"GCP service account tokens",
+  "expirySettings": {
+    "timeoutInSec": {
+      "value":"600"
+    }
+  }
+}
+EOF
+
+
+
 npm run test
 
 sleep 1
 
 # clean up
 deleteKVM 'gcp-sa-devrel'
+deleteCache 'gcp-tokens'

@@ -38,6 +38,7 @@ try {
       context.setVariable('private.gcp.service_account.' + prop, serviceAccountKey[prop]);
     }
   }
+  context.setVariable('token.purpose', (scope || targetAudience));
 } catch (e) {
   context.setVariable('gcp.service_account.error_message', e.message);
 }

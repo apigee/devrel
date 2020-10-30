@@ -13,17 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<TargetEndpoint name="default">
-  <PreFlow name="PreFlow">
-    <Request/>
-    <Response/>
-  </PreFlow>
-  <Flows/>
-  <PostFlow name="PostFlow">
-    <Request/>
-    <Response/>
-  </PostFlow>
-  <HTTPTargetConnection>
-    <URL>https://www.googleapis.com/oauth2/v1/tokeninfo</URL>
-  </HTTPTargetConnection>
-</TargetEndpoint>
+<KeyValueMapOperations name="KV.LookupSAKey" mapIdentifier="gcp-sa-devrel">
+    <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
+    <Get assignTo="private.gcp.service_account.key">
+        <Key>
+            <Parameter>cantdonothing@iam.gserviceaccount.com</Parameter>
+        </Key>
+    </Get>
+</KeyValueMapOperations>

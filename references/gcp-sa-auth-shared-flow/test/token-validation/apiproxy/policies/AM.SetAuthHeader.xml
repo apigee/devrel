@@ -19,5 +19,9 @@
             <QueryParam name="access_token">{private.gcp.access_token}</QueryParam>
         </QueryParams>
     </Set>
+    <AssignVariable>
+        <Name>target.copy.pathsuffix</Name>
+        <Value>false</Value>
+    </AssignVariable>
     <AssignTo createNew="false" transport="http" type="request"/>
 </AssignMessage>

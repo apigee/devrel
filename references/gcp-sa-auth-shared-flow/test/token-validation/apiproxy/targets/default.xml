@@ -13,12 +13,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<PopulateCache name="PC.CacheAccessToken">
-    <CacheKey>
-        <Prefix>gcp.sa</Prefix>
-        <KeyFragment ref="private.gcp.service_account.client_id"/>
-        <KeyFragment ref="token.purpose"/>
-    </CacheKey>
-    <CacheResource>gcp-tokens</CacheResource>
-    <Source>private.gcp.access_token</Source>
-</PopulateCache>
+<TargetEndpoint name="default">
+  <Flows>
+    <Flow name="Opaque OAuth">
+      <Description />
+      <Request>
+        <Step>
+          <Name>AM.SetAuthHeader</Name>
+        </Step>
+      </Request>
+      <Condition>(proxy.pathsuffix MatchesPath "/oauth") and (request.verb = "GET")</Condition>
+    </Flow>
+  </Flows>
+  <HTTPTargetConnection>
+    <URL>https://www.googleapis.com/oauth2/v1/tokeninfo</URL>
+  </HTTPTargetConnection>
+</TargetEndpoint>

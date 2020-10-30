@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="3" name="token-validation-v0">
+<APIProxy revision="1" name="token-validation-v0">
     <Basepaths>/token-validation/v0</Basepaths>
     <Description>Test Proxy for GCP Service Account Auth SharedFlow</Description>
     <DisplayName>token-validation-v0</DisplayName>

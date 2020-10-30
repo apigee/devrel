@@ -13,27 +13,42 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ProxyEndpoint name="default">
-    <PreFlow name="PreFlow">
+<ProxyEndpoint name="default">  
+    <Flows>
+        <Flow name="JWT">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>AM.SetTargetAudience</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>VJ.VerifyJWT</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/jwt") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="Opague OAuth">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>AM.SetScope</Name>
+                </Step>
+            </Request>
+            <Condition>(proxy.pathsuffix MatchesPath "/oauth") and (request.verb = "GET")</Condition>
+        </Flow>
+        
+    </Flows>
+    <PostFlow name="PostFlow">
         <Request>
             <Step>
                 <Name>KV.LookupSAKey</Name>
             </Step>
             <Step>
-                <Name>AM.SetScope</Name>
-            </Step>
-            <Step>
                 <Name>FC.AccessToken</Name>
             </Step>
-            <Step>
-                <Name>AM.SetAuthHeader</Name>
-            </Step>
         </Request>
-        <Response/>
-    </PreFlow>
-    <Flows/>
-    <PostFlow name="PostFlow">
-        <Request/>
         <Response/>
     </PostFlow>
     <HTTPProxyConnection>
@@ -42,5 +57,8 @@
     </HTTPProxyConnection>
     <RouteRule name="default">
         <TargetEndpoint>default</TargetEndpoint>
+        <Condition>proxy.pathsuffix MatchesPath "/oauth"</Condition>
+    </RouteRule>
+    <RouteRule name="noroute">
     </RouteRule>
 </ProxyEndpoint>

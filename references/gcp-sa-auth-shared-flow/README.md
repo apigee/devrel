@@ -1,11 +1,12 @@
 # GCP Service Account Authentication - Shared Flow
 
 This shared flow can be used obtain access tokens for Google Cloud service
-accounts. Access tokens are cached in the default environment cache resource for
-10min.
+accounts. Access tokens are cached in a dedicated environment cache resource
+for 10min.
 
 ## Usage instructions
 
+1. Create an environment cache resource called `gcp-tokens`
 1. Create a service account in Google Cloud and assign it the necessary roles.
    See GCP
    [docs](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
@@ -18,16 +19,13 @@ accounts. Access tokens are cached in the default environment cache resource for
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<KeyValueMapOperations async="false" continueOnError="false" enabled="true"
-name="KV.Lookup-SA-Key" mapIdentifier="MAP_NAME_HERE">
-    <ExclusiveCache>false</ExclusiveCache>
+<KeyValueMapOperations name="KV.Lookup-SA-Key" mapIdentifier="MAP_NAME_HERE">
     <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
     <Get assignTo="private.gcp.service_account.key">
         <Key>
             <Parameter>MAP_ENTRY_KEY_HERE</Parameter>
         </Key>
     </Get>
-    <Scope>environment</Scope>
 </KeyValueMapOperations>
 ```
 
@@ -44,8 +42,8 @@ name="KV.Lookup-SA-Key" mapIdentifier="MAP_NAME_HERE">
   issued JWT. This can be used e.g. to authenticate Apigee against Cloud Run
   backends.
 
-```xmlß
-<AssignMessage async="false" name="AM.GCPScopes">
+```xml
+<AssignMessage name="AM.GCPScopes">
     <AssignVariable>
         <Name>gcp.scopes</Name>
         <Value>https://www.googleapis.com/auth/cloud-platform</Value>

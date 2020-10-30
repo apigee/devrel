@@ -15,9 +15,10 @@
 -->
 <LookupCache name="LC.LookupGCPAccessToken">
     <CacheKey>
-        <Prefix>gcp.sa.access_token</Prefix>
+        <Prefix>gcp.sa</Prefix>
         <KeyFragment ref="private.gcp.service_account.client_id"/>
+        <KeyFragment ref="token.purpose"/>
     </CacheKey>
-    <Scope>Exclusive</Scope>
+    <CacheResource>gcp-tokens</CacheResource>
     <AssignTo>private.gcp.access_token</AssignTo>
 </LookupCache>

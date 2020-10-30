@@ -13,12 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<PopulateCache name="PC.CacheAccessToken">
-    <CacheKey>
-        <Prefix>gcp.sa</Prefix>
-        <KeyFragment ref="private.gcp.service_account.client_id"/>
-        <KeyFragment ref="token.purpose"/>
-    </CacheKey>
-    <CacheResource>gcp-tokens</CacheResource>
+<VerifyJWS name="VJ.VerifyJWT">
+    <DisplayName>Verify JWS-1</DisplayName>
+    <Algorithm>RS256</Algorithm>
     <Source>private.gcp.access_token</Source>
-</PopulateCache>
+    <PublicKey>
+        <JWKS uri="https://www.googleapis.com/oauth2/v3/certs"/>
+    </PublicKey>
+</VerifyJWS>
