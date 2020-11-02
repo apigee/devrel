@@ -29,8 +29,6 @@ deleteCache() {
 deleteKVM 'gcp-sa-devrel'
 deleteCache 'gcp-tokens'
 
-sleep 1
-
 #don't continue on failure
 set -e
 
@@ -63,11 +61,7 @@ curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1
 }
 EOF
 
-
-
 npm run test
-
-sleep 1
 
 # clean up
 deleteKVM 'gcp-sa-devrel'

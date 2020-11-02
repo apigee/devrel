@@ -30,7 +30,7 @@ for 10min.
 ```
 
 1. Set one of the following variables `gcp.scopes` or `gcp.target_audience`
-   depending on whether you need a GCP JWT or opague access token.
+   depending on whether you need a GCP JWT or opaque access token.
 
 * `gcp.scopes` is used to retrieve an opaque OAuth token and holds the required
   scopes per the Google
@@ -48,7 +48,6 @@ for 10min.
         <Name>gcp.scopes</Name>
         <Value>https://www.googleapis.com/auth/cloud-platform</Value>
     </AssignVariable>
-    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
 </AssignMessage>
 ```
 

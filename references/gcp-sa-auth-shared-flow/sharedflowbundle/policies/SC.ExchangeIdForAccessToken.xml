@@ -15,7 +15,7 @@
 -->
 <!--see https://developers.google.com/identity/protocols/oauth2/service-account-->
 <ServiceCallout name="SC.ExchangeIdForAccessToken">
-    <Request clearPayload="true" variable="accessTokenRequest">
+    <Request variable="accessTokenRequest">
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
         <Set>
             <FormParams>
@@ -26,7 +26,6 @@
     </Request>
     <Response>gcp.access_token.response</Response>
     <HTTPTargetConnection>
-        <Properties/>
         <URL>https://oauth2.googleapis.com/token</URL>
     </HTTPTargetConnection>
 </ServiceCallout>

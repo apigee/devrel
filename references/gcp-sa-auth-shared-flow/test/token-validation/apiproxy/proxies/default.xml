@@ -29,7 +29,7 @@
             </Response>
             <Condition>(proxy.pathsuffix MatchesPath "/jwt") and (request.verb = "GET")</Condition>
         </Flow>
-        <Flow name="Opague OAuth">
+        <Flow name="Opaque OAuth">
             <Description/>
             <Request>
                 <Step>
@@ -38,7 +38,7 @@
             </Request>
             <Condition>(proxy.pathsuffix MatchesPath "/oauth") and (request.verb = "GET")</Condition>
         </Flow>
-        
+
     </Flows>
     <PostFlow name="PostFlow">
         <Request>

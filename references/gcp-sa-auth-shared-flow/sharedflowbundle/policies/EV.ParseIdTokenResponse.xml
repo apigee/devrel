@@ -16,9 +16,8 @@
 <ExtractVariables name="EV.ParseIdTokenResponse">
     <Source>gcp.access_token.response</Source>
     <JSONPayload>
-        <Variable name="access_token" type="string">
+        <Variable name="private.gcp.access_token" type="string">
             <JSONPath>$.id_token</JSONPath>
         </Variable>
     </JSONPayload>
-    <VariablePrefix>private.gcp</VariablePrefix>
 </ExtractVariables>

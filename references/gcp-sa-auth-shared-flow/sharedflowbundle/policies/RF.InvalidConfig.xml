@@ -14,11 +14,12 @@
  limitations under the License.
 -->
 <RaiseFault name="RF.InvalidConfig">
- <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
  <FaultResponse>
    <Set>
      <StatusCode>500</StatusCode>
-     <ReasonPhrase>Invalid Config</ReasonPhrase>
+     <ReasonPhrase>Internal Server Error</ReasonPhrase>
+     <Payload contentType="text/plain">Invalid config when trying to obtain a
+     GCP access token</Payload>
    </Set>
  </FaultResponse>
 </RaiseFault>
