@@ -64,5 +64,5 @@ EOF
 npm run test
 
 # clean up
-deleteKVM 'gcp-sa-devrel'
-deleteCache 'gcp-tokens'
+#deleteKVM 'gcp-sa-devrel'
+#deleteCache 'gcp-tokens'
