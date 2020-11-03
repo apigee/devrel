@@ -22,6 +22,7 @@ env:
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
+  REF_GCP_SA_SF: ${{ secrets.REF_GCP_SA_SF }}
 
 jobs:
 
