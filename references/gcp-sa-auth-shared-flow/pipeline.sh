@@ -41,7 +41,7 @@ curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1
   "entry": [
     {
       "name": "cantdonothing@iam.gserviceaccount.com",
-      "value": $REF_GCP_SA_SF
+      "value": $(echo "$REF_GCP_SA_SF" | jq '.|tostring')
     }
   ]
 }
@@ -64,5 +64,5 @@ EOF
 npm run test
 
 # clean up
-#deleteKVM 'gcp-sa-devrel'
-#deleteCache 'gcp-tokens'
+deleteKVM 'gcp-sa-devrel'
+deleteCache 'gcp-tokens'
