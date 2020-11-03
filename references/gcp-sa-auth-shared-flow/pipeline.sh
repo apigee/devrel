@@ -41,7 +41,7 @@ curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1
   "entry": [
     {
       "name": "cantdonothing@iam.gserviceaccount.com",
-      "value": $(echo "$REF_GCP_SA_SF" | jq '.|tostring')
+      "value": "(echo "$REF_GCP_SA_SF" | jq '.|tostring')"
     }
   ]
 }
