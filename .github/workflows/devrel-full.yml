@@ -22,7 +22,8 @@ env:
   APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
-
+  # Component specific secrets
+  REF_GCP_SA_SF: ${{ secrets.REF_GCP_SA_SF }}
 jobs:
 
   static-analysis:
@@ -51,7 +52,7 @@ jobs:
         uses: ./tools/pipeline-runner
         with:
           pipeline-action: check-readme.sh
-  
+
   project-pipelines:
 
     name: Run Pipelines
@@ -62,7 +63,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Turnstyle
-        uses: softprops/turnstyle@v1 
+        uses: softprops/turnstyle@v1
         with:
           same-branch-only: false
           poll-interval-seconds: 10
@@ -75,4 +76,4 @@ jobs:
         with:
           pipeline-action: run-pipelines.sh
 
-  
+
