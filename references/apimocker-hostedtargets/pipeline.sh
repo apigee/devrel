@@ -18,4 +18,11 @@ set -x
 
 npm install
 npm run deploy
+
+# wait for hosted target to be up
+until curl -o /dev/null -s -f https://"$APIGEE_ORG"-"$APIGEE_ENV".apigee.net/mock/v1/dogs; do
+    printf '.'
+    sleep 2
+done
+
 npm test
