@@ -23,7 +23,7 @@ RUN apk add --no-cache \
   maven=3.6.3-r0 \
   nodejs=12.18.4-r0 \
   npm=12.18.4-r0 \
-  openjdk11-jre-headless=11.0.8_p10-r0 \
+  openjdk11-jre-headless=11.0.9_p11-r0 \
   util-linux=2.35.2-r0
 
 RUN go get github.com/google/addlicense
