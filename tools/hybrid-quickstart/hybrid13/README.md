@@ -29,22 +29,29 @@ gcloud init
 
 ## Override Default Config (if desired)
 
-If the following environment variables are not defined, the script
-automatically sets them based on the default values in steps.sh.
+If the following environment variables are set by default.
+Export them to override the default values if neeed.
 
 ```bash
 export PROJECT_ID=xxx
-export AX_REGION='europe-west1' # Apigee Analytics Region
+# Apigee analytics region see Apigee docs for full list
+export AX_REGION='europe-west1'
+# Default GCP region for runtime
 export REGION='europe-west1'
 export ZONE='europe-west1-b'
+# Name of the GKE cluster that hosts the runtime
+export GKE_CLUSTER_NAME='apigee-hybrid'
+# Apigee Config
+export ENV_NAME='test1'
+export ENV_GROUP_NAME='test'
+# Subdomain will be created for every environment group
 export DNS_NAME="$PROJECT_ID.example.com"
-export CLUSTER_NAME=apigee-hybrid
 ```
 
-## Initialize GKE cluster
+## Initialize Apigee hybrid runtime on a GKE cluster
 
 ```bash
-./initialize-gke.sh
+./initialize-runtime-gke.sh
 ```
 
 ## (Optional) Provision Trusted TLS/SSL Certificates
@@ -57,5 +64,5 @@ See the [this](https://community.apigee.com/articles/86322/free-trusted-ssl-cert
 Delete the runtime resources to avoid paying for unused GKE clusters.
 
 ```bash
-./destroy-runtime.sh
+./destroy-runtime-gke.sh
 ```
