@@ -30,7 +30,7 @@ set_idp_env_var() {
 
     # retrieve configuration data from a discovery document
     response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration)
-    if [ $( grep -c error <<< "$response" ) -ne 0  ]; then
+    if [ $( printf '%s' "$response" | grep -c error ) -ne 0  ]; then
         echo "$response"
         
         exit 1
