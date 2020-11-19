@@ -132,7 +132,7 @@ set_devapp_product() {
 set_idp_env_var
 
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update -e
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update -X -e
 
 # set developer app (apigee_client) credentials with the exact same values than the one in the keycloak IdP
 set_devapp_credentials
