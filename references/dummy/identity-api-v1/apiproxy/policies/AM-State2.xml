@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-State2">
+    <DisplayName>AM-State2</DisplayName>
+    <Properties/>
+    <AssignVariable>
+        <Name>oidc.flow.authorization.state2</Name>
+        <Ref>oauthv2authcode.OA2-GenerateAzCode-State2.code</Ref>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

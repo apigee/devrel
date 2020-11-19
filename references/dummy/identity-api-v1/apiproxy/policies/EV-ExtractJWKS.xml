@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-ExtractJWKS">
+    <DisplayName>EV-ExtractJWKS</DisplayName>
+    <Source>jwks</Source>
+    <JSONPayload>
+        <Variable name="flow.idp.jwks_payload" type="string">
+            <JSONPath>$</JSONPath>
+        </Variable>
+    </JSONPayload>
+</ExtractVariables>

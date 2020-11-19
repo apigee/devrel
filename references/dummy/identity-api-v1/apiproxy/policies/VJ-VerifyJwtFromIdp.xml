@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<VerifyJWT name="VJ-VerifyJwtFromIdp">
+    <Algorithm>RS256</Algorithm>
+    <Source>oidc.flow.jwt</Source>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <PublicKey>
+        <JWKS ref="flow.idp.jwks_payload"/>
+    </PublicKey>
+    <Issuer ref="flow.idp.issuer"/>
+    <Audience ref="flow.idp.apigee.client_id"/>
+</VerifyJWT>

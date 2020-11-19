@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-GetJwksFromIdp">
+    <DisplayName>SC-GetJwksFromIdp</DisplayName>
+    <Properties/>
+    <Request clearPayload="true">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    </Request>
+    <Response>jwks</Response>
+    <HTTPTargetConnection>
+        <Properties/>
+        <URL>https://{flow.idp.jwks.hostname}/{flow.idp.jwks.uri}</URL>
+    </HTTPTargetConnection>
+</ServiceCallout>

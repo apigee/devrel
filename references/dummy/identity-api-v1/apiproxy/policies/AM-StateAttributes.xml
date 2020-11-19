@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-StateAttributes">
+    <DisplayName>AM-StateAttributes</DisplayName>
+    <Properties/>
+    <AssignVariable>
+        <Name>oidc.flow.authorize.state1</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.state1</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>request.formparam.client_id</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.client_id</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>oidc.flow.authorize.redirect_uri</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.redirect_uri</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>oidc.flow.authorize.response_type</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.response_type</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>oidc.flow.authorize.scope</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.scope</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>oauth_external_authorization_status</Name>
+        <Value>true</Value>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

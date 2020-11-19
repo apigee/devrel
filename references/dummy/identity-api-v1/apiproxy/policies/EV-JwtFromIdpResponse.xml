@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-JwtFromIdpResponse">
+    <DisplayName>EV-JwtFromIdpResponse</DisplayName>
+    <Properties/>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <JSONPayload>
+        <Variable name="oidc.flow.jwt">
+            <JSONPath>$.id_token</JSONPath>
+        </Variable>
+        <Variable name="oidc.flow.scope">
+            <JSONPath>$.scope</JSONPath>
+        </Variable>
+        <Variable name="oidc.flow.expires_in">
+            <JSONPath>$.expires_in</JSONPath>
+        </Variable>
+    </JSONPayload>
+    <Source clearPayload="false">tokenResponse</Source>
+</ExtractVariables>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OAuthV2 async="false" continueOnError="false" enabled="true" name="OA2-StoreExternalAuthorizationCode">
+    <DisplayName>OA2-StoreExternalAuthorizationCode</DisplayName>
+    <Operation>GenerateAuthorizationCode</Operation>
+    <ClientId>request.formparam.client_id</ClientId>
+    <ResponseType>oidc.flow.authorize.response_type</ResponseType>
+    <GenerateResponse enabled="false"/>
+    <ExternalAuthorization>true</ExternalAuthorization>
+    <ExternalAuthorizationCode>request.queryparam.code</ExternalAuthorizationCode>
+    <StoreToken>true</StoreToken>
+    <Attributes>
+        <Attribute name="state1" ref="oidc.flow.authorize.state1" display="false"/>
+        <Attribute name="scope" ref="oidc.flow.authorize.scope" display="false"/>
+    </Attributes>
+    <Tokens/>
+</OAuthV2>

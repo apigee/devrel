@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<GetOAuthV2Info name="OA2-AttributesFromAzCode-State2">
+    <AuthorizationCode ref="request.queryparam.state"/>
+    <IgnoreAccessTokenStatus>true</IgnoreAccessTokenStatus>
+</GetOAuthV2Info>

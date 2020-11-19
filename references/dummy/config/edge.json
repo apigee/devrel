@@ -1,0 +1,112 @@
+{
+    "version": "1.0",
+    "envConfig": {
+        "test": {
+            "targetServers": [],
+            "virtualHosts": [],
+            "caches": [],
+            "kvms": [
+                {
+                    "name": "idpParameters",
+                    "entry": [
+                        {
+                            "name": "idp.hostname",
+                            "value": "TEST.IDP_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.authentication.endpoint.uri",
+                            "value": "TEST.IDP_AUTHENTICATION_ENDPOINT_URI"
+                        },
+                        {
+                            "name": "idp.apigee.client_id",
+                            "value": "TEST.IDP_APIGEE_CLIENT_ID"
+                        },
+                        {
+                            "name": "idp.apigee.client_secret",
+                            "value": "TEST.IDP_APIGEE_CLIENT_SECRET"
+                        },
+                        {
+                            "name": "idp.apigee.redirect_uri",
+                            "value": "TEST.IDP_APIGEE_REDIRECT_URI"
+                        },
+                        {
+                            "name": "idp.token-issuance.hostname",
+                            "value": "TEST.IDP_TOKEN_ISSUANCE_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.token-issuance.endpoint.uri",
+                            "value": "TEST.IDP_TOKEN_ISSUANCE_ENDPOINT_URI"
+                        },
+                        {
+                            "name": "idp.jwks.hostname",
+                            "value": "TEST.IDP_JWKS_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.jwks.endpoint.uri",
+                            "value": "TEST.IDP_JWKS_ENDPOINT_URI"
+                        }
+                    ]
+                }
+            ],
+            "extensions":[]
+        },
+        "prod": {
+            "targetServers": [],
+            "virtualHosts": [ ],
+            "caches": [],
+            "kvms": [
+                {
+                    "name": "idpParameters",
+                    "entry": [
+                        {
+                            "name": "idp.hostname",
+                            "value": "PROD.IDP_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.authentication.endpoint.uri",
+                            "value": "PROD.IDP_AUTHENTICATION_ENDPOINT_URI"
+                        },
+                        {
+                            "name": "idp.apigee.client_id",
+                            "value": "PROD.IDP_APIGEE_CLIENT_ID"
+                        },
+                        {
+                            "name": "idp.apigee.client_secret",
+                            "value": "PROD.IDP_APIGEE_CLIENT_SECRET"
+                        },
+                        {
+                            "name": "idp.apigee.redirect_uri",
+                            "value": "PROD.IDP_APIGEE_REDIRECT_URI"
+                        },
+                        {
+                            "name": "idp.token-issuance.hostname",
+                            "value": "PROD.IDP_TOKEN_ISSUANCE_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.token-issuance.endpoint.uri",
+                            "value": "PROD.IDP_TOKEN_ISSUANCE_ENDPOINT_URI"
+                        },
+                        {
+                            "name": "idp.jwks.hostname",
+                            "value": "PROD.IDP_JWKS_HOSTNAME"
+                        },
+                        {
+                            "name": "idp.jwks.endpoint.uri",
+                            "value": "PROD.IDP_JWKS_ENDPOINT_URI"
+                        }
+                    ]
+                }
+            ],
+            "extensions":[ ]
+        }
+    },
+    "orgConfig": {
+        "maskconfigs": [ ],
+        "apiProducts": [],
+        "developers": [],
+        "developerApps": { },
+        "kvms": []
+    },
+    "apiConfig": {}
+}
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-BuildIdpRequest">
+    <DisplayName>AM-BuildIdpRequest</DisplayName>
+    <Properties/>
+    <AssignTo createNew="true" type="request">idpPostTokenRequest</AssignTo>
+    <Remove>
+        <FormParams/>
+        <Headers>
+            <Header name="authorization"/>
+        </Headers>
+    </Remove>
+    <Set>
+        <Headers>
+            <Header name="content-type">application/x-www-form-urlencoded</Header>
+            <Header name="accept">application/json</Header>
+        </Headers>
+        <FormParams>
+            <FormParam name="code">{request.formparam.code}</FormParam>
+            <FormParam name="client_id">{flow.idp.apigee.client_id}</FormParam>
+            <FormParam name="client_secret">{flow.idp.apigee.client_secret}</FormParam>
+            <FormParam name="redirect_uri">{flow.idp.apigee.redirect_uri}</FormParam>
+            <FormParam name="scope">{oauthv2authcode.OA2-GetState1Attribute.scope}</FormParam>
+            <FormParam name="grant_type">authorization_code</FormParam>
+        </FormParams>
+        <Verb>POST</Verb>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

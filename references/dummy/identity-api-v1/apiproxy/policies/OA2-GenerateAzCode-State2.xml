@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OAuthV2 async="false" continueOnError="false" enabled="true" name="OA2-GenerateAzCode-State2">
+    <DisplayName>OA2-GenerateAzCode-State2</DisplayName>
+    <Properties/>
+    <ExternalAuthorization>false</ExternalAuthorization>
+    <Operation>GenerateAuthorizationCode</Operation>
+    <GenerateResponse enabled="false"/>
+    <!-- Set query params as attributes of state2 (= az_code) -->
+    <Attributes>
+        <Attribute name="state1" ref="oidc.flow.authorize.state1" display="true"/>
+        <Attribute name="client_id" ref="oidc.flow.authorize.client_id" display="true"/>
+        <Attribute name="redirect_uri" ref="oidc.flow.authorize.redirect_uri" display="true"/>
+        <Attribute name="response_type" ref="oidc.flow.authorize.response_type" display="true"/>
+        <Attribute name="scope" ref="oidc.flow.authorize.scope" display="true"/>
+    </Attributes>
+</OAuthV2>

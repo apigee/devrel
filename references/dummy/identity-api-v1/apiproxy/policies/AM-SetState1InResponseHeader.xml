@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetState1InResponseHeader">
+    <DisplayName>AM-SetState1InResponseHeader</DisplayName>
+    <Properties/>
+    <Set>
+        <Headers>
+            <Header name="x-state1">{oauthv2authcode.OA2-GetState1Attribute.state1}</Header>
+        </Headers>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

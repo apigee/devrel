@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-RedirectToApp">
+    <DisplayName>AM-RedirectToApp</DisplayName>
+    <Properties/>
+    <Set>
+        <Headers>
+            <Header name="Location">{oidc.flow.authorize.redirect_uri}?code={oauthv2authcode.OA2-StoreExternalAuthorizationCode.code}&amp;state1={oidc.flow.authorize.state1}</Header>
+        </Headers>
+        <StatusCode>302</StatusCode>
+        <ReasonPhrase>Found</ReasonPhrase>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

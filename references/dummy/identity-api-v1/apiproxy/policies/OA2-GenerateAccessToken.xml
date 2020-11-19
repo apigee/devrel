@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OAuthV2 async="false" continueOnError="false" enabled="true" name="OA2-GenerateAccessToken">
+    <DisplayName>OA2-GenerateAccessToken</DisplayName>
+    <Operation>GenerateAccessToken</Operation>
+    <ExpiresIn ref="flow.idp.expires_in">1800000</ExpiresIn>
+    <RefreshTokenExpiresIn ref="flow.idp.expires_in">1800000</RefreshTokenExpiresIn>
+    <SupportedGrantTypes>
+        <GrantType>authorization_code</GrantType>
+    </SupportedGrantTypes>
+    <GrantType>request.formparam.grant_type</GrantType>
+    <Attributes>
+        <Attribute name="idp.jwt" ref="oidc.flow.jwt" display="false"/>
+        <Attribute name="idp.access_token" ref="oidc.flow.access_token" display="false"/>
+        <Attribute name="idp.scope" ref="oidc.flow.scope" display="false"/>
+    </Attributes>
+    <GenerateResponse enabled="true"/>
+</OAuthV2>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>SA-DoSProtection</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <Flows>
+        <Flow name="GET /authorize">
+            <Description>Initiate Authentication Sequence</Description>
+            <Request>
+                <Step>
+                    <Name>VAK-VerifyAPIKey-ClientId</Name>
+                </Step>
+                <Step>
+                    <Name>EV-InputQueryParams</Name>
+                </Step>
+                <Step>
+                    <!--+
+                        | **************************************************************************
+                        | *** test 'redirect_uri' query param and value set at application level ***
+                        | **************************************************************************
+                        +-->
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != oidc.flow.authorize.redirect_uri )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | *******************************************************************
+                        | *** query param response_type is not equal to 'code' or 'token' ***
+                        | *******************************************************************
+                        +-->
+                    <Name>RF-ResponseType-Invalid</Name>
+                    <Condition>( oidc.flow.authorize.response_type != "code" ) and ( oidc.flow.authorize.response_type != "token" )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | *********************************************************************************
+                        | *** control that a state1 query parameter has  been provided and is not empry ***
+                        | *********************************************************************************
+                        +-->
+                    <Name>RF-State-Control</Name>
+                    <Condition>( oidc.flow.authorize.state1 Is null ) or ( oidc.flow.authorize.state1 = "" )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | *******************************************************************************
+                        | *** control that a scope query parameter has been provided and is not empry ***
+                        | *******************************************************************************
+                        +-->
+                    <Name>RF-Scope-Control</Name>
+                    <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GenerateAzCode-State2</Name>
+                </Step>
+                <Step>
+                    <Name>AM-State2</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-RedirectToIdpAuth</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/authorize") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="GET /callback">
+            <Description>Token Issuance</Description>
+            <Request>
+                <Step>
+                    <!--+
+                        | ******************************************************************************
+                        | *** control that a code query parameter has been provided and is not empry ***
+                        | ******************************************************************************
+                        +-->
+                    <Name>RF-Code-Control</Name>
+                    <Condition>( request.queryparam.code Is null ) or ( request.queryparam.code = "" )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | *********************************************************************************
+                        | *** control that a state1 query parameter has  been provided and is not empry ***
+                        | *********************************************************************************
+                        +-->
+                    <Name>RF-State-Control</Name>
+                    <Condition>( request.queryparam.state Is null ) or ( request.queryparam.state = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>OA2-AttributesFromAzCode-State2</Name>
+                </Step>
+                <Step>
+                    <Name>AM-StateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-StoreExternalAuthorizationCode</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-RedirectToApp</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/callback") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="POST /token">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>BA-GetClientCredentials</Name>
+                </Step>
+                <Step>
+                    <Name>VAK-VerifyAPIKey-ClientId</Name>
+                </Step>
+                <Step>
+                    <!--+
+                        | ********************************************************************************
+                        | *** test 'client_secret' basic auth param and value set at application level ***
+                        | ********************************************************************************
+                        +-->
+                    <Name>RF-ClientSecret-Control</Name>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.client_secret != oidc.flow.client_secret )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | *************************************************************************
+                        | *** test 'redirect_uri' form param and value set at application level ***
+                        | *************************************************************************
+                        +-->
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != request.formparam.redirect_uri )</Condition>
+                </Step>
+                <Step>
+                    <!--+
+                        | **********************************************************************
+                        | *** test 'grant_type' form param. (must = to 'authorization_code') ***
+                        | **********************************************************************
+                        +-->
+                    <Name>RF-GrantType-Control</Name>
+                    <Condition>( request.formparam.grant_type != "authorization_code" )</Condition>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GetState1Attribute</Name>
+                </Step>
+                <Step>
+                    <Name>AM-BuildIdpRequest</Name>
+                </Step>
+                <Step>
+                    <Name>SC-IdpTokenIssuance</Name>
+                </Step>
+                <Step>
+                    <Name>EV-JwtFromIdpResponse</Name>
+                </Step>
+                <Step>
+                    <Name>LC-GetJWKS</Name>
+                </Step>
+                <Step>
+                    <Name>SC-GetJwksFromIdp</Name>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-ExtractJWKS</Name>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                </Step>
+                <Step>
+                    <Name>PC-CacheJWKS</Name>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                </Step>
+                <Step>
+                    <Name>VJ-VerifyJwtFromIdp</Name>
+                </Step>
+                <Step>
+                    <Name>JS-SetAccessTokenExpiry</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GenerateAccessToken</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-SetState1InResponseHeader</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/token") and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="404 - Not Found">
+            <Request>
+                <Step>
+                    <Name>RF-404NotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <HTTPProxyConnection>
+        <BasePath>/v1/oauth20</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="noroute"/>
+</ProxyEndpoint>
