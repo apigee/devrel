@@ -17,10 +17,6 @@
 set -x 
 set -e
 
-# discovery docs: google, keycloak
-# google_discovery_doc="https://accounts.google.com/.well-known/openid-configuration"
-# keycloak_discovery_doc="https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration"
-
 #################################
 ### function: set_idp_env_var ###
 #################################
