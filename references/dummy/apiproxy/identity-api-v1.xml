@@ -1,4 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!--
+ Copyright 2020 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <APIProxy revision="18" name="identity-api-v1">
     <Basepaths>/v1/oauth20</Basepaths>
     <ConfigurationVersion majorVersion="4" minorVersion="0"/>
@@ -8,7 +19,6 @@
     <DisplayName>identity-api-v1</DisplayName>
     <LastModifiedAt>1584392107400</LastModifiedAt>
     <LastModifiedBy>defaultUser</LastModifiedBy>
-    <ManifestVersion>SHA-512:e52fa838185b242122752c3673849802dba15a958869898372da93e9c780bfab106f1097fb9c5bd2a68afd3e1d974a9f127a44b4863d5ad100e0a2fb6ff6d783</ManifestVersion>
     <Policies/>
     <ProxyEndpoints>
         <ProxyEndpoint>default</ProxyEndpoint>
