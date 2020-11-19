@@ -26,7 +26,7 @@ keycloak_discovery_doc="https://keycloak.iloveapis.io/auth/realms/demo/.well-kno
 #################################
 ### function: set_idp_env_var ###
 #################################
-function set_idp_env_var() {
+set_idp_env_var() {
 
     # retrieve configuration data from the google discovery document
     response=$(curl --silent -k1 -X GET -H "Accept:application/json" $keycloak_discovery_doc)
@@ -87,7 +87,7 @@ EOF
 ########################################
 ### function: set_devapp_credentials ###
 ########################################
-function set_devapp_credentials() {
+set_devapp_credentials() {
     # retrieve configuration data from a keycloak endpoint
     response=$(curl --silent -X POST --data "$(generate_post_data_app_credentials)" -u $APIGEE_USER:$APIGEE_PASS -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/developers/helene.dozi.demo@gmail.com/apps/identityApp/keys/create)
     if [ $( grep -c error <<< "$response" ) -ne 0  ]; then
@@ -100,7 +100,7 @@ function set_devapp_credentials() {
 ####################################
 ### function: set_devapp_product ###
 ####################################
-function set_devapp_product() {
+set_devapp_product() {
     # retrieve configuration data from a keycloak endpoint
     response=$(curl --silent -X POST --data "$(generate_post_data_app_identity_product)" -u $APIGEE_USER:$APIGEE_PASS -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/developers/helene.dozi.demo@gmail.com/apps/identityApp/keys/xkey)
     if [ $( grep -c error <<< "$response" ) -ne 0  ]; then
