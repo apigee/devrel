@@ -135,59 +135,60 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <basedir>${basedir}</basedir>
+                    <directory>${project.root.dir}</directory>
+                    <filtering>true</filtering>
                     <includes>
-                    <include>edge.json</include> <!-- path to your edge.json -->
+                        <include>edge.json</include> <!-- path to your edge.json -->
                     </includes>
                     <replacements>
-                    <replacement>
-                        <token>TEST_IDP_APIGEE_REDIRECT_URI</token>
-                        <value>${TEST_IDP_APIGEE_REDIRECT_URI}</value>
-                    </replacement>
-                    <replacement>
-		        <token>TEST_IDP_AZ_HOSTNAME</token>
-			<value>${TEST_IDP_AZ_HOSTNAME}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_AZ_URI</token>
-                        <value>${TEST_IDP_AZ_URI}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_APIGEE_CLIENT_ID</token>
-                        <value>${TEST_IDP_APIGEE_CLIENT_ID}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_APIGEE_CLIENT_SECRET</token>
-                        <value>${TEST_IDP_APIGEE_CLIENT_SECRET}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_TOKEN_HOSTNAME</token>
-                        <value>${TEST_IDP_TOKEN_HOSTNAME}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_TOKEN_URI</token>
-                        <value>${TEST_IDP_TOKEN_URI}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_JWKS_HOSTNAME</token>
-                        <value>${TEST_IDP_JWKS_HOSTNAME}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_JWKS_URI</token>
-                        <value>${TEST_IDP_JWKS_URI}</value>
-		    </replacement>
-		    <replacement>
-                        <token>TEST_IDP_USERINFO_HOSTNAME</token>
-                        <value>${TEST_IDP_USERINFO_HOSTNAME}</value>
-		    </replacement>
-                    <replacement>
-                        <token>TEST_IDP_USERINFO_URI</token>
-                        <value>${TEST_IDP_USERINFO_URI}</value>
-		    </replacement>
-                    <replacement>
-			<token>TEST_IDP_ISSUER</token>
-			<value>${TEST_IDP_ISSUER}</value>
-		    </replacement>
+                        <replacement>
+                            <token>TEST_IDP_APIGEE_REDIRECT_URI</token>
+                            <value>${TEST_IDP_APIGEE_REDIRECT_URI}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_AZ_HOSTNAME</token>
+                            <value>${TEST_IDP_AZ_HOSTNAME}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_AZ_URI</token>
+                            <value>${TEST_IDP_AZ_URI}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_APIGEE_CLIENT_ID</token>
+                            <value>${TEST_IDP_APIGEE_CLIENT_ID}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_APIGEE_CLIENT_SECRET</token>
+                            <value>${TEST_IDP_APIGEE_CLIENT_SECRET}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_TOKEN_HOSTNAME</token>
+                            <value>${TEST_IDP_TOKEN_HOSTNAME}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_TOKEN_URI</token>
+                            <value>${TEST_IDP_TOKEN_URI}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_JWKS_HOSTNAME</token>
+                            <value>${TEST_IDP_JWKS_HOSTNAME}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_JWKS_URI</token>
+                            <value>${TEST_IDP_JWKS_URI}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_USERINFO_HOSTNAME</token>
+                            <value>${TEST_IDP_USERINFO_HOSTNAME}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_USERINFO_URI</token>
+                            <value>${TEST_IDP_USERINFO_URI}</value>
+                        </replacement>
+                        <replacement>
+                            <token>TEST_IDP_ISSUER</token>
+                            <value>${TEST_IDP_ISSUER}</value>
+                        </replacement>
                     </replacements>
                 </configuration>
             </plugin>
