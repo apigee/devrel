@@ -135,7 +135,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <basedir>${target.root.dir}</basedir>
+                    <basedir>${basedir}</basedir>
                     <includes>
                     <include>edge.json</include> <!-- path to your edge.json -->
                     </includes>
