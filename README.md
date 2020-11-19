@@ -35,8 +35,8 @@ further to fit a particular use case.
   Reference for using mTLS client authentication for securely connecting Apigee to
   backend services
 - [Identity Proxy](references/dummy) -
-  Reference for using Apigee as an identity proxy for end-user authentication via 
-  OIDC
+  Reference for using Apigee as an identity proxy for end-user authentication
+  via OIDC
 
 ## Tools
 
