@@ -34,6 +34,9 @@ further to fit a particular use case.
 - [Southbound mTLS](references/southbound-mtls) -
   Reference for using mTLS client authentication for securely connecting Apigee to
   backend services
+- [Identity Proxy](references/dummy) -
+  Reference for using Apigee as an identity proxy for end-user authentication via 
+  OIDC
 
 ## Tools
 
