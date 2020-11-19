@@ -20,8 +20,8 @@ set -e
 cd ./identity-api-v1
 
 # discovery docs: google, keycloak
-google_discovery_doc="https://accounts.google.com/.well-known/openid-configuration"
-keycloak_discovery_doc="https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration"
+# google_discovery_doc="https://accounts.google.com/.well-known/openid-configuration"
+# keycloak_discovery_doc="https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration"
 
 #################################
 ### function: set_idp_env_var ###
@@ -29,7 +29,7 @@ keycloak_discovery_doc="https://keycloak.iloveapis.io/auth/realms/demo/.well-kno
 set_idp_env_var() {
 
     # retrieve configuration data from the google discovery document
-    response=$(curl --silent -k1 -X GET -H "Accept:application/json" $keycloak_discovery_doc)
+    response=$(curl --silent -k1 -X GET -H "Accept:application/json" https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration)
     if [ $( grep -c error <<< "$response" ) -ne 0  ]; then
         echo "$response"
         
