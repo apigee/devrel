@@ -203,7 +203,7 @@
                 <!-- use env variables for ORG, USER and PASSWORD -->
                 <apigee.org>${env.APIGEE_ORG}</apigee.org>
                 <apigee.username>${env.APIGEE_USER}</apigee.username>
-                <apigee.password>${env.APIGEE_PASSW}</apigee.password>
+                <apigee.password>${env.APIGEE_PASS}</apigee.password>
                 <apigee.authtype>basic</apigee.authtype> <!-- optional: oauth|basic(default) -->
                 <apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl> <!-- optional: oauth -->
                 <apigee.mfatoken>${mfatoken}</apigee.mfatoken> <!-- optional: mfa -->
