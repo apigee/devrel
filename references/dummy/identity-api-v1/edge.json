@@ -6,13 +6,19 @@
             "virtualHosts": [],
             "caches": [
                 {
-                    "name": "IDP_JWKS_CACHE",
-                    "description": "IdP JWKS Response Cache"
-                }
+                    "name":"IDP_JWKS_CACHE",
+                    "description":"IdP JWKS Response Cache",
+                    "expirySettings":{
+                       "timeoutInSec":{
+                          "value":"300"
+                       },
+                       "valuesNull":false
+                    }
+                 }
             ],
             "kvms": [
                 {
-                    "name": "idpConfigIdentityProxy-g",
+                    "name": "idpConfigIdentityProxy",
                     "entry": [
                         {
                             "name": "idp.az.hostname",
@@ -72,13 +78,19 @@
             "virtualHosts": [ ],
             "caches": [
                 {
-                    "name": "IDP_JWKS_CACHE",
-                    "description": "IdP JWKS Response Cache"
-                }
+                    "name":"IDP_JWKS_CACHE",
+                    "description":"IdP JWKS Response Cache",
+                    "expirySettings":{
+                       "timeoutInSec":{
+                          "value":"300"
+                       },
+                       "valuesNull":false
+                    }
+                 }
             ],
              "kvms": [
                 {
-                    "name": "idpConfigIdentityProxy-g",
+                    "name": "idpConfigIdentityProxy",
                     "entry": [
                         {
                             "name": "idp.az.hostname",
