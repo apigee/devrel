@@ -134,11 +134,9 @@
                     </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <directory>${project.root.dir}</directory>
-                    <filtering>true</filtering>
+                <configuration><echo message="##### basedir parent : ${basedir}"/>
                     <includes>
-                        <include>edge.json</include> <!-- path to your edge.json -->
+                        <include>${basedir}/edge.json</include> <!-- path to your edge.json -->
                     </includes>
                     <replacements>
                         <replacement>
