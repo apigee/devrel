@@ -20,7 +20,7 @@ const {
   Then,
   After
 } = require('cucumber')
-const puppeteer = require('puppeteer-core')
+const puppeteer = require('puppeteer')
 const org = process.env.APIGEE_ORG
 const env = 'test'
 const state='123-abc'
