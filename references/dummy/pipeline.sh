@@ -78,6 +78,28 @@ set_idp_env_var() {
     export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
+#################################
+### function: set_idp_env_var ###
+#################################
+set_functest_env_var() {
+
+    #APP_CLIENT_ID
+    APP_CLIENT_ID="xkey"
+    export APP_CLIENT_ID
+
+    #APP_CLIENT_SECRET
+    APP_CLIENT_SECRET="xsecret"
+    export APP_CLIENT_SECRET
+    
+    #KEYCLOACK_USER_USERNAME
+    KEYCLOACK_USER_USERNAME="jeanmartin"
+    export KEYCLOACK_USER_USERNAME
+
+    #KEYCLOACK_USER_PASSWORD
+    KEYCLOACK_USER_PASSWORD="Passw0rd!"
+    export KEYCLOACK_USER_PASSWORD
+}
+
 ####################################################
 ### function: generate_post_data_app_credentials ###
 ####################################################
