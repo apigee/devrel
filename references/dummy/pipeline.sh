@@ -170,4 +170,4 @@ set_devapp_product
 
 # execute integration tests
 npm i
-npm test
+npm run test

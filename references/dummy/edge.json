@@ -22,51 +22,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_AZ_HOSTNAME"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/auth"
+                            "value": "TEST_IDP_AZ_URI"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "apigee_client"
+                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
+                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
+                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_TOKEN_HOSTNAME"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/token"
+                            "value": "TEST_IDP_TOKEN_URI"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_JWKS_HOSTNAME"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/certs"
+                            "value": "TEST_IDP_JWKS_URI"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"keycloak.iloveapis.io"
+                            "value":"TEST_IDP_USERINFO_HOSTNAME"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"auth/realms/demo/protocol/openid-connect/userinfo"
+                            "value":"TEST_IDP_USERINFO_URI"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"https://keycloak.iloveapis.io/auth/realms/demo"
+                            "value":"TEST_IDP_ISSUER"
                         }
                     ]
                 }
@@ -94,51 +94,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_AZ_HOSTNAME"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/auth"
+                            "value": "TEST_IDP_AZ_URI"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "apigee_client"
+                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
+                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
+                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_TOKEN_HOSTNAME"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/token"
+                            "value": "TEST_IDP_TOKEN_URI"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "keycloak.iloveapis.io"
+                            "value": "TEST_IDP_JWKS_HOSTNAME"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "auth/realms/demo/protocol/openid-connect/certs"
+                            "value": "TEST_IDP_JWKS_URI"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"keycloak.iloveapis.io"
+                            "value":"TEST_IDP_USERINFO_HOSTNAME"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"auth/realms/demo/protocol/openid-connect/userinfo"
+                            "value":"TEST_IDP_USERINFO_URI"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"https://keycloak.iloveapis.io/auth/realms/demo"
+                            "value":"TEST_IDP_ISSUER"
                         }
                     ]
                 }
