@@ -29,7 +29,6 @@ const scope = 'openid email address'
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
     headless:false,
-    executablePath: '/usr/bin/chromium-browser',
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()

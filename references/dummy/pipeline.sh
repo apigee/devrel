@@ -170,4 +170,7 @@ set_devapp_product
 
 # execute integration tests
 npm i
+
+unzip /github/workspace/references/dummy/node_modules/puppeteer/.local-chromium/linux-756035/chrome-linux.zip
+
 npm run test
