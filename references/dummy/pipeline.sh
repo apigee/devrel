@@ -165,5 +165,5 @@ set_devapp_credentials
 set_devapp_product
 
 # execute integration tests
-#npm i
-#npm test
+npm i
+npm test
