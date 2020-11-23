@@ -155,6 +155,9 @@ set_devapp_product() {
 # set env variables for google oidc
 set_idp_env_var
 
+# set env variables for testing : to be removed when env variables can be set differently
+set_functest_env_var
+
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
 mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update -X -e
 
