@@ -169,5 +169,4 @@ set_devapp_product
 
 # execute integration tests
 npm i
-PUPPETEER_PRODUCT="$(firefox npm install)"
 npm test

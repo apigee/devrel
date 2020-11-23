@@ -27,6 +27,10 @@ const state='123-abc'
 
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
   	ignoreHTTPSErrors: true
   })
   this.page = await this.browser.newPage()
