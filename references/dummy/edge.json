@@ -22,51 +22,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "TEST_IDP_AZ_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "TEST_IDP_AZ_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/auth"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
+                            "value": "apigee_client"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
+                            "value": "bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
+                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "TEST_IDP_TOKEN_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "TEST_IDP_TOKEN_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/token"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "TEST_IDP_JWKS_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "TEST_IDP_JWKS_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/certs"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"TEST_IDP_USERINFO_HOSTNAME"
+                            "value":"keycloak.iloveapis.io"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"TEST_IDP_USERINFO_URI"
+                            "value":"auth/realms/demo/protocol/openid-connect/userinfo"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"TEST_IDP_ISSUER"
+                            "value":"https://keycloak.iloveapis.io/auth/realms/demo"
                         }
                     ]
                 }
@@ -94,51 +94,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "TEST_IDP_AZ_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "TEST_IDP_AZ_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/auth"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
+                            "value": "apigee_client"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
+                            "value": "bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
+                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "TEST_IDP_TOKEN_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "TEST_IDP_TOKEN_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/token"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "TEST_IDP_JWKS_HOSTNAME"
+                            "value": "keycloak.iloveapis.io"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "TEST_IDP_JWKS_URI"
+                            "value": "auth/realms/demo/protocol/openid-connect/certs"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"TEST_IDP_USERINFO_HOSTNAME"
+                            "value":"keycloak.iloveapis.io"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"TEST_IDP_USERINFO_URI"
+                            "value":"auth/realms/demo/protocol/openid-connect/userinfo"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"TEST_IDP_ISSUER"
+                            "value":"https://keycloak.iloveapis.io/auth/realms/demo"
                         }
                     ]
                 }
@@ -199,4 +199,3 @@
     },
     "apiConfig": {}
 }
-

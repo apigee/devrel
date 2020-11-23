@@ -23,20 +23,17 @@ const {
 const puppeteer = require('puppeteer')
 const org = process.env.APIGEE_ORG
 const env = 'test'
-const state='123-abc'
+const state ='123-abc'
+const scope = 'openid email address'
 
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
   	ignoreHTTPSErrors: true
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + org + '-' + env + 
     '.apigee.net/v1/oauth20/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state)
+    + '&redirect_uri=https://httpbin.org/get&response_type=code&state1=' + state +'&scope=' + scope)
 })
 
 When('I sign in and consent', async function() {
