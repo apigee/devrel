@@ -69,10 +69,12 @@ set_idp_env_var() {
     TEST_IDP_USERINFO_URI=$(printf '%s' "$userinfo_endpoint" | awk -F "$TEST_IDP_USERINFO_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}') 
     export TEST_IDP_USERINFO_URI
     
-    TEST_IDP_APIGEE_CLIENT_ID=$IDP_APIGEE_CLIENT_ID
+    #TEST_IDP_APIGEE_CLIENT_ID=$IDP_APIGEE_CLIENT_ID
+    TEST_IDP_APIGEE_CLIENT_ID="apigee_client"
     export TEST_IDP_APIGEE_CLIENT_ID
     
-    TEST_IDP_APIGEE_CLIENT_SECRET=$IDP_APIGEE_CLIENT_SECRET
+    #TEST_IDP_APIGEE_CLIENT_SECRET=$IDP_APIGEE_CLIENT_SECRET
+    TEST_IDP_APIGEE_CLIENT_SECRET="bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
     export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
@@ -122,7 +124,7 @@ set_devapp_product() {
     response=$(curl --silent -X POST --data "$(generate_post_data_app_identity_product)" -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/helene.dozi.demo@gmail.com/apps/identityApp/keys/xkey)
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
-        
+
         exit 1
     fi
 }
