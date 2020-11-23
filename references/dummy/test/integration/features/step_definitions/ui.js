@@ -28,9 +28,8 @@ const scope = 'openid email address'
 
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
-    headless: false,
-  	ignoreHTTPSErrors: true
+    headless:false,
+    args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + org + '-' + env + 
