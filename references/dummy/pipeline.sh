@@ -23,7 +23,7 @@ set -e
 set_idp_env_var() {
 
     # retrieve configuration data from a discovery document
-    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://keycloak.iloveapis.io/auth/realms/demo/.well-known/openid-configuration)
+    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://jeanmartindemodevrel-eval-test.apigee.net/op/.well-known/openid-configuration)
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
         
@@ -93,11 +93,11 @@ set_functest_env_var() {
     export KEYCLOACK_USER_PASSWORD
 
      #TEST_IDP_APIGEE_CLIENT_ID=$IDP_APIGEE_CLIENT_ID
-    TEST_IDP_APIGEE_CLIENT_ID="apigee_client"
+    TEST_IDP_APIGEE_CLIENT_ID="oidcCLIENT"
     export TEST_IDP_APIGEE_CLIENT_ID
     
     #TEST_IDP_APIGEE_CLIENT_SECRET=$IDP_APIGEE_CLIENT_SECRET
-    TEST_IDP_APIGEE_CLIENT_SECRET="bc2eb50e-d3b7-4422-8e2f-8a1a25199de1"
+    TEST_IDP_APIGEE_CLIENT_SECRET="91c0fabd17a9db3cfe53f28a10728e39b7724e234ecd78dba1fb05b909fb4ed98c476afc50a634d52808ad3cb2ea744bc8c3b45b7149ec459b5c416a6e8db242"
     export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
@@ -169,8 +169,5 @@ set_devapp_credentials
 set_devapp_product
 
 # execute integration tests
-npm i
-
-unzip /github/workspace/references/dummy/node_modules/puppeteer/.local-chromium/linux-756035/chrome-linux.zip
-
-npm run test
+#npm i
+#npm run test
