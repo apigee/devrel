@@ -28,6 +28,17 @@ Feature:
     Given I set Authorization header to Bearer `userToken`
     When I GET /v1/oauth20/protected
     Then response code should be 200
-    And response body path $.status should be (.+)
-    And response body path $.token should be (.+)
-    And response body path $.response should be (.+)
+    And response body path $.response.status should be (ok)
+    And response body path $.response.message should be (.+)
+    And response body path $.response.user.email should be (.+@example.com)
+
+  Scenario: Client App Accesses Protected Resource without a Valid Access Token
+    Given I set Authorization header to Bearer 'xxx-invalid-toen-xxx'
+    When I GET /v1/oauth20/protected
+    Then response code should be 401
+    And response body should be valid json
+
+  Scenario: Client App Accesses a Resource that is Not Found
+    When I GET /v1/oauth20/notfound
+    Then response code should be 404
+    And response body should be valid json

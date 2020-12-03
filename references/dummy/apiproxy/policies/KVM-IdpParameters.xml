@@ -56,6 +56,16 @@
             <Parameter>idp.jwks.hostname</Parameter>
         </Key>
     </Get>
+    <Get assignTo="flow.idp.userinfo.uri" index="1">
+        <Key>
+            <Parameter>idp.userinfo.uri</Parameter>
+        </Key>
+    </Get>
+    <Get assignTo="flow.idp.userinfo.hostname" index="1">
+        <Key>
+            <Parameter>idp.userinfo.hostname</Parameter>
+        </Key>
+    </Get>
     <Get assignTo="flow.idp.jwks.uri" index="1">
         <Key>
             <Parameter>idp.jwks.uri</Parameter>

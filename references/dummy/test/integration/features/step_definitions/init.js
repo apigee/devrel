@@ -23,10 +23,10 @@ const {
 
 const org = process.env.APIGEE_ORG
 const env = 'test'
-const clientId = process.env.APP_CLIENT_ID
-const clientSecret = process.env.APP_CLIENT_SECRET
-const username = process.env.KEYCLOAK_USER_USERNAME
-const password = process.env.KEYCLOAK_USER_PASSWORD
+const clientId = 'xkey' 
+const clientSecret = 'xsecret'
+const username = 'johndoe' 
+const password = 'dummy-password'
 
 Before(function() {
   this.apickli = new apickli.Apickli('https',

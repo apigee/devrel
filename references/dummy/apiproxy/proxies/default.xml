@@ -50,9 +50,9 @@
                 </Step>
                 <Step>
                     <!--+
-                        | *********************************************************************************
-                        | *** control that a state1 query parameter has  been provided and is not empry ***
-                        | *********************************************************************************
+                        | ***********************************************************************************
+                        | *** control that a state(1) query parameter has  been provided and is not empry ***
+                        | ***********************************************************************************
                         +-->
                     <Name>RF-State-Control</Name>
                     <Condition>( oidc.flow.authorize.state1 Is null ) or ( oidc.flow.authorize.state1 = "" )</Condition>
@@ -73,7 +73,7 @@
                     <Name>OA2-GenerateAzCode-State2</Name>
                 </Step>
                 <Step>
-                    <Name>AM-State2</Name>
+                    <Name>AM-GenerateState2ForIdp</Name>
                 </Step>
             </Request>
             <Response>
@@ -158,10 +158,20 @@
                     <Condition>( request.formparam.grant_type != "authorization_code" )</Condition>
                 </Step>
                 <Step>
+                    <Name>RF-Code-Control</Name>
+                    <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
+                </Step>
+                <Step>
                     <Name>KVM-IdpParameters</Name>
                 </Step>
                 <Step>
-                    <Name>OA2-GetState1Attribute</Name>
+                    <Name>OA2-GetOriginalStateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SanitizeRequest</Name>
+                </Step>
+                <Step>
+                    <Name>BA-AddClientID-ClientSecret-AzHeader</Name>
                 </Step>
                 <Step>
                     <Name>AM-BuildIdpRequest</Name>
@@ -194,6 +204,9 @@
                     <Name>JS-SetAccessTokenExpiry</Name>
                 </Step>
                 <Step>
+                    <Name>AM-SetClientIdAsFormParam</Name>
+                </Step>
+                <Step>
                     <Name>OA2-GenerateAccessToken</Name>
                 </Step>
             </Request>
@@ -203,6 +216,28 @@
                 </Step>
             </Response>
             <Condition>(proxy.pathsuffix MatchesPath "/token") and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="GET /protected">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>OA2-VerifyAccessToken</Name>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>SC-GetUserInfoFromIdp</Name>
+                </Step>
+                <Step>
+                    <Name>EV-ExtractUserInfo</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetDummyResponse</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/protected") and (request.verb = "GET")</Condition>
         </Flow>
         <Flow name="404 - Not Found">
             <Request>

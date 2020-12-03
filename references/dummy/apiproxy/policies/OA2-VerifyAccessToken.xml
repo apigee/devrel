@@ -11,16 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-RedirectToApp">
-    <DisplayName>AM-RedirectToApp</DisplayName>
+<OAuthV2 async="false" continueOnError="false" enabled="true" name="OA2-VerifyAccessToken">
+    <DisplayName>OA2-VerifyAccessToken</DisplayName>
     <Properties/>
-    <Set>
-        <Headers>
-            <Header name="Location">{oidc.flow.authorize.redirect_uri}?code={oauthv2authcode.OA2-StoreExternalAuthorizationCode.code}&amp;state={oidc.flow.authorize.state1}</Header>
-        </Headers>
-        <StatusCode>302</StatusCode>
-        <ReasonPhrase>Found</ReasonPhrase>
-    </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="request"/>
-</AssignMessage>
+    <Attributes/>
+    <ExternalAuthorization>false</ExternalAuthorization>
+    <Operation>VerifyAccessToken</Operation>
+    <SupportedGrantTypes/>
+    <GenerateResponse enabled="true"/>
+    <Tokens/>
+</OAuthV2>

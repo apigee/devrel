@@ -19,10 +19,10 @@
     <GenerateResponse enabled="false"/>
     <!-- Set query params as attributes of state2 (= az_code) -->
     <Attributes>
-        <Attribute name="state1" ref="oidc.flow.authorize.state1" display="true"/>
-        <Attribute name="client_id" ref="oidc.flow.authorize.client_id" display="true"/>
-        <Attribute name="redirect_uri" ref="oidc.flow.authorize.redirect_uri" display="true"/>
-        <Attribute name="response_type" ref="oidc.flow.authorize.response_type" display="true"/>
-        <Attribute name="scope" ref="oidc.flow.authorize.scope" display="true"/>
+        <Attribute name="state1" ref="oidc.flow.authorize.state1" display="false"/>
+        <Attribute name="client_id" ref="oidc.flow.authorize.client_id" display="false"/>
+        <Attribute name="redirect_uri" ref="oidc.flow.authorize.redirect_uri" display="false"/>
+        <Attribute name="response_type" ref="oidc.flow.authorize.response_type" display="false"/>
+        <Attribute name="scope" ref="oidc.flow.authorize.scope" display="false"/>
     </Attributes>
 </OAuthV2>

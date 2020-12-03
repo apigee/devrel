@@ -28,13 +28,14 @@ const scope = 'openid email address'
 
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
     headless:false,
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + org + '-' + env + 
     '.apigee.net/v1/oauth20/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=code&state1=' + state +'&scope=' + scope)
+    + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
 })
 
 When('I sign in and consent', async function() {
@@ -46,13 +47,13 @@ When('I sign in and consent', async function() {
   
   //submit
   await Promise.all([
-    this.page.click('#kc-login'),
+    this.page.click('#submit'),
     this.page.waitForNavigation()
   ])
 
   //return submit
   return await Promise.all([
-    this.page.click('#kc-login'),
+    this.page.click('#submit'),
     this.page.waitForNavigation()
   ])
 

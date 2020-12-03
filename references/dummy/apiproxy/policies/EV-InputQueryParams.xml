@@ -14,7 +14,7 @@
 <ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-InputQueryParams">
     <DisplayName>EV-InputQueryParams</DisplayName>
     <Source>request</Source>
-    <QueryParam name="state1">
+    <QueryParam name="state">
         <Pattern ignoreCase="true">{state1}</Pattern>
     </QueryParam>
     <QueryParam name="response_type">

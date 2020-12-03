@@ -11,23 +11,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-JwtFromIdpResponse">
-    <DisplayName>EV-JwtFromIdpResponse</DisplayName>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-ExtractUserInfo">
+    <DisplayName>EV-ExtractUserInfo</DisplayName>
     <Properties/>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
     <JSONPayload>
-        <Variable name="oidc.flow.jwt">
-            <JSONPath>$.id_token</JSONPath>
+        <Variable name="flow.protected.name">
+            <JSONPath>$.name</JSONPath>
         </Variable>
-        <Variable name="oidc.flow.scope">
-            <JSONPath>$.scope</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.expires_in">
-            <JSONPath>$.expires_in</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.access_token">
-            <JSONPath>$.access_token</JSONPath>
+        <Variable name="flow.protected.email">
+            <JSONPath>$.email</JSONPath>
         </Variable>
     </JSONPayload>
-    <Source clearPayload="false">tokenResponse</Source>
+    <Source clearPayload="false">userInfoResponse</Source>
 </ExtractVariables>

@@ -11,23 +11,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-JwtFromIdpResponse">
-    <DisplayName>EV-JwtFromIdpResponse</DisplayName>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetClientIdAsFormParam">
+    <DisplayName>AM-SetClientIdAsFormParam</DisplayName>
     <Properties/>
+    <Add>
+        <FormParams>
+            <FormParam name="client_id">{request.queryparam.client_id}</FormParam>
+            <FormParam name="client_secret">{oidc.flow.client_secret}</FormParam>
+        </FormParams>
+    </Add>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <JSONPayload>
-        <Variable name="oidc.flow.jwt">
-            <JSONPath>$.id_token</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.scope">
-            <JSONPath>$.scope</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.expires_in">
-            <JSONPath>$.expires_in</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.access_token">
-            <JSONPath>$.access_token</JSONPath>
-        </Variable>
-    </JSONPayload>
-    <Source clearPayload="false">tokenResponse</Source>
-</ExtractVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

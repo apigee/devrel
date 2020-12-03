@@ -23,7 +23,7 @@ set -e
 set_idp_env_var() {
 
     # retrieve configuration data from a discovery document
-    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://jeanmartindemodevrel-eval-test.apigee.net/op/.well-known/openid-configuration)
+    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/openid-connect/.well-known/openid-configuration)
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
         
@@ -68,7 +68,12 @@ set_idp_env_var() {
     
     TEST_IDP_USERINFO_URI=$(printf '%s' "$userinfo_endpoint" | awk -F "$TEST_IDP_USERINFO_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}') 
     export TEST_IDP_USERINFO_URI
-    
+
+    TEST_IDP_APIGEE_CLIENT_ID="dummy-client_id-123"
+    export TEST_IDP_APIGEE_CLIENT_ID
+
+    TEST_IDP_APIGEE_CLIENT_SECRET="dummy-client_secret-456"
+    export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
 #################################
@@ -83,22 +88,6 @@ set_functest_env_var() {
     #APP_CLIENT_SECRET
     APP_CLIENT_SECRET="xsecret"
     export APP_CLIENT_SECRET
-    
-    #KEYCLOACK_USER_USERNAME
-    KEYCLOACK_USER_USERNAME="jeanmartin"
-    export KEYCLOACK_USER_USERNAME
-
-    #KEYCLOACK_USER_PASSWORD
-    KEYCLOACK_USER_PASSWORD="Passw0rd!"
-    export KEYCLOACK_USER_PASSWORD
-
-     #TEST_IDP_APIGEE_CLIENT_ID=$IDP_APIGEE_CLIENT_ID
-    TEST_IDP_APIGEE_CLIENT_ID="oidcCLIENT"
-    export TEST_IDP_APIGEE_CLIENT_ID
-    
-    #TEST_IDP_APIGEE_CLIENT_SECRET=$IDP_APIGEE_CLIENT_SECRET
-    TEST_IDP_APIGEE_CLIENT_SECRET="91c0fabd17a9db3cfe53f28a10728e39b7724e234ecd78dba1fb05b909fb4ed98c476afc50a634d52808ad3cb2ea744bc8c3b45b7149ec459b5c416a6e8db242"
-    export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
 ####################################################
@@ -160,7 +149,7 @@ set_idp_env_var
 set_functest_env_var
 
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update -X -e
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
 
 # set developer app (apigee_client) credentials with the exact same values than the one in the keycloak IdP
 set_devapp_credentials

@@ -11,8 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<GetOAuthV2Info async="false" continueOnError="false" enabled="true" name="OA2-GetState1Attribute">
-    <DisplayName>OA2-GetState1Attribute</DisplayName>
-    <AuthorizationCode ref="request.formparam.code"/>
-    <IgnoreAccessTokenStatus>true</IgnoreAccessTokenStatus>
-</GetOAuthV2Info>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-GenerateState2ForIdp">
+    <DisplayName>AM-GenerateState2ForIdp</DisplayName>
+    <Properties/>
+    <AssignVariable>
+        <Name>oidc.flow.authorization.state2</Name>
+        <Ref>oauthv2authcode.OA2-GenerateAzCode-State2.code</Ref>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

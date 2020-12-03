@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // get id_token expiry in seconds
-var idTokenExpiryInSeconds = context.getVariable('oidc.flow.expires_in');
+var idTokenIdpExpiryInSeconds = context.getVariable('jwt.VJ-VerifyIdPIssuedIdToken.seconds_remaining');
+var accessTokenIdpExpiryInSeconds = (context.getVariable('oidc.flow.expires_in') !== null)?parseInt(context.getVariable('oidc.flow.expires_in'), 10)*1000:1800*1000;
 
 // set access_token expiry in milliseconds
-var accessTokenExpiryInMilliSeconds = parseInt(idTokenExpiryInSeconds, 10) * 1000;
+var accessTokenExpiryInMilliSeconds = (idTokenIdpExpiryInSeconds !== null)?parseInt(idTokenIdpExpiryInSeconds, 10)*1000:accessTokenIdpExpiryInSeconds;
 
 // set access_token expiry as a string in 'flow.idp.expires_in' variable
 context.setVariable('flow.idp.expires_in',accessTokenExpiryInMilliSeconds.toString(10));

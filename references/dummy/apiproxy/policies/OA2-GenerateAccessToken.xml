@@ -24,6 +24,7 @@
         <Attribute name="idp.jwt" ref="oidc.flow.jwt" display="false"/>
         <Attribute name="idp.access_token" ref="oidc.flow.access_token" display="false"/>
         <Attribute name="idp.scope" ref="oidc.flow.scope" display="false"/>
+        <Attribute name="idp.expires_in" ref="oidc.flow.expires_in" display="false"/>
     </Attributes>
     <GenerateResponse enabled="true"/>
 </OAuthV2>

@@ -22,51 +22,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_AZ_HOSTNAME"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "op/auth"
+                            "value": "TEST_IDP_AZ_URI"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "oidcCLIENT"
+                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "91c0fabd17a9db3cfe53f28a10728e39b7724e234ecd78dba1fb05b909fb4ed98c476afc50a634d52808ad3cb2ea744bc8c3b45b7149ec459b5c416a6e8db242"
+                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
+                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_TOKEN_HOSTNAME"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "op/token"
+                            "value": "TEST_IDP_TOKEN_URI"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_JWKS_HOSTNAME"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "op/certs"
+                            "value": "TEST_IDP_JWKS_URI"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"user-code:9000"
+                            "value":"TEST_IDP_USERINFO_HOSTNAME"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"op/me"
+                            "value":"TEST_IDP_USERINFO_URI"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"http://localhost:9000/op"
+                            "value":"TEST_IDP_ISSUER"
                         }
                     ]
                 }
@@ -94,51 +94,51 @@
                     "entry": [
                         {
                             "name": "idp.az.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_AZ_HOSTNAME"
                         },
                         {
                             "name": "idp.az.uri",
-                            "value": "op/auth"
+                            "value": "TEST_IDP_AZ_URI"
                         },
                         {
                             "name": "idp.apigee.client_id",
-                            "value": "oidcCLIENT"
+                            "value": "TEST_IDP_APIGEE_CLIENT_ID"
                         },
                         {
                             "name": "idp.apigee.client_secret",
-                            "value": "91c0fabd17a9db3cfe53f28a10728e39b7724e234ecd78dba1fb05b909fb4ed98c476afc50a634d52808ad3cb2ea744bc8c3b45b7149ec459b5c416a6e8db242"
+                            "value": "TEST_IDP_APIGEE_CLIENT_SECRET"
                         },
                         {
                             "name": "idp.apigee.redirect_uri",
-                            "value": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/oauth20/callback"
+                            "value": "TEST_IDP_APIGEE_REDIRECT_URI"
                         },
                         {
                             "name": "idp.token.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_TOKEN_HOSTNAME"
                         },
                         {
                             "name": "idp.token.uri",
-                            "value": "op/token"
+                            "value": "TEST_IDP_TOKEN_URI"
                         },
                         {
                             "name": "idp.jwks.hostname",
-                            "value": "user-code:9000"
+                            "value": "TEST_IDP_JWKS_HOSTNAME"
                         },
                         {
                             "name": "idp.jwks.uri",
-                            "value": "op/certs"
+                            "value": "TEST_IDP_JWKS_URI"
                         },
                         {
                             "name":"idp.userinfo.hostname",
-                            "value":"user-code:9000"
+                            "value":"TEST_IDP_USERINFO_HOSTNAME"
                         },
                         {
                             "name":"idp.userinfo.uri",
-                            "value":"op/me"
+                            "value":"TEST_IDP_USERINFO_URI"
                         },
                         {
                             "name":"idp.issuer",
-                            "value":"http://localhost:9000/op"
+                            "value":"TEST_IDP_ISSUER"
                         }
                     ]
                 }

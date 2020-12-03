@@ -18,6 +18,6 @@
     <PublicKey>
         <JWKS ref="flow.idp.jwks_payload"/>
     </PublicKey>
-    <Issuer ref="flow.idp.issuer"/>
-    <Audience ref="flow.idp.apigee.client_id"/>
+    <!-- Issuer ref="flow.idp.issuer"/>
+    <Audience ref="flow.idp.apigee.client_id"/ -->
 </VerifyJWT>

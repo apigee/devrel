@@ -11,14 +11,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetState1InResponseHeader">
-    <DisplayName>AM-SetState1InResponseHeader</DisplayName>
-    <Properties/>
-    <Set>
-        <Headers>
-            <Header name="x-state">{oauthv2authcode.OA2-GetOriginalStateAttributes.state1}</Header>
-        </Headers>
-    </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="request"/>
-</AssignMessage>
+<GetOAuthV2Info async="false" continueOnError="false" enabled="true" name="OA2-GetOriginalStateAttributes">
+    <DisplayName>OA2-GetOriginalStateAttributes</DisplayName>
+    <AuthorizationCode ref="request.formparam.code"/>
+    <IgnoreAccessTokenStatus>true</IgnoreAccessTokenStatus>
+</GetOAuthV2Info>

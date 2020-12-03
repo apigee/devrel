@@ -11,23 +11,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-JwtFromIdpResponse">
-    <DisplayName>EV-JwtFromIdpResponse</DisplayName>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetDummyResponse">
+    <DisplayName>AM-SetDummyResponse</DisplayName>
     <Properties/>
+    <Set>
+        <Payload contentType="application/json">{"response":{"status":"ok","message":"access token has been validated!","user":{"name":"{flow.protected.name}","email":"{flow.protected.email}"}}}</Payload>
+    </Set>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <JSONPayload>
-        <Variable name="oidc.flow.jwt">
-            <JSONPath>$.id_token</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.scope">
-            <JSONPath>$.scope</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.expires_in">
-            <JSONPath>$.expires_in</JSONPath>
-        </Variable>
-        <Variable name="oidc.flow.access_token">
-            <JSONPath>$.access_token</JSONPath>
-        </Variable>
-    </JSONPayload>
-    <Source clearPayload="false">tokenResponse</Source>
-</ExtractVariables>
+    <AssignTo createNew="false" transport="http" type="response"/>
+</AssignMessage>
