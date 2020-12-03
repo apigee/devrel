@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2020 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request/>
+        <Response/>
+    </PreFlow>
+    <Flows>
+        <Flow name="authorize">
+            <Description>authorization endpoint</Description>
+            <Request>
+                <Step>
+                    <Name>EV-AuthzQueryParams</Name>
+                </Step>
+                <Step>
+                    <Name>RF-ClientId-Control</Name>
+                    <Condition>!(oidc.flow.authorize.client_id =| "dummy-client_id")</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( oidc.flow.authorize.redirect_uri Is null ) or ( oidc.flow.authorize.redirect_uri = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-ResponseType-Invalid</Name>
+                    <Condition>( oidc.flow.authorize.response_type != "code" ) and ( oidc.flow.authorize.response_type != "token" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-State-Control</Name>
+                    <Condition>( oidc.flow.authorize.state Is null ) or ( oidc.flow.authorize.state = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-Scope-Control</Name>
+                    <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetAppName</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-SetLoginPage</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/auth") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="token">
+            <Description>token endpoint</Description>
+            <Request>
+                <Step>
+                    <Name>BA-GetClientCredentials</Name>
+                </Step>
+                <Step>
+                    <Name>RF-ClientId-Secret-Control</Name>
+                    <Condition>!( oidc.flow.token.client_id =| "dummy-client_id" ) or !( oidc.flow.token.client_secret =| "dummy-client_secret" )</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-TokenFormParams</Name>
+                </Step>
+                <Step>
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( oidc.flow.token.redirect_uri Is null ) or ( oidc.flow.token.redirect_uri = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-Scope-Control</Name>
+                    <Condition>( oidc.flow.token.scope Is null ) or ( oidc.flow.token.scope = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-AzCode-Control</Name>
+                    <Condition>( oidc.flow.token.code Is null ) or ( oidc.flow.token.code = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-GrantType-Control</Name>
+                    <Condition>oidc.flow.token.grant_type != "authorization_code"</Condition>
+                </Step>
+                <Step>
+                    <Name>JS-GenerateAccessToken</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetIdToken</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/token") and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="introspection">
+            <Description>introspection endpoint</Description>
+            <Request>
+                <Step>
+                    <Name>EV-TokenToIntrospect</Name>
+                </Step>
+                <Step>
+                    <Name>BA-GetClientCredentials</Name>
+                </Step>
+                <Step>
+                    <Name>RF-ClientAuthentication-Control</Name>
+                    <Condition>!( oidc.flow.token.client_id =| "dummy-client_id" ) or !( oidc.flow.token.client_secret =| "dummy-client_secret" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-Token-Control</Name>
+                    <Condition>( oidc.flow.introspect.token Is null ) or ( oidc.flow.introspect.token = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetIntrospectionResponse</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/introspection") and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="userinfo">
+            <Description>userinfo endpoint</Description>
+            <Request>
+                <Step>
+                    <Name>EV-BearerToken</Name>
+                </Step>
+                <Step>
+                    <Name>RF-Token-Control</Name>
+                    <Condition>!( oidc.flow.userinfo.token =| "dummy-access_token" ) or ( oidc.flow.userinfo.token Is null )</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetUserInfoResponse</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/userinfo") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="jwks">
+            <Description>jwks endpoint</Description>
+            <Request>
+                <Step>
+                    <Name>AM-SetJWKS</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/certs") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="discovery document">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>AM-SetDiscoveryDocument</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/.well-known/openid-configuration") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="consent">
+            <Description>consent screen</Description>
+            <Request>
+                <Step>
+                    <Name>EV-TokenFormParams</Name>
+                </Step>
+                <Step>
+                    <Name>RF-State-Control</Name>
+                    <Condition>( oidc.flow.token.state Is null ) or ( oidc.flow.token.state = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( oidc.flow.token.redirect_uri Is null ) or ( oidc.flow.token.redirect_uri = "" )</Condition>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-SetConsentPage</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/consent") and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="confirm">
+            <Description>confirmation screen</Description>
+            <Request>
+                <Step>
+                    <Name>EV-TokenFormParams</Name>
+                </Step>
+                <Step>
+                    <Name>RF-State-Control</Name>
+                    <Condition>( oidc.flow.token.state Is null ) or ( oidc.flow.token.state = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-RedirectURI-Control</Name>
+                    <Condition>( oidc.flow.token.redirect_uri Is null ) or ( oidc.flow.token.redirect_uri = "" )</Condition>
+                </Step>
+                <Step>
+                    <Name>JS-GenerateAzCode</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-SetRedirectLocationToClientApp</Name>
+                </Step>
+            </Response>
+            <Condition>(proxy.pathsuffix MatchesPath "/confirm") and (request.verb = "POST")</Condition>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <HTTPProxyConnection>
+        <BasePath>/v1/openid-connect</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="noroute"/>
+</ProxyEndpoint>

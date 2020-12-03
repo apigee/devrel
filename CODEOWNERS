@@ -9,6 +9,7 @@
 /references/js-callout                @seymen
 /references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
+/references/oidc-mock		      @joelgauci
 /references/dummy		      @joelgauci
 /labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen
 /tools/organization-cleanup           @laughingbiscuit

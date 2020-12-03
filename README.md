@@ -37,6 +37,8 @@ further to fit a particular use case.
 - [Identity Proxy](references/dummy) -
   Reference for using Apigee as an identity proxy for end-user authentication
   via OIDC
+- [OIDC Mock Identity Proxy](references/oidc-mock) -
+  Reference project that includes an oidc mock identity provider
 
 ## Tools
 
