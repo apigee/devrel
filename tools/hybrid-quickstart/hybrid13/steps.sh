@@ -34,8 +34,9 @@ set_config_params() {
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
 
-    export APIGEE_CTL_VERSION='1.3.3'
+    export APIGEE_CTL_VERSION='1.3.4'
     export KPT_VERSION='v0.34.0'
+    export CERT_MANAGER_VERSION='v1.1.0'
 
     OS_NAME=$(uname -s)
     if [[ "$OS_NAME" == "Linux" ]]; then
@@ -304,7 +305,7 @@ create_gke_cluster() {
 install_asm_and_certmanager() {
 
   echo "👩🏽‍💼 Creating Cert Manager"
-  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
+  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
 
   echo "🤹‍♂️ Initialize ASM"
 
@@ -368,16 +369,22 @@ install_asm_and_certmanager() {
 download_apigee_ctl() {
     echo "📥 Setup Apigeectl"
 
-    mkdir -p "$QUICKSTART_TOOLS"/apigeectl
-    curl -L \
-      -o "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz \
-      "https://storage.googleapis.com/apigee-public/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
+    APIGEECTL_ROOT="$QUICKSTART_TOOLS/apigeectl"
 
-    tar xvzf "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz -C "$QUICKSTART_TOOLS"/apigeectl
-    rm "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz
+    # Remove if it existed from an old install
+    if [ -d "$APIGEECTL_ROOT" ]; then rm -rf "$APIGEECTL_ROOT"; fi
+    mkdir -p "$APIGEECTL_ROOT"
+
+    curl -L \
+      -o "$APIGEECTL_ROOT/apigeectl.tar.gz" \
+      "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
+
+    tar xvzf "$APIGEECTL_ROOT/apigeectl.tar.gz" -C "$APIGEECTL_ROOT"
+    rm "$APIGEECTL_ROOT/apigeectl.tar.gz"
+
     mkdir -p "$APIGEECTL_HOME"
-    mv "$QUICKSTART_TOOLS"/apigeectl/apigeectl_*_64/* "$APIGEECTL_HOME"
-    rm -d "$QUICKSTART_TOOLS"/apigeectl/apigeectl_*_64
+    mv "$APIGEECTL_ROOT/apigeectl_*_64/*" "$APIGEECTL_HOME"
+    rm -d "$APIGEECTL_ROOT/apigeectl_*_64"
     echo "✅ Apigeectl set up in $APIGEECTL_HOME"
 }
 
@@ -435,7 +442,7 @@ install_runtime() {
   cat << EOF > "$HYBRID_HOME"/overrides/overrides.yaml
 gcp:
   projectID: $PROJECT_ID
-  region: "$REGION"
+  region: "$REGION" # Analytics Region
 # Apigee org name.
 org: $PROJECT_ID
 # Kubernetes cluster name details
@@ -468,6 +475,11 @@ metrics:
 
 watcher:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
+
+logger:
+  enabled: true
+  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
+
 EOF
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
