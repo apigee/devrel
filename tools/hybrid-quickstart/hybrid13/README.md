@@ -29,7 +29,7 @@ gcloud init
 
 ## Override Default Config (if desired)
 
-If the following environment variables are set by default.
+The following environment variables are set by default.
 Export them to override the default values if neeed.
 
 ```bash
@@ -48,7 +48,7 @@ export ENV_GROUP_NAME='test'
 export DNS_NAME="$PROJECT_ID.example.com"
 ```
 
-## Initialize Apigee hybrid runtime on a GKE cluster
+## Initialize the Apigee hybrid runtime on a GKE cluster
 
 ```bash
 ./initialize-runtime-gke.sh
