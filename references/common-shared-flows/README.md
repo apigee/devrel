@@ -6,11 +6,19 @@ A set of useful shared flows for Apigee.
 
 - [NodeJS](https://nodejs.org/en/) LTS version or above
 - Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- For MacOS users only - readlink:
+
+        $ brew install coreutils
+        $ ln -s /usr/local/bin/greadlink /usr/bin/readlink
 
 ## Quick Start
+If MFA is enabled in your org, consider using [get_token](https://docs.apigee.com/api-platform/system-administration/using-gettoken) or similar to retrieve a token. 
 
     export APIGEE_ORG=xxx
     export APIGEE_ENV=xxx
+    ** if MFA
+    export APIGEE_SSO_TOKEN=xxx
+    ** otherwise
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
 

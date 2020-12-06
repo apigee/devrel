@@ -19,6 +19,8 @@ set -x
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
+[[ ! -z "$APIGEE_SSO_TOKEN" ]] && export APIGEE_AUTH="-t $APIGEE_SSO_TOKEN" || export APIGEE_AUTH="-u $APIGEE_USER -p $APIGEE_PASS"
+
 cd "$SCRIPTPATH" || exit
 for SF in */; do
   npm run deploy --prefix "$SCRIPTPATH"/"$SF"
