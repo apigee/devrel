@@ -382,9 +382,7 @@ download_apigee_ctl() {
     tar xvzf "$APIGEECTL_ROOT/apigeectl.tar.gz" -C "$APIGEECTL_ROOT"
     rm "$APIGEECTL_ROOT/apigeectl.tar.gz"
 
-    mkdir -p "$APIGEECTL_HOME"
-    mv "$APIGEECTL_ROOT/apigeectl_*_64/*" "$APIGEECTL_HOME"
-    rm -d "$APIGEECTL_ROOT/apigeectl_*_64"
+    mv "$APIGEECTL_ROOT"/apigeectl_*_64 "$APIGEECTL_HOME"
     echo "✅ Apigeectl set up in $APIGEECTL_HOME"
 }
 
