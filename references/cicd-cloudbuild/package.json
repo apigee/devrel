@@ -1,0 +1,33 @@
+{
+  "name": "cicd-v1",
+  "version": "1.0.0",
+  "description": "Sample Proxy for CI/CD Reference",
+  "author": "danistrebel",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "scripts": {
+    "test": "npm run unit-test && npm run integration-test",
+    "unit-test": "nyc --reporter=html mocha --recursive \"./test/unit/*.js\"",
+    "integration-test": "cucumber-js ./test/integration",
+    "lint": "npm run eslint && npm run apigeelint",
+    "eslint": "eslint -c ./.eslintrc-jsc.yml --format html",
+    "apigeelint": "apigeelint -s ./apiproxy -f html.js -e PO025,PO013"
+  },
+  "devDependencies": {
+    "apickli": "^2.3.3",
+    "apigeelint": "^2.2.0",
+    "cucumber": "^7.0.0-rc.0",
+    "eslint": "^7.0.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.11.0",
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.0.5",
+    "sinon": "^9.0.2"
+  }
+}
