@@ -14,7 +14,6 @@
 # limitations under the License.
 
 
-set -x 
 set -e
 
 #################################
@@ -158,5 +157,5 @@ set_devapp_credentials
 set_devapp_product
 
 # execute integration tests
-#npm i
-#npm run test
+npm i
+npm run test

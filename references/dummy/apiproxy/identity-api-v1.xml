@@ -10,21 +10,4 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="18" name="identity-api-v1">
-    <Basepaths>/v1/oauth20</Basepaths>
-    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
-    <CreatedAt>1582300513001</CreatedAt>
-    <CreatedBy>defaultUser</CreatedBy>
-    <Description></Description>
-    <DisplayName>identity-api-v1</DisplayName>
-    <LastModifiedAt>1584392107400</LastModifiedAt>
-    <LastModifiedBy>defaultUser</LastModifiedBy>
-    <Policies/>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources/>
-    <Spec></Spec>
-    <TargetServers/>
-    <TargetEndpoints/>
-</APIProxy>
+<APIProxy revision="1" name="identity-api-v1"/>
