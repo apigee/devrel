@@ -88,6 +88,7 @@ This id token is the one proposed on jwt.io, as shown here:
 If needed, you can modify this value.
 For this, please modify the content of the [AM-SetIdToken.xml](./apiproxy/policies/AM-SetIdToken.xml), as shown on the following picture:
 
+![AM-SetIdToken.xml](./img/01.png "Modifying the value of th ID token")
 
 ### Endpoints
 
@@ -132,6 +133,8 @@ Here is a detailed description of each endpoints and in particular the list of r
 
 If you need to change the value of the endpoint URI, please make the modification on the following file: [default.xml](./apiproxy/proxies/default.xml), as shown on the folowing picture:
 
+![default.xml](./img/02.png "Modifying the authorization endpoint")
+
 List of parameters:
 
 | Name| Type (query/header/form) | Value | Required (yes/no) | 
@@ -157,20 +160,22 @@ Output:
 
 Authentication page of the mock OIDC identity provider:
 
+![Authentication Page](./img/03.png "Authentication page of the OIDC Mock IdP")
 
 As there is no user authentication, you can enter login and password of your choice.
 As an example, here is an extract of the HTML body of the authentication page:
   
+![Authentication HTML Content](./img/04.png "HTML content of the Authentication page")
 
+Consent page of the mock OIDC identity provider:
 
-
-Consent page of the mock OIDC identity provider
+![Consent Page](./img/05.png "Consent page of the OIDC Mock IdP")
   
 “**Allow**” and “**Reject**” trigger the same result, which is an HTTP redirection (302) to the **redirect_uri**
 
-
 As an example, here is an extract of the HTML body of the consent page:
-  
+
+![Consent Page HTML Content](./img/06.png "HTML content of the Authentication page")
 
 *Token*
 
@@ -203,7 +208,6 @@ List of parameters:
 
 Example:
 
-
     Method:
     POST
     Headers:
@@ -219,7 +223,6 @@ Example:
     grant_type: authorization_code
 	
 Output:
-
 
 A JSON content with a valid access token and id token:
 
@@ -378,6 +381,7 @@ A JWKS content (JSON):
 The JWKS can be used to validate theJWT token that has been returned when executing the ```POST /token``` endpoint. If you modified the value of the ID Token returned by the OIDC Mock IdP please make sure to also modify the JWKS content using a tool of your choice.
 You need to modify the [AM-SetJWKS.xml](./apiproxy/policies/AM-SetJWKS.xml), as shown on the following picture:
 
+![AM-SetJWKS.xml](./img/07.png "Modifying the JWKS keys")
 
 *Discovery Document*
 
@@ -397,7 +401,6 @@ You need to modify the [AM-SetJWKS.xml](./apiproxy/policies/AM-SetJWKS.xml), as 
 List of parameters:
 
 None
-
 
 Example:
 
