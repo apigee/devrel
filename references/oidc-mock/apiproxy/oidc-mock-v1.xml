@@ -11,19 +11,4 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="16" name="oidc-mock-v1">
-    <Basepaths>/v1/mock</Basepaths>
-    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
-    <CreatedAt>1606233658225</CreatedAt>
-    <CreatedBy>defaultuser</CreatedBy>
-    <Description></Description>
-    <DisplayName>oidc-mock-v1</DisplayName>
-    <LastModifiedAt>1607004996019</LastModifiedAt>
-    <LastModifiedBy>defaultuser</LastModifiedBy>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Spec></Spec>
-    <TargetServers/>
-    <TargetEndpoints/>
-</APIProxy>
+<APIProxy revision="1" name="oidc-mock-v1"/>

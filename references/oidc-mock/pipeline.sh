@@ -13,13 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-set -x 
 set -e
 
 # deploy Apigee API Proxy
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update -X
 
 # execute integration tests
-#npm i
-#npm run test
+npm i
+npm run test

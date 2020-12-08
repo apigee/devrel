@@ -21,7 +21,7 @@
       "username": "jdoe",
       "scope": "openid email",
       "iat": 1516239022,
-      "iss": ""issuer": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect"
+      "iss": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect"
      }</Payload>
     </Set>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>

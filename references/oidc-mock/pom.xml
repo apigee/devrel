@@ -31,8 +31,6 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-    <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order 
-         of execution is the same as the order in which you define them. -->
     <build>
         <plugins>
             <plugin>
@@ -61,8 +59,8 @@
                 <groupId>io.apigee.build-tools.enterprise4g</groupId>
                 <artifactId>apigee-edge-maven-plugin</artifactId>
                 <version>1.2.3</version>
-                <executions>
-                    <execution>
+		<executions>
+		    <execution>
                         <id>configure-bundle-step</id>
                         <phase>package</phase>
                         <goals>
@@ -123,15 +121,8 @@
                 <apigee.refresh>${refresh}</apigee.refresh> <!-- optional: Refresh token override -->
             </properties>
         </profile>
-    </profiles>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+</profiles>
+<dependencies/>
 </project>
 
 
