@@ -28,7 +28,7 @@ Standard endpoints are exposed, like:
 
 ## OIDC Mock documentation
 
-The OIDC mock Identity Provider (IdP) is a mock version of an OIDC 
+The OIDC mock Identity Provider (IdP) is a mock version of an OIDC
 compliant IdP.
 
 It is proposed as an Apigee API Proxy and can be deployed on Apigee
