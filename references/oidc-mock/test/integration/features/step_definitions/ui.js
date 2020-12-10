@@ -29,7 +29,7 @@ const scope = 'openid email address'
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
-    headless:false,
+    headless: true,
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()

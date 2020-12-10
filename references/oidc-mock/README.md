@@ -2,6 +2,7 @@
 
 A simple OIDC mock identity provider implementation.
 Standard endpoints are exposed, like:
+
 - Authorize
 - Token
 - Introspection
@@ -33,10 +34,12 @@ The OIDC mock Identity Provider (IdP) is a mock version of an OIDC compliant IdP
 It is proposed as an Apigee API Proxy and can be deployed on Apigee Edge public Cloud, Apigee hybrid and Apigee Edge private Cloud.
 
 In the following sections, we describe the different characteristics of the OIDC Mock IdP:
+
 - Client App
 - Access Token
 - ID Token
 - Endpoints:
+
     1. Discovery document
     2. Authorize 
     3. Token
@@ -53,6 +56,7 @@ The value of the callback url is not checked by the mock OIDC IdP, so you can ch
 #### Client App Credentials
 
 Valid client app credentials are in the following form:
+
 - Client Id (aka. consumer key or app key) : MUST start with **dummy-client_id**
 
     Valid examples are:
@@ -61,7 +65,9 @@ Valid client app credentials are in the following form:
     - **dummy-client_id**-xxx
 
 - Client Secret (aka. consumer secret or app secret): MUST start with **dummy-client_secret**
+
     Valid examples are:
+
     - **dummy-client_secret**
     - **dummy-client_secret**-456def
     - **dummy-client_secret**-yyy
@@ -69,6 +75,7 @@ Valid client app credentials are in the following form:
 ### Access Tokens
 
 Access tokens delivered are in the following form:
+
 - dummy-access_token-<timestamp>
 
 Here is an example: **dummy-access_token-1606917416617**
@@ -93,6 +100,7 @@ For this, please modify the content of the [AM-SetIdToken.xml](./apiproxy/polici
 ### Endpoints
 
 Available endpoints are the following ones:
+
 1. Discovery document
 2. Authorize 
 3. Token
