@@ -26,13 +26,13 @@ RUN apk add --no-cache \
   openjdk11-jre-headless=11.0.9_p11-r0 \
   util-linux=2.35.2-r0 \
   # add chromium and dependencies for UI testing
-  chromium \
-  nss \
-  freetype \
-  freetype-dev \
-  harfbuzz \
-  ca-certificates \
-  ttf-freefont
+  chromium=86.0.4240.111-r0 \
+  nss=3.59-r0 \
+  freetype=2.10.4-r0 \
+  freetype-dev=2.10.4-r0 \
+  harfbuzz=2.6.6-r0 \
+  ca-certificates=20191127-r4 \
+  ttf-freefont=20120503-r1
 
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
