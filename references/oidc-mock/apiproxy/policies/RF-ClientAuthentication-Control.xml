@@ -16,10 +16,12 @@
     <Properties/>
     <FaultResponse>
         <Set>
-            <Headers/>
+            <Headers>
+                <Header name="Cache-Control">no-store</Header>
+                <Header name="Pragma">no-cache</Header>
+            </Headers>
             <Payload contentType="application/json">{
-  "error": "invalid_client or secret",
-  "error_description": "The client authentication was invalid"
+  "error": "invalid_client"
 }</Payload>
             <StatusCode>401</StatusCode>
             <ReasonPhrase>Unauthorized</ReasonPhrase>

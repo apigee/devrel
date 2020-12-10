@@ -21,8 +21,13 @@
                     <Name>EV-AuthzQueryParams</Name>
                 </Step>
                 <Step>
+                    <Condition>( oidc.flow.authorize.client_id Is null ) or 
+                    ( oidc.flow.authorize.client_id = "" )</Condition>
+                    <Name>RF-ClientId-Control-InvalidRequest</Name>
+                </Step>
+                <Step>
                     <Condition>!(oidc.flow.authorize.client_id =| "dummy-client_id")</Condition>
-                    <Name>RF-ClientId-Control</Name>
+                    <Name>RF-ClientId-Control-InvalidClient</Name>
                 </Step>
                 <Step>
                     <Condition>( oidc.flow.authorize.redirect_uri Is null ) or 
@@ -115,7 +120,11 @@
                 <Step>
                     <Condition>( oidc.flow.introspect.token Is null ) or 
                     ( oidc.flow.introspect.token = "" )</Condition>
-                    <Name>RF-Token-Control</Name>
+                    <Name>RF-Token-Control-InvalidRequest</Name>
+                </Step>
+                <Step>
+                    <Condition>!( oidc.flow.introspect.token =| "dummy-access_token" )</Condition>
+                    <Name>RF-Token-Control-InvalidToken</Name>
                 </Step>
                 <Step>
                     <Name>AM-SetIntrospectionResponse</Name>
@@ -131,9 +140,13 @@
                     <Name>EV-BearerToken</Name>
                 </Step>
                 <Step>
-                    <Condition>!( oidc.flow.userinfo.token =| "dummy-access_token" ) or 
-                    ( oidc.flow.userinfo.token Is null )</Condition>
-                    <Name>RF-Token-Control</Name>
+                    <Condition>( oidc.flow.userinfo.token Is null ) or 
+                    ( oidc.flow.userinfo.token = "" )</Condition>
+                    <Name>RF-Token-Control-InvalidRequest</Name>
+                </Step>
+                <Step>
+                    <Condition>!( oidc.flow.userinfo.token =| "dummy-access_token" )</Condition>
+                    <Name>RF-Token-Control-InvalidToken</Name>
                 </Step>
                 <Step>
                     <Name>AM-SetUserInfoResponse</Name>
@@ -211,6 +224,14 @@
                     <Name>AM-SetRedirectLocationToClientApp</Name>
                 </Step>
             </Response>
+        </Flow>
+        <Flow name="404 - Not Found">
+            <Request>
+                <Step>
+                    <Name>RF-404NotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
         </Flow>
     </Flows>
     <HTTPProxyConnection>

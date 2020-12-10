@@ -16,8 +16,11 @@
     <Properties/>
     <FaultResponse>
         <Set>
-            <Headers/>
-            <Payload contentType="application/json">{"message":"code not provided"}</Payload>
+            <Headers>
+                <Header name="Cache-Control">no-store</Header>
+                <Header name="Pragma">no-cache</Header>
+            </Headers>
+            <Payload contentType="application/json">{"error":"invalid_grant"}</Payload>
             <StatusCode>400</StatusCode>
             <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>

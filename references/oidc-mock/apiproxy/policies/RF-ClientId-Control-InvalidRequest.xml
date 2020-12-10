@@ -11,15 +11,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-Token-Control">
-    <DisplayName>RF-Token-Control</DisplayName>
+<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Control-InvalidRequest">
+    <DisplayName>RF-ClientId-Control-InvalidRequest</DisplayName>
     <Properties/>
     <FaultResponse>
         <Set>
-            <Headers/>
-            <Payload contentType="application/json">{"message":"invalid or missing access token"}</Payload>
-            <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Headers>
+                <Header name="Cache-Control">no-store</Header>
+                <Header name="Pragma">no-cache</Header>
+            </Headers>
+            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>

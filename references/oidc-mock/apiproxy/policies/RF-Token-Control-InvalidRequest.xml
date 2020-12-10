@@ -11,8 +11,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Secret-Control">
-    <DisplayName>RF-ClientId-Secret-Control</DisplayName>
+<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-Token-Control-InvalidRequest">
+    <DisplayName>RF-Token-Control-InvalidRequest</DisplayName>
     <Properties/>
     <FaultResponse>
         <Set>
@@ -20,9 +20,9 @@
                 <Header name="Cache-Control">no-store</Header>
                 <Header name="Pragma">no-cache</Header>
             </Headers>
-            <Payload contentType="application/json">{"error":"invalid_client"}</Payload>
-            <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>

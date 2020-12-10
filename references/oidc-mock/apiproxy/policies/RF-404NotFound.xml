@@ -11,15 +11,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Control">
-    <DisplayName>RF-ClientId-Control</DisplayName>
-    <Properties/>
+<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-404NotFound">
     <FaultResponse>
         <Set>
-            <Headers/>
-            <Payload contentType="application/json">{"message":"bad credentials"}</Payload>
-            <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Headers>
+                <Header name="Cache-Control">no-store</Header>
+                <Header name="Pragma">no-cache</Header>
+            </Headers>
+            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
+            <StatusCode>404</StatusCode>
+            <ReasonPhrase>Not Found</ReasonPhrase>
         </Set>
     </FaultResponse>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>

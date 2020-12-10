@@ -27,10 +27,11 @@ const clientId = 'dummy-client_id-123'
 const clientSecret = 'dummy-client_secret-456'
 const username = 'janedoe' 
 const password = 'dummy-password'
+const basePath = process.env.TEST_BASE_PATH || "/v1/openid-connect";
 
 Before(function() {
   this.apickli = new apickli.Apickli('https',
-    org + '-' + env + '.apigee.net')
+    org + '-' + env + '.apigee.net' +basePath)
   this.apickli.scenarioVariables.clientId = clientId
   this.apickli.scenarioVariables.clientSecret = clientSecret
   this.apickli.scenarioVariables.username = username

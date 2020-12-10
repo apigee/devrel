@@ -1,4 +1,4 @@
-@AccessIdentityProvider
+@End-to-EndTests
 Feature:
   As a Client App 
   I want to get an access token from an identity provider
@@ -15,19 +15,19 @@ Feature:
   Scenario: Generate Access Token
     Given I have basic authentication credentials `clientId` and `clientSecret`
     And I set form parameters to 
-      | parameter   | value		      |
+      | parameter   | value		                |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      |	state	    | `state`		      |
-      | scope	    | openid email address    |
-    When I POST to /v1/openid-connect/token
+      |	state	      | `state`		              |
+      | scope	      | openid email address    |
+    When I POST to /token
     Then response code should be 200
     And I store the value of body path $.access_token as userToken in global scope
 
   Scenario: Client App Accesses User Information
     Given I set Authorization header to Bearer `userToken`
-    When I GET /v1/openid-connect/userinfo
+    When I GET /userinfo
     Then response code should be 200
     And response body path $.email should be (.+@example.com)
 
@@ -36,12 +36,12 @@ Feature:
     And I set form parameters to
       | parameter   | value                   |
       | token	    | `userToken`	      |
-    When I POST to /v1/openid-connect/introspect
+    When I POST to /introspect
     Then response code should be 200
     And response body path $.active should be (true)
 
   Scenario: Client App Accesses JWKS Resource
-    When I GET /v1/openid-connect/certs
+    When I GET /certs
     Then response code should be 200
     And response body path $.keys[0].alg should be (RS256)
     And response body path $.keys[0].n should be (.)

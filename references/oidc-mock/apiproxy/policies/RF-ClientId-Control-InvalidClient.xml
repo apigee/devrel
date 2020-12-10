@@ -11,8 +11,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Secret-Control">
-    <DisplayName>RF-ClientId-Secret-Control</DisplayName>
+<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Control-InvalidClient">
+    <DisplayName>RF-ClientId-Control-InvalidClient</DisplayName>
     <Properties/>
     <FaultResponse>
         <Set>
