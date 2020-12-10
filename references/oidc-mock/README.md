@@ -31,10 +31,10 @@ Standard endpoints are exposed, like:
 The OIDC mock Identity Provider (IdP) is a mock version of an OIDC 
 compliant IdP.
 
-It is proposed as an Apigee API Proxy and can be deployed on Apigee 
+It is proposed as an Apigee API Proxy and can be deployed on Apigee
 Edge public Cloud, Apigee hybrid and Apigee Edge private Cloud.
 
-In the following sections, we describe the different characteristics 
+In the following sections, we describe the different characteristics
 of the OIDC Mock IdP:
 
 - Client App
@@ -42,7 +42,7 @@ of the OIDC Mock IdP:
 - ID Token
 - Endpoints:
     1. Discovery document
-    2. Authorize 
+    2. Authorize
     3. Token
     4. Introspection
     5. Userinfo
@@ -51,8 +51,8 @@ of the OIDC Mock IdP:
 ### Client App
 
 The name of the client app is set to **dummy-client_app**
-The value of the callback url is not checked by the mock OIDC IdP, 
-so you can choose the value, which is the more convenient for you 
+The value of the callback url is not checked by the mock OIDC IdP,
+so you can choose the value, which is the more convenient for you
 like: [https://httpbin.org/get](https://httpbin.org/get)
 
 #### Client App Credentials
@@ -63,7 +63,7 @@ Valid client app credentials are in the following form:
 
     Valid examples are:
   - **dummy-client_id**
-  - **dummy-client_id**-123abc 
+  - **dummy-client_id**-123abc
   - **dummy-client_id**-xxx
 
 - Client Secret (aka. consumer secret or app secret): MUST start with **dummy-client_secret**
@@ -95,8 +95,8 @@ Here is its value:
 This id token is the one proposed on jwt.io, as shown here:
 
 If needed, you can modify this value.
-For this, please modify the content of the 
-[AM-SetIdToken.xml](./apiproxy/policies/AM-SetIdToken.xml), 
+For this, please modify the content of the
+[AM-SetIdToken.xml](./apiproxy/policies/AM-SetIdToken.xml),
 as shown on the following picture:
 
 ![AM-SetIdToken.xml](./img/01.png "Modifying the value of th ID token")
@@ -113,7 +113,7 @@ Available endpoints are the following ones:
 6. JWKS (certs)
 
 Once the OIDC mock API Proxy has been installed on a target organization
- and deployed into an environment, here are values for these different 
+ and deployed into an environment, here are values for these different
  endpoints and method available for each of them:
 
 | Endpoint | Available method + URI |
@@ -127,7 +127,7 @@ Once the OIDC mock API Proxy has been installed on a target organization
 
 #### Endpoint details
 
-Here is a detailed description of each endpoints and in particular the 
+Here is a detailed description of each endpoints and in particular the
 list of required parameters for each of them:
 
 ##### Authorize
@@ -144,9 +144,9 @@ list of required parameters for each of them:
 |:----|
 | /auth |
 
-If you need to change the value of the endpoint URI, please make the 
-modification on the following file: 
-[default.xml](./apiproxy/proxies/default.xml), 
+If you need to change the value of the endpoint URI, please make the
+modification on the following file:
+[default.xml](./apiproxy/proxies/default.xml),
 as shown on the folowing picture:
 
 ![default.xml](./img/02.png "Modifying the authorization endpoint")
@@ -169,14 +169,14 @@ Example:
     GET
     URI:  
     /v1/openid-connect/auth?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://httpbin.org/get
-	
+
 Output:
 
 Authentication page of the mock OIDC identity provider:
 
 ![Authentication Page](./img/03.png "Authentication page of the OIDC Mock IdP")
 
-As there is no user authentication, 
+As there is no user authentication,
 you can enter login and password of your choice.
 As an example, here is an extract of the HTML body of the authentication page:
   
@@ -186,7 +186,7 @@ Consent page of the mock OIDC identity provider:
 
 ![Consent Page](./img/05.png "Consent page of the OIDC Mock IdP")
   
-“**Allow**” and “**Reject**” trigger the same result, 
+“**Allow**” and “**Reject**” trigger the same result,
 which is an HTTP redirection (302) to the **redirect_uri**
 
 As an example, here is an extract of the HTML body of the consent page:
@@ -205,7 +205,7 @@ As an example, here is an extract of the HTML body of the consent page:
 
 | Endpoint URI |
 | :----|
-| /token |	
+|/token|
 
 List of parameters:
 
@@ -309,10 +309,10 @@ A JSON content with validation response:
 | Endpoint URI |
 | :----|
 | /userinfo |
-	
+
 List of parameters:
 
-| Name | Type (query/header/form) | Value | Required (yes/no) | 
+| Name | Type (query/header/form) | Value | Required (yes/no) |
 |:----|:-----:|:----:|:----:|
 | authorization | header | Bearer Token - cf. Access Tokens | yes |
 
@@ -362,7 +362,7 @@ Example:
     GET
     URI:
     /v1/openid-connect/certs
-	
+
 Output:
 
 A JWKS content (JSON):
@@ -380,11 +380,11 @@ A JWKS content (JSON):
         ]
     }
 
-The JWKS can be used to validate theJWT token that has been returned when 
-executing the ```POST /token``` endpoint. If you modified the value of the 
-ID Token returned by the OIDC Mock IdP please make sure to also modify the 
+The JWKS can be used to validate theJWT token that has been returned when
+executing the ```POST /token``` endpoint. If you modified the value of the
+ID Token returned by the OIDC Mock IdP please make sure to also modify the
 JWKS content using a tool of your choice.
-You need to modify the [AM-SetJWKS.xml](./apiproxy/policies/AM-SetJWKS.xml), 
+You need to modify the [AM-SetJWKS.xml](./apiproxy/policies/AM-SetJWKS.xml),
 as shown on the following picture:
 
 ![AM-SetJWKS.xml](./img/07.png "Modifying the JWKS keys")
@@ -416,7 +416,7 @@ Example:
 
 Output:
 
-A JSON content providing the different endpoints, 
+A JSON content providing the different endpoints,
 the issuer and other security configuration specific to the Mock OIDC IdP:
 
     {
