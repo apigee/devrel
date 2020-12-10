@@ -16,6 +16,15 @@
 -->
 
 <ProxyEndpoint name="default">
+  <PreFlow name="PreFlow">
+    <Request/>
+    <Response/>
+  </PreFlow>
+  <Flows/>
+  <PostFlow name="PostFlow">
+    <Request/>
+    <Response/>
+  </PostFlow>
   <HTTPProxyConnection>
     <BasePath>/httpbin/v0</BasePath>
   </HTTPProxyConnection>

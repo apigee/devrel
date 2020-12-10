@@ -23,8 +23,8 @@ set_config_params
 
 echo "🗑️ Delete Apigee hybrid cluster"
 
-gcloud container hub memberships unregister "$CLUSTER_NAME" --gke-cluster="${ZONE}/${CLUSTER_NAME}"
-yes | gcloud container clusters delete "$CLUSTER_NAME"
+gcloud container hub memberships unregister "$GKE_CLUSTER_NAME" --gke-cluster="${ZONE}/${GKE_CLUSTER_NAME}"
+yes | gcloud container clusters delete "$GKE_CLUSTER_NAME"
 
 echo "✅ Apigee hybrid cluster deleted"
 
@@ -49,7 +49,7 @@ rm -r "$HYBRID_HOME"
 echo "✅ Tooling and Config removed"
 
 delete_apigee_keys
-delete_sa_keys "$CLUSTER_NAME-anthos"
+delete_sa_keys "$GKE_CLUSTER_NAME-anthos"
 
 echo "✅ SA keys deleted"
 
