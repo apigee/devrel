@@ -58,7 +58,7 @@ like: [https://httpbin.org/get](https://httpbin.org/get)
 **There is one exception**: should you need working with an invalid
 ```redirect_uri``` value, you can use the only value considered
 invalid by the OIDC Mock :
-**https://example.com/invalid**
+`https://example.com/invalid`
 
 #### Client App Credentials
 
@@ -123,12 +123,12 @@ Once the OIDC mock API Proxy has been installed on a target organization
 
 | Endpoint | Available method + URI |
 |:----|:---|
-|Discovery document| GET /v1/openid-connect/.well-known/openid-configuration |
-| Authorize             | GET /v1/openid-connect/authorize                        |
-| Token                 | POST /v1/openid-connect/token                      |
-| Introspection         | POST /v1/openid-connect/introspect                 |
-| UserInfo              | GET /v1/openid-connect/userinfo                    |
-| JWKS/Certs            | GET /v1/openid-connect/certs                       |
+|Discovery document|GET /v1/openid-connect/.well-known/openid-configuration|
+| Authorize             | GET /v1/openid-connect/authorize |
+| Token                 | POST /v1/openid-connect/token |
+| Introspection         | POST /v1/openid-connect/introspect |
+| UserInfo              | GET /v1/openid-connect/userinfo |
+| JWKS/Certs            | GET /v1/openid-connect/certs |
 
 #### Endpoint details
 
