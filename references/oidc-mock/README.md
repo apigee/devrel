@@ -52,8 +52,13 @@ of the OIDC Mock IdP:
 
 The name of the client app is set to **dummy-client_app**
 The value of the callback url is not checked by the mock OIDC IdP,
-so you can choose the value, which is the more convenient for you
+so you can choose the value, which is the most convenient for you
 like: [https://httpbin.org/get](https://httpbin.org/get)
+
+**There is one exception**: should you need working with an invalid
+```redirect_uri``` value, you can use the only value considered
+invalid by the OIDC Mock :
+**https://example.com/invalid**
 
 #### Client App Credentials
 
