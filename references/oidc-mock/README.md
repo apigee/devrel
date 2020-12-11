@@ -119,7 +119,7 @@ Once the OIDC mock API Proxy has been installed on a target organization
 | Endpoint | Available method + URI |
 |:----|:---|
 |Discovery document| GET /v1/openid-connect/.well-known/openid-configuration |
-| Authorize             | GET /v1/openid-connect/auth                        |
+| Authorize             | GET /v1/openid-connect/authorize                        |
 | Token                 | POST /v1/openid-connect/token                      |
 | Introspection         | POST /v1/openid-connect/introspect                 |
 | UserInfo              | GET /v1/openid-connect/userinfo                    |
@@ -142,7 +142,7 @@ list of required parameters for each of them:
 
 | Endpoint URI |
 |:----|
-| /auth |
+| /authorize |
 
 If you need to change the value of the endpoint URI, please make the
 modification on the following file:
@@ -168,7 +168,7 @@ Example:
     Method:
     GET
     URI:  
-    /v1/openid-connect/auth?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://httpbin.org/get
+    /v1/openid-connect/authorize?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://httpbin.org/get
 
 Output:
 
@@ -421,7 +421,7 @@ the issuer and other security configuration specific to the Mock OIDC IdP:
 
     {
         "issuer": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect",
-        "authorization_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/auth",
+        "authorization_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/authorize",
         "token_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/token",
         "introspection_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/token/introspect",
         "userinfo_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/userinfo",

@@ -11,19 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientId-Control-InvalidRequest">
-    <DisplayName>RF-ClientId-Control-InvalidRequest</DisplayName>
-    <Properties/>
+<RaiseFault async="false" name="RF-UnsupportedResponseType">
     <FaultResponse>
         <Set>
-            <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
-            </Headers>
-            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"unsupported_response_type"}</Payload>
             <StatusCode>400</StatusCode>
             <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

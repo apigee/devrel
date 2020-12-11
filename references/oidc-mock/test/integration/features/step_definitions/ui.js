@@ -18,6 +18,7 @@ const {
   Given,
   When,
   Then,
+  And,
   After
 } = require('cucumber')
 const puppeteer = require('puppeteer')
@@ -34,8 +35,44 @@ Given('I navigate to the authorize page', async function() {
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + org + '-' + env + 
-    '.apigee.net/v1/openid-connect/auth?client_id=' + this.apickli.scenarioVariables.clientId
+    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
+})
+
+Given('I navigate to the authorize page with an invalid response type', async function() {
+  this.browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
+    headless: true,
+    args: ["--no-sandbox"]
+  })
+  this.page = await this.browser.newPage()
+  return await this.page.goto('https://' + org + '-' + env + 
+    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+    + '&redirect_uri=https://httpbin.org/get&response_type=xxx&state=' + state +'&scope=' + scope)
+})
+
+Given('I navigate to the authorize page without a scope parameter', async function() {
+  this.browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
+    headless: true,
+    args: ["--no-sandbox"]
+  })
+  this.page = await this.browser.newPage()
+  return await this.page.goto('https://' + org + '-' + env + 
+    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+    + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state)
+})
+
+Given('I navigate to the authorize page without a state parameter', async function() {
+  this.browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
+    headless: true,
+    args: ["--no-sandbox"]
+  })
+  this.page = await this.browser.newPage()
+  return await this.page.goto('https://' + org + '-' + env + 
+    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+    + '&redirect_uri=https://httpbin.org/get&response_type=code&&scope=' + scope)
 })
 
 When('I sign in and consent', async function() {
@@ -74,6 +111,14 @@ Then('I store the auth code in global scope', async function() {
 
 Then('I store the state parameter in global scope', async function() {
   this.apickli.setGlobalVariable('state',state)
+})
+
+Then('I receive an unsupported_response_type error',  function(cb) {
+  cb(this.page.url().indexOf('error=unsupported_response_type') === -1)
+})
+
+Then('I receive an invalid_request error',  function(cb) {
+  cb(this.page.url().indexOf('error=invalid_request') === -1)
 })
 
 After(async function() {

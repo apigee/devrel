@@ -19,5 +19,5 @@ set -e
 mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
 
 # execute integration tests
-npm i
+npm install
 npm run test

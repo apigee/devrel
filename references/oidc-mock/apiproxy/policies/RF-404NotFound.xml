@@ -11,17 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-404NotFound">
+<RaiseFault name="RF-404NotFound">
     <FaultResponse>
         <Set>
-            <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
-            </Headers>
-            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"not_found"}</Payload>
             <StatusCode>404</StatusCode>
             <ReasonPhrase>Not Found</ReasonPhrase>
         </Set>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

@@ -15,11 +15,11 @@ Feature:
   Scenario: Generate Access Token
     Given I have basic authentication credentials `clientId` and `clientSecret`
     And I set form parameters to 
-      | parameter   | value		                |
-      | grant_type  | authorization_code      |
-      | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
-      |	state	      | `state`		              |
+      | parameter   | value 			|
+      | grant_type  | authorization_code 	|
+      | code        | `authCode`              	|
+      | redirect_uri| https://httpbin.org/get 	|
+      |	state	      | `state`			|
       | scope	      | openid email address    |
     When I POST to /token
     Then response code should be 200
@@ -34,8 +34,8 @@ Feature:
   Scenario: Client App Accesses Introspection Endpoint 
     Given I have basic authentication credentials `clientId` and `clientSecret`
     And I set form parameters to
-      | parameter   | value                   |
-      | token	    | `userToken`	      |
+      | parameter   | value	  |
+      | token	    | `userToken` |
     When I POST to /introspect
     Then response code should be 200
     And response body path $.active should be (true)

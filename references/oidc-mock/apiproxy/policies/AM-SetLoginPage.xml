@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetLoginPage">
-    <DisplayName>AM-SetLoginPage</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-SetLoginPage">
     <Set>
         <Payload contentType="text/html"><![CDATA[
 <!DOCTYPE html>
@@ -157,5 +155,5 @@
 </html> ]]></Payload>
     </Set>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="response"/>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetConsentPage">
-    <DisplayName>AM-SetConsentPage</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-SetConsentPage">
     <Set>
         <Payload contentType="text/html"><![CDATA[
 <!DOCTYPE html>
@@ -152,6 +150,6 @@
 </body>
 </html> ]]></Payload>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="response"/>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

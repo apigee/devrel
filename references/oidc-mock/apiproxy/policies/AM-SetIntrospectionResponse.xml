@@ -11,19 +11,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetIntrospectionResponse">
-    <DisplayName>AM-SetIntrospectionResponse</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-SetIntrospectionResponse">
     <Set>
         <Payload contentType="application/json">{
       "active": true,
       "client_id": "dummy-client_id-123abc",
       "username": "jdoe",
       "scope": "openid email",
-      "iat": 1516239022,
+      "iat": {system.timestamp},
       "iss": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect"
      }</Payload>
     </Set>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="response"/>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

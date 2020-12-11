@@ -14,4 +14,4 @@ Feature:
     When I GET /baduri/openid-configuration
     Then response code should be 404
     And response body should be valid json
-    And response body path $.error should be invalid_request
+    And response body path $.error should be not_found

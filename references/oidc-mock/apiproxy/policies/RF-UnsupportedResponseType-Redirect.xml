@@ -11,19 +11,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-Scope-Control">
-    <DisplayName>RF-Scope-Control</DisplayName>
-    <Properties/>
+<RaiseFault async="false" name="RF-UnsupportedResponseType-Redirect">
     <FaultResponse>
         <Set>
             <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
+                <Header name="Location">{oidc.flow.authorize.redirect_uri}?error=unsupported_response_type</Header>
             </Headers>
-            <Payload contentType="application/json">{"error":"invalid_request"}</Payload>
-            <StatusCode>400</StatusCode>
-            <ReasonPhrase>Bad Request</ReasonPhrase>
+            <StatusCode>302</StatusCode>
+            <ReasonPhrase>Found</ReasonPhrase>
         </Set>
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <AssignTo createNew="false" type="response"/>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

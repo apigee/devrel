@@ -7,9 +7,9 @@
 /references/gcp-sa-auth-shared-flow   @danistrebel
 /references/java-callout              @laughingbiscuit
 /references/js-callout                @seymen
+/references/oidc-mock                 @joelgauci
 /references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
-/references/oidc-mock                 @joelgauci
 /labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen
 /tools/organization-cleanup           @laughingbiscuit
 /tools/pipeline-runner                @laughingbiscuit @seymen

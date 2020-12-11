@@ -11,12 +11,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-TokenToIntrospect">
-    <DisplayName>EV-TokenToIntrospect</DisplayName>
-    <Properties/>
+<ExtractVariables name="EV-TokenToIntrospect">
     <Source>request</Source>
     <FormParam name="token">
-        <Pattern ignoreCase="true">{token}</Pattern>
+        <Pattern>{token}</Pattern>
     </FormParam>
     <VariablePrefix>oidc.flow.introspect</VariablePrefix>
 </ExtractVariables>

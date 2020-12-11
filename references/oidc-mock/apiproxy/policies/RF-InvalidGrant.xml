@@ -11,19 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ResponseType-Invalid">
-    <DisplayName>RF-ResponseType-Invalid</DisplayName>
-    <Properties/>
+<RaiseFault name="RF-InvalidGrant">
     <FaultResponse>
         <Set>
-            <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
-            </Headers>
-            <Payload contentType="application/json">{"error":"unsupported_response_type"}</Payload>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"invalid_grant"}</Payload>
             <StatusCode>400</StatusCode>
             <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

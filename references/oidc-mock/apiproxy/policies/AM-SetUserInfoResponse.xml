@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetUserInfoResponse">
-    <DisplayName>AM-SetUserInfoResponse</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-SetUserInfoResponse">
     <Set>
         <Payload contentType="application/json">{
         "sub":"248289761001",
@@ -24,6 +22,5 @@
         "picture":"http://example.com/janedoe/me.jpg"
         }</Payload>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="response"/>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

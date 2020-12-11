@@ -11,16 +11,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetRedirectLocationToClientApp">
-    <DisplayName>AM-SetRedirectLocationToClientApp</DisplayName>
-    <Properties/>
+<AssignMessage async="false" name="AM-SetRedirectLocationToClientApp">
     <Set>
         <Headers>
             <Header name="Location">{oidc.flow.token.redirect_uri}?code={flow.oidc.azcode}&amp;state={oidc.flow.token.state}</Header>
         </Headers>
         <StatusCode>302</StatusCode>
-        <ReasonPhrase>Found Redirect</ReasonPhrase>
+        <ReasonPhrase>Found</ReasonPhrase>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="response"/>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

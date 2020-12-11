@@ -11,21 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-ClientAuthentication-Control">
-    <DisplayName>RF-ClientAuthentication-Control</DisplayName>
-    <Properties/>
+<RaiseFault name="RF-UnsupportedGrantType">
     <FaultResponse>
         <Set>
-            <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
-            </Headers>
-            <Payload contentType="application/json">{
-  "error": "invalid_client"
-}</Payload>
-            <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"unsupported_grant_type"}</Payload>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

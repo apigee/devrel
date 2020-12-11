@@ -11,27 +11,25 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="true" enabled="true" name="EV-TokenFormParams">
-    <DisplayName>EV-TokenFormParams</DisplayName>
-    <Properties/>
+<ExtractVariables name="EV-TokenFormParams">
     <Source>request</Source>
     <FormParam name="code">
-        <Pattern ignoreCase="true">{code}</Pattern>
+        <Pattern>{code}</Pattern>
     </FormParam>
     <FormParam name="scope">
-        <Pattern ignoreCase="true">{scope}</Pattern>
+        <Pattern>{scope}</Pattern>
     </FormParam>
     <FormParam name="grant_type">
-        <Pattern ignoreCase="true">{grant_type}</Pattern>
+        <Pattern>{grant_type}</Pattern>
     </FormParam>
     <FormParam name="redirect_uri">
-        <Pattern ignoreCase="true">{redirect_uri}</Pattern>
+        <Pattern>{redirect_uri}</Pattern>
     </FormParam>
     <FormParam name="state">
-        <Pattern ignoreCase="true">{state}</Pattern>
+        <Pattern>{state}</Pattern>
     </FormParam>
     <FormParam name="app_name">
-        <Pattern ignoreCase="true">{app_name}</Pattern>
+        <Pattern>{app_name}</Pattern>
     </FormParam>
     <VariablePrefix>oidc.flow.token</VariablePrefix>
 </ExtractVariables>

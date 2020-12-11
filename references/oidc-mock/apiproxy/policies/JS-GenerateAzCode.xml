@@ -11,8 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript async="false" continueOnError="false" enabled="true" timeLimit="200" name="JS-GenerateAzCode">
-    <DisplayName>JS-GenerateAzCode</DisplayName>
-    <Properties/>
+<Javascript timeLimit="200" name="JS-GenerateAzCode">
     <ResourceURL>jsc://JS-GenerateAzCode.js</ResourceURL>
 </Javascript>

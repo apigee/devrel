@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "apickli": "^2.3.3",
-    "puppeteer": "^3.3.0",
+    "puppeteer": "^5.2.1",
     "cucumber": "^6.0.5"
   }
 }

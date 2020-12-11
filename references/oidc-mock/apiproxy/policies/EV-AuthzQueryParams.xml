@@ -11,8 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-AuthzQueryParams">
-    <DisplayName>EV-AuthzQueryParams</DisplayName>
+<ExtractVariables name="EV-AuthzQueryParams">
     <Source>request</Source>
     <QueryParam name="state">
         <Pattern ignoreCase="true">{state}</Pattern>
@@ -33,7 +32,7 @@
         <Pattern ignoreCase="true">{nonce}</Pattern>
     </QueryParam>
     <QueryParam name="prompt">
-        <Pattern ignoreCase="true">{prompt}</Pattern>
+        <Pattern>{prompt}</Pattern>
     </QueryParam>
     <VariablePrefix>oidc.flow.authorize</VariablePrefix>
 </ExtractVariables>

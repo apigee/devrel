@@ -11,12 +11,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-BearerToken">
-    <DisplayName>EV-BearerToken</DisplayName>
-    <Properties/>
-    <Header name="authorization">
+<ExtractVariables name="EV-BearerToken">
+    <Header name="Authorization">
         <Pattern ignoreCase="true">Bearer {token}</Pattern>
     </Header>
     <VariablePrefix>oidc.flow.userinfo</VariablePrefix>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </ExtractVariables>

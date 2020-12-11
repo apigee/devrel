@@ -11,19 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-AzCode-Control">
-    <DisplayName>RF-AzCode-Control</DisplayName>
-    <Properties/>
+<RaiseFault name="RF-InvalidClient">
     <FaultResponse>
         <Set>
-            <Headers>
-                <Header name="Cache-Control">no-store</Header>
-                <Header name="Pragma">no-cache</Header>
-            </Headers>
-            <Payload contentType="application/json">{"error":"invalid_grant"}</Payload>
-            <StatusCode>400</StatusCode>
-            <ReasonPhrase>Bad Request</ReasonPhrase>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"invalid_client"}</Payload>
+            <StatusCode>401</StatusCode>
+            <ReasonPhrase>Unauthorized</ReasonPhrase>
         </Set>
     </FaultResponse>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </RaiseFault>

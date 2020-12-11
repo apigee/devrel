@@ -11,13 +11,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetAppName">
-    <DisplayName>AM-SetAppName</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-SetAppName">
     <AssignVariable>
         <Name>oidc.flow.authorize.appName</Name>
         <Value>dummy-client_app</Value>
     </AssignVariable>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" transport="http" type="request"/>
+    <AssignTo createNew="false" type="request"/>
 </AssignMessage>

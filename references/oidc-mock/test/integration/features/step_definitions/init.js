@@ -17,7 +17,6 @@
 const apickli = require('apickli')
 const {
   Before,
-  Given,
   setDefaultTimeout
 } = require('cucumber')
 
