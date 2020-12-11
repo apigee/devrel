@@ -32,12 +32,11 @@ set_config_params() {
 
     echo "🔧 Configuring Apigee hybrid"
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
-    export CLUSTER_NAME=${CLUSTER_NAME:=apigee-hybrid}
-    export ENV_GROUP_NAME=${ENV_GROUP_NAME:=default}
-    export ENV_NAME=${ENV_NAME:=test}
+    export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
 
-    export APIGEE_CTL_VERSION='1.3.3'
+    export APIGEE_CTL_VERSION='1.3.4'
     export KPT_VERSION='v0.34.0'
+    export CERT_MANAGER_VERSION='v1.1.0'
 
     OS_NAME=$(uname -s)
     if [[ "$OS_NAME" == "Linux" ]]; then
@@ -127,7 +126,7 @@ enable_all_apis() {
   PROJECT_ID=${PROJECT_ID:=$(gcloud config get-value "project")}
 
   echo "📝 Enabling all required APIs in GCP project \"$PROJECT_ID\""
-  
+
   # Assuming we already enabled the APIs if the Apigee Org exists
   if check_existing_apigee_resource "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID" ; then
     echo "(assuming APIs are already enabled)"
@@ -223,8 +222,8 @@ create_apigee_envgroup() {
 
     curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
       -d "{
-        \"name\":\"$ENV_GROUP_NAME\", 
-        \"hostnames\":[\"api.$DNS_NAME\"], 
+        \"name\":\"$ENV_GROUP_NAME\",
+        \"hostnames\":[\"$ENV_GROUP_NAME.$DNS_NAME\"],
       }" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups"
 
@@ -243,7 +242,7 @@ add_env_to_envgroup() {
   local ENV_GROUPS_ATTACHMENT_URI
   ENV_GROUPS_ATTACHMENT_URI="https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME/attachments"
 
-  
+
 
   if curl --silent -H "Authorization: Bearer $(token)" -H "content-type:application/json" "$ENV_GROUPS_ATTACHMENT_URI" | grep -q "\"environment\": \"$ENV_NAME\""; then
     echo "(skipping, envgroup assignment already exists)"
@@ -252,12 +251,14 @@ add_env_to_envgroup() {
     curl -q -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
       -d '{ "environment": "'"$ENV_NAME"'" }' "$ENV_GROUPS_ATTACHMENT_URI"
   fi
-  
+
   echo "✅ Added Env $ENV_NAME to Env Group $ENV_GROUP_NAME"
 }
 
 configure_network() {
     echo "🌐 Setup Networking"
+
+    ENV_GROUP_NAME=$1
 
     gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
 
@@ -269,7 +270,7 @@ configure_network() {
     gcloud dns record-sets transaction start --zone=apigee-dns-zone
 
     gcloud dns record-sets transaction add "$INGRESS_IP" \
-        --name="api.$DNS_NAME." --ttl=600 \
+        --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
         --type=A --zone=apigee-dns-zone
 
     gcloud dns record-sets transaction describe --zone=apigee-dns-zone
@@ -284,7 +285,7 @@ configure_network() {
 create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
-    gcloud container clusters create $CLUSTER_NAME \
+    gcloud container clusters create $GKE_CLUSTER_NAME \
       --machine-type "e2-standard-4" \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
@@ -292,7 +293,7 @@ create_gke_cluster() {
       --workload-pool "$WORKLOAD_POOL" \
       --enable-stackdriver-kubernetes
 
-    gcloud container clusters get-credentials $CLUSTER_NAME
+    gcloud container clusters get-credentials $GKE_CLUSTER_NAME
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)"
@@ -304,7 +305,7 @@ create_gke_cluster() {
 install_asm_and_certmanager() {
 
   echo "👩🏽‍💼 Creating Cert Manager"
-  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
+  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
 
   echo "🤹‍♂️ Initialize ASM"
 
@@ -314,7 +315,7 @@ install_asm_and_certmanager() {
     "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize"
 
   echo "🔌 Registering Cluster with Anthos Hub"
-  SERVICE_ACCOUNT_NAME="$CLUSTER_NAME-anthos"
+  SERVICE_ACCOUNT_NAME="$GKE_CLUSTER_NAME-anthos"
 
   # fail silently if the account already exists
   gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME 2>/dev/null
@@ -328,9 +329,9 @@ install_asm_and_certmanager() {
   gcloud iam service-accounts keys create $SERVICE_ACCOUNT_KEY_PATH \
    --iam-account="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
-  gcloud container hub memberships register $CLUSTER_NAME \
-    --gke-cluster="$ZONE/$CLUSTER_NAME" \
-    --service-account-key-file="$SERVICE_ACCOUNT_KEY_PATH"
+  gcloud container hub memberships register $GKE_CLUSTER_NAME \
+    --gke-cluster="$ZONE/$GKE_CLUSTER_NAME" \
+    --service-account-key-file="$SERVICE_ACCOUNT_KEY_PATH" -q
 
   rm $SERVICE_ACCOUNT_KEY_PATH
 
@@ -348,7 +349,7 @@ install_asm_and_certmanager() {
   "$QUICKSTART_TOOLS"/kpt/kpt pkg get \
     https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.6-asm "$QUICKSTART_TOOLS"/kpt/asm
 
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster "$CLUSTER_NAME"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster "$GKE_CLUSTER_NAME"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.core.project "$PROJECT_ID"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.compute.location "$ZONE"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.project.environProjectNumber "$MESH_ID"
@@ -368,16 +369,20 @@ install_asm_and_certmanager() {
 download_apigee_ctl() {
     echo "📥 Setup Apigeectl"
 
-    mkdir -p "$QUICKSTART_TOOLS"/apigeectl
-    curl -L \
-      -o "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz \
-      "https://storage.googleapis.com/apigee-public/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
+    APIGEECTL_ROOT="$QUICKSTART_TOOLS/apigeectl"
 
-    tar xvzf "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz -C "$QUICKSTART_TOOLS"/apigeectl
-    rm "$QUICKSTART_TOOLS"/apigeectl/apigeectl.tar.gz
-    mkdir -p "$APIGEECTL_HOME"
-    mv "$QUICKSTART_TOOLS"/apigeectl/apigeectl_*_64/* "$APIGEECTL_HOME"
-    rm -d "$QUICKSTART_TOOLS"/apigeectl/apigeectl_*_64
+    # Remove if it existed from an old install
+    if [ -d "$APIGEECTL_ROOT" ]; then rm -rf "$APIGEECTL_ROOT"; fi
+    mkdir -p "$APIGEECTL_ROOT"
+
+    curl -L \
+      -o "$APIGEECTL_ROOT/apigeectl.tar.gz" \
+      "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
+
+    tar xvzf "$APIGEECTL_ROOT/apigeectl.tar.gz" -C "$APIGEECTL_ROOT"
+    rm "$APIGEECTL_ROOT/apigeectl.tar.gz"
+
+    mv "$APIGEECTL_ROOT"/apigeectl_*_64 "$APIGEECTL_HOME"
     echo "✅ Apigeectl set up in $APIGEECTL_HOME"
 }
 
@@ -394,25 +399,30 @@ prepare_resources() {
     ln -s "$APIGEECTL_HOME/templates" "$HYBRID_HOME/templates"
     ln -s "$APIGEECTL_HOME/plugins" "$HYBRID_HOME/plugins"
 
-    create_self_signed_cert "$DNS_NAME" "$PROJECT_ID-$ENV_GROUP_NAME"
     echo "✅ Hybrid Config Setup"
 }
 
 create_self_signed_cert() {
-  DNS_NAME=$1
-  SECRET_NAME=$2
 
-  echo "🙈 Creating self-signed cert - $SECRET_NAME"
+  ENV_GROUP_NAME=$1
+
+  echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
   mkdir  -p "$HYBRID_HOME/certs"
-  openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$DNS_NAME.key" -out "$HYBRID_HOME/certs/$DNS_NAME.crt"
-  openssl req -out "$HYBRID_HOME/certs/api.$DNS_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/api.$DNS_NAME.key" -subj "/CN=api.$DNS_NAME/O=Apigee Quickstart"
-  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$DNS_NAME.crt" -CAkey "$HYBRID_HOME/certs/$DNS_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/api.$DNS_NAME.csr" -out "$HYBRID_HOME/certs/api.$DNS_NAME.crt"
-  cat "$HYBRID_HOME/certs/api.$DNS_NAME.crt" "$HYBRID_HOME/certs/$DNS_NAME.crt" > "$HYBRID_HOME/certs/api.$DNS_NAME.fullchain.crt"
-  
-  kubectl create -n istio-system secret generic "$SECRET_NAME"  \
-    --from-file=key="$HYBRID_HOME/certs/api.$DNS_NAME.key" \
-    --from-file=cert="$HYBRID_HOME/certs/api.$DNS_NAME.fullchain.crt" --dry-run -o yaml | 
-  kubectl apply -f -
+
+  CA_CERT_NAME="quickstart-ca"
+
+  # create CA cert if not exist
+  if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
+    echo "CA already exists! Reusing that one."
+  else
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+  fi
+
+  openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
+
+  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
+
+  cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
 }
 
 create_sa() {
@@ -423,22 +433,25 @@ create_sa() {
 }
 
 install_runtime() {
-    echo "Configure Overrides"
+  ENV_NAME=$1
+  ENV_GROUP_NAME=$2
+  echo "Configure Overrides"
 
-    cat << EOF > "$HYBRID_HOME"/overrides/overrides.yaml
+  cat << EOF > "$HYBRID_HOME"/overrides/overrides.yaml
 gcp:
   projectID: $PROJECT_ID
-  region: "$REGION"
+  region: "$REGION" # Analytics Region
 # Apigee org name.
 org: $PROJECT_ID
 # Kubernetes cluster name details
 k8sCluster:
-  name: $CLUSTER_NAME
+  name: $GKE_CLUSTER_NAME
   region: "$REGION"
 
 virtualhosts:
   - name: $ENV_GROUP_NAME
-    sslSecret: $PROJECT_ID-$ENV_GROUP_NAME
+    sslCertPath: $HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt
+    sslKeyPath: $HYBRID_HOME/certs/$ENV_GROUP_NAME.key
 
 instanceID: "$PROJECT_ID-$(date +%s)"
 
@@ -460,6 +473,11 @@ metrics:
 
 watcher:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
+
+logger:
+  enabled: true
+  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
+
 EOF
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
@@ -467,7 +485,7 @@ EOF
     echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
 
-    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --dry-run=true
+    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --dry-run=client
     "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
     echo -n "⏳ Waiting for Apigeectl apply "
@@ -486,25 +504,28 @@ EOF
 
 deploy_example_proxy() {
   echo "🦄 Deploy Sample Proxy"
-  
-  (cd "$QUICKSTART_ROOT/example-proxy" && zip -r apiproxy.zip apiproxy/*) 
+
+  ENV_NAME=$1
+  ENV_GROUP_NAME=$2
+
+  (cd "$QUICKSTART_ROOT/example-proxy" && zip -r apiproxy.zip apiproxy/*)
 
   PROXY_REV=$(curl -X POST \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/apis?action=import&name=httpbin-v0&validate=true" \
     -H "Authorization: Bearer $(token)" \
     -H "Content-Type: multipart/form-data" \
     -F "zipFile=@$QUICKSTART_ROOT/example-proxy/apiproxy.zip" | grep '"revision": "[^"]*' | cut -d'"' -f4)
-  
+
   rm "$QUICKSTART_ROOT/example-proxy/apiproxy.zip"
 
   curl -X POST \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/apis/httpbin-v0/revisions/${PROXY_REV}/deployments?override=true" \
     -H "Authorization: Bearer $(token)"
-  
+
   echo "✅ Sample Proxy Deployed"
 
   echo "🤓 Try without DNS (first deployment takes a few seconds. Relax and breathe!):"
-  echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/$DNS_NAME.crt --resolve api.$DNS_NAME:443:$INGRESS_IP https://api.$DNS_NAME/httpbin/v0/anything"
+  echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
 
   echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
 }
