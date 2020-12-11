@@ -7,6 +7,55 @@ set -e
 VAR1=${VAR1:-default}
 SCRIPT=$(readlink -f "$0")
 SCRIPT_PATH=$(dirname "$SCRIPT")
+OPENLEGACY_HOST="httpbin.org"
 
-# Run something from lib
-$SCRIPT_PATH/../lib/example.sh
+## install dependencies
+#npm install -g @apidevtools/swagger-cli
+#npm install -g openapi2apigee
+#curl https://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.4.17/swagger-codegen-cli-2.4.17.jar -O swagger-codegen-cli.jar
+
+
+# Input 
+## swagger url or file - http://10.2.2.2:8080/{resource}/swagger.json
+SPEC="$SCRIPT_PATH"/swagger.json
+
+## sanitize input
+sed -i 's/^.*originalRef.*$//' "$SCRIPT_PATH"/swagger.json
+sed -i "s/\"host\":.*/\"host\": \"$OPENLEGACY_HOST\", \"schemes\":[\"https\"],/" "$SCRIPT_PATH"/swagger.json
+
+## validate swagger, check host is correct
+swagger-cli validate "$SPEC"
+
+mkdir -p "$SCRIPT_PATH"/target
+# generate shared flow + java 
+
+# autogenerate client 
+java -jar "$SCRIPT_PATH"/swagger-codegen-cli.jar generate \
+  -i https://petstore.swagger.io/v2/swagger.json \
+  -l java \
+  -o samples/client/petstore/java
+
+# add to javacallout in shared flow
+
+## generate example service callout per operation
+
+## generate proxy bundle
+openapi2apigee generateApi generatedProxy -s ~/devrel/tools/apigee-openlegacy/bin/swagger.json -d "$SCRIPT_PATH"/target
+
+## todo - check with openlegacy how oauth or southbound traffic is secured
+## todo - replace with a nicer template
+
+# Output
+## swagger generated client library
+java -jar swagger-codegen-cli.jar generate \
+  -l java \
+  -i "$SPEC" \
+  -o java-lib
+
+##!!! OR create one big shared flow with many conditional service callouts based on operationId
+## and with a bunch of parameters
+## set an Assign Message 
+
+# generate proxy bundle - openapi2apigee
+
+## generate options from swagger to parameterise sharedflow

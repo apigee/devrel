@@ -1,0 +1,157 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "mainframe-ts-api API",
+    "version": "0.1",
+    "title": "mainframe-ts-api",
+    "contact": {}
+  },
+  "host": "httpbin.org", "schemes":["https"],
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "cards-controller",
+      "description": "Cards Controller"
+    }
+  ],
+  "paths": {
+    "/api/cards": {
+      "get": {
+        "tags": [
+          "cards-controller"
+        ],
+        "summary": "Cards GET operation",
+        "operationId": "getCardsUsingGET",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "query",
+            "description": "customerId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+
+              "$ref": "#/definitions/CardsOut"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "test"
+            ]
+          },
+          {
+            "oauth2-password": [
+              "test"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    }
+  },
+  "securityDefinitions": {
+    "oauth2": {
+      "type": "oauth2",
+      "tokenUrl": "/oauth/token",
+      "flow": "application",
+      "scopes": {
+        "test": "Test"
+      }
+    },
+    "oauth2-password": {
+      "type": "oauth2",
+      "tokenUrl": "/oauth/token",
+      "flow": "password",
+      "scopes": {
+        "test": "Test"
+      }
+    }
+  },
+  "definitions": {
+    "CardsOut": {
+      "type": "object",
+      "properties": {
+        "creditCards": {
+          "type": "array",
+          "description": "Fininq2Credit Cards",
+          "items": {
+
+            "$ref": "#/definitions/Fininq2CreditCards"
+          }
+        }
+      },
+      "title": "CardsOut"
+    },
+    "ErrorModel": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "exception": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "messages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "path": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ErrorModel"
+    },
+    "Fininq2CreditCards": {
+      "type": "object",
+      "properties": {
+        "cardLimit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cardNumber": {
+          "type": "string"
+        },
+        "cardType": {
+          "type": "string"
+        },
+        "cardUsage": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "Fininq2CreditCards"
+    }
+  }
+}
