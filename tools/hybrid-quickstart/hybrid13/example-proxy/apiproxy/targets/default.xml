@@ -16,6 +16,15 @@
 -->
 
 <TargetEndpoint name="default">
+  <PreFlow name="PreFlow">
+    <Request/>
+    <Response/>
+  </PreFlow>
+  <Flows/>
+  <PostFlow name="PostFlow">
+    <Request/>
+    <Response/>
+  </PostFlow>
   <HTTPTargetConnection>
     <URL>https://httpbin.org</URL>
   </HTTPTargetConnection>
