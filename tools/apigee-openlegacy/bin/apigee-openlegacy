@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Apigee Open Legacy CLI
+
+set -e
+
+VAR1=${VAR1:-default}
+SCRIPT=$(readlink -f "$0")
+SCRIPT_PATH=$(dirname "$SCRIPT")
+
+# Run something from lib
+$SCRIPT_PATH/../lib/example.sh

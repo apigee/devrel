@@ -49,6 +49,8 @@ Apigee products.
   A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
+- [Apigee OpenLegacy](tools/apigee-openlegacy) -
+  Generate an Apigee API Proxy connecting to a mainframe via OpenLegacy
 
 ## Labs
 
