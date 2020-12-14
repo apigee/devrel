@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,35 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-QUICKSTART_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
-export QUICKSTART_ROOT
+set -e
 
-source "$QUICKSTART_ROOT/steps.sh"
+# deploy Apigee API Proxy
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
 
-enable_all_apis
-
-set_config_params
-
-create_apigee_org
-
-create_apigee_env "test"
-
-create_apigee_envgroup "default"
-
-add_env_to_envgroup "test" "default"
-
-configure_network
-
-create_gke_cluster
-
-install_asm_and_certmanager
-
-download_apigee_ctl
-
-prepare_resources
-
-create_sa
-
-install_runtime
-
-deploy_example_proxy
+# execute integration tests
+npm install
+npm run test

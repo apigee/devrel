@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2020 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<RaiseFault name="RF-InvalidClient-Html">
+    <FaultResponse>
+        <Set>
+            <Headers/>
+            <Payload contentType="text/html"><![CDATA[
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <style type="text/css">
+        @import url(https://fonts.googleapis.com/css?family=Roboto:400,100);
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin-top: 50px;
+        }
+        .login-card {
+            padding: 40px;
+            padding-top: 0px;
+            padding-bottom: 10px;
+            width: 274px;
+            background-color: #F7F7F7;
+            margin: 0 auto 10px;
+            border-radius: 2px;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .login-card h1 {
+            font-weight: 100;
+            text-align: center;
+            font-size: 2.3em;
+        }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <h1>Error: invalid_client</h1>
+</div>
+</body>
+</html> ]]></Payload>
+            <StatusCode>401</StatusCode>
+            <ReasonPhrase>Unauthorized</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
