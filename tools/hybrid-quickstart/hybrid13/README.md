@@ -45,8 +45,16 @@ export GKE_CLUSTER_NAME='apigee-hybrid'
 export ENV_NAME='test1'
 export ENV_GROUP_NAME='test'
 # Subdomain will be created for every environment group
+# e.g. test.$PROJECT_ID.example.com
 export DNS_NAME="$PROJECT_ID.example.com"
 ```
+
+**Note:** If the custom `DNS_NAME` you would like to use has been used with
+CloudDNS before, you need to prove your ownership over that domain. For this
+you have to create a DNS zone called `apigee-dns-zone` and your env group A
+records. The quickstart checks if the `apigee-dns-zone` already exists and will
+skip its creation.
+If you use the default `DNS_NAME` you don't have to manually create a dns zone.
 
 ## Initialize the Apigee hybrid runtime on a GKE cluster
 
