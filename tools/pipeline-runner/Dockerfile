@@ -16,7 +16,7 @@ FROM golang:alpine3.12
 
 # Install our tools
 RUN apk add --no-cache \
-  curl=7.69.1-r2 \
+  curl=7.69.1-r3 \
   docker=19.03.12-r0 \
   git=2.26.2-r0 \
   jq=1.6-r1 \
