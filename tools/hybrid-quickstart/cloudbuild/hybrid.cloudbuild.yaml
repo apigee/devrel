@@ -1,0 +1,104 @@
+#  Copyright 2021 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+# While the quickstart creates all required resources from scratch,
+# this script makes the following assumptions to reduce the permissions
+# on the cloud build SA. To prepare your project you can use the
+# corresponding steps in the steps.sh:
+# 1. enable_all_apis - All required Google APIs are enabled on the project
+# 2. create_sa - All Apigee service accounts created
+#
+# Cloud build service account needs the following roles:
+# 1. roles/editor
+# 2. roles/container.clusterAdmin
+# 3. roles/container.admin
+# 4. roles/iam.serviceAccountKeyAdmin
+steps:
+# Step 1: Install node dependencies for linting and testing
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      # git clone https://github.com/apigee/devrel.git
+
+      git clone https://github.com/danistrebel/devrel.git && cd devrel
+      git checkout feature/hybrid14
+      cd ..
+
+      QUICKSTART_ROOT=$$(pwd)/devrel/tools/hybrid-quickstart/hybrid14
+      source "$$QUICKSTART_ROOT/steps.sh"
+
+      set_config_params
+
+      create_apigee_org
+
+      create_apigee_env $_QUICKSTART_ENV_NAME
+
+      create_apigee_envgroup $_QUICKSTART_ENV_GROUP_NAME
+
+      add_env_to_envgroup $_QUICKSTART_ENV_NAME $_QUICKSTART_ENV_GROUP_NAME
+
+      configure_network $_QUICKSTART_ENV_GROUP_NAME
+
+      create_gke_cluster
+
+      install_asm_and_certmanager
+
+      download_apigee_ctl
+
+      prepare_resources
+
+      create_self_signed_cert $_QUICKSTART_ENV_GROUP_NAME
+
+      for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
+      do
+        gcloud iam service-accounts keys create "$$HYBRID_HOME/service-accounts/$$PROJECT_ID-apigee-$$SA.json" \
+          --iam-account="apigee-$$SA@$${PROJECT_ID}.iam.gserviceaccount.com"
+      done
+
+      install_runtime $_QUICKSTART_ENV_NAME $_QUICKSTART_ENV_GROUP_NAME
+
+      # install missing zip command
+      apt-get update && apt-get install zip -y
+
+      deploy_example_proxy $_QUICKSTART_ENV_NAME $_QUICKSTART_ENV_GROUP_NAME
+
+      echo "curl --fail --cacert $$QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt \
+      --resolve $_QUICKSTART_ENV_GROUP_NAME.$$DNS_NAME:443:$$INGRESS_IP \
+      https://$_QUICKSTART_ENV_GROUP_NAME.$$DNS_NAME/httpbin/v0/anything" > ./test-proxy.sh
+      chmod +x ./test-proxy.sh
+
+# Step 1: Test that the proxy is successfully deployed
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - "for i in {1..20}; do ./test-proxy.sh && break || sleep 15; done"
+
+# Step 2: (Optional) destroy the deployed Apigee runtime cluster
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+      if [ "$_DESTROY_AFTER_VALIDATION" == "true" ]
+      then
+        ./devrel/tools/hybrid-quickstart/hybrid14/destroy-runtime-gke.sh
+      fi
+timeout: 1800s #30min
+substitutions:
+  _QUICKSTART_ENV_NAME: test1
+  _QUICKSTART_ENV_GROUP_NAME: test
+  _DESTROY_AFTER_VALIDATION: "false"
