@@ -34,6 +34,8 @@ further to fit a particular use case.
 - [Southbound mTLS](references/southbound-mtls) -
   Reference for using mTLS client authentication for securely connecting Apigee to
   backend services
+- [OIDC Mock](references/oidc-mock) -
+  A simple OIDC mock identity provider implementation
 
 ## Tools
 
