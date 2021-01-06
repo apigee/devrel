@@ -1,1 +1,1 @@
-identity-facade proxy
+dummy identity-v1
