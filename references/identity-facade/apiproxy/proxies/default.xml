@@ -170,11 +170,7 @@
                     <Name>OA2-GenerateAccessToken</Name>
                 </Step>
             </Request>
-            <Response>
-                <Step>
-                    <Name>AM-SetState1InResponseHeader</Name>
-                </Step>
-            </Response>
+            <Response/>
         </Flow>
         <Flow name="GET /protected">
             <Condition>(proxy.pathsuffix MatchesPath "/protected") and 

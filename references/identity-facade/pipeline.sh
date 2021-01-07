@@ -20,8 +20,11 @@ set -e
 #################################
 set_idp_env_var() {
 
+    # discovery document of an OIDC compliant IdP
+    idp_discovery_document=https://"$APIGEE_ORG"-"$APIGEE_ENV".apigee.net/v1/openid-connect/.well-known/openid-configuration
+
     # retrieve configuration data from a discovery document
-    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" https://"$APIGEE_ORG"-"$APIGEE_ENV".apigee.net/v1/openid-connect/.well-known/openid-configuration)
+    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" "$idp_discovery_document")
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
         
