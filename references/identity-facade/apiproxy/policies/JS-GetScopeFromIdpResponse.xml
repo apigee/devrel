@@ -11,6 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="200" name="JS-SetAccessTokenExpiry">
-    <ResourceURL>jsc://JS-SetAccessTokenExpiry.js</ResourceURL>
+<Javascript timeLimit="200" name="JS-GetScopeFromIdpResponse">
+    <ResourceURL>jsc://JS-GetScopeFromIdpResponse.js</ResourceURL>
 </Javascript>

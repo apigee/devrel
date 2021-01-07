@@ -19,7 +19,8 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      |	state	    | `state`		      |	
+      |	state	    | `state`		      |
+      |	scope	    | `scope`		      |
     When I POST to /token
     Then response code should be 200
     And I store the value of body path $.access_token as userToken in global scope

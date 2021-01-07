@@ -11,6 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="200" name="JS-SetAccessTokenExpiry">
-    <ResourceURL>jsc://JS-SetAccessTokenExpiry.js</ResourceURL>
-</Javascript>
+<RaiseFault name="RF-UnsupportedGrantType">
+    <FaultResponse>
+        <Set>
+            <Headers/>
+            <Payload contentType="application/json">{"error":"unsupported_grant_type"}</Payload>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+</RaiseFault>

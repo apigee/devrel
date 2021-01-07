@@ -16,9 +16,6 @@
         <Variable name="oidc.flow.jwt">
             <JSONPath>$.id_token</JSONPath>
         </Variable>
-        <Variable name="oidc.flow.scope">
-            <JSONPath>$.scope</JSONPath>
-        </Variable>
         <Variable name="oidc.flow.expires_in">
             <JSONPath>$.expires_in</JSONPath>
         </Variable>

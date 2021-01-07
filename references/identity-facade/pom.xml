@@ -31,8 +31,6 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-    <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order 
-         of execution is the same as the order in which you define them. -->
     <build>
         <plugins>
             <plugin>
@@ -98,20 +96,6 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>targetservers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-resourcefiles</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>resourcefiles</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>create-config-apiproduct</id>
                         <phase>install</phase>                        
                         <goals>
@@ -144,7 +128,6 @@
                 <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
                 <apigee.apiversion>v1</apigee.apiversion>
                 <apigee.env>${env.APIGEE_ENV}</apigee.env>
-                <!-- use env variables for ORG, USER and PASSWORD -->
                 <apigee.org>${env.APIGEE_ORG}</apigee.org>
                 <apigee.username>${env.APIGEE_USER}</apigee.username>
                 <apigee.password>${env.APIGEE_PASS}</apigee.password>
@@ -166,7 +149,6 @@
                 <apigee.env>${env.APIGEE_ENV}</apigee.env>
                 <apigee.username>${username}</apigee.username>
                 <apigee.password>${password}</apigee.password>
-                <!-- use env variables for ORG, USER and PASSWORD -->
                 <apigee.org>${env.APIGEE_ORG}</apigee.org>
                 <apigee.username>${env.APIGEE_USER}</apigee.username>
                 <apigee.password>${env.APIGEE_PASS}</apigee.password>

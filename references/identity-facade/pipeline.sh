@@ -334,19 +334,19 @@ set_devapp_product() {
 
 
 # set env variables for google oidc
-#set_idp_env_var
+set_idp_env_var
 
 # generate edge.json file
-#generate_edge_json
+generate_edge_json
 
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-#mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
 
 # set developer app (apigee_client) credentials with the exact same values than the one in the keycloak IdP
-#set_devapp_credentials
+set_devapp_credentials
 
 # set developer app (apigeee_client) product
-#set_devapp_product
+set_devapp_product
 
 # execute integration tests
 npm i

@@ -25,7 +25,7 @@
                 </Step>
                 <Step>
                     <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != oidc.flow.authorize.redirect_uri )</Condition>
-                    <Name>RF-InvalidClient</Name>
+                    <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
                     <Condition>( oidc.flow.authorize.response_type != "code" ) and 
@@ -107,19 +107,16 @@
                 </Step>
                 <Step>
                     <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != request.formparam.redirect_uri )</Condition>
-                    <Name>RF-InvalidClient</Name>
-                </Step>
-                <Step>
-                    <Name>AM-SetRedirectURIVariable</Name>
+                    <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
                     <Condition>( request.formparam.grant_type != "authorization_code" )</Condition>
-                    <Name>RF-InvalidRequest-Redirect</Name>
+                    <Name>RF-UnsupportedGrantType</Name>
                 </Step>
                 <Step>
                 <Condition>( request.formparam.code Is null ) or 
                 ( request.formparam.code = "" )</Condition>
-                    <Name>RF-InvalidGrant-Redirect</Name>
+                    <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
                     <Name>KVM-IdpParameters</Name>
@@ -141,6 +138,9 @@
                 </Step>
                 <Step>
                     <Name>EV-JwtFromIdpResponse</Name>
+                </Step>
+                <Step>
+                    <Name>JS-GetScopeFromIdpResponse</Name>
                 </Step>
                 <Step>
                     <Name>LC-GetJWKS</Name>
