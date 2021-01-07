@@ -36,6 +36,9 @@ further to fit a particular use case.
   backend services
 - [OIDC Mock](references/oidc-mock) -
   A simple OIDC mock identity provider implementation
+- [Identity Facade](references/identity-facade) -
+  Reference implementation for an Identity Facade proxy in front of an OIDC
+  compliant identity provider
 
 ## Tools
 
