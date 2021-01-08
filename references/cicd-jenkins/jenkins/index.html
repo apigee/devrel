@@ -52,8 +52,8 @@
   <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
   <div class="doc-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
     <h1 id="jenkinsexamplesetup">Jenkins Example Setup</h1>
-<p>This document explains how to set up and configure a Jenkins CI server to run
-an Apigee deployment pipeline.</p>
+<p>This document explains how to build and configure a Jenkins CI server container
+image to run an Apigee deployment pipeline.</p>
 <p>You can choose between two different setups:</p>
 <ul>
 <li><code>Jenkins Web</code>: Builds an image for running Jenkins with a web UI.</li>
@@ -65,14 +65,18 @@ our continuous testing in Apigee DevRel.</li>
 <p>Follow these instructions to build and run a fully configured Jenkins UI
 instance.</p>
 <h3 id="build">Build</h3>
-<h4 id="optionalocalbuild">Option A: Local Build</h4>
-<pre><code class="bash language-bash">docker build -f jenkins-web/Dockerfile -t apigee-cicd/jenkins:latest .
+<h4 id="optionauseaprebuiltimage">Option A: Use a pre-built image</h4>
+<pre><code class="bash language-bash">docker pull ghcr.io/danistrebel/devrel/jenkins:latest
+docker tag ghcr.io/danistrebel/devrel/jenkins:latest devrel/jenkins:latest
 </code></pre>
-<h4 id="optionbcloudbuildongcp">Option B: Cloud Build on GCP</h4>
+<h4 id="optionblocalbuild">Option B: Local Build</h4>
+<pre><code class="bash language-bash">docker build -f jenkins-web/Dockerfile -t devrel/jenkins:latest .
+</code></pre>
+<h4 id="optionccloudbuildongcp">Option C: Cloud Build on GCP</h4>
 <pre><code class="bash language-bash">PROJECT_ID=$(gcloud config get-value project)
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml
 docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest
-docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest apigee-cicd/jenkins:latest
+docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest devrel/jenkins:latest
 </code></pre>
 <h3 id="runthejenkinscontainer">Run the Jenkins Container</h3>
 <p>Ensure you have your Apigee credentials set:</p>
@@ -91,7 +95,7 @@ export APIGEE_ORG=XXX
   -e APIGEE_PASS \
   -e APIGEE_ORG \
   -e JENKINS_ADMIN_PASS \
-  apigee-cicd/jenkins:latest
+  devrel/jenkins:latest
 </code></pre>
 <p>After the initialization is completed, you can login with the Jenkins web UI
 <code>http://localhost:8080</code> using the <code>admin</code> user and the password you specified
@@ -99,14 +103,18 @@ before.</p>
 <h2 id="jenkinsfilerunner">Jenkinsfile-Runner</h2>
 <p>Follow these instructions to build and run an ephemeral Jenkinsfile runtime.</p>
 <h3 id="build-1">Build</h3>
-<h4 id="optionalocalbuild-1">Option A: Local Build</h4>
-<pre><code class="bash language-bash">docker build -f jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner .
+<h4 id="optionauseaprebuiltimage-1">Option A: Use a pre-built image</h4>
+<pre><code class="bash language-bash">docker pull ghcr.io/danistrebel/devrel/jenkins:latest
+docker tag ghcr.io/danistrebel/devrel/jenkins:latest devrel/jenkinsfile-runner:latest
 </code></pre>
-<h4 id="optionbcloudbuildongcp-1">Option B: Cloud Build on GCP</h4>
+<h4 id="optionblocalbuild-1">Option B: Local Build</h4>
+<pre><code class="bash language-bash">docker build -f jenkinsfile-runner/Dockerfile -t devrel/jenkinsfile-runner:latest .
+</code></pre>
+<h4 id="optionccloudbuildongcp-1">Option C: Cloud Build on GCP</h4>
 <pre><code class="bash language-bash">PROJECT_ID=$(gcloud config get-value project)
 gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml
 docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest
-docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest apigee-cicd/jenkinsfile-runner:latest
+docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest devrel/jenkinsfile-runner:latest
 </code></pre>
 <h3 id="examplerun">Example Run</h3>
 <pre><code class="bash language-bash">docker run \
@@ -117,7 +125,7 @@ docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest apigee-cicd/
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -it apigee-cicd/jenkinsfile-runner
+  -it devrel/jenkinsfile-runner:latest
 </code></pre>
   </div>
 </div>
