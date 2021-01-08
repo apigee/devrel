@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -25,25 +25,7 @@
         <Response/>
     </PreFlow>
     <Flows>
-        <Flow name="static-get-kvm-entry">
-            <Description/>
-            <Request>
-                <Step>
-                    <Name>KV-GetEntryStatic</Name>
-                </Step>
-            </Request>
-            <Response>
-                <Step>
-                    <Name>RF-404</Name>
-                    <Condition>kvm-entry.value is null</Condition>
-                </Step>
-                <Step>
-                    <Name>AM-SetResponse</Name>
-                </Step>
-            </Response>
-            <Condition>(proxy.pathsuffix MatchesPath "/entries/*") and (request.verb = "GET")</Condition>
-        </Flow>
-        <Flow name="dynamic-get-kvm-entry">
+        <Flow name="/kvms/*/entries/*">
             <Description/>
             <Request>
                 <Step>
@@ -52,8 +34,8 @@
             </Request>
             <Response>
                 <Step>
-                    <Name>RF-404</Name>
-                    <Condition>kvm-entry.value is null</Condition>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
                 </Step>
                 <Step>
                     <Name>AM-SetResponse</Name>
@@ -61,20 +43,7 @@
             </Response>
             <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and  (request.verb = "GET")</Condition>
         </Flow>
-        <Flow name="static-put-kvm-entry">
-            <Description/>
-            <Request>
-                <Step>
-                    <Name>EV-ParseRequestBody</Name>
-                </Step>
-                <Step>
-                    <Name>KV-PutEntryStatic</Name>
-                </Step>
-            </Request>
-            <Response/>
-            <Condition>(proxy.pathsuffix MatchesPath "/entries/*") and (request.verb = "PUT")</Condition>
-        </Flow>
-        <Flow name="dynamic-put-kvm-entry">
+        <Flow name="/kvms/*/entries/*">
             <Description/>
             <Request>
                 <Step>
@@ -87,17 +56,7 @@
             <Response/>
             <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "PUT")</Condition>
         </Flow>
-        <Flow name="static-delete-kvm-entry">
-            <Description/>
-            <Request>
-                <Step>
-                    <Name>KV-DeleteEntryStatic</Name>
-                </Step>
-            </Request>
-            <Response/>
-            <Condition>(proxy.pathsuffix MatchesPath "/entries/*") and (request.verb = "DELETE")</Condition>
-        </Flow>
-        <Flow name="dynamic-delete-kvm-entry">
+        <Flow name="/kvms/*/entries/*">
             <Description/>
             <Request>
                 <Step>
@@ -107,7 +66,7 @@
             <Response/>
             <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "DELETE")</Condition>
         </Flow>
-        <Flow>
+        <Flow name="fallback 404">
             <Request>
                 <Step>
                     <Name>RF-404</Name>
@@ -119,6 +78,16 @@
         <Request/>
         <Response/>
     </PostFlow>
+
+    <FaultRules>
+        <FaultRule name="Missing KVM">
+            <Condition>(fault.name = "MapNotFound")</Condition>
+            <Step>
+                <Name>RF-404</Name>
+            </Step>
+        </FaultRule>
+     </FaultRules>
+
     <HTTPProxyConnection>
         <BasePath>/kvm-admin/v1</BasePath>
         <VirtualHost>secure</VirtualHost>

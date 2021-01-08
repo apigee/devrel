@@ -7,13 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "deploy-hybrid": "./deploy.sh",
     "test": "npm i && npx cucumber-js test"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "apickli": "^2.3.1",
-    "apigeetool": "^0.15.0",
     "cucumber": "^5.1.0"
   }
 }

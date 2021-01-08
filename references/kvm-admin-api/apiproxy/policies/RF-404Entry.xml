@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  limitations under the License.
 -->
 
-<KeyValueMapOperations name="KV-PutEntryStatic" mapIdentifier="kvm-name">
-    <Put override="true">
-        <Key>
-            <Parameter ref="kvm-entry.key"/>
-        </Key>
-        <Value ref="kvm-entry.value"/>
-    </Put>
-</KeyValueMapOperations>
+<RaiseFault async="false" name="RF-404Entry">
+    <FaultResponse>
+        <Set>
+            <StatusCode>404</StatusCode>
+            <ReasonPhrase>Not Found</ReasonPhrase>
+            <Payload contentType="application/json" variablePrefix="@"
+            variableSuffix="#">{"code": "404", "message": "No entry found for key: @kvm-entry.key#"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>

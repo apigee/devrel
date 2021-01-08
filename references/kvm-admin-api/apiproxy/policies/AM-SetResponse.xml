@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 -->
 
 <AssignMessage async="false" name="AM-SetResponse">
-    
     <Set>
-        <Payload contentType="application/json">
-            { "value": "{kvm-entry.value}"}
-        </Payload>
+        <Payload contentType="application/json">{"value": "{private.kvm-entry.value}"}</Payload>
     </Set>
 </AssignMessage>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 <KeyValueMapOperations name="KV-GetEntryDynamic">
     <MapName ref="kvm.name"/>
-    <Get assignTo="kvm-entry.value" index="1">
+    <Get assignTo="private.kvm-entry.value" index="1">
         <Key>
             <Parameter ref="kvm-entry.key"/>
         </Key>
