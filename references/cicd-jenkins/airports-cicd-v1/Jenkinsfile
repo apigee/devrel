@@ -38,7 +38,7 @@ pipeline {
 
         stage('Clean') {
           steps {
-            sh "mvn clean"
+            sh "mvn clean -B"
           }
         }
 
@@ -105,7 +105,7 @@ pipeline {
                   ).trim()
                 }
             }
-            sh "mvn process-resources -P${env.MAVEN_PROFILE} \
+            sh "mvn process-resources -B -P${env.MAVEN_PROFILE} \
                   -Dcommit=${env.GIT_COMMIT} \
                   -Dbranch=${env.GIT_BRANCH} \
                   -Dauthor=${AUTHOR_EMAIL} \
@@ -115,13 +115,13 @@ pipeline {
 
         stage('Package proxy bundle') {
           steps {
-            sh "mvn apigee-enterprise:configure -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+            sh "mvn apigee-enterprise:configure -B -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
           }
         }
 
         stage('Deploy proxy bundle') {
           steps {
-            sh "mvn apigee-enterprise:deploy -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+            sh "mvn apigee-enterprise:deploy -B -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
           }
         }
 
