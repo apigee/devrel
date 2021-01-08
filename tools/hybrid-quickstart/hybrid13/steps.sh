@@ -256,29 +256,35 @@ add_env_to_envgroup() {
 }
 
 configure_network() {
-    echo "🌐 Setup Networking"
-
     ENV_GROUP_NAME=$1
+
+    echo "🌐 Set up Networking for $ENV_GROUP_NAME.$DNS_NAME"
 
     gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
 
-    gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
+    DNS_ZONE_NAME=apigee-dns-zone
+    EXISTING_DNS_ZONE=$(gcloud dns managed-zones list --filter $DNS_ZONE_NAME)
+    if [[ $EXISTING_DNS_ZONE == *"$DNS_ZONE_NAME"* ]]; then
+      echo "👷 DNS Zone manually configured"
+    else
+      gcloud dns managed-zones create $DNS_ZONE_NAME --dns-name="$DNS_NAME" --description="Apigee Ingress DNS"
 
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
-    export INGRESS_IP
+      INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+      export INGRESS_IP
 
-    gcloud dns record-sets transaction start --zone=apigee-dns-zone
+      gcloud dns record-sets transaction start --zone=$DNS_ZONE_NAME
 
-    gcloud dns record-sets transaction add "$INGRESS_IP" \
-        --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
-        --type=A --zone=apigee-dns-zone
+      gcloud dns record-sets transaction add "$INGRESS_IP" \
+          --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
+          --type=A --zone=$DNS_ZONE_NAME
 
-    gcloud dns record-sets transaction describe --zone=apigee-dns-zone
-    gcloud dns record-sets transaction execute --zone=apigee-dns-zone
+      gcloud dns record-sets transaction execute --zone=$DNS_ZONE_NAME
 
-    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
-    export NAME_SERVER
-    echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
+      NAME_SERVER=$(gcloud dns managed-zones describe $DNS_ZONE_NAME --format="json" --format="get(nameServers[0])")
+      export NAME_SERVER
+      echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
+    fi
+
     echo "✅ Networking set up"
 }
 
