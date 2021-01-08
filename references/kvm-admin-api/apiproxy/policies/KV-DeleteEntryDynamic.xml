@@ -17,6 +17,11 @@
 
 <KeyValueMapOperations name="KV-DeleteEntryDynamic">
     <MapName ref="kvm.name"/>
+    <Get assignTo="private.kvm-entry.value">
+        <Key>
+            <Parameter ref="kvm-entry.key"/>
+        </Key>
+    </Get>
     <Delete>
         <Key>
             <Parameter ref="kvm-entry.key"/>

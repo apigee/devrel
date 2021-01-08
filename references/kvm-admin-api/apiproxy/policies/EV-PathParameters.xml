@@ -17,8 +17,7 @@
 
 <ExtractVariables name="EV-PathParameters">
     <URIPath>
-        <Pattern
-        ignoreCase="true">/kvms/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/entries/{kvm-entry.key}</Pattern>
+        <Pattern ignoreCase="true">/kvms/{kvm.name}/entries/{kvm-entry.key}</Pattern>
+        <Pattern ignoreCase="true">/kvms/{kvm.name}/entries</Pattern>
     </URIPath>
 </ExtractVariables>

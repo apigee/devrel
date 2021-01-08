@@ -15,8 +15,8 @@
  limitations under the License.
 -->
 
-<AssignMessage async="false" name="AM-SetResponse">
+<AssignMessage name="AM-SetResponse">
     <Set>
-        <Payload contentType="application/json">{"value": "{private.kvm-entry.value}"}</Payload>
+        <Payload contentType="application/json">{"name": "{kvm-entry.key}", "value": "{private.kvm-entry.value}"}</Payload>
     </Set>
 </AssignMessage>

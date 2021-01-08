@@ -17,7 +17,7 @@
 
 <KeyValueMapOperations name="KV-GetEntryDynamic">
     <MapName ref="kvm.name"/>
-    <Get assignTo="private.kvm-entry.value" index="1">
+    <Get assignTo="private.kvm-entry.value">
         <Key>
             <Parameter ref="kvm-entry.key"/>
         </Key>

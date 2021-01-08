@@ -18,20 +18,21 @@ Feature:
   So that I can use it to store config values
 
   Scenario: Create an entry in the KVM
-    Given I set body to {"value":"test-value"}
+    Given I set body to {"name": "test-entry", "value":"test-value"}
     And I set Content-Type header to application/json
-    When I PUT /kvms/kvmap/entries/testentry
-    Then response code should be 200
-
-  Scenario: Retrieve an entry in the KVM
-    When I GET /kvms/kvmap/entries/testentry
+    When I POST to /kvms/kvmap/entries
     Then response code should be 200
     And response body path $.value should be test-value
+    And response body path $.name should be test-entry
+
+  Scenario: Retrieve an entry in the KVM
+    When I GET /kvms/kvmap/entries/test-entry
+    Then response code should be 200
+    And response body path $.value should be test-value
+    And response body path $.name should be test-entry
 
   Scenario: Delete an entry in the KVM
-    When I DELETE /kvms/kvmap/entries/testentry
+    When I DELETE /kvms/kvmap/entries/test-entry
     Then response code should be 200
-
-  Scenario: Attempt to retrieve a deleted entry in the KVM
-    When I GET /kvms/kvmap/entries/testentry
-    Then response code should be 404
+    And response body path $.value should be test-value
+    And response body path $.name should be test-entry

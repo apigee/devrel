@@ -1,11 +1,7 @@
 {
   "name": "kvm-admin-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "description": "Proxy to administer KVM entries",
   "scripts": {
     "test": "npm i && npx cucumber-js test"
   },

@@ -15,12 +15,12 @@
  limitations under the License.
 -->
 
-<RaiseFault async="false" name="RF-404">
+<RaiseFault name="RF-404">
     <FaultResponse>
         <Set>
             <StatusCode>404</StatusCode>
             <ReasonPhrase>Not Found</ReasonPhrase>
-            <Payload contentType="application/json">{"code": "404", "message": "Not Found"}</Payload>
+            <Payload contentType="application/json">{"code": "404.99.01", "message": "Not Found"}</Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>

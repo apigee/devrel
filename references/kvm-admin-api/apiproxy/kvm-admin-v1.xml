@@ -15,23 +15,6 @@
  limitations under the License.
 -->
 
-<APIProxy revision="6" name="kvm-admin-v1">
-    <DisplayName></DisplayName>
+<APIProxy name="kvm-admin-v1">
     <Description>Administration API for KVM.</Description>
-    <BasePaths>/kvm-admin/v1</BasePaths>
-    <Policies>
-        <Policy>EV-PathParameters</Policy>
-        <Policy>KV-GetEntry</Policy>
-        <Policy>AM-SetResponse</Policy>
-        <Policy>KV-PutEntry</Policy>
-        <Policy>EV-ParseRequestBody</Policy>
-        <Policy>KV-DeleteEntry</Policy>
-        <Policy>RF-404</Policy>
-    </Policies>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources></Resources>
-    <TargetServers></TargetServers>
-    <TargetEndpoints></TargetEndpoints>
 </APIProxy>

@@ -22,11 +22,10 @@
                 <Name>EV-PathParameters</Name>
             </Step>
         </Request>
-        <Response/>
     </PreFlow>
     <Flows>
-        <Flow name="/kvms/*/entries/*">
-            <Description/>
+        <Flow name="GET /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and  (request.verb = "GET")</Condition>
             <Request>
                 <Step>
                     <Name>KV-GetEntryDynamic</Name>
@@ -41,30 +40,34 @@
                     <Name>AM-SetResponse</Name>
                 </Step>
             </Response>
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and  (request.verb = "GET")</Condition>
         </Flow>
-        <Flow name="/kvms/*/entries/*">
-            <Description/>
+        <Flow name="POST /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries") and (request.verb = "POST")</Condition>
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
                 </Step>
                 <Step>
-                    <Name>KV-PutEntryDynamic</Name>
+                    <Name>KV-PostEntryDynamic</Name>
                 </Step>
             </Request>
-            <Response/>
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "PUT")</Condition>
         </Flow>
-        <Flow name="/kvms/*/entries/*">
-            <Description/>
+        <Flow name="DELETE /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "DELETE")</Condition>
             <Request>
                 <Step>
                     <Name>KV-DeleteEntryDynamic</Name>
                 </Step>
             </Request>
-            <Response/>
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "DELETE")</Condition>
+            <Response>
+                <Step>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
         </Flow>
         <Flow name="fallback 404">
             <Request>
@@ -74,10 +77,6 @@
             </Request>
         </Flow>
     </Flows>
-    <PostFlow name="PostFlow">
-        <Request/>
-        <Response/>
-    </PostFlow>
 
     <FaultRules>
         <FaultRule name="Missing KVM">

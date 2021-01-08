@@ -15,13 +15,12 @@
  limitations under the License.
 -->
 
-<RaiseFault async="false" name="RF-404Entry">
+<RaiseFault name="RF-404Entry">
     <FaultResponse>
         <Set>
             <StatusCode>404</StatusCode>
             <ReasonPhrase>Not Found</ReasonPhrase>
-            <Payload contentType="application/json" variablePrefix="@"
-            variableSuffix="#">{"code": "404", "message": "No entry found for key: @kvm-entry.key#"}</Payload>
+            <Payload contentType="application/json" variablePrefix="@" variableSuffix="#">{"code": "404.99.02", "message": "No entry found for key: @kvm-entry.key#"}</Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>

@@ -15,7 +15,7 @@ deploment model and the existance of KVM managment APIs.
 MapName element. It will automatically default to a KVM called `kvmap` and
 ignore the provided map name in the path.
 
-```bash
+```sh
 export TOKEN=$(gcloud auth print-access-token)
 export APIGEE_HYBRID_ORG=my-org-name
 export APIGEE_HYBRID_ENV=test1
@@ -29,20 +29,20 @@ curl -X POST \
     --data "{\"name\":\"$KVM_NAME\",\"encrypted\": true}"
 ```
 
-## Create a KVM entry
+## Create or Update a KVM entry
 
 ```sh
-curl -X PUT -H "Content-Type: application/json" -d '{ "value": "bar" }' https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/sample-kvm/entries/foo
+curl -X POST -H "Content-Type: application/json" -d '{ "name": "foo", "value": "bar" }' "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/$KVM_NAME/entries"
 ```
 
 ## Read a KVM entry
 
 ```sh
-curl -X GET https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/sample-kvm/entries/foo
+curl -X GET "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/$KVM_NAME/entries/foo"
 ```
 
 ## Delete a KVM entry
 
 ```sh
-curl -X DELETE   https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/sample-kvm/entries/foo
+curl -X DELETE "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/kvm-admin/v1/kvms/$KVM_NAME/entries/foo"
 ```

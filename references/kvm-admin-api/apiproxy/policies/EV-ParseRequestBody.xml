@@ -20,5 +20,8 @@
         <Variable name="private.kvm-entry.value" type="string">
             <JSONPath>$.value</JSONPath>
         </Variable>
+        <Variable name="kvm-entry.key" type="string">
+            <JSONPath>$.name</JSONPath>
+        </Variable>
     </JSONPayload>
 </ExtractVariables>
