@@ -41,6 +41,8 @@ export REGION='europe-west1'
 export ZONE='europe-west1-b'
 # Name of the GKE cluster that hosts the runtime
 export GKE_CLUSTER_NAME='apigee-hybrid'
+# Machine type of the GKE cluster that hosts the runtime
+export GKE_CLUSTER_MACHINE_TYPE='e2-standard-4'
 # Apigee Config
 export ENV_NAME='test1'
 export ENV_GROUP_NAME='test'
