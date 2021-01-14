@@ -36,6 +36,8 @@ further to fit a particular use case.
   backend services
 - [OIDC Mock](references/oidc-mock) -
   A simple OIDC mock identity provider implementation
+- [KVM Admin API](references/kvm-admin-api) -
+  Generic API proxy to provide Create, Read and Delete operations for KVMs.
 
 ## Tools
 

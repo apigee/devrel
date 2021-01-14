@@ -33,7 +33,7 @@ set_config_params() {
     echo "🔧 Configuring Apigee hybrid"
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
-
+    export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:=e2-standard-4}
     export APIGEE_CTL_VERSION='1.3.4'
     export KPT_VERSION='v0.34.0'
     export CERT_MANAGER_VERSION='v1.1.0'
@@ -292,7 +292,7 @@ create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
     gcloud container clusters create $GKE_CLUSTER_NAME \
-      --machine-type "e2-standard-4" \
+      --machine-type $GKE_CLUSTER_MACHINE_TYPE \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
       --labels mesh_id="$MESH_ID" \
