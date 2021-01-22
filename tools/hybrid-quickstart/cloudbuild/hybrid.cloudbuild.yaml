@@ -31,26 +31,21 @@ steps:
   args:
     - "-c"
     - |-
-      # git clone https://github.com/apigee/devrel.git
+      QUICKSTART_ROOT=$$(pwd)/tools/hybrid-quickstart/hybrid14
 
-      git clone https://github.com/danistrebel/devrel.git && cd devrel
-      git checkout feature/hybrid14
-      cd ..
-
-      QUICKSTART_ROOT=$$(pwd)/devrel/tools/hybrid-quickstart/hybrid14
       source "$$QUICKSTART_ROOT/steps.sh"
 
       set_config_params
 
       create_apigee_org
 
-      create_apigee_env $_QUICKSTART_ENV_NAME
+      create_apigee_env "$_QUICKSTART_ENV_NAME"
 
-      create_apigee_envgroup $_QUICKSTART_ENV_GROUP_NAME
+      create_apigee_envgroup "$_QUICKSTART_ENV_GROUP_NAME"
 
-      add_env_to_envgroup $_QUICKSTART_ENV_NAME $_QUICKSTART_ENV_GROUP_NAME
+      add_env_to_envgroup "$_QUICKSTART_ENV_NAME" "$_QUICKSTART_ENV_GROUP_NAME"
 
-      configure_network $_QUICKSTART_ENV_GROUP_NAME
+      configure_network "$_QUICKSTART_ENV_GROUP_NAME"
 
       create_gke_cluster
 
@@ -60,7 +55,7 @@ steps:
 
       prepare_resources
 
-      create_self_signed_cert $_QUICKSTART_ENV_GROUP_NAME
+      create_self_signed_cert "$_QUICKSTART_ENV_GROUP_NAME"
 
       for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
       do
@@ -78,6 +73,7 @@ steps:
       echo "curl --fail --cacert $$QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt \
       --resolve $_QUICKSTART_ENV_GROUP_NAME.$$DNS_NAME:443:$$INGRESS_IP \
       https://$_QUICKSTART_ENV_GROUP_NAME.$$DNS_NAME/httpbin/v0/anything" > ./test-proxy.sh
+
       chmod +x ./test-proxy.sh
 
 # Step 1: Test that the proxy is successfully deployed

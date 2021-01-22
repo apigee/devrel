@@ -261,9 +261,9 @@ add_env_to_envgroup() {
 configure_network() {
     echo "🌐 Setup Networking"
 
-    ENV_GROUP_NAME=$1
+    ENV_GROUP_NAME="$1"
 
-    gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
+    gcloud compute addresses create apigee-ingress-loadbalancer --region "$REGION"
 
     gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
 
@@ -288,8 +288,8 @@ configure_network() {
 create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
-    gcloud container clusters create $GKE_CLUSTER_NAME \
-      --machine-type $GKE_CLUSTER_MACHINE_TYPE \
+    gcloud container clusters create "$GKE_CLUSTER_NAME" \
+      --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
       --labels mesh_id="$MESH_ID" \
@@ -321,7 +321,7 @@ install_asm_and_certmanager() {
   SERVICE_ACCOUNT_NAME="$GKE_CLUSTER_NAME-anthos"
 
   # fail silently if the account already exists
-  gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME 2>/dev/null
+  gcloud iam service-accounts create "$SERVICE_ACCOUNT_NAME" 2>/dev/null
 
   gcloud projects add-iam-policy-binding "$PROJECT_ID" \
    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
