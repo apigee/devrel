@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: DevRel All Projects Pipeline
+name: DevRel Linter Pipeline
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
   - cron: "0 0 * * *"
-env:
-  APIGEE_USER: ${{ secrets.APIGEE_USER }}
-  APIGEE_PASS: ${{ secrets.APIGEE_PASS }}
-  APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
-  APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
-  # Component specific secrets
-  REF_GCP_SA_SF: ${{ secrets.REF_GCP_SA_SF }}
 jobs:
 
   static-analysis:
@@ -44,36 +43,11 @@ jobs:
           MARKDOWN_CONFIG_FILE: .markdown-lint.yml
 
       - name: Check all files are licensed
-        uses: ./tools/pipeline-runner
+        uses: ./tools/pipeline-linter
         with:
           pipeline-action: check-license.sh
 
       - name: Check README and CODEOWNER index
-        uses: ./tools/pipeline-runner
+        uses: ./tools/pipeline-linter
         with:
           pipeline-action: check-readme.sh
-
-  project-pipelines:
-
-    name: Run Pipelines
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Turnstyle
-        uses: softprops/turnstyle@v1
-        with:
-          same-branch-only: false
-          poll-interval-seconds: 10
-          continue-after-seconds: 120
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Pipelines
-        uses: ./tools/pipeline-runner
-        with:
-          pipeline-action: run-pipelines.sh
-
-

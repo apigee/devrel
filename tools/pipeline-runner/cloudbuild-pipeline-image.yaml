@@ -1,6 +1,4 @@
-#!/bin/sh
-
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-set -x
-
-npm i --no-fund
-npm run deploy
-npm test
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-f'
+  - './tools/pipeline-runner/Dockerfile'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  - './tools/pipeline-runner'
+  id: 'pipeline-build'
+images:
+- 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'

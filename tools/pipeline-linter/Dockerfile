@@ -1,12 +1,10 @@
-#!/bin/sh
-
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+# <http://www.apache.org/licenses/LICENSE-2.0>
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-set -x
+FROM golang:alpine3.12
 
-npm i --no-fund
-npm run deploy
-npm test
+RUN apk add --no-cache git
+RUN go get github.com/google/addlicense
+RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
+
+# install our dependencies
+COPY *.sh /usr/bin/
+
+# Run script
+WORKDIR /home
+CMD ["check-licenses.sh"]
