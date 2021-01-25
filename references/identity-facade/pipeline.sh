@@ -346,7 +346,7 @@ set_functional_test_env_var() {
 }
 
 # generate a timestamp to make some values unique
-timestamp=`date '+%s'`
+timestamp=$(date '+%s')
 
 # set env variables for google oidc
 set_idp_env_var
@@ -354,7 +354,7 @@ set_idp_env_var
 # generate edge.json file
 generate_edge_json
 
-set_functional_test_env_var $timestamp
+set_functional_test_env_var "$timestamp"
 
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
 mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
