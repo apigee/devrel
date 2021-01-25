@@ -23,7 +23,7 @@ const {
 
 const org = process.env.APIGEE_ORG
 const env = process.env.APIGEE_ENV
-const clientId = 'xkey' 
+const clientId = process.env.TEST_APP_CONSUMER_KEY 
 const clientSecret = 'xsecret'
 const username = 'johndoe' 
 const password = 'dummy-password'

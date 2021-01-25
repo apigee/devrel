@@ -10,7 +10,7 @@ Feature:
     And response body should be valid json
     
   Scenario: I should get an error if redirect_uri is missing or invalid
-    When I GET /authorize?client_id=xkey&redirect_uri=https://example.com/invalid&response_type=code&state=12345&scope=openid%20email
+    When I GET /authorize?client_id=`clientId`&redirect_uri=https://example.com/invalid&response_type=code&state=12345&scope=openid%20email
     Then response code should be 400
     And response body path $.error should be invalid_request
     

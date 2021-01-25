@@ -3,8 +3,8 @@
 An identity facade that is used in front of an OpenID Connect (OIDC) compliant
 Identity Provider (IdP).
 The aim of the identity facade is to deal with all the interactions between a
-client app and an IdP and to generate an OAuth20 access token that can be used
-by the client app to access protected resources through Apigee.
+client app and an IdP and to generate an OAuth 2.0 access token that
+can be used by the client app to access protected resources through Apigee.
 This reference promotes a clear **separation of concerns** between Apigee and
 the IdP.
 
@@ -13,14 +13,14 @@ the IdP.
 
 The IdP that is used is the [OIDC Mock IdP](../oidc-mock) but you may
 use any OIDC compliant IdP. Should you use your own IdP solution, please
-modify the value of the variable ```idp_discovery_document``` in the
-```pipeline.sh``` script. This variable MUST point to the URL of the
+modify the value of the variable `idp_discovery_document` in the
+`pipeline.sh` script. This variable MUST point to the URL of the
 discovery document of your IdP solution.
 Other values that need to be changed are values of the 2 following variables:
 
-- ```TEST_IDP_APIGEE_CLIENT_ID```: the client_id Apigee can use to connect to
+- `TEST_IDP_APIGEE_CLIENT_ID`: the client_id Apigee can use to connect to
  the IdP
-- ```TEST_IDP_APIGEE_CLIENT_SECRET```: the client_secret Apigee can use to
+- `TEST_IDP_APIGEE_CLIENT_SECRET`: the client_secret Apigee can use to
 connect to the IdP
 
 ## Dependencies
@@ -37,6 +37,23 @@ connect to the IdP
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
     ./pipeline.sh
+
+## Script outputs
+
+The pipeline script deploys on Apigee an API Proxy containing the full
+configuration of the identity facade reference as well as the
+following elements:
+
+- A Key Value Map (`idpConfigIdentityProxy`) with values inherited from
+the IdP's discovery document. This KVM is scoped at env level.
+- A cache (`IDP_JWKS_CACHE`) used to cache JWKS keys received from
+the IdP. This cache is scoped at env level.
+- An API Product only used for functional tests
+- A developer app only used for functional tests
+
+On the machine and directory from where the script is executed, you can find
+a `edge.json` file, which contains the configuration of all these
+elements
 
 ## Identity Facade Sequence Diagram
 

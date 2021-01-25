@@ -22,5 +22,5 @@
         <ReasonPhrase>Found</ReasonPhrase>
     </Set>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" type="request"/>
+    <AssignTo createNew="false" type="response"/>
 </AssignMessage>

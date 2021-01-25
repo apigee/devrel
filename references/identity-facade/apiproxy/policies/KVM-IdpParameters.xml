@@ -12,64 +12,63 @@
  limitations under the License.
 -->
 <KeyValueMapOperations name="KVM-IdpParameters" mapIdentifier="idpConfigIdentityProxy">
-    <ExclusiveCache>false</ExclusiveCache>
     <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
-    <Get assignTo="flow.idp.az.hostname" index="1">
+    <Get assignTo="flow.idp.az.hostname">
         <Key>
             <Parameter>idp.az.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.az.uri" index="1">
+    <Get assignTo="flow.idp.az.uri">
         <Key>
             <Parameter>idp.az.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.client_id" index="1">
+    <Get assignTo="flow.idp.apigee.client_id">
         <Key>
             <Parameter>idp.apigee.client_id</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.client_secret" index="1">
+    <Get assignTo="flow.idp.apigee.client_secret">
         <Key>
             <Parameter>idp.apigee.client_secret</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.redirect_uri" index="1">
+    <Get assignTo="flow.idp.apigee.redirect_uri">
         <Key>
             <Parameter>idp.apigee.redirect_uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.token.hostname" index="1">
+    <Get assignTo="flow.idp.token.hostname">
         <Key>
             <Parameter>idp.token.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.token.uri" index="1">
+    <Get assignTo="flow.idp.token.uri">
         <Key>
             <Parameter>idp.token.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.jwks.hostname" index="1">
+    <Get assignTo="flow.idp.jwks.hostname">
         <Key>
             <Parameter>idp.jwks.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.userinfo.uri" index="1">
+    <Get assignTo="flow.idp.userinfo.uri">
         <Key>
             <Parameter>idp.userinfo.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.userinfo.hostname" index="1">
+    <Get assignTo="flow.idp.userinfo.hostname">
         <Key>
             <Parameter>idp.userinfo.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.jwks.uri" index="1">
+    <Get assignTo="flow.idp.jwks.uri">
         <Key>
             <Parameter>idp.jwks.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.issuer" index="1">
+    <Get assignTo="flow.idp.issuer">
         <Key>
             <Parameter>idp.issuer</Parameter>
         </Key>

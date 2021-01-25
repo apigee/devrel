@@ -291,7 +291,7 @@ generate_post_data_app_credentials()
 {
   cat <<EOF
 {
-  "consumerKey": "xkey",
+  "consumerKey": "$TEST_APP_CONSUMER_KEY",
   "consumerSecret": "xsecret"
 }
 EOF
@@ -327,7 +327,7 @@ set_devapp_credentials() {
 ####################################
 set_devapp_product() {
     # retrieve configuration data from a keycloak endpoint
-    response=$(curl --silent -X POST --data "$(generate_post_data_app_identity_product)" -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/xkey)
+    response=$(curl --silent -X POST --data "$(generate_post_data_app_identity_product)" -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY")
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
 
@@ -335,12 +335,26 @@ set_devapp_product() {
     fi
 }
 
+################################
+### function: set_idp_env_var ###
+#################################
+set_functional_test_env_var() {
+
+    # use timestamp (parameter) to create a unique value
+    TEST_APP_CONSUMER_KEY="xkey-$1"
+    export TEST_APP_CONSUMER_KEY
+}
+
+# generate a timestamp to make some values unique
+timestamp=`date '+%s'`
 
 # set env variables for google oidc
 set_idp_env_var
 
 # generate edge.json file
 generate_edge_json
+
+set_functional_test_env_var $timestamp
 
 # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
 mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
