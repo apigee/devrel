@@ -16,23 +16,23 @@ FROM golang:alpine3.12
 
 # Install our tools
 RUN apk add --no-cache \
-  curl=7.69.1-r2 \
-  docker=19.03.12-r0 \
-  git=2.26.2-r0 \
-  jq=1.6-r1 \
-  maven=3.6.3-r0 \
-  nodejs=12.18.4-r0 \
-  npm=12.18.4-r0 \
-  openjdk11-jre-headless=11.0.9_p11-r0 \
-  util-linux=2.35.2-r0 \
+  curl \
+  docker \
+  git \
+  jq \
+  maven \
+  nodejs \
+  npm \
+  openjdk11-jre-headless \
+  util-linux \
   # add chromium and dependencies for UI testing
-  chromium=86.0.4240.111-r0 \
-  nss=3.59-r0 \
-  freetype=2.10.4-r0 \
-  freetype-dev=2.10.4-r0 \
-  harfbuzz=2.6.6-r0 \
-  ca-certificates=20191127-r4 \
-  ttf-freefont=20120503-r1
+  chromium \
+  nss \
+  freetype \
+  freetype-dev \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont
 
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0

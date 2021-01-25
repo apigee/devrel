@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,16 +14,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="1" name="httpbin-v0">
-    <Description>Hybrid Sample Deployment</Description>
-    <BasePaths>/httpbin/v0</BasePaths>
-    <Policies></Policies>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources></Resources>
-    <TargetServers></TargetServers>
-    <TargetEndpoints>
-        <TargetEndpoint>default</TargetEndpoint>
-    </TargetEndpoints>
-</APIProxy>
+
+<AssignMessage name="AM-SetResponse">
+    <Set>
+        <Payload contentType="application/json">{"name": "{kvm-entry.key}", "value": "{private.kvm-entry.value}"}</Payload>
+    </Set>
+</AssignMessage>

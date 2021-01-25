@@ -1,0 +1,13 @@
+{
+  "name": "kvm-admin-api",
+  "version": "1.0.0",
+  "description": "Proxy to administer KVM entries",
+  "scripts": {
+    "test": "npm i && npx cucumber-js test"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "apickli": "^2.3.1",
+    "cucumber": "^5.1.0"
+  }
+}

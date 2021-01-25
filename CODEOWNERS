@@ -9,6 +9,7 @@
 /references/java-callout              @laughingbiscuit
 /references/js-callout                @seymen
 /references/oidc-mock                 @joelgauci
+/references/kvm-admin-api             @danistrebel
 /references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
 /labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen

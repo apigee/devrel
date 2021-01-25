@@ -39,6 +39,8 @@ further to fit a particular use case.
 - [Identity Facade](references/identity-facade) -
   Reference implementation for an Identity Facade proxy in front of an OIDC
   compliant identity provider
+- [KVM Admin API](references/kvm-admin-api) -
+  Generic API proxy to provide Create, Read and Delete operations for KVMs.
 
 ## Tools
 

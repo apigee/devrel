@@ -38,7 +38,7 @@ use your existing infrastructure. The `jenkins` folder contains instructions
 on how to set up a dockerized Jenkins environment with all the necessary
 tooling and plugins required.
 
-#### Option A: Configure Jenkins Docker Container
+#### Option A: Run a Jenkins Docker Container
 
 See the instructions in [./jenkins/README.md](./jenkins/README.md).
 

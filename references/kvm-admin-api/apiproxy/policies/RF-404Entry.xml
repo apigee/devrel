@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2020 Google LLC
+ Copyright 2021 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,15 +14,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<PopulateCache name="PC.CacheAccessToken">
-    <CacheKey>
-        <Prefix>gcp.sa</Prefix>
-        <KeyFragment ref="private.gcp.service_account.client_id"/>
-        <KeyFragment ref="token.purpose"/>
-    </CacheKey>
-    <CacheResource>gcp-tokens</CacheResource>
-    <Source>private.gcp.access_token</Source>
-    <ExpirySettings>
-        <TimeoutInSec>300</TimeoutInSec>
-    </ExpirySettings>
-</PopulateCache>
+
+<RaiseFault name="RF-404Entry">
+    <FaultResponse>
+        <Set>
+            <StatusCode>404</StatusCode>
+            <ReasonPhrase>Not Found</ReasonPhrase>
+            <Payload contentType="application/json" variablePrefix="@" variableSuffix="#">{"code": "404.99.02", "message": "No entry found for key: @kvm-entry.key#"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
