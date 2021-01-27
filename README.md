@@ -56,6 +56,9 @@ Apigee products.
   A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
+- [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
+  A rescue utility to decrypt proxies and shared flows
+  
 
 ## Labs
 
