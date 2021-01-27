@@ -1,72 +1,71 @@
 # Decrypt Hybrid Assets
 
-A rescue utility to decrypt proxies and shared flows taken directly 
-from an apigee-runtime pod in an encrypted form.
+A rescue utility to decrypt proxies and shared flows taken directly from an apigee-runtime pod in an encrypted form.
 
 ## Description
 
-Image, your trial Apigee hybrid organisation was deleted. The only 
-thing that's left is a running runtime.
+Image, your trial Apigee hybrid organisation was deleted. The only thing that's left is a running runtime.
 
-No need to panic. 
+No need to panic.
 
 ## To take a backup snapshot
 
 1. Log into any apigee-runtime pod
 
-2. Read the value of an $CONTRACT_ENCRYPT_KEY_PATH environment variable
+1. Read the value of an $CONTRACT_ENCRYPT_KEY_PATH environment variable
 
-```
-echo $CONTRACT_ENCRYPT_KEY_PATH
-```
-It points to a file that contains base64-encoded artefact encryption key.
+    ```sh
+    echo $CONTRACT_ENCRYPT_KEY_PATH
+    ```
 
-For 1.3.x and 1.4.x it will be `/etc/encryption/plainTextDEK`
+    It points to a file that contains base64-encoded artefact encryption key.
 
-3. Read the encoded key value
-```
-cat $CONTRACT_ENCRYPT_KEY_PATH
-```
-4. tar/gz contents of the `/opt/apigee/apigee-runtime/data/$XXX/config/` 
-directory. 
+    For 1.3.x and 1.4.x it will be `/etc/encryption/plainTextDEK`
+
+1. Read the encoded key value
+
+    ```sh
+    cat $CONTRACT_ENCRYPT_KEY_PATH
+    ```
+
+1. tar/gz contents of the `/opt/apigee/apigee-runtime/data/$XXX/config/` directory.
 
 ## To recover assets
 
 1. Clone the utility and add its directory to a PATH
 
-2. Define the key as a variable so that you don't need to show it off during 
-utility invocation
-```
-export KEY="<your-encoded-key>"
-```
+1. Define the key as a variable so that you don't need to show it off during utility invocation
 
-2. Untar the file to any working directory
+    ```sh
+    export KEY="<your-encoded-key>"
+    ```
 
-3. In the working directory, execute
+1. Untar the file to any working directory
 
-```
-decrypt-folder-tree.sh $KEY <source-dir> <target-dir> &> log.log
-```
+1. In the working directory, execute
 
-The utility will traverse the <source-dir> directory and will replicate
+    ```sh
+    decrypt-folder-tree.sh $KEY <source-dir> <target-dir> &> log.log
+    ```
+
+The utility will traverse the &lt;source-dir&gt; directory and will replicate
 the directory structure and decrypted files into the &lt;target-dir&gt; directory.
-
 
 ## Restore the status quo and Future-proof your SDLC process
 
 1. Zip each folder and import/deploy them into an Apigee hybrid org.
 
-2. Now it's time to reconsider your approach to using Apigee as a Version Control System.
+1. Now it's time to reconsider your approach to using Apigee as a Version Control System.
 
-3. Revisit every proxy folder and put it into a source control system of your choice.
+1. Revisit every proxy folder and put it into a source control system of your choice.
 
-
-## Bonus section 
+## Bonus section
 
 How to decrypt a single file only
 
 Assuming $KEY env variable contains the base64 encoded key, execute
-```
+
+```sh
 # decode the encoded key to a steam of bytes
 K=$(echo $KEY|base64 -d |hexdump -ve '1/1 "%.2x"')
 

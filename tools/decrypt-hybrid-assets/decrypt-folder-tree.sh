@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 encodedkey="$1"
 idir="$2"
 odir="$3"
@@ -29,29 +27,29 @@ odir="$3"
     fi
 
 
-key=$(echo $encodedkey|base64 -d |hexdump -ve '1/1 "%.2x"')
-keylength=$(( $(echo -n $K | wc -m) / 2 * 8 ))
+key=$(echo "$encodedkey"|base64 -d |hexdump -ve '1/1 "%.2x"')
+keylength=$(( $(echo -n "$K" | wc -m) * 8 / 2 ))
 
-odirabs="$(cd "$(dirname "$odir")"; pwd)/$(basename "$odir")"
+odirabs="$(cd "$(dirname "$odir")" || exit; pwd)/$(basename "$odir")"
 
-printf "Source Path: $idir\n\n"
-printf "Full Target Path: $odirabs\n\n"
+printf "Source Path: %s\n\n" "$idir"
+printf "Full Target Path: %s\n\n" "$odirabs"
 
 
-mkdir -p $odir
+mkdir -p "$odir"
 
 (
-cd $idir
-find . | while read i; do
-  echo "Processing: $i\n"
+cd "$idir" || exit
+find . | while read -r i; do
+  printf "Processing: %s\n" "$i"
   of="$i"
   echo "   of: $of"
   if [ -d "$of" ]; then
-    printf "\n   Target DIR: $odirabs/$of\n"
+    printf "\n   Target DIR: %s\n" "$odirabs/$of"
     mkdir "$odirabs/$of"
   elif [ -f "$of" ]; then
-    printf "   Target FILE: $odirabs/$of\n"
-    openssl enc -d -aes-$keylength-ecb -K $key -in "$of" > "$odirabs/$of"
+    printf "   Target FILE: %s\n" "$odirabs/$of"
+    openssl enc -d -aes-$keylength-ecb -K "$key" -in "$of" > "$odirabs/$of"
   fi
 
 done
