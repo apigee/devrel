@@ -1,10 +1,12 @@
 # Decrypt Hybrid Assets
 
-A rescue utility to decrypt proxies and shared flows taken directly from an apigee-runtime pod in an encrypted form.
+A rescue utility to decrypt proxies and shared flows taken directly from
+an apigee-runtime pod in an encrypted form.
 
 ## Description
 
-Image, your trial Apigee hybrid organisation was deleted. The only thing that's left is a running runtime.
+Image, your trial Apigee hybrid organisation was deleted. The only thing that's
+left is a running runtime.
 
 No need to panic.
 
@@ -34,7 +36,8 @@ No need to panic.
 
 1. Clone the utility and add its directory to a PATH
 
-1. Define the key as a variable so that you don't need to show it off during utility invocation
+1. Define the key as a variable so that you don't need to show it off during
+utility invocation
 
     ```sh
     export KEY="<your-encoded-key>"
@@ -49,15 +52,18 @@ No need to panic.
     ```
 
 The utility will traverse the &lt;source-dir&gt; directory and will replicate
-the directory structure and decrypted files into the &lt;target-dir&gt; directory.
+the directory structure and decrypted files into the &lt;target-dir&gt;
+directory.
 
 ## Restore the status quo and Future-proof your SDLC process
 
 1. Zip each folder and import/deploy them into an Apigee hybrid org.
 
-1. Now it's time to reconsider your approach to using Apigee as a Version Control System.
+1. Now it's time to reconsider your approach to using Apigee as
+a Version Control System.
 
-1. Revisit every proxy folder and put it into a source control system of your choice.
+1. Revisit every proxy folder and put it into a source control system of
+your choice.
 
 ## Bonus section
 
