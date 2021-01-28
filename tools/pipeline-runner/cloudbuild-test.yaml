@@ -61,6 +61,7 @@ steps:
   - 'PROJECT_ID=$PROJECT_ID'
   - 'PR_NUMBER=$_PR_NUMBER'
   - 'REPO_GH_ISSUE=$_REPO_GH_ISSUE'
+  - 'CREATE_GH_ISSUE=$_CREATE_GH_ISSUE'
 # Explicitly fail build if needed
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   entrypoint: "bash"
