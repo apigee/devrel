@@ -12,8 +12,9 @@
 /references/kvm-admin-api             @danistrebel
 /references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
-/labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen
+/labs/best-practices-hackathon        @laughingbiscuit @sauliuz @seymen
 /tools/organization-cleanup           @laughingbiscuit
 /tools/pipeline-runner                @laughingbiscuit @seymen
 /tools/another-apigee-client          @laughingbiscuit
 /tools/hybrid-quickstart              @danistrebel
+/tools/decrypt-hybrid-assets          @yuriylesyuk
