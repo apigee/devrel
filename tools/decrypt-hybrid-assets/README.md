@@ -5,7 +5,7 @@ an apigee-runtime pod in an encrypted form.
 
 ## Description
 
-Image, your trial Apigee hybrid organisation was deleted. The only thing that's
+Imagine, your trial Apigee hybrid organisation was deleted. The only thing that's
 left is a running runtime.
 
 No need to panic.
@@ -17,7 +17,7 @@ No need to panic.
 1. Read the value of an $CONTRACT_ENCRYPT_KEY_PATH environment variable
 
     ```sh
-    echo $CONTRACT_ENCRYPT_KEY_PATH
+    echo "$CONTRACT_ENCRYPT_KEY_PATH"
     ```
 
     It points to a file that contains base64-encoded artefact encryption key.
@@ -27,10 +27,14 @@ No need to panic.
 1. Read the encoded key value
 
     ```sh
-    cat $CONTRACT_ENCRYPT_KEY_PATH
+    cat "$CONTRACT_ENCRYPT_KEY_PATH"
     ```
 
-1. tar/gz contents of the `/opt/apigee/apigee-runtime/data/$XXX/config/` directory.
+1. tar/gz contents of the `/opt/apigee/apigee-runtime/data/` directory.
+
+    ```sh
+    tar -czvf /tmp/data-backup.tar.gz -C /opt/apigee/apigee-runtime/data .
+    ```
 
 ## To recover assets
 
@@ -48,7 +52,7 @@ utility invocation
 1. In the working directory, execute
 
     ```sh
-    decrypt-folder-tree.sh $KEY <source-dir> <target-dir> &> log.log
+    decrypt-folder-tree.sh "$KEY" <source-dir> <target-dir> &> log.log
     ```
 
 The utility will traverse the &lt;source-dir&gt; directory and will replicate
@@ -59,8 +63,16 @@ directory.
 
 1. Zip each folder and import/deploy them into an Apigee hybrid org.
 
+    [How to: manually zip up an API Proxy bundle into something that can be imported to Apigee Edge](https://community.apigee.com/articles/42221/how-to-manually-zip-up-an-api-proxy-bundle-into-so-1.html)
+
 1. Now it's time to reconsider your approach to using Apigee as
 a Version Control System.
+
+    The following community articles are a good starting points:
+
+    * [Source Control for API Proxy Development](https://community.apigee.com/articles/34868/source-control-for-api-proxy-development.html)
+
+    * [Antipattern: Manage Edge resources without using source control management](https://docs.apigee.com/api-platform/antipatterns/no-source-control)
 
 1. Revisit every proxy folder and put it into a source control system of
 your choice.
@@ -73,11 +85,11 @@ Assuming $KEY env variable contains the base64 encoded key, execute
 
 ```sh
 # decode the encoded key to a steam of bytes
-K=$(echo $KEY|base64 -d |hexdump -ve '1/1 "%.2x"')
+K=$(echo "$KEY"|base64 -d |hexdump -ve '1/1 "%.2x"')
 
 # calculate the key length for a correct cypher invocation
-KEYLENGTH=$(( $(echo -n $K | wc -m) / 2 * 8 ))
+KEYLENGTH=$(( $(echo -n "$K" | wc -m) / 2 * 8 ))
 
 # Process the file output a result at stdout
-openssl enc -d -aes-$KEYLENGTH-ecb -K $K -in <encrypted-file>
+openssl enc -d -aes-$KEYLENGTH-ecb -K "$K" -in <encrypted-file>
 ```
