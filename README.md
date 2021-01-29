@@ -60,6 +60,8 @@ Apigee products.
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
   A rescue utility to decrypt proxies and shared flows
+- [HTTPBin Upcheck](tools/httpbin-upcheck) -
+  HTTPBin Upcheck
 
 ## Labs
 

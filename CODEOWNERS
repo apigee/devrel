@@ -17,5 +17,6 @@
 /tools/pipeline-runner                @laughingbiscuit @seymen @danistrebel
 /tools/pipeline-linter                @laughingbiscuit @seymen @danistrebel
 /tools/another-apigee-client          @laughingbiscuit
+/tools/httpbin-upcheck                @seymen
 /tools/hybrid-quickstart              @danistrebel
 /tools/decrypt-hybrid-assets          @yuriylesyuk
