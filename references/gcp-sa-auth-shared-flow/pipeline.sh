@@ -15,7 +15,7 @@
 
 # REQUIREMENT:
 # Populate a service account key into the environment variable "REF_GCP_SA_SF" e.g. by:
-# $ c
+# $ REF_GCP_SA_SF=$(cat /path/to/gcp-sa-key.json | jq '. | tostring')
 #
 # Hint:
 # Make sure that newline characters are properly escaped with `\\n` within

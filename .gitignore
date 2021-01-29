@@ -1,6 +1,5 @@
 **/node_modules/**
 **/generated/**
-/service-accounts
 
 .settings
 .project
