@@ -20,7 +20,7 @@ set -x
 mkdir -p ./tmp
 curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12
 
-mvn install -Ptest -Dapigee.config.options=update 
+mvn install -ntp -B -Ptest -Dapigee.config.options=update
 
 npm i
 npm run test

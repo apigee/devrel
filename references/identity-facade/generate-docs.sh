@@ -13,16 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 set -e
 
-git fetch
-PROJECTS=$(git diff --name-only origin/main | grep "labs/\|references/\|tools/" \
-  | awk -F '/' '{ print $1 "/" $2}' | uniq)
-
-if [ "$(echo "$PROJECTS" | wc -w)" -le 1 ]; then
-  echo "::set-output name=project::$PROJECTS"
-else
-  echo "Multiple projects changed - running all pipelines"
-  echo "::set-output name=project::"
-fi
+# generate the picture of the sequence diagram based on the text file describing the sequences
+java -jar ./lib/plantuml.1.2020.23.jar ./diagram/sequence-identity-facade-v1.txt

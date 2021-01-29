@@ -34,7 +34,8 @@ set_config_params() {
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:=e2-standard-4}
-    export APIGEE_CTL_VERSION='1.3.4'
+
+    export APIGEE_CTL_VERSION='1.4.0'
     export KPT_VERSION='v0.34.0'
     export CERT_MANAGER_VERSION='v1.1.0'
 
@@ -42,12 +43,12 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-linux-amd64.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.7.3-asm.6-linux-amd64.tar.gz'
       export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.6.11-asm.1-osx.tar.gz'
+      export ISTIO_ASM_CLI='istio-1.7.3-asm.6-osx.tar.gz'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
@@ -151,6 +152,8 @@ enable_all_apis() {
     meshconfig.googleapis.com \
     meshtelemetry.googleapis.com \
     monitoring.googleapis.com \
+    pubsub.googleapis.com \
+    stackdriver.googleapis.com \
     --project "$PROJECT_ID"
 }
 
@@ -227,7 +230,7 @@ create_apigee_envgroup() {
       }" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups"
 
-    echo -n "⏳ Waiting for Apigeectl Env Creation"
+    echo -n "⏳ Waiting for Apigeectl Env Creation "
     wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME | grep -q $ENV_GROUP_NAME; echo \$?" "Environment Group $ENV_GROUP_NAME of Organization $PROJECT_ID is created."
 
     echo "✅ Created Env Group '$ENV_GROUP_NAME'"
@@ -256,43 +259,37 @@ add_env_to_envgroup() {
 }
 
 configure_network() {
-    ENV_GROUP_NAME=$1
+    echo "🌐 Setup Networking"
 
-    echo "🌐 Set up Networking for $ENV_GROUP_NAME.$DNS_NAME"
+    ENV_GROUP_NAME="$1"
 
-    gcloud compute addresses create apigee-ingress-loadbalancer --region $REGION
+    gcloud compute addresses create apigee-ingress-loadbalancer --region "$REGION"
 
-    DNS_ZONE_NAME=apigee-dns-zone
-    EXISTING_DNS_ZONE=$(gcloud dns managed-zones list --filter $DNS_ZONE_NAME)
-    if [[ $EXISTING_DNS_ZONE == *"$DNS_ZONE_NAME"* ]]; then
-      echo "👷 DNS Zone manually configured"
-    else
-      gcloud dns managed-zones create $DNS_ZONE_NAME --dns-name="$DNS_NAME" --description="Apigee Ingress DNS"
+    gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
 
-      INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
-      export INGRESS_IP
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+    export INGRESS_IP
 
-      gcloud dns record-sets transaction start --zone=$DNS_ZONE_NAME
+    gcloud dns record-sets transaction start --zone=apigee-dns-zone
 
-      gcloud dns record-sets transaction add "$INGRESS_IP" \
-          --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
-          --type=A --zone=$DNS_ZONE_NAME
+    gcloud dns record-sets transaction add "$INGRESS_IP" \
+        --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
+        --type=A --zone=apigee-dns-zone
 
-      gcloud dns record-sets transaction execute --zone=$DNS_ZONE_NAME
+    gcloud dns record-sets transaction describe --zone=apigee-dns-zone
+    gcloud dns record-sets transaction execute --zone=apigee-dns-zone
 
-      NAME_SERVER=$(gcloud dns managed-zones describe $DNS_ZONE_NAME --format="json" --format="get(nameServers[0])")
-      export NAME_SERVER
-      echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
-    fi
-
+    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
+    export NAME_SERVER
+    echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
     echo "✅ Networking set up"
 }
 
 create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
-    gcloud container clusters create $GKE_CLUSTER_NAME \
-      --machine-type $GKE_CLUSTER_MACHINE_TYPE \
+    gcloud container clusters create "$GKE_CLUSTER_NAME" \
+      --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
       --num-nodes "4" \
       --enable-autoscaling --min-nodes "3" --max-nodes "6" \
       --labels mesh_id="$MESH_ID" \
@@ -324,7 +321,7 @@ install_asm_and_certmanager() {
   SERVICE_ACCOUNT_NAME="$GKE_CLUSTER_NAME-anthos"
 
   # fail silently if the account already exists
-  gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME 2>/dev/null
+  gcloud iam service-accounts create "$SERVICE_ACCOUNT_NAME" 2>/dev/null
 
   gcloud projects add-iam-policy-binding "$PROJECT_ID" \
    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
@@ -353,16 +350,16 @@ install_asm_and_certmanager() {
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
 
   "$QUICKSTART_TOOLS"/kpt/kpt pkg get \
-    https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.6-asm "$QUICKSTART_TOOLS"/kpt/asm
+    https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.7-asm "$QUICKSTART_TOOLS"/kpt/asm
 
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster "$GKE_CLUSTER_NAME"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.core.project "$PROJECT_ID"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.compute.location "$ZONE"
   "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.project.environProjectNumber "$MESH_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm anthos.servicemesh.profile "asm-gcp"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm anthos.servicemesh.rev asm-173-6
 
-  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/kpt/asm/cluster/istio-operator.yaml \
-    --revision=asm-1611-1 \
+  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/kpt/asm/istio/istio-operator.yaml \
+    --revision=asm-173-6 \
     --set values.gateways.istio-ingressgateway.loadBalancerIP="$INGRESS_IP" \
     --set meshConfig.enableAutoMtls=false \
     --set meshConfig.accessLogFile=/dev/stdout \
@@ -432,7 +429,7 @@ create_self_signed_cert() {
 }
 
 create_sa() {
-    for SA in mart cassandra udca metrics synchronizer logger watcher
+    for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
     do
       yes | "$APIGEECTL_HOME"/tools/create-service-account "apigee-$SA" "$HYBRID_HOME/service-accounts"
     done
@@ -466,7 +463,7 @@ envs:
     serviceAccountPaths:
       synchronizer: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-synchronizer.json"
       udca: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
-
+      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-distributed-trace.json"
 mart:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
@@ -481,7 +478,7 @@ watcher:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
 
 logger:
-  enabled: true
+  enabled: false
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
 
 EOF
@@ -499,13 +496,19 @@ EOF
 
     popd || return
 
+    echo -n "🔛 Enabling runtime synchronizer"
     curl -X POST -H "Authorization: Bearer $(token)" \
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}:setSyncAuthorization" \
     -d "{\"identities\":[\"serviceAccount:apigee-synchronizer@${PROJECT_ID}.iam.gserviceaccount.com\"]}"
 
-    echo "🎉🎉🎉 Hybrid installation completed!"
+    echo -n "🕵️‍♀️ Turn on trace logs"
+    curl -X POST -H "Authorization: Bearer $(token)" \
+    -H "Content-Type:application/json" \
+    "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/traceConfig" \
+    -d "{\"exporter\":\"CLOUD_TRACE\",\"endpoint\":\"${PROJECT_ID}\",\"sampling_config\":{\"sampler\":\"PROBABILITY\",\"sampling_rate\":0.5}}"
 
+    echo "🎉🎉🎉 Hybrid installation completed!"
 }
 
 deploy_example_proxy() {
@@ -526,7 +529,8 @@ deploy_example_proxy() {
 
   curl -X POST \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/apis/httpbin-v0/revisions/${PROXY_REV}/deployments?override=true" \
-    -H "Authorization: Bearer $(token)"
+    -H "Authorization: Bearer $(token)" \
+    -H "Content-Length: 0"
 
   echo "✅ Sample Proxy Deployed"
 
@@ -537,7 +541,7 @@ deploy_example_proxy() {
 }
 
 delete_apigee_keys() {
-  for SA in mart cassandra udca metrics synchronizer logger watcher
+  for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
   do
     delete_sa_keys "apigee-${SA}"
   done

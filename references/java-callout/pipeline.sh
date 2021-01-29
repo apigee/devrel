@@ -14,7 +14,7 @@
 # limitations under the License.
 
 set -e
-set -x 
+set -x
 
-mvn install -Ptest -B
+mvn install -Ptest -B -ntp
 npm test --prefix proxy-v1

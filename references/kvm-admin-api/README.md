@@ -7,7 +7,12 @@ to leverage policies to perform CRUD operations on the KVM contents.
 
 This project provides a reference implementation for how to read, write and
 delete entries within environment scoped KVMs inside Apigee regardless of the
-deploment model and the existance of KVM managment APIs.
+deployment model and the existence of KVM management APIs.
+
+**Note:** This reference implementation does not include authentication or
+authorization controls. Before exposing this API proxy, think about how you
+would secure it from anonymous clients. Use of this proxy as-is, without
+such controls, could lead to unauthorized manipulation of KVMs within your org.
 
 ## (Prerequisite) Create a KVM
 

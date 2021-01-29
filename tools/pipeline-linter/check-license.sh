@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: "Apigee DevRel Pipeline Runner"
-inputs:
-  pipeline-action:
-    required: true
-  project:
-    required: false
-outputs:
-  stdout:
-    description: "Output of the command"
-runs:
-  using: "docker"
-  image: "Dockerfile"
-  args:
-    - ${{ inputs.pipeline-action }}
-    - ${{ inputs.project }}
+set -e
+
+addlicense -check "$PWD"
