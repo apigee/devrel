@@ -15,7 +15,6 @@
 # limitations under the License.
 
 set -e
-set -x
 
 # TODO figure out how to move this to apigee/devrel repo
 # See https://github.com/apigee/devrel/issues/76

@@ -51,7 +51,9 @@ Apigee products.
   A tool to cleanup proxies in an Apigee organization, leveraging
   [Another Apigee Client](tools/another-apigee-client)
 - [Pipeline Runner](tools/pipeline-runner) -
-  A tool to lint, build and test groups of Apigee projects
+  A tool to build and test groups of Apigee projects
+- [Pipeline Linter](tools/pipeline-linter) -
+  A tool to lint groups of Apigee projects
 - [Another Apigee Client](tools/another-apigee-client) -
   A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -

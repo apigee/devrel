@@ -1,0 +1,10 @@
+**/node_modules/**
+**/generated/**
+**/target/**
+/tools/hybrid-quickstart/**/tools
+/service-accounts
+.settings
+.project
+.classpath
+.vscode
+.git

@@ -12,13 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:alpine3.12
+FROM google/cloud-sdk:alpine
 
-# Install our tools
+# Install additional tools
 RUN apk add --no-cache \
-  curl \
-  docker \
-  git \
   jq \
   maven \
   nodejs \
@@ -34,15 +31,16 @@ RUN apk add --no-cache \
   ca-certificates \
   ttf-freefont
 
-RUN go get github.com/google/addlicense
-RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
+# install claat
+RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
+RUN chmod +x /usr/local/bin/claat
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install --global puppeteer@5.2.1
 
-# install our dependencies
+# add our tooling scripts
 COPY *.sh /usr/bin/
 
 # Run script
