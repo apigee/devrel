@@ -13,6 +13,16 @@
 # limitations under the License.
 
 steps:
+# Build the runner image
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-f'
+  - './tools/pipeline-runner/Dockerfile'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  - './tools/pipeline-runner'
+  id: 'pipeline-build'
 # Load secrets from secret manager
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   entrypoint: "sh"
