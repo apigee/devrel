@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2020 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<PopulateCache name="PC-CacheJWKS">
+    <CacheKey>
+        <Prefix>IDP_JWKS_CACHE</Prefix>
+        <KeyFragment ref="flow.idp.issuer"/>
+        <KeyFragment>jwksPayload</KeyFragment>
+    </CacheKey>
+    <CacheResource>IDP_JWKS_CACHE</CacheResource>
+    <Scope>Exclusive</Scope>
+    <ExpirySettings>
+        <TimeoutInSec>3600</TimeoutInSec>
+    </ExpirySettings>
+    <Source>flow.idp.jwks_payload</Source>
+</PopulateCache>

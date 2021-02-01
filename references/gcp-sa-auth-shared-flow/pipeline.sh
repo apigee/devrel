@@ -34,9 +34,9 @@ deleteKVM() {
 #clean up if the KVM and create cache if not already exists
 deleteKVM 'gcp-sa-devrel'
 
-curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
+curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
   -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- << EOF
+  --data-binary @- > /dev/null << EOF
 {
   "name":"gcp-tokens",
   "description":"GCP service account tokens",
@@ -51,16 +51,16 @@ EOF
 #don't continue on failure
 set -e
 
-curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
+curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
   -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- << EOF
+  --data-binary @- > /dev/null << EOF
 {
   "name": "gcp-sa-devrel",
   "encrypted": "true",
   "entry": [
     {
       "name": "cantdonothing@iam.gserviceaccount.com",
-      "value": $REF_GCP_SA_SF
+      "value": $(echo "$REF_GCP_SA_SF" | jq '. | tostring')
     }
   ]
 }
