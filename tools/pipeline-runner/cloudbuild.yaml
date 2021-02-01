@@ -70,8 +70,10 @@ steps:
   - 'BUILD_ID=$BUILD_ID'
   - 'PROJECT_ID=$PROJECT_ID'
   - 'PR_NUMBER=$_PR_NUMBER'
+  - 'SHORT_SHA=$SHORT_SHA'
   - 'REPO_GH_ISSUE=$_REPO_GH_ISSUE'
   - 'CREATE_GH_ISSUE=$_CREATE_GH_ISSUE'
+  - 'GH_BOT_NAME=$_GH_BOT_NAME'
 # Explicitly fail build if needed
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   entrypoint: "bash"
@@ -86,4 +88,5 @@ substitutions:
   _CI_PROJECT: "all" # all|[path]
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
+  _GH_BOT_NAME: "apigee-devrel-bot"
   # _PR_NUMBER: # automatically set for PRs
