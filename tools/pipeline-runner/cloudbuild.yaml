@@ -12,9 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 steps:
-# Build the runner image
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Turnstyle DevRel Pipeline'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    if [ "$(gcloud builds list --ongoing --format='value(id)' | wc  -l | xargs)" -gt "1" ]; then
+      echo "Pipeline is already running";
+      exit -1;
+    fi
 - name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Image'
   args:
   - 'build'
   - '-f'
@@ -22,9 +33,8 @@ steps:
   - '-t'
   - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   - './tools/pipeline-runner'
-  id: 'pipeline-build'
-# Load secrets from secret manager
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Load Secrets'
   entrypoint: "sh"
   args:
     - "-c"
@@ -44,8 +54,8 @@ steps:
       echo "export GITHUB_TOKEN=\"$(gcloud secrets versions access latest \
         --secret=devrel_github_token --format="get(payload.data)" | \
         base64 -d )\"" >> env.txt
-# Run pipeline for a specific path or all projects
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Run Pipeline'
   entrypoint: "sh"
   args:
     - "-c"
@@ -59,8 +69,8 @@ steps:
   env:
   - 'APIGEE_ORG=$_APIGEE_ORG'
   - 'APIGEE_ENV=$_APIGEE_ENV'
-# Create Github PR comments or new issues
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Create GH Comment or Issue'
   entrypoint: "bash"
   args:
     - "-c"
@@ -70,10 +80,12 @@ steps:
   - 'BUILD_ID=$BUILD_ID'
   - 'PROJECT_ID=$PROJECT_ID'
   - 'PR_NUMBER=$_PR_NUMBER'
+  - 'SHORT_SHA=$SHORT_SHA'
   - 'REPO_GH_ISSUE=$_REPO_GH_ISSUE'
   - 'CREATE_GH_ISSUE=$_CREATE_GH_ISSUE'
-# Explicitly fail build if needed
+  - 'GH_BOT_NAME=$_GH_BOT_NAME'
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Explicitly Fail'
   entrypoint: "bash"
   args:
     - "-c"
@@ -86,4 +98,5 @@ substitutions:
   _CI_PROJECT: "all" # all|[path]
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
+  _GH_BOT_NAME: "apigee-devrel-bot"
   # _PR_NUMBER: # automatically set for PRs
