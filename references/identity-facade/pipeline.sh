@@ -345,6 +345,16 @@ set_functional_test_env_var() {
     export TEST_APP_CONSUMER_KEY
 }
 
+
+# deploy the OIDC mock identity provider...
+cd ../oidc-mock
+mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+npm i
+npm test
+
+#...then deploy the identity-facade proxy
+cd ../identity-facade
+
 # generate a timestamp to make some values unique
 timestamp=$(date '+%s')
 
