@@ -9,7 +9,7 @@ This reference promotes a clear **separation of concerns** between Apigee and
 the IdP.
 
 - Apigee is responsible for **authenticating client apps**
-- The IdP is incharge of **authenticating the end-users**
+- The IdP is in charge of **authenticating the end-users**
 
 The IdP that is used is the [OIDC Mock IdP](../oidc-mock) but you may
 use any OIDC compliant IdP. Should you use your own IdP solution, please
@@ -44,6 +44,7 @@ The pipeline script deploys on Apigee an API Proxy containing the full
 configuration of the identity facade reference as well as the
 following elements:
 
+- the [OIDC Mock IdP](../oidc-mock/README.md) reference
 - A Key Value Map (`idpConfigIdentityProxy`) with values inherited from
 the IdP's discovery document. This KVM is scoped at env level.
 - A cache (`IDP_JWKS_CACHE`) used to cache JWKS keys received from
