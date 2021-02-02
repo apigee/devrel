@@ -28,6 +28,7 @@ elif test -f "$DIR/pipeline.sh"; then
 else
   for TYPE in references labs tools; do
     for D in "$DIR"/"$TYPE"/*; do
+      echo "[INFO] DevRel Pipeline: $D"
       PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
       (cd "$D" && ./pipeline.sh;)
       PIPELINE_REPORT="$PIPELINE_REPORT;$TYPE/$D Pipeline,$?"
@@ -36,9 +37,10 @@ else
 fi
 
 # print report
+echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t > pipeline-result.txt
 echo
 echo "FINAL RESULT"
-echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t
+cat ./pipeline-result.txt
 echo
 
 # set exit code

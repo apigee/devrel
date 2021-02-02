@@ -16,7 +16,7 @@
 set -e
 
 # deploy Apigee API Proxy
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+mvn install -ntp -P"$APIGEE_ENV" -Dapigee.config.options=update
 
 # execute integration tests
 npm install

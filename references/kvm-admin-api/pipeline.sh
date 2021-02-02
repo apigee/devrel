@@ -17,5 +17,5 @@
 set -e
 set -x
 
-mvn install
+mvn install -ntp -B
 npm run test
