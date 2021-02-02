@@ -1,7 +1,5 @@
 # Apigee DevRel
 
-[![DevRel All Projects Pipeline](https://github.com/apigee/devrel/workflows/DevRel%20All%20Projects%20Pipeline/badge.svg)](https://github.com/apigee/devrel/actions?query=workflow%3A%22DevRel+All+Projects+Pipeline%22)
-[![DevRel Github Pages Pipeline](https://github.com/apigee/devrel/workflows/DevRel%20Github%20Pages%20Pipeline/badge.svg)](https://github.com/apigee/devrel/actions?query=workflow%3A%22DevRel+Github+Pages+Pipeline%22)
 [![In Solidarity](https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png)](https://github.com/apps/in-solidarity)
 
 Common solutions and tools developed by Apigee.
