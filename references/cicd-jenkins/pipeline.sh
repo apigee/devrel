@@ -15,16 +15,18 @@
 # limitations under the License.
 
 set -e
-set -x
 
-docker build -f jenkins/jenkinsfile-runner/Dockerfile -t apigee-cicd/jenkinsfile-runner ./jenkins
+# TODO figure out how to move this to apigee/devrel repo
+# See https://github.com/apigee/devrel/issues/76
+docker pull ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
+docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest devrel/jenkinsfile-runner:latest
 
 # because volume mounts don't work inside docker in docker without reference to the host file system
 cat << EOF >> /tmp/Dockerfile-jenkins-cicd
-FROM apigee-cicd/jenkinsfile-runner
+FROM devrel/jenkinsfile-runner:latest
 COPY ./airports-cicd-v1 /workspace
 EOF
-docker build -f /tmp/Dockerfile-jenkins-cicd -t apigee-cicd/jenkinsfile-runner-airports .
+docker build -f /tmp/Dockerfile-jenkins-cicd -t devrel/jenkinsfile-runner-airports:latest .
 rm /tmp/Dockerfile-jenkins-cicd
 
 docker run \
@@ -34,7 +36,7 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS=password \
-  -i apigee-cicd/jenkinsfile-runner-airports
+  -i devrel/jenkinsfile-runner-airports:latest
 
 npm install --no-fund
 

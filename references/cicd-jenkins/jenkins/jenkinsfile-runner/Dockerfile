@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jenkins4eval/jenkinsfile-runner:1.0-beta-12
+FROM jenkins4eval/jenkinsfile-runner:1.0-beta-25
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  maven=3.6.0-1 \
-  nodejs=12.19.0-1nodesource1 \
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  maven=3.6.1* \
+  nodejs=14.* \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app/jenkins

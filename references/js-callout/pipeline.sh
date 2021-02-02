@@ -17,6 +17,6 @@
 set -e
 set -x
 
-npm i
+npm i --no-fund
 npm run deploy
 npm test
