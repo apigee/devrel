@@ -13,21 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DIR="${1:-$PWD}"
+DIRS="$1"
 PIPELINE_REPORT="run-pipelines,0"
 
 if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   echo "NO CREDENTIALS - SKIPPING PIPELINES"
-elif [ ! -d "$DIR" ]; then
-  echo "$DIR NOT FOUND"
-  exit 1
-elif test -f "$DIR/pipeline.sh"; then
-  PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
-  (cd "$DIR" && ./pipeline.sh;)
-  PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
+elif [ -n "$DIRS" ]; then
+  for DIR in $(echo "$DIRS" | sed "s/,/ /g")
+  do
+    echo "[INFO] DevRel Pipeline: $DIR"
+    if ! test -f  "$DIR/pipeline.sh"; then
+      echo "[ERROR] $DIR/pipeline.sh NOT FOUND"
+      exit 1
+    else
+      PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
+      (cd "$DIR" && ./pipeline.sh;)
+      PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
+    fi
+  done
 else
   for TYPE in references labs tools; do
-    for D in "$DIR"/"$TYPE"/*; do
+    for D in "$PWD"/"$TYPE"/*; do
       echo "[INFO] DevRel Pipeline: $D"
       PATH=$PATH:./tools/another-apigee-client ./tools/organization-cleanup/organization-cleanup.sh
       (cd "$D" && ./pipeline.sh;)

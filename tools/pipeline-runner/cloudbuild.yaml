@@ -61,10 +61,17 @@ steps:
     - "-c"
     - |-
       source env.txt && \
-      if [ "$_CI_PROJECT" = "all" ]; then
-        run-pipelines.sh || true # see pipeline-result.txt for results
+      if [ -n "$_PR_NUMBER" ]; then
+        git fetch origin
+        PROJECTS=$(git diff --name-only origin/main | \
+        grep "labs/\|references/\|tools/" | \
+        awk -F '/' '{ print $$1 "/" $$2}' | uniq | paste -sd , -)
+        echo "PR includes changes in $$PROJECTS"
+        run-pipelines.sh "$$PROJECTS" || true
+      elif [ "$_CI_PROJECT" = "all" ]; then
+        run-pipelines.sh || true
       else
-        run-pipelines.sh "$_CI_PROJECT"
+        run-pipelines.sh "$_CI_PROJECT" || true
       fi
   env:
   - 'APIGEE_ORG=$_APIGEE_ORG'
