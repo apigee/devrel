@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<AssignMessage name="Assign.createPetsRequest">
+  <AssignTo createNew="true" type="request">createPetsRequest</AssignTo>
+  <AssignVariable>
+    <Name>createPets.url</Name>
+    <Value>https://httpbin.org</Value>
+  </AssignVariable>
+  <Set>
+    <Path>post</Path>
+    <Headers>
+      <Header name="x-header">{custom.header.x-header}</Header>
+      <Header name="x-header-2">{custom.header.x-header-2}</Header>
+    </Headers>
+    <QueryParams>
+      <QueryParam name="qp">{custom.queryparams.qp}</QueryParam>
+    </QueryParams>
+    <Payload>{custom.payload}</Payload>
+  </Set>
+</AssignMessage>
