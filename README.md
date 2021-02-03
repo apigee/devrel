@@ -58,6 +58,8 @@ Apigee products.
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
   A rescue utility to decrypt proxies and shared flows
+- [OpenAPI to AssignMessage](tools/oas-to-am) -
+  A utility to derive an AssignMessage policy from a spec
 
 ## Labs
 
