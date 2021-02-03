@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=2140
 
 set -e
 
@@ -6,64 +7,64 @@ set -e
 [ -z "$OPERATION" ] && echo "Operation Missing" && exit
 
 # Build up AssignMessage policy
-RESULT="<AssignMessage name=\"Assign."$OPERATION"Request\">"
-RESULT="$RESULT""<AssignTo createNew=\"true\" type=\"request\">"$OPERATION"Request</AssignTo>"
+RESULT="<AssignMessage name="Assign.$OPERATION">"
+RESULT="$RESULT<AssignTo createNew="true" type="request">$OPERATION</AssignTo>"
 
 # Set target url as a variable for use in TargetEndpoint, ServiceCallout or TargetServer
-RESULT="$RESULT""<AssignVariable>"
-RESULT="$RESULT""<Name>"$OPERATION".url</Name>"
-RESULT="$RESULT""<Value>$(cat $SPEC | jq -r '.servers[].url')</Value>"
-RESULT="$RESULT""</AssignVariable>"
+RESULT="$RESULT<AssignVariable>"
+RESULT="$RESULT<Name>$OPERATION.url</Name>"
+RESULT="$RESULT<Value>$(jq -r '.servers[].url' < "$SPEC")</Value>"
+RESULT="$RESULT</AssignVariable>"
 
 # <Set>
-RESULT="$RESULT""<Set>"
+RESULT="$RESULT<Set>"
 
 # Path Suffix
-PATHSUFFIX=$(cat "$SPEC" | jq -r ".paths
+PATHSUFFIX=$(jq -r ".paths
   | select(.[][].operationId == \"$OPERATION\") 
   | .[] 
-  | keys[]")
+  | keys[]" < "$SPEC")
 
-RESULT="$RESULT""<Path>"
-RESULT="$RESULT""$PATHSUFFIX"
-RESULT="$RESULT""</Path>"
+RESULT="$RESULT<Path>"
+RESULT="$RESULT$PATHSUFFIX"
+RESULT="$RESULT</Path>"
 
 # Set Headers
-RESULT="$RESULT""<Headers>"
-HEADERS=$(cat "$SPEC" | jq -r ".paths 
+RESULT="$RESULT<Headers>"
+HEADERS=$(jq -r ".paths 
   | select(.[][].operationId == \"$OPERATION\") 
   | .[][].parameters[] 
   | select(.in==\"header\") 
-  | .name")
+  | .name" < "$SPEC")
 
 for HEADER in $HEADERS; do
-  RESULT="$RESULT""<Header name=\"$HEADER\">"
-  RESULT="$RESULT""{custom.header."$HEADER"}"
-  RESULT="$RESULT""</Header>"
+  RESULT="$RESULT<Header name=\"$HEADER\">"
+  RESULT="$RESULT{custom.header.$HEADER}"
+  RESULT="$RESULT</Header>"
 done
 RESULT="$RESULT""</Headers>"
 
 # Query Params
 RESULT="$RESULT""<QueryParams>"
-QPS=$(cat "$SPEC" | jq -r ".paths
+QPS=$(jq -r ".paths
   | select(.[][].operationId == \"$OPERATION\")
   | .[][].parameters[]
   | select(.in==\"query\")
-  | .name")
+  | .name" < "$SPEC")
 
 for QP in $QPS; do
-  RESULT="$RESULT""<QueryParam name=\"$QP\">"
-  RESULT="$RESULT""{custom.queryparams."$QP"}"
-  RESULT="$RESULT""</QueryParam>"
+  RESULT="$RESULT<QueryParam name=\"$QP\">"
+  RESULT="$RESULT{custom.queryparams.$QP}"
+  RESULT="$RESULT</QueryParam>"
 done
-RESULT="$RESULT""</QueryParams>"
+RESULT="$RESULT</QueryParams>"
 
 # payload
-RESULT="$RESULT""<Payload>"
-RESULT="$RESULT""{custom.payload}"
-RESULT="$RESULT""</Payload>"
+RESULT="$RESULT<Payload>"
+RESULT="$RESULT{custom.payload}"
+RESULT="$RESULT</Payload>"
 
-RESULT="$RESULT""</Set>"
-RESULT="$RESULT""</AssignMessage>"
+RESULT="$RESULT</Set>"
+RESULT="$RESULT</AssignMessage>"
 
-echo $RESULT
+echo "$RESULT"

@@ -18,4 +18,4 @@ set -e
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-sh $SCRIPTPATH/test/apickli.sh | sh
+sh "$SCRIPTPATH"/test/apickli.sh | sh
