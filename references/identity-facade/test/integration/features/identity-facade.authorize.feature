@@ -36,5 +36,13 @@ Feature:
     And I receive an auth code in a query param
     And I store the auth code in global scope
     And I store the state parameter in global scope
+  
+  Scenario: User Authorizes with query params that must be sanitized
+    Given I navigate to the authorize page with query params that must be sanitized
+    When I sign in and consent
+    Then I am redirected to the Client App
+    And I receive an auth code in a query param
+    And I store the auth code in global scope
+    And I store the state parameter in global scope
 
     
