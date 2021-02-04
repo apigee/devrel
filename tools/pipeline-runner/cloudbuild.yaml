@@ -62,10 +62,7 @@ steps:
     - |-
       source env.txt && \
       if [ -n "$_PR_NUMBER" ]; then
-        git fetch origin
-        PROJECTS=$(git diff --name-only origin/main | \
-        grep "labs/\|references/\|tools/" | \
-        awk -F '/' '{ print $$1 "/" $$2}' | uniq | paste -sd , -)
+        PROJECTS=$(list-repo-changes.sh)
         echo "PR includes changes in $$PROJECTS"
         run-pipelines.sh "$$PROJECTS" || true
       elif [ "$_CI_PROJECT" = "all" ]; then
