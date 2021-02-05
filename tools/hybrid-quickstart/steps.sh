@@ -30,6 +30,8 @@ set_config_params() {
     export ZONE=${ZONE:='europe-west1-c'}
     gcloud config set compute/zone $ZONE
 
+    export INGRESS_TYPE=${INGRESS_TYPE:='external'} # internal|external
+
     echo "🔧 Configuring Apigee hybrid"
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
@@ -62,7 +64,7 @@ set_config_params() {
     export MESH_ID="proj-${PROJECT_NUMBER}"
 
     # these will be set if the steps are run in order
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)" || echo "")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)" || echo "")
     export INGRESS_IP
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
@@ -266,14 +268,22 @@ configure_network() {
 
     ENV_GROUP_NAME="$1"
 
-    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-loadbalancer' --format='get(address)')" ]; then
-      gcloud compute addresses create apigee-ingress-loadbalancer --region "$REGION"
+    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
+      if [[ "$INGRESS_TYPE" == "external" ]]; then
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION"
+      else
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet default --purpose SHARED_LOADBALANCER_VIP
+      fi
     fi
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
     export INGRESS_IP
 
     if [ -z "$(gcloud dns managed-zones list --filter 'name=apigee-dns-zone' --format='get(name)')" ]; then
-      gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
+      if [[ "$INGRESS_TYPE" == "external" ]]; then
+        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
+      else
+        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone --visibility="private" --networks="default"
+      fi
 
       rm -f transaction.yaml
       gcloud dns record-sets transaction start --zone=apigee-dns-zone
@@ -284,9 +294,12 @@ configure_network() {
       gcloud dns record-sets transaction execute --zone=apigee-dns-zone
     fi
 
-    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
-    export NAME_SERVER
-    echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
+    if [[ "$INGRESS_TYPE" == "external" ]]; then
+      NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
+      export NAME_SERVER
+      echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
+    fi
+
     echo "✅ Networking set up"
 }
 
@@ -295,15 +308,20 @@ create_gke_cluster() {
 
     if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
       gcloud container clusters create "$GKE_CLUSTER_NAME" \
+        --zone "$ZONE" \
+        --network default \
+        --subnetwork default \
+        --default-max-pods-per-node "110" \
+        --enable-ip-alias \
         --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-        --num-nodes "4" \
+        --num-nodes "3" \
         --enable-autoscaling --min-nodes "3" --max-nodes "6" \
         --labels mesh_id="$MESH_ID" \
         --workload-pool "$WORKLOAD_POOL" \
         --enable-stackdriver-kubernetes
     fi
 
-    gcloud container clusters get-credentials $GKE_CLUSTER_NAME
+    gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
@@ -356,6 +374,7 @@ install_asm_and_certmanager() {
   "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/istio-asm/asm/istio/istio-operator.yaml \
     --revision=asm-173-6 \
     --set values.gateways.istio-ingressgateway.loadBalancerIP="$INGRESS_IP" \
+    --set values.gateways.istio-ingressgateway.serviceAnnotations.'networking\.gke\.io/load-balancer-type'=$INGRESS_TYPE \
     --set meshConfig.enableAutoMtls=false \
     --set meshConfig.accessLogFile=/dev/stdout \
     --set meshConfig.accessLogEncoding=1 \

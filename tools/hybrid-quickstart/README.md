@@ -49,6 +49,8 @@ export ENV_GROUP_NAME='test'
 # Subdomain will be created for every environment group
 # e.g. test.$PROJECT_ID.example.com
 export DNS_NAME="$PROJECT_ID.example.com"
+# Choose between 'external' and 'internal' ingress
+export INGRESS_TYPE="external"
 ```
 
 **Note:** If the custom `DNS_NAME` you would like to use has been used with
