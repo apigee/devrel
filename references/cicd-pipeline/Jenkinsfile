@@ -27,18 +27,12 @@ pipeline {
                   // env.APIGEE_ORG = 'apigee-org-name'
               // All other branches are deployed as separate proxies with suffix in the test environment
               } else {
-                  env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-jenkins"
+                  env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "--devrel-jenkins"
                   env.MAVEN_PROFILE = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'
               }
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
             }
-          }
-        }
-
-        stage('Clean') {
-          steps {
-            sh "mvn clean -B"
           }
         }
 
@@ -63,7 +57,7 @@ pipeline {
 
             sh "rm eslint-out.html"
 
-            sh "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO013 > apigeelint-out.html"
+            sh "npm run apigeelint > apigeelint-out.html"
 
             publishHTML(target: [
               allowMissing: false,
@@ -96,38 +90,31 @@ pipeline {
         stage('Env Config') {
           steps {
             script {
-                if (env.AUTHOR_EMAIL) {
-                  AUTHOR_EMAIL = env.AUTHOR_EMAIL
-                } else {
-                  AUTHOR_EMAIL = sh (
-                    script: 'git --no-pager show -s --format=\'%ae\'',
-                    returnStdout: true
-                  ).trim()
-                }
+              if (env.AUTHOR_EMAIL) {
+                AUTHOR_EMAIL = env.AUTHOR_EMAIL
+              } else {
+                AUTHOR_EMAIL = sh (
+                  script: 'git --no-pager show -s --format=\'%ae\'',
+                  returnStdout: true
+                ).trim()
+              }
             }
-            sh "mvn process-resources -B -P${env.MAVEN_PROFILE} \
-                  -Dcommit=${env.GIT_COMMIT} \
-                  -Dbranch=${env.GIT_BRANCH} \
-                  -Dauthor=${AUTHOR_EMAIL} \
-                  -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-          }
-        }
 
-        stage('Package proxy bundle') {
-          steps {
-            sh "mvn apigee-enterprise:configure -B -P${env.MAVEN_PROFILE} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
-          }
-        }
-
-        stage('Deploy proxy bundle') {
-          steps {
-            sh "mvn apigee-enterprise:deploy -B -P${env.MAVEN_PROFILE} -Dapigee.org=${env.APIGEE_ORG} -Dapigee.username=${APIGEE_CREDS_USR} -Dapigee.password=${APIGEE_CREDS_PSW} -Ddeployment.suffix=${env.APIGEE_DEPLOYMENT_SUFFIX}"
+            sh """
+              mvn clean install \
+                -P"apigeeapi,${env.MAVEN_PROFILE}" \
+                -Dpassword="${APIGEE_CREDS_PSW}" \
+                -Dusername="${APIGEE_CREDS_USR}" \
+                -Dorg="${env.APIGEE_ORG}" \
+                -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
+                -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
+            """
           }
         }
 
         stage('Functional Test') {
           steps {
-            sh "node ./node_modules/cucumber/bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
+            sh "node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
           }
         }
     }

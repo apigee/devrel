@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,20 @@
 
 set -e
 
+echo "[INFO] CICD Pipeline for Apigee SaaS (Cloud Build)"
+
+BRANCH_NAME=devrel-cloudbuild
+
+SUBSTITUTIONS="_INT_TEST_BASE_PATH=/airports-cicd-$BRANCH_NAME/v1"
+SUBSTITUTIONS="$SUBSTITUTIONS,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+SUBSTITUTIONS="$SUBSTITUTIONS,_DEPLOYMENT_ORG=$APIGEE_ORG"
+SUBSTITUTIONS="$SUBSTITUTIONS,BRANCH_NAME=$BRANCH_NAME"
+
+gcloud builds submit --config=cloudbuild.yaml \
+  --substitutions="$SUBSTITUTIONS"
+
+echo "[INFO] CICD Pipeline for Apigee SaaS (Jenkins)"
+
 # TODO figure out how to move this to apigee/devrel repo
 # See https://github.com/apigee/devrel/issues/76
 docker pull ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
@@ -24,7 +38,7 @@ docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest devrel/jenkinsfi
 # because volume mounts don't work inside docker in docker without reference to the host file system
 cat << EOF >> /tmp/Dockerfile-jenkins-cicd
 FROM devrel/jenkinsfile-runner:latest
-COPY ./airports-cicd-v1 /workspace
+COPY . /workspace
 EOF
 docker build -f /tmp/Dockerfile-jenkins-cicd -t devrel/jenkinsfile-runner-airports:latest .
 rm /tmp/Dockerfile-jenkins-cicd
@@ -37,12 +51,3 @@ docker run \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS=password \
   -i devrel/jenkinsfile-runner-airports:latest
-
-npm install --no-fund
-
-API_NAME=airports-cicd-nightly
-
-echo "Undeploying Proxy $API_NAME:"
-curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/environments/test/apis/$API_NAME/revisions/1/deployments"
-echo "Deleting Proxy $API_NAME:"
-curl -u "$APIGEE_USER:$APIGEE_PASS" -X DELETE "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/apis/$API_NAME"

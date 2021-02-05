@@ -15,11 +15,15 @@
 steps:
   # Install node dependencies for linting and testing
 - name: node
+  id: "Install Dependencies"
   entrypoint: npm
   args:
     - "install"
+    - "--slient"
+    - "--no-fund"
   # Run static code analysis and linting
 - name: node
+  id: "Static Code Analysis"
   entrypoint: "bash"
   args:
     - "-c"
@@ -30,6 +34,7 @@ steps:
       if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
   # Run unit tests for custom policy impementations
 - name: node
+  id: "Unit Test"
   entrypoint: "bash"
   args:
     - "-c"
@@ -38,6 +43,7 @@ steps:
   # and set branch specific config parameters
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: "bash"
+  id: "Fetch Credentials"
   args:
     - "-c"
     - |-
@@ -59,10 +65,10 @@ steps:
       if [ "$_API_VERSION" = "apigee" ]
       then
         echo "APIGEE_BUILD_PASS=\"$(gcloud secrets versions access latest \
-          --secret=apigee_cicd_password --format="get(payload.data)" | \
+          --secret=devrel_apigee_pass --format="get(payload.data)" | \
           base64 -d)\"" >> env.txt &&
         echo "APIGEE_BUILD_USER=\"$(gcloud secrets versions access latest \
-          --secret=apigee_cicd_user --format="get(payload.data)" | \
+          --secret=devrel_apigee_user --format="get(payload.data)" | \
           base64 -d)\"" >> env.txt
       else
         echo "APIGEE_BUILD_TOKEN=\"$(gcloud auth application-default print-access-token)\"" >> env.txt
@@ -75,6 +81,7 @@ steps:
 
   # Deploy using the Apigee credentials from above
 - name: "gcr.io/cloud-builders/mvn"
+  id: "Proxy Deployment"
   entrypoint: "bash"
   args:
     - "-c"
@@ -100,6 +107,7 @@ steps:
       fi
   # Run integration tests
 - name: node
+  id: "Integration Test"
   entrypoint: "bash"
   args:
     - "-c"
@@ -111,6 +119,7 @@ steps:
     - "TEST_BASE_PATH=$_INT_TEST_BASE_PATH"
   # Copy coverage reports and other deployment artifacts to a storage bucket
 - name: "gcr.io/cloud-builders/gsutil"
+  id: "Archive Report"
   entrypoint: "bash"
   args:
     - "-c"
