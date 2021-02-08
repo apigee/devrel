@@ -1,9 +1,11 @@
 # KVM Admin Proxy
 
 Depending on the Apigee deployment model you might have Managment APIs for
-acessing and modifying the content of Apigee Key Value Maps (KVMs). In cases
-where the access to the KVMs is not provided via the Apigee APIs you will need
-to leverage policies to perform CRUD operations on the KVM contents.
+accessing and modifying the content of Apigee Key Value Maps (KVMs). In Apigee
+hybrid and Apigee X the access to the KVMs is not provided via the Apigee
+APIs and you will need to leverage Apigee policies to perform CRUD operations
+on the KVM contents. For more background information, please see [this](https://community.apigee.com/articles/89782/providing-kvm-content-apis-for-apigee-x-and-hybrid.html)
+article in the Apigee community.
 
 This project provides a reference implementation for how to read, write and
 delete entries within environment scoped KVMs inside Apigee regardless of the
@@ -35,7 +37,7 @@ curl -X POST \
 
 ## Create the Proxy
 
-### Google APIs (Apigee hybrid)
+### Google APIs (Apigee hybrid and Apigee X)
 
 ```sh
 mvn clean install -ntp -B -Pgoogleapi -Dtoken=$(gcloud auth print-access-token) \
