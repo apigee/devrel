@@ -25,7 +25,7 @@ SUBSTITUTIONS="$SUBSTITUTIONS,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
 SUBSTITUTIONS="$SUBSTITUTIONS,_DEPLOYMENT_ORG=$APIGEE_ORG"
 SUBSTITUTIONS="$SUBSTITUTIONS,BRANCH_NAME=$BRANCH_NAME"
 
-gcloud builds submit --config=cloudbuild.yaml \
+gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
   --substitutions="$SUBSTITUTIONS"
 
 echo "[INFO] CICD Pipeline for Apigee SaaS (Jenkins)"
@@ -39,6 +39,7 @@ docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest devrel/jenkinsfi
 cat << EOF >> /tmp/Dockerfile-jenkins-cicd
 FROM devrel/jenkinsfile-runner:latest
 COPY . /workspace
+RUN cp /workspace/ci-config/jenkins/Jenkinsfile /workspace/Jenkinsfile
 EOF
 docker build -f /tmp/Dockerfile-jenkins-cicd -t devrel/jenkinsfile-runner-airports:latest .
 rm /tmp/Dockerfile-jenkins-cicd
@@ -50,4 +51,5 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS=password \
-  -i devrel/jenkinsfile-runner-airports:latest
+  -i \
+  devrel/jenkinsfile-runner-airports:latest

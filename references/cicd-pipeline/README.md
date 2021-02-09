@@ -75,7 +75,8 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 Run the following command to trigger a cloud build manually:
 
 ```sh
-gcloud builds submit --config=cloudbuild.yaml --substitutions=_API_VERSION=google,_DEPLOYMENT_ORG=$PROJECT_ID,_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd-experiment/v1,BRANCH_NAME=experiment
+gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
+  --substitutions=_API_VERSION=google,_DEPLOYMENT_ORG=$PROJECT_ID,_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd-experiment/v1,BRANCH_NAME=experiment
 ```
 
 ### Apigee SaaS
@@ -119,13 +120,13 @@ gcloud builds submit --config=cloudbuild.yaml --substitutions=_API_VERSION=apige
 ### Requirement: Jenkins Server
 
 You can either use the included instructions to configure a new Jenkins server
-or use your existing infrastructure. The `jenkins` folder contains instructions
+or use your existing infrastructure. The `jenkins-build` folder contains instructions
 on how to set up a dockerized Jenkins environment with all the necessary
 tooling and plugins required.
 
 #### Option A: Run a Jenkins Docker Container
 
-See the instructions in [./jenkins/README.md](./jenkins/README.md).
+See the instructions in [./jenkins-build/README.md](./jenkins-build/README.md).
 
 #### Option B: Use an existing Jenkins Setup
 
@@ -165,10 +166,10 @@ git push -u origin feature/cicd-pipeline
 Use the UI to configure the Jenkins Job for multibranch pipelines:
 
 1. Set the Git repo e.g. `https://github.com/my-user/my-api-proxy-repo`
-2. Path to the Jenkinsfile e.g. `Jenkinsfile`
+2. Path to the Jenkinsfile e.g. `ci-config/jenkins/Jenkinsfile`
 3. (Optional) Set the build trigger / polling frequency
 
-![Jenkins Config](./img/jenkins-config.png)
+![Jenkins Config](./jenkins-build/img/jenkins-config.png)
 
 ### Run the pipeline
 
@@ -178,7 +179,7 @@ Use the UI to configure the Jenkins Job for multibranch pipelines:
 3. Explore the build(s) that get triggered.
 4. Explore the final build success.
 
-![Jenkins Successful Pipeline](./img/jenkins-success.png)
+![Jenkins Successful Pipeline](./jenkins-build/img/jenkins-success.png)
 
 ### Promote to different stages and environments (feature/test/prod)
 
