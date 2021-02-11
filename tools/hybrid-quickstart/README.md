@@ -6,7 +6,7 @@ purpose. The resulting Apigee hybrid environment is intended to serve as an
 initial end to end setup without production grade hardening and reliability.
 
 For tooling related to production setup and operation of Apigee hybrid, please
-visit the [AHR project on Github](https://github.com/yuriylesyuk/ahr).
+visit the [AHR project on Github](https://github.com/apigee/ahr).
 
 ## Prerequisites
 
@@ -15,13 +15,13 @@ visit the [AHR project on Github](https://github.com/yuriylesyuk/ahr).
 kubectl version
 
 #installed tar
-tar --help
+tar --version
 
 #installed openssl
 openssl version
 
 #installed gcloud
-gcloud auth list
+gcloud version
 
 #login if needed
 gcloud init

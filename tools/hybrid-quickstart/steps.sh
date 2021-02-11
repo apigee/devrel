@@ -46,12 +46,12 @@ set_config_params() {
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
       export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
-      export JQ_URL='https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64'
+      export JQ_VERSION='jq-1.6/jq-linux64'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
-      export JQ_URL='https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64'
+      export JQ_VERSION='jq-1.6/jq-osx-amd64'
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
       exit 2
@@ -88,7 +88,6 @@ function wait_for_ready(){
     local signal
 
     echo -e "Start: $(date)\n"
-    set +e
 
     while true; do
         ((iterations++))
@@ -100,14 +99,12 @@ function wait_for_ready(){
         fi
 
         if [ "$iterations" -ge "$max_iterations" ]; then
-          echo "Wait Timeout"
+          echo "Wait timed out"
           exit 1
         fi
         echo -n "."
         sleep 5
     done
-
-    set -e
 }
 
 
@@ -346,7 +343,7 @@ install_asm_and_certmanager() {
   export PATH=$PATH:"$QUICKSTART_TOOLS"/kpt
 
   mkdir -p "$QUICKSTART_TOOLS"/jq
-  curl -L -o "$QUICKSTART_TOOLS"/jq/jq $JQ_URL
+  curl -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
   chmod +x "$QUICKSTART_TOOLS"/jq/jq
   export PATH="$QUICKSTART_TOOLS"/jq:$PATH
 
