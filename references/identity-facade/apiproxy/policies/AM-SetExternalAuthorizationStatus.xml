@@ -11,14 +11,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="AM-RedirectToApp">
-    <Set>
-        <Headers>
-            <Header name="Location">{oidc.flow.callback.redirect_uri}?code={oauthv2authcode.OA2-StoreExternalAuthorizationCode.code}&amp;state={oidc.flow.callback.state1}</Header>
-        </Headers>
-        <StatusCode>302</StatusCode>
-        <ReasonPhrase>Found</ReasonPhrase>
-    </Set>
+<AssignMessage name="AM-SetExternalAuthorizationStatus">
+    <AssignVariable>
+        <Name>oauth_external_authorization_status</Name>
+        <Value>true</Value>
+    </AssignVariable>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" type="response"/>
+    <AssignTo createNew="false" type="request"/>
 </AssignMessage>

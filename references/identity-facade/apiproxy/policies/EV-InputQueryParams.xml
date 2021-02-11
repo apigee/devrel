@@ -12,7 +12,6 @@
  limitations under the License.
 -->
 <ExtractVariables name="EV-InputQueryParams">
-    <DisplayName>EV-InputQueryParams</DisplayName>
     <Source>request</Source>
     <QueryParam name="state">
         <Pattern ignoreCase="true">{state1}</Pattern>
