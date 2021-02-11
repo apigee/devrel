@@ -17,7 +17,8 @@ just a few small guidelines you need to follow.
 3. Develop using the following guidelines to help expedite your review:
     1. Ensure that your code adheres to the existing
         [style](https://google.github.io/styleguide).
-    2. Ensure that your code has an appropriate set of tests which all pass.
+    2. Ensure that your code has an appropriate set of tests which all pass (see
+        next Step).
     3. Ensure that your code has an accompanying README.md file. See
         [awesome-readme](https://github.com/matiassingers/awesome-readme) for
         good examples of high-quality READMEs. Please include the following
@@ -50,42 +51,66 @@ just a few small guidelines you need to follow.
     our automation daily. Make sure that you use an appropriate
     [shebang](<https://en.wikipedia.org/wiki/Shebang_(Unix)>) if you want the
     automation to execute a text file. See [this example
-    pipeline](https://github.com/apigee/DevRel/blob/main/demos/hello-world/pipeline.sh)
+    pipeline](https://github.com/apigee/DevRel/blob/main/references/js-callout/pipeline.sh)
     implementation.
 5. Submit a pull request.
 
 ## DevRel Automation
 
 Apigee DevRel uses automation that runs daily to ensure all solutions build
-successfully with all tests passing. It is recommended for the contributors to
+successfully with all tests passing. Additionally we apply static code analysis
+to enforce a consistent coding style.It is recommended for the contributors to
 run the same checks locally at least once before every pull request to ensure
-build won't fail in our automation.
+the build won't fail in our automation.
 
 We use docker to setup the environment to run the full pipeline so ensure you
 have docker installed and configured on your development environment.
 
-In order to run this process locally for your solution:
+```sh
+docker version
+```
 
-    # build a docker image that will run the automation pipeline
-    npm run build-pipeline-runner
+### Static Code Analysis via GitHub action
 
-    # run the pipeline for a single solution folder
-    npm run pipeline -- <path-to-your-solution-folder>
-    E.g. npm run pipeline -- ./demos/hello-world
+We use the [GitHub Super-Linter](https://github.com/github/super-linter)
+collection to lint the entire DevRel repository. The Super-Linter image is quite
+big (>>1GB) in size and therefore we suggest you to
+[enable](https://docs.github.com/en/github/administering-a-repository/disabling-or-limiting-github-actions-for-a-repository)
+GitHub actions on your fork and run the linter workflow automatically on every
+push.
 
-In order to run the pipeline for all solutions within DevRel, execute the
-following commands:
+### Static Code Analysis locally
 
-    # build a docker image that will run the automation pipeline
-    npm run build-pipeline-runner
+Using the DevRel linter image you can check for:
 
-    # run the pipeline for all solution folders
-    npm run pipeline
+- License Files
+- README Completeness
 
-Check out the [Dockerfile](https://github.com/apigee/devrel/blob/main/tools/pipeline-runner/Dockerfile)
-to see how the pipeline is implemented.
+```sh
+docker build -t apigee/devrel-linter ./tools/pipeline-linter
+docker run --rm -v $(pwd):/home apigee/devrel-linter check-license.sh
+docker run --rm -v $(pwd):/home apigee/devrel-linter check-readme.sh
+```
 
-### Apigee Org Variables
+The GitHub Super-Linter can be run via (note that locally all validators need to
+be enabled explicitly):
+
+```sh
+docker run -e RUN_LOCAL=true \
+  -e VALIDATE_BASH=true \
+  -e VALIDATE_DOCKERFILE_HADOLINT=true \
+  -e VALIDATE_JAVA=true \
+  -e VALIDATE_JSON=true \
+  -e VALIDATE_MARKDOWN=true \
+  -e VALIDATE_VALIDATE_JAVASCRIPT_ES=true \
+  -e VALIDATE_XML=true \
+  -e VALIDATE_YAML=true \
+  -e LOG_LEVEL=WARN \
+  -v $(pwd):/tmp/lint \
+  github/super-linter:v3
+```
+
+### Run Pipeline Tests
 
 If your solution contains any Apigee proxies, you are required to deploy them
 to an Apigee org and run tests within your pipeline. This is to ensure that
@@ -103,6 +128,36 @@ environment variables which you can use in your deploy scripts:
 
 Please note that only `test` and `prod` environments are available. `test`
 environment is the default value for `APIGEE_ENV`.
+
+In order to run the pipeline locally for your solution run:
+
+```sh
+# Build the docker image for the pipeline runner
+docker build -t apigee/devrel-pipeline ./tools/pipeline-runner
+
+# Build a specific solution folder (./references/js-callout)
+docker run \
+ -e APIGEE_USER \
+ -e APIGEE_PASS \
+ -e APIGEE_ORG \
+ -e APIGEE_ENV \
+ -v $(pwd):/home \
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ apigee/devrel-pipeline  run-pipelines.sh ./references/js-callout
+
+# Or omit the path to the solution folder to run all DevRel pipelines
+docker run \
+ -e APIGEE_USER \
+ -e APIGEE_PASS \
+ -e APIGEE_ORG \
+ -e APIGEE_ENV \
+ -v $(pwd):/home \
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ apigee/devrel-pipeline  run-pipelines.sh
+```
+
+Check out the [Dockerfile](https://github.com/apigee/devrel/blob/main/tools/pipeline-runner/Dockerfile)
+to see how the pipeline is implemented.
 
 ## Contributor License Agreement
 

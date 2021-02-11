@@ -18,7 +18,7 @@ set -e
 
 for TYPE in references labs tools; do
   for D in "$TYPE"/*; do
-    grep "^-" README.md | grep "$D" -q
-    grep "$D" CODEOWNERS -q
+    grep "^-" README.md | grep "$D" -q || (echo "missing README entry for $D" && exit 1)
+    grep "$D" CODEOWNERS -q || (echo "missing CODEOWNERS entry for $D" && exit 1)
   done
 done

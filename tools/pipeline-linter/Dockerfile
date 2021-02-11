@@ -23,4 +23,4 @@ COPY *.sh /usr/bin/
 
 # Run script
 WORKDIR /home
-CMD ["check-licenses.sh"]
+CMD ["check-license.sh"]

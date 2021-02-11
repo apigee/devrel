@@ -28,8 +28,6 @@ steps:
   id: 'Build Image'
   args:
   - 'build'
-  - '-f'
-  - './tools/pipeline-runner/Dockerfile'
   - '-t'
   - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   - './tools/pipeline-runner'
