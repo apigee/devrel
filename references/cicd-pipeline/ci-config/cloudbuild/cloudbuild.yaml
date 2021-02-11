@@ -19,7 +19,7 @@ steps:
   entrypoint: npm
   args:
     - "install"
-    - "--slient"
+    - "--silent"
     - "--no-fund"
   # Run static code analysis and linting
 - name: node
