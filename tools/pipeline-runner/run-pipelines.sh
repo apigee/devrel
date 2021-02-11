@@ -30,8 +30,8 @@ elif [ -n "$DIRS" ]; then
   for DIR in $(echo "$DIRS" | sed "s/,/ /g")
   do
     if ! test -f  "$DIR/pipeline.sh"; then
-      echo "[ERROR] $DIR/pipeline.sh NOT FOUND"
-      exit 1
+      echo "[WARN] $DIR/pipeline.sh NOT FOUND"
+      PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR Pipeline,0"
     else
       run_single_pipeline "$DIR"
       PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
