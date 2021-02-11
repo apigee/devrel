@@ -1,6 +1,6 @@
 # KVM Admin Proxy
 
-Depending on the Apigee deployment model you might have Managment APIs for
+Depending on the Apigee deployment model you might have Management APIs for
 accessing and modifying the content of Apigee Key Value Maps (KVMs). In Apigee
 hybrid and Apigee X the access to the KVMs is not provided via the Apigee
 APIs and you will need to leverage Apigee policies to perform CRUD operations
