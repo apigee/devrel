@@ -14,14 +14,14 @@
 <OAuthV2 name="OA2-StoreExternalAuthorizationCode">
     <Operation>GenerateAuthorizationCode</Operation>
     <ClientId>request.formparam.client_id</ClientId>
-    <ResponseType>oidc.flow.authorize.response_type</ResponseType>
+    <ResponseType>oidc.flow.callback.response_type</ResponseType>
     <GenerateResponse enabled="false"/>
     <ExternalAuthorization>true</ExternalAuthorization>
     <ExternalAuthorizationCode>request.queryparam.code</ExternalAuthorizationCode>
     <StoreToken>true</StoreToken>
     <Attributes>
-        <Attribute name="state1" ref="oidc.flow.authorize.state1" display="false"/>
-        <Attribute name="scope" ref="oidc.flow.authorize.scope" display="false"/>
+        <Attribute name="state1" ref="oidc.flow.callback.state1" display="false"/>
+        <Attribute name="scope" ref="oidc.flow.callback.scope" display="false"/>
     </Attributes>
     <Tokens/>
 </OAuthV2>
