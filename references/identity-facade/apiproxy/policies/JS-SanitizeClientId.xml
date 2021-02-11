@@ -11,8 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="1000" name="JS-SanitizeQueryParams">
-    <DisplayName>JS-SanitizeQueryParams</DisplayName>
-    <Properties/>
-    <ResourceURL>jsc://JS-SanitizeQueryParams.js</ResourceURL>
+<Javascript timeLimit="200" name="JS-SanitizeClientId">
+    <ResourceURL>jsc://JS-SanitizeClientId.js</ResourceURL>
 </Javascript>

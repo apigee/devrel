@@ -49,7 +49,7 @@ Given('I navigate to the authorize page with query params that must be sanitized
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + org + '-' + env + 
     '.apigee.net' + basePath + '/authorize?client_id=' + '    ' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri= https://httpbin.org/get   &response_type= code  &      state=  ' + state +'&   scope  =' + scope)
+    + '&redirect_uri= https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
 })
 
 Given('I navigate to the authorize page with an invalid response type', async function() {

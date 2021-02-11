@@ -18,7 +18,7 @@
             (request.verb = "GET")</Condition>
             <Request>
                 <Step>
-                    <Name>JS-SanitizeQueryParams</Name>
+                    <Name>JS-SanitizeClientId</Name>
                 </Step>
                 <Step>
                     <Name>VAK-VerifyAPIKey-ClientId</Name>
@@ -65,9 +65,6 @@
             <Condition>(proxy.pathsuffix MatchesPath "/callback") and 
             (request.verb = "GET")</Condition>
             <Request>
-                <Step>
-                    <Name>JS-SanitizeQueryParams</Name>
-                </Step>
                 <Step>
                     <Name>EV-InputQueryParamsCallback</Name>
                 </Step>
