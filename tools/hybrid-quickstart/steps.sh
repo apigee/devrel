@@ -30,6 +30,8 @@ set_config_params() {
     export ZONE=${ZONE:='europe-west1-c'}
     gcloud config set compute/zone $ZONE
 
+    export INGRESS_TYPE=${INGRESS_TYPE:='external'} # internal|external
+
     echo "🔧 Configuring Apigee hybrid"
     export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
@@ -43,13 +45,13 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.7.3-asm.6-linux-amd64.tar.gz'
       export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
+      export JQ_VERSION='jq-1.6/jq-linux64'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export ISTIO_ASM_CLI='istio-1.7.3-asm.6-osx.tar.gz'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
+      export JQ_VERSION='jq-1.6/jq-osx-amd64'
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
       exit 2
@@ -62,9 +64,9 @@ set_config_params() {
     export MESH_ID="proj-${PROJECT_NUMBER}"
 
     # these will be set if the steps are run in order
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)" || echo "")
     export INGRESS_IP
-    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null)
+    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:=$PWD}"
@@ -97,7 +99,7 @@ function wait_for_ready(){
         fi
 
         if [ "$iterations" -ge "$max_iterations" ]; then
-          echo "Wait Timeout"
+          echo "Wait timed out"
           exit 1
         fi
         echo -n "."
@@ -263,43 +265,63 @@ configure_network() {
 
     ENV_GROUP_NAME="$1"
 
-    gcloud compute addresses create apigee-ingress-loadbalancer --region "$REGION"
-
-    gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
-
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-loadbalancer" --format="get(address)")
+    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
+      if [[ "$INGRESS_TYPE" == "external" ]]; then
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION"
+      else
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet default --purpose SHARED_LOADBALANCER_VIP
+      fi
+    fi
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
     export INGRESS_IP
 
-    gcloud dns record-sets transaction start --zone=apigee-dns-zone
+    if [ -z "$(gcloud dns managed-zones list --filter 'name=apigee-dns-zone' --format='get(name)')" ]; then
+      if [[ "$INGRESS_TYPE" == "external" ]]; then
+        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
+      else
+        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone --visibility="private" --networks="default"
+      fi
 
-    gcloud dns record-sets transaction add "$INGRESS_IP" \
-        --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
-        --type=A --zone=apigee-dns-zone
+      rm -f transaction.yaml
+      gcloud dns record-sets transaction start --zone=apigee-dns-zone
+      gcloud dns record-sets transaction add "$INGRESS_IP" \
+          --name="$ENV_GROUP_NAME.$DNS_NAME." --ttl=600 \
+          --type=A --zone=apigee-dns-zone
+      gcloud dns record-sets transaction describe --zone=apigee-dns-zone
+      gcloud dns record-sets transaction execute --zone=apigee-dns-zone
+    fi
 
-    gcloud dns record-sets transaction describe --zone=apigee-dns-zone
-    gcloud dns record-sets transaction execute --zone=apigee-dns-zone
+    if [[ "$INGRESS_TYPE" == "external" ]]; then
+      NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
+      export NAME_SERVER
+      echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
+    fi
 
-    NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])")
-    export NAME_SERVER
-    echo "👋 Add this as an NS record for $DNS_NAME: $NAME_SERVER"
     echo "✅ Networking set up"
 }
 
 create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
-    gcloud container clusters create "$GKE_CLUSTER_NAME" \
-      --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-      --num-nodes "4" \
-      --enable-autoscaling --min-nodes "3" --max-nodes "6" \
-      --labels mesh_id="$MESH_ID" \
-      --workload-pool "$WORKLOAD_POOL" \
-      --enable-stackdriver-kubernetes
+    if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
+      gcloud container clusters create "$GKE_CLUSTER_NAME" \
+        --zone "$ZONE" \
+        --network default \
+        --subnetwork default \
+        --default-max-pods-per-node "110" \
+        --enable-ip-alias \
+        --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
+        --num-nodes "3" \
+        --enable-autoscaling --min-nodes "3" --max-nodes "6" \
+        --labels mesh_id="$MESH_ID" \
+        --workload-pool "$WORKLOAD_POOL" \
+        --enable-stackdriver-kubernetes
+    fi
 
-    gcloud container clusters get-credentials $GKE_CLUSTER_NAME
+    gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE
 
     kubectl create clusterrolebinding cluster-admin-binding \
-      --clusterrole cluster-admin --user "$(gcloud config get-value account)"
+      --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
 
     echo "✅ GKE set up"
 }
@@ -310,38 +332,29 @@ install_asm_and_certmanager() {
   echo "👩🏽‍💼 Creating Cert Manager"
   kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
 
-  echo "🤹‍♂️ Initialize ASM"
-
-   curl --request POST \
-    --header "Authorization: Bearer $(token)" \
-    --data '' \
-    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize"
-
-  echo "🔌 Registering Cluster with Anthos Hub"
-  SERVICE_ACCOUNT_NAME="$GKE_CLUSTER_NAME-anthos"
-
-  # fail silently if the account already exists
-  gcloud iam service-accounts create "$SERVICE_ACCOUNT_NAME" 2>/dev/null
-
-  gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-   --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
-   --role="roles/gkehub.connect"
-
-  SERVICE_ACCOUNT_KEY_PATH="/tmp/$SERVICE_ACCOUNT_NAME.json"
-
-  gcloud iam service-accounts keys create $SERVICE_ACCOUNT_KEY_PATH \
-   --iam-account="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
-
-  gcloud container hub memberships register $GKE_CLUSTER_NAME \
-    --gke-cluster="$ZONE/$GKE_CLUSTER_NAME" \
-    --service-account-key-file="$SERVICE_ACCOUNT_KEY_PATH" -q
-
-  rm $SERVICE_ACCOUNT_KEY_PATH
-
   echo "🏗️ Installing Anthos Service Mesh"
   mkdir -p "$QUICKSTART_TOOLS"/istio-asm
-  curl -L -o "$QUICKSTART_TOOLS/istio-asm/istio-asm.tar.gz" "https://storage.googleapis.com/gke-release/asm/${ISTIO_ASM_CLI}"
-  tar xzf "$QUICKSTART_TOOLS/istio-asm/istio-asm.tar.gz" -C "$QUICKSTART_TOOLS/istio-asm"
+  curl https://storage.googleapis.com/csm-artifacts/asm/install_asm_1.7 > "$QUICKSTART_TOOLS"/istio-asm/install_asm
+  chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
+
+  mkdir -p "$QUICKSTART_TOOLS"/kpt
+  curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
+  tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
+  export PATH=$PATH:"$QUICKSTART_TOOLS"/kpt
+
+  mkdir -p "$QUICKSTART_TOOLS"/jq
+  curl -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
+  chmod +x "$QUICKSTART_TOOLS"/jq/jq
+  export PATH="$QUICKSTART_TOOLS"/jq:$PATH
+
+  "$QUICKSTART_TOOLS"/istio-asm/install_asm \
+    --project_id "$PROJECT_ID" \
+    --cluster_name "$GKE_CLUSTER_NAME" \
+    --cluster_location "$ZONE" \
+    --mode install \
+    --output_dir "$QUICKSTART_TOOLS"/istio-asm \
+    --only_validate
+
   mv "$QUICKSTART_TOOLS"/istio-asm/istio-*/* "$QUICKSTART_TOOLS/istio-asm/."
 
   echo "🩹 Patching the ASM Config"
@@ -349,18 +362,16 @@ install_asm_and_certmanager() {
   curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
 
-  "$QUICKSTART_TOOLS"/kpt/kpt pkg get \
-    https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-1.7-asm "$QUICKSTART_TOOLS"/kpt/asm
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.container.cluster "$GKE_CLUSTER_NAME"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.core.project "$PROJECT_ID"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.compute.location "$ZONE"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.project.environProjectNumber "$MESH_ID"
+  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm anthos.servicemesh.rev asm-173-6
 
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.container.cluster "$GKE_CLUSTER_NAME"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.core.project "$PROJECT_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.compute.location "$ZONE"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm gcloud.project.environProjectNumber "$MESH_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/kpt/asm anthos.servicemesh.rev asm-173-6
-
-  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/kpt/asm/istio/istio-operator.yaml \
+  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/istio-asm/asm/istio/istio-operator.yaml \
     --revision=asm-173-6 \
     --set values.gateways.istio-ingressgateway.loadBalancerIP="$INGRESS_IP" \
+    --set values.gateways.istio-ingressgateway.serviceAnnotations.'networking\.gke\.io/load-balancer-type'=$INGRESS_TYPE \
     --set meshConfig.enableAutoMtls=false \
     --set meshConfig.accessLogFile=/dev/stdout \
     --set meshConfig.accessLogEncoding=1 \
@@ -488,7 +499,6 @@ EOF
     echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
 
-    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --dry-run=client
     "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
     echo -n "⏳ Waiting for Apigeectl apply "
