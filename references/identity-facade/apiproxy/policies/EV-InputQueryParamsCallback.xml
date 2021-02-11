@@ -11,14 +11,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="AM-RedirectToApp">
-    <Set>
-        <Headers>
-            <Header name="Location">{oidc.flow.callback.redirect_uri}?code={oauthv2authcode.OA2-StoreExternalAuthorizationCode.code}&amp;state={oidc.flow.callback.state1}</Header>
-        </Headers>
-        <StatusCode>302</StatusCode>
-        <ReasonPhrase>Found</ReasonPhrase>
-    </Set>
+<ExtractVariables name="EV-InputQueryParamsCallback">
+    <Source>request</Source>
+    <QueryParam name="state">
+        <Pattern ignoreCase="true">{state2}</Pattern>
+    </QueryParam>
+    <QueryParam name="code">
+        <Pattern ignoreCase="true">{code}</Pattern>
+    </QueryParam>
+    <VariablePrefix>oidc.flow.callback</VariablePrefix>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" type="response"/>
-</AssignMessage>
+</ExtractVariables>
