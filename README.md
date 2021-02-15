@@ -58,6 +58,8 @@ Apigee products.
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
   A rescue utility to decrypt proxies and shared flows
+- [ApigeeX Trial Provisioning Reference](tools/apigee-x-trial-provision) -
+  A reference provisioning script for Apigee X trial provisioning
 
 ## Labs
 
