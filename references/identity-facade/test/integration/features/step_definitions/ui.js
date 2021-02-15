@@ -40,6 +40,18 @@ Given('I navigate to the authorize page', async function() {
     + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
 })
 
+Given('I navigate to the authorize page with query params that must be sanitized', async function() {
+  this.browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
+    headless: true,
+    args: ["--no-sandbox"]
+  })
+  this.page = await this.browser.newPage()
+  return await this.page.goto('https://' + org + '-' + env + 
+    '.apigee.net' + basePath + '/authorize?client_id=' + '    ' + this.apickli.scenarioVariables.clientId
+    + '&redirect_uri= https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
+})
+
 Given('I navigate to the authorize page with an invalid response type', async function() {
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,

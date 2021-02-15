@@ -11,14 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="AM-RedirectToApp">
-    <Set>
-        <Headers>
-            <Header name="Location">{oidc.flow.callback.redirect_uri}?code={oauthv2authcode.OA2-StoreExternalAuthorizationCode.code}&amp;state={oidc.flow.callback.state1}</Header>
-        </Headers>
-        <StatusCode>302</StatusCode>
-        <ReasonPhrase>Found</ReasonPhrase>
-    </Set>
-    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-    <AssignTo createNew="false" type="response"/>
-</AssignMessage>
+<Javascript timeLimit="200" name="JS-SanitizeClientId">
+    <ResourceURL>jsc://JS-SanitizeClientId.js</ResourceURL>
+</Javascript>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2020 Google LLC
+Copyright 2021 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -50,29 +50,44 @@ limitations under the License.
 		<project.root.dir>${basedir}</project.root.dir>
 		<target.root.dir>${basedir}/target</target.root.dir>
 		<deployment.suffix></deployment.suffix>
-		<apigee.hosturl>${env.APIGEE_HOSTURL}</apigee.hosturl>
 		<apigee.apiversion>v1</apigee.apiversion>
-		<apigee.org>${env.APIGEE_ORG}</apigee.org>
-		<apigee.username>${env.APIGEE_USER}</apigee.username>
-		<apigee.password>${env.APIGEE_PASS}</apigee.password>
-		<apigee.authtype>oauth</apigee.authtype>
+		<apigee.options>override</apigee.options>
+		<apigee.org>${org}</apigee.org>
+		<deployment.description>n/a</deployment.description>
 	</properties>
 
-	<!-- This is where you add the environment specific properties under various profile names -->
-	<!-- For apigee.options, refer to "Advanced Configuration Options" under https://github.com/apigee/apigee-deploy-maven-plugin#pom-xml-sample -->
 	<profiles>
+        <profile>
+            <!-- Current Generation SaaS -->
+            <id>apigeeapi</id>
+            <properties>
+                <apigee.plugin.version>1.2.2</apigee.plugin.version>
+                <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+                <apigee.authtype>oauth</apigee.authtype>
+                <apigee.username>${username}</apigee.username>
+                <apigee.password>${password}</apigee.password>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Next Generation SaaS and hybrid -->
+            <id>googleapi</id>
+            <properties>
+                <apigee.plugin.version>2.1.0</apigee.plugin.version>
+				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+                <apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
+                <apigee.serviceaccount.file>${sa}</apigee.serviceaccount.file>
+            </properties>
+        </profile>
 		<profile>
 			<id>test</id>
 			<properties>
 				<apigee.env>test</apigee.env>
-				<apigee.options>update</apigee.options>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
 				<apigee.env>prod</apigee.env>
-				<apigee.options>override</apigee.options>
 				<apigee.override.delay>5</apigee.override.delay>
 			</properties>
 		</profile>
@@ -84,7 +99,7 @@ limitations under the License.
 				<plugin>
 					<groupId>io.apigee.build-tools.enterprise4g</groupId>
 					<artifactId>apigee-edge-maven-plugin</artifactId>
-					<version>1.1.7</version>
+					<version>${apigee.plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -151,7 +166,7 @@ limitations under the License.
 						</replacement>
 						<replacement>
 							<token>@description</token>
-							<value>Commit: ${commit}, Branch: ${branch}, Author: ${author}</value>
+							<value>${deployment.description}</value>
 						</replacement>
 					</replacements>
 				</configuration>
@@ -160,7 +175,7 @@ limitations under the License.
 			<plugin>
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
-				<version>1.1.7</version>
+				<version>${apigee.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>configure-bundle-step</id>
@@ -189,13 +204,6 @@ limitations under the License.
 					<execution>
 						<id>auto-clean-init</id>
 						<phase>initialize</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>auto-clean-install</id>
-						<phase>install</phase>
 						<goals>
 							<goal>clean</goal>
 						</goals>

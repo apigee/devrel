@@ -18,7 +18,7 @@ RUN apk add --no-cache git
 RUN go get github.com/google/addlicense
 RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
 
-# install our dependencies
+# Install our dependencies
 COPY *.sh /usr/bin/
 
 # Run script

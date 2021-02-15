@@ -17,6 +17,7 @@ FROM google/cloud-sdk:alpine
 # Install additional tools
 RUN apk add --no-cache \
   jq \
+  libxml2-utils \
   maven \
   nodejs \
   npm \
