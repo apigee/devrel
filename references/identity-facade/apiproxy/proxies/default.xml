@@ -18,6 +18,9 @@
             (request.verb = "GET")</Condition>
             <Request>
                 <Step>
+                    <Name>JS-SanitizeClientId</Name>
+                </Step>
+                <Step>
                     <Name>VAK-VerifyAPIKey-ClientId</Name>
                 </Step>
                 <Step>
@@ -36,13 +39,11 @@
                     <Condition>( oidc.flow.authorize.state1 Is null ) or 
                     ( oidc.flow.authorize.state1 = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
-                    
                 </Step>
                 <Step>
                     <Condition>( oidc.flow.authorize.scope Is null ) or 
                     ( oidc.flow.authorize.scope = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
-                    
                 </Step>
                 <Step>
                     <Name>KVM-IdpParameters</Name>
@@ -65,6 +66,9 @@
             (request.verb = "GET")</Condition>
             <Request>
                 <Step>
+                    <Name>EV-InputQueryParamsCallback</Name>
+                </Step>
+                <Step>
                     <Condition>( request.queryparam.code Is null ) or 
                     ( request.queryparam.code = "" )</Condition>
                     <Name>RF-InvalidGrant</Name>
@@ -73,13 +77,15 @@
                     <Condition>( request.queryparam.state Is null ) or 
                     ( request.queryparam.state = "" )</Condition>
                     <Name>RF-InvalidRequest</Name>
-                    
                 </Step>
                 <Step>
                     <Name>OA2-AttributesFromAzCode-State2</Name>
                 </Step>
                 <Step>
                     <Name>AM-StateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetExternalAuthorizationStatus</Name>
                 </Step>
                 <Step>
                     <Name>OA2-StoreExternalAuthorizationCode</Name>

@@ -13,7 +13,7 @@
 -->
 <AssignMessage name="AM-StateAttributes">
     <AssignVariable>
-        <Name>oidc.flow.authorize.state1</Name>
+        <Name>oidc.flow.callback.state1</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.state1</Ref>
     </AssignVariable>
     <AssignVariable>
@@ -21,20 +21,16 @@
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.client_id</Ref>
     </AssignVariable>
     <AssignVariable>
-        <Name>oidc.flow.authorize.redirect_uri</Name>
+        <Name>oidc.flow.callback.redirect_uri</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.redirect_uri</Ref>
     </AssignVariable>
     <AssignVariable>
-        <Name>oidc.flow.authorize.response_type</Name>
+        <Name>oidc.flow.callback.response_type</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.response_type</Ref>
     </AssignVariable>
     <AssignVariable>
-        <Name>oidc.flow.authorize.scope</Name>
+        <Name>oidc.flow.callback.scope</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.scope</Ref>
-    </AssignVariable>
-    <AssignVariable>
-        <Name>oauth_external_authorization_status</Name>
-        <Value>true</Value>
     </AssignVariable>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <AssignTo createNew="false" type="request"/>

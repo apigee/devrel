@@ -20,10 +20,10 @@ further to fit a particular use case.
 - [Custom Java Extensions in Apigee](references/java-callout) -
   A reference project that includes a Java Extension
 - [GCP Service Account Shared Flow](references/gcp-sa-auth-shared-flow) -
-  A shared flow to obtain access tokens for GCP service accounts.
-- [Jenkins CI/CD Pipeline](references/cicd-jenkins) -
-  Reference implementation for a CI/CD Pipeline using Jenkins and the Apigee
-  Deploy Maven Plugin
+  A shared flow to obtain access tokens for GCP service accounts
+- [CI/CD Pipeline](references/cicd-pipeline) -
+  Reference implementation for a CI/CD Pipeline using the Apigee
+  Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
@@ -38,7 +38,7 @@ further to fit a particular use case.
   Reference implementation for an Identity Facade proxy in front of an OIDC
   compliant identity provider
 - [KVM Admin API](references/kvm-admin-api) -
-  Generic API proxy to provide Create, Read and Delete operations for KVMs.
+  Generic API proxy to provide Create, Read and Delete operations for KVMs
 
 ## Tools
 
