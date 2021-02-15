@@ -4,8 +4,7 @@
 
 ## Description
 
-A reference example of [Command Line](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli) 
+A reference example of [Command Line](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli)
 Provisioning for Apigee X.
 
 Please refer to the documentation for the latest usage.
-
