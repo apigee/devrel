@@ -16,6 +16,7 @@
 # limitations under the License.
 
 set -e
+set -x
 
 if [ -z "$PROJECT" ]; then
    echo "ERROR: Environment variable PROJECT is not set."
