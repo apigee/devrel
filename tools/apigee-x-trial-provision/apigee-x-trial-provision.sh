@@ -29,8 +29,8 @@ function token { echo -n "$(gcloud config config-helper --force-auth-refresh | g
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT" --format="value(projectNumber)")
 export PROJECT_NUMBER
 
-export NETWORK=default
-export SUBNET=default
+export NETWORK=${NETWORK:-default}
+export SUBNET=${SUBNET:-default}
 
 export REGION=${REGION:-europe-west1}
 export ZONE=${ZONE:-europe-west1-b}
@@ -77,7 +77,7 @@ gcloud alpha apigee organizations provision \
 # https://cloud.google.com/vpc/docs/configure-private-google-access#gcloud_2
 
 # enable Private Google Access:
-gcloud compute networks subnets update $SUBNET \
+gcloud compute networks subnets update "$SUBNET" \
 --region="$REGION" \
 --enable-private-ip-google-access --project "$PROJECT"
 
@@ -90,8 +90,8 @@ export APIGEE_ENDPOINT
 
 # 1. Create an instance template
 gcloud compute instance-templates create "$MIG" \
-  --region "$REGION" --network $NETWORK \
-  --subnet $SUBNET \
+  --region "$REGION" --network "$NETWORK" \
+  --subnet "$SUBNET" \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
   --machine-type n1-standard-1 --image-family centos-7 \
   --image-project centos-cloud --boot-disk-size 20GB \
@@ -124,7 +124,7 @@ export RUNTIME_IP
 # 3. Create a firewall rule that lets the Load Balancer access Envoy
 gcloud compute firewall-rules create k8s-allow-lb-to-apigee-envoy \
   --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" \
-  --network $NETWORK --allow=tcp:443 \
+  --network "$NETWORK" --allow=tcp:443 \
   --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy --project "$PROJECT"
 
 # Step 7e: Upload credentials
