@@ -38,7 +38,7 @@ export PROJECT_ID=xxx
 export AX_REGION='europe-west1'
 # Default GCP region for runtime
 export REGION='europe-west1'
-export ZONE='europe-west1-b'
+export ZONE='europe-west1-c'
 # Name of the GKE cluster that hosts the runtime
 export GKE_CLUSTER_NAME='apigee-hybrid'
 # Machine type of the GKE cluster that hosts the runtime
