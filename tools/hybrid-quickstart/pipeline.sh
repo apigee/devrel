@@ -14,4 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "Apigee hybrid Quickstart Script"
+echo "Running separately because of time it takes to provision"

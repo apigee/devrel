@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
       - name: generate-docs
-        uses: ./tools/pipeline-runner
+        uses: ./tools/pipeline-linter
         with:
           pipeline-action: generate-all-docs.sh
       - name: Archive Generated Docs
@@ -50,6 +50,6 @@ jobs:
         run: |
           git config --global user.name "DevRel GH Pages Publish Action"
           git config --global user.email "bot-action@devrel.apigee.com"
-          git add . 
+          git add .
           git commit -m "Update GH Pages - $GITHUB_SHA" || echo "No Changes in docs"
           git push

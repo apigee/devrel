@@ -1,0 +1,51 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DevRel Linter Pipeline
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * *"
+jobs:
+
+  static-analysis:
+
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Run Super-Linter
+        uses: docker://github/super-linter:v3.13.1
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          MARKDOWN_CONFIG_FILE: .markdown-lint.yml
+
+      - name: Check all files are licensed
+        uses: ./tools/pipeline-linter
+        with:
+          pipeline-action: check-license.sh
+
+      - name: Check README and CODEOWNER index
+        uses: ./tools/pipeline-linter
+        with:
+          pipeline-action: check-readme.sh

@@ -19,5 +19,5 @@ In this example, the Java code is packaged as a jar, and as such has a separate
 export APIGEE_USER=xxx
 export APIGEE_PASS=xxx
 export APIGEE_ORG=xxx
-mvn clean install -Ptest
+mvn clean install -Ptest -ntp
 ```
