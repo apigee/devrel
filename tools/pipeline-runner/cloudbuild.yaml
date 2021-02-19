@@ -47,10 +47,6 @@ steps:
         --secret=devrel_apigee_user --format="get(payload.data)" | \
         base64 -d)\"" >> env.txt
 
-      echo "export REF_GCP_SA_SF=$(gcloud secrets versions access latest \
-        --secret=devrel_ci_genericsa --format="get(payload.data)" | \
-        base64 -d | jq '. | tostring')" >> env.txt
-
       echo "export GITHUB_TOKEN=\"$(gcloud secrets versions access latest \
         --secret=devrel_github_token --format="get(payload.data)" | \
         base64 -d )\"" >> env.txt
