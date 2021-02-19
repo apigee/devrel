@@ -14,4 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "Running separately because of time it takes to provision"
+gcloud builds submit --config ./cloudbuild.yaml \
+  --substitutions="_DESTROY_AFTER_VALIDATION=true" \
+  --project $HYBRID_GCP_PROJECT
