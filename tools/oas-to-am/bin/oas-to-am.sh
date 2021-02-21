@@ -22,8 +22,8 @@ set -e
 [ -z "$OPERATION" ] && echo "Operation Missing" && exit
 
 # Build up AssignMessage policy
-RESULT="<AssignMessage name="Assign.$OPERATION">"
-RESULT="$RESULT<AssignTo createNew="true" type="request">$OPERATION</AssignTo>"
+RESULT="<AssignMessage name=\"Assign.$OPERATION\">"
+RESULT="$RESULT<AssignTo createNew=\"true\" type=\"request\">$OPERATION</AssignTo>"
 
 # Set target url as a variable for use in TargetEndpoint, ServiceCallout or TargetServer
 RESULT="$RESULT<AssignVariable>"

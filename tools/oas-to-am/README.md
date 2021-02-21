@@ -1,6 +1,6 @@
 # OpenAPI Specification to Assign Message
 
-A simple tool to generate an Assign Message policy from a JSON OpenAPI Spec.
+A simple tool to generate an Assign Message policy from a JSON OpenAPI (3.0) Spec.
 
 ## Usage
 

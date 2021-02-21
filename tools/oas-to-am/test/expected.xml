@@ -14,8 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="Assign.createPetsRequest">
-  <AssignTo createNew="true" type="request">createPetsRequest</AssignTo>
+<AssignMessage name="Assign.createPets">
+  <AssignTo createNew="true" type="request">createPets</AssignTo>
   <AssignVariable>
     <Name>createPets.url</Name>
     <Value>https://httpbin.org</Value>
