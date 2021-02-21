@@ -80,20 +80,20 @@ set_config_params() {
 token() { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
 
 function wait_for_ready(){
-    local expected_status=$1
+    local expected_output=$1
     local action=$2
     local message=$3
     local max_iterations=120 # 10min
     local iterations=0
-    local signal
+    local actual_out
 
     echo -e "Start: $(date)\n"
 
     while true; do
-        ((iterations++))
+        iterations="$((iterations+1))"
 
-        signal=$(eval "$action")
-        if [ "$expected_status" = "$signal" ]; then
+        actual_out=$(bash -c "$action" || echo "error code $?")
+        if [ "$expected_output" = "$actual_out" ]; then
             echo -e "\n$message"
             break
         fi
@@ -355,7 +355,7 @@ install_asm_and_certmanager() {
     --output_dir "$QUICKSTART_TOOLS"/istio-asm \
     --only_validate
 
-  mv "$QUICKSTART_TOOLS"/istio-asm/istio-*/* "$QUICKSTART_TOOLS/istio-asm/."
+  mv "$QUICKSTART_TOOLS"/istio-asm/istio-*/* "$QUICKSTART_TOOLS/istio-asm/." || echo "[WARN] cannot move directory. Exists already?"
 
   echo "🩹 Patching the ASM Config"
   mkdir -p "$QUICKSTART_TOOLS"/kpt
