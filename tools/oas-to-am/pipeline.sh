@@ -18,4 +18,4 @@ set -e
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-PATH=$PATH:$SCRIPTPATH/bin $SCRIPTPATH/test/smoketest.sh
+PATH=$PATH:$SCRIPTPATH/bin "$SCRIPTPATH/test/smoketest.sh"

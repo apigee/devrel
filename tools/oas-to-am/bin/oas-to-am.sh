@@ -27,7 +27,7 @@ RESULT="$RESULT<AssignTo createNew=\"true\" type=\"request\">$OPERATION</AssignT
 
 # Set target url as a variable for use in TargetEndpoint, ServiceCallout or TargetServer
 RESULT="$RESULT<AssignVariable>"
-RESULT="$RESULT<Name>$OPERATION.url</Name>"
+RESULT="$RESULT<Name>custom.url</Name>"
 RESULT="$RESULT<Value>$(jq -r '.servers[].url' < "$SPEC")</Value>"
 RESULT="$RESULT</AssignVariable>"
 

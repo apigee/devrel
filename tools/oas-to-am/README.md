@@ -18,12 +18,13 @@ SPEC=./path/to/spec.json OPERATION=operationId oas-to-am
 
 ## Current Behaviour
 
-Takes the OAS spec [here](./test/features/fixtures/petstore.json), parses it to
-generate [this](./test/features/fixtures/expected.xml). The behaviour is
-described [here](./test/features/OASToAM.feature).
+Takes the OAS spec [here](./test/features/fixtures/petstore.json) and a
+single Operation, parses it to generate [this](./test/features/fixtures/expected.xml)
+. The behaviour is described [here](./test/features/OASToAM.feature).
 
 ## Purpose
 
+- Generate Target Request and Service Callout templates based on API Specifications
 - Now it is very easy to use out of the box Apigee policies to set the variables
 needed
 - It is also easy to take an OpenAPI spec from a tool like OpenLegacy and

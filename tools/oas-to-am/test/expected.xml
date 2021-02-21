@@ -17,7 +17,7 @@
 <AssignMessage name="Assign.createPets">
   <AssignTo createNew="true" type="request">createPets</AssignTo>
   <AssignVariable>
-    <Name>createPets.url</Name>
+    <Name>custom.url</Name>
     <Value>https://httpbin.org</Value>
   </AssignVariable>
   <Set>
