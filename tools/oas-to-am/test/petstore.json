@@ -9,11 +9,11 @@
   },
   "servers": [
     {
-      "url": "https://httpbin.org"
+      "url": "https://example.com"
     }
   ],
   "paths": {
-    "/post": {
+    "/pets": {
       "post": {
         "summary": "Create a pet",
         "operationId": "createPets",

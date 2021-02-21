@@ -18,10 +18,11 @@
   <AssignTo createNew="true" type="request">createPets</AssignTo>
   <AssignVariable>
     <Name>custom.url</Name>
-    <Value>https://httpbin.org</Value>
+    <Value>https://example.com</Value>
   </AssignVariable>
   <Set>
-    <Path>post</Path>
+    <Verb>post</Verb>
+    <Path>/pets</Path>
     <Headers>
       <Header name="x-header">{custom.header.x-header}</Header>
       <Header name="x-header-2">{custom.header.x-header-2}</Header>

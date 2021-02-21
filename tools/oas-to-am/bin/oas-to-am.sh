@@ -34,10 +34,19 @@ RESULT="$RESULT</AssignVariable>"
 # <Set>
 RESULT="$RESULT<Set>"
 
+# <Verb>
+VERB=$(jq -r ".paths
+  | select(.[][].operationId == \"$OPERATION\")
+  | .[]
+  | keys[]" < "$SPEC")
+
+RESULT="$RESULT<Verb>"
+RESULT="$RESULT$VERB"
+RESULT="$RESULT</Verb>"
+
 # Path Suffix
 PATHSUFFIX=$(jq -r ".paths
   | select(.[][].operationId == \"$OPERATION\") 
-  | .[] 
   | keys[]" < "$SPEC")
 
 RESULT="$RESULT<Path>"
