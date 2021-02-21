@@ -28,7 +28,7 @@ odir="$3"
 
 
 key=$(echo "$encodedkey"|base64 -d |hexdump -ve '1/1 "%.2x"')
-keylength=$(( $(echo -n "$K" | wc -m) * 8 / 2 ))
+keylength=$(( $(echo -n "$key" | wc -m) * 8 / 2 ))
 
 odirabs="$(cd "$(dirname "$odir")" || exit; pwd)/$(basename "$odir")"
 

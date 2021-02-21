@@ -60,6 +60,8 @@ Apigee products.
   A rescue utility to decrypt proxies and shared flows
 - [OpenAPI to AssignMessage](tools/oas-to-am) -
   A utility to derive an AssignMessage policy from a spec
+- [Apigee X Trial Provisioning Reference](tools/apigee-x-trial-provision) -
+  A reference provisioning script for Apigee X trial provisioning
 
 ## Labs
 
