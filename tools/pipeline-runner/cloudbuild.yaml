@@ -47,10 +47,6 @@ steps:
         --secret=devrel_apigee_user --format="get(payload.data)" | \
         base64 -d)\"" >> env.txt
 
-      echo "export REF_GCP_SA_SF=$(gcloud secrets versions access latest \
-        --secret=devrel_ci_genericsa --format="get(payload.data)" | \
-        base64 -d | jq '. | tostring')" >> env.txt
-
       echo "export GITHUB_TOKEN=\"$(gcloud secrets versions access latest \
         --secret=devrel_github_token --format="get(payload.data)" | \
         base64 -d )\"" >> env.txt
@@ -73,6 +69,7 @@ steps:
   env:
   - 'APIGEE_ORG=$_APIGEE_ORG'
   - 'APIGEE_ENV=$_APIGEE_ENV'
+  - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   id: 'Create GH Comment or Issue'
   entrypoint: "bash"
@@ -95,10 +92,11 @@ steps:
     - "-c"
     - |-
       ! grep -q "fail" ./pipeline-result.txt
-timeout: 1800s #30min
+timeout: 2400s #40min
 substitutions:
   _APIGEE_ORG: my-org
   _APIGEE_ENV: my-env
+  _HYBRID_GCP_PROJECT: my-gcp-project
   _CI_PROJECT: "all" # all|[path]
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
