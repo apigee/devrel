@@ -20,7 +20,8 @@ steps:
   args:
     - "-c"
     - |-
-      apt-get update && apt-get install zip -y
+      apt-get update && apt-get install zip jq -y
+      gcloud components install kpt -q
       ./initialize-runtime-gke.sh
   env:
     - 'ENV_NAME=$_QUICKSTART_ENV_NAME'

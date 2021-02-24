@@ -20,6 +20,12 @@ tar --version
 #installed openssl
 openssl version
 
+# installed kpt
+kpt version
+
+# installed jq
+jq --help
+
 #installed gcloud
 gcloud version
 
