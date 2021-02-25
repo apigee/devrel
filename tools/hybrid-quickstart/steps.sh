@@ -40,8 +40,10 @@ set_config_params() {
     export APIGEE_CTL_VERSION='1.4.0'
     export KPT_VERSION='v0.34.0'
     export CERT_MANAGER_VERSION='v1.1.0'
+    export ASM_VERSION='1.8'
 
     OS_NAME=$(uname -s)
+
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
@@ -332,11 +334,7 @@ install_asm_and_certmanager() {
   echo "👩🏽‍💼 Creating Cert Manager"
   kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
 
-  echo "🏗️ Installing Anthos Service Mesh"
-  mkdir -p "$QUICKSTART_TOOLS"/istio-asm
-  curl https://storage.googleapis.com/csm-artifacts/asm/install_asm_1.7 > "$QUICKSTART_TOOLS"/istio-asm/install_asm
-  chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
-
+  echo "🏗️ Preparing ASM install requirements"
   mkdir -p "$QUICKSTART_TOOLS"/kpt
   curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
@@ -345,37 +343,55 @@ install_asm_and_certmanager() {
   mkdir -p "$QUICKSTART_TOOLS"/jq
   curl -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
   chmod +x "$QUICKSTART_TOOLS"/jq/jq
-  export PATH="$QUICKSTART_TOOLS"/jq:$PATH
+  export PATH=$PATH:"$QUICKSTART_TOOLS"/jq
+
+  echo "🏗️ Installing Anthos Service Mesh"
+  mkdir -p "$QUICKSTART_TOOLS"/istio-asm
+  curl https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
+  chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
+
+  # patch ASM installer to work on OSX and Linux
+  # (sacrificing the YAML fix which we don't rely on at the moment)
+  sed -i -e '/handle_multi_yaml_bug$/s/^/#/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
+  # patch ASM installer to allow for cloud build SA
+  sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
+
+  cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        serviceAnnotations:
+          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+          cloud.google.com/neg: '{"ingress": true}'
+          networking.gke.io.load-balancer-type: $INGRESS_TYPE
+        service:
+          type: LoadBalancer
+          loadBalancerIP: $INGRESS_IP
+          ports:
+          - name: status-port
+            port: 15021 # for ASM 1.7.x and above, else 15020
+            targetPort: 15021 # for ASM 1.7.x and above, else 15020
+          - name: http2
+            port: 80
+            targetPort: 8080
+          - name: https
+            port: 443
+            targetPort: 8443
+EOF
 
   "$QUICKSTART_TOOLS"/istio-asm/install_asm \
     --project_id "$PROJECT_ID" \
     --cluster_name "$GKE_CLUSTER_NAME" \
     --cluster_location "$ZONE" \
-    --mode install \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm \
-    --only_validate
-
-  mv "$QUICKSTART_TOOLS"/istio-asm/istio-*/* "$QUICKSTART_TOOLS/istio-asm/." || echo "[WARN] cannot move directory. Exists already?"
-
-  echo "🩹 Patching the ASM Config"
-  mkdir -p "$QUICKSTART_TOOLS"/kpt
-  curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
-  tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
-
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.container.cluster "$GKE_CLUSTER_NAME"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.core.project "$PROJECT_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.compute.location "$ZONE"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm gcloud.project.environProjectNumber "$MESH_ID"
-  "$QUICKSTART_TOOLS"/kpt/kpt cfg set "$QUICKSTART_TOOLS"/istio-asm/asm anthos.servicemesh.rev asm-173-6
-
-  "$QUICKSTART_TOOLS"/istio-asm/bin/istioctl install -f "$QUICKSTART_TOOLS"/istio-asm/asm/istio/istio-operator.yaml \
-    --revision=asm-173-6 \
-    --set values.gateways.istio-ingressgateway.loadBalancerIP="$INGRESS_IP" \
-    --set values.gateways.istio-ingressgateway.serviceAnnotations.'networking\.gke\.io/load-balancer-type'=$INGRESS_TYPE \
-    --set meshConfig.enableAutoMtls=false \
-    --set meshConfig.accessLogFile=/dev/stdout \
-    --set meshConfig.accessLogEncoding=1 \
-    --set meshConfig.accessLogFormat='{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'
+    --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
+    --enable_all \
+    --mode install
 
   echo "✅ ASM installed"
 }
@@ -559,8 +575,8 @@ delete_apigee_keys() {
 
 delete_sa_keys() {
   SA=$1
-  for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="${SA}@${PROJECT_ID}.iam.gserviceaccount.com" --format="get(name)")
+  for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="${SA}@${PROJECT_ID}.iam.gserviceaccount.com" --format="get(name)" --filter="keyType=USER_MANAGED")
   do
-    gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA@$PROJECT_ID.iam.gserviceaccount.com" --filter="keyType=USER_MANAGED" -q
+    gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA@$PROJECT_ID.iam.gserviceaccount.com" -q
   done
 }
