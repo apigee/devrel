@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-gcloud builds submit --config ./cloudbuild.yaml \
-  --substitutions="_DESTROY_AFTER_VALIDATION=true" \
-  --project "$HYBRID_GCP_PROJECT"
+git fetch origin
+
+git diff --name-only origin/main | \
+    grep "labs/\|references/\|tools/" | \
+    awk -F '/' '{ print $1 "/" $2}' | uniq | paste -sd , -

@@ -2,7 +2,7 @@
 
 /references/apigee-sandbox-v1         @laughingbiscuit
 /references/apimocker-hostedtargets   @laughingbiscuit
-/references/cicd-jenkins              @danistrebel
+/references/cicd-pipeline             @danistrebel
 /references/common-shared-flows       @laughingbiscuit
 /references/gcp-sa-auth-shared-flow   @danistrebel
 /references/identity-facade           @joelgauci
@@ -19,3 +19,5 @@
 /tools/another-apigee-client          @laughingbiscuit
 /tools/hybrid-quickstart              @danistrebel
 /tools/decrypt-hybrid-assets          @yuriylesyuk
+/tools/oas-to-am                      @laughingbiscuit
+/tools/apigee-x-trial-provision       @yuriylesyuk
