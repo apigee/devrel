@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2059,SC2016
+# shellcheck disable=SC2059,SC2016,SC2181
 
 # Copyright 2020 Google LLC
 #
@@ -182,14 +182,14 @@ if [ "$SSL_CERT_EXISTS" = "T" ] && [ "$SSL_KEY_EXISTS" = "T" ]; then
 else
   echo "Generate eval certificate and key"
 
-  openssl req -x509 -out $RUNTIME_SSL_CERT -keyout $RUNTIME_SSL_KEY -newkey rsa:2048 -nodes -sha256 -subj '/CN='"$RUNTIME_HOST_ALIAS"'' -extensions EXT -config <( printf "[dn]\nCN=$RUNTIME_HOST_ALIAS\n[req]\ndistinguished_name=dn\n[EXT]\nbasicConstraints=critical,CA:TRUE,pathlen:1\nsubjectAltName=DNS:$RUNTIME_HOST_ALIAS\nkeyUsage=digitalSignature,keyCertSign\nextendedKeyUsage=serverAuth")
+  openssl req -x509 -out "$RUNTIME_SSL_CERT" -keyout "$RUNTIME_SSL_KEY" -newkey rsa:2048 -nodes -sha256 -subj '/CN='"$RUNTIME_HOST_ALIAS"'' -extensions EXT -config <( printf "[dn]\nCN=$RUNTIME_HOST_ALIAS\n[req]\ndistinguished_name=dn\n[EXT]\nbasicConstraints=critical,CA:TRUE,pathlen:1\nsubjectAltName=DNS:$RUNTIME_HOST_ALIAS\nkeyUsage=digitalSignature,keyCertSign\nextendedKeyUsage=serverAuth")
 
 fi
 
 echo "Step 7e.2: Upload your SSL server certificate and key to GCP"
 gcloud compute ssl-certificates create apigee-ssl-cert \
-  --certificate=$RUNTIME_SSL_CERT \
-  --private-key=$RUNTIME_SSL_KEY --project "$PROJECT"
+  --certificate="$RUNTIME_SSL_CERT" \
+  --private-key="$RUNTIME_SSL_KEY" --project "$PROJECT"
 
 echo "Step 7f: Create a global Load Balancer"
 
