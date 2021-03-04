@@ -41,7 +41,11 @@ export ORG=$PROJECT
 echo "CHECK: Checking if organization $ORG is already provisioned"
 ORG_JSON=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG")
 
+APIGEE_PROVISIONED="F"
 if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
+  APIGEE_PROVISIONED="T"
+
+
   echo "Apigee Organization exists and is active"
   echo "$ORG_JSON"
 
@@ -97,16 +101,24 @@ fi
 echo "Step 2: Enable APIs"
 gcloud services enable apigee.googleapis.com servicenetworking.googleapis.com compute.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
+if [ "$APIGEE_PROVISIONED" = "F" ]; then
 
+  echo "Apigee Organization is already provisioned."
+  echo "Reserved IP addresses for network $NETWORK:"
+  gcloud compute addresses list --project "$PROJECT"
+
+  echo ""
+  echo "Skipping Service networking and Organization Provisioning steps."
+else
 
 echo "Step 4: Configure service networking"
 
 echo "Step 4.1: Define a range of reserved IP addresses for your network. "
 set +e
-OUTPUT=$(gcloud compute addresses create google-svcs --global --prefix-length=16 --description="Peering range for Google services" --network=default --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
+OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=16 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
 if [ "$?" != 0 ]; then
    if [[ "$OUTPUT" =~ " already exists" ]]; then
-      echo "google-svcs already exists"
+      echo "google-managed-services-default already exists"
       set -e
    else
       echo "$OUTPUT"
@@ -115,7 +127,7 @@ if [ "$?" != 0 ]; then
 fi
 
 echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
-gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com --network=default --ranges=google-svcs --project="$PROJECT"
+gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT"
 
 echo "Step 4.4: Create a new eval org [it takes time, 10-20 minutes. please wait...]"
 
@@ -123,9 +135,12 @@ set +e
 gcloud alpha apigee organizations provision \
   --runtime-location="$ZONE" \
   --analytics-region="$AX_REGION" \
-  --authorized-network=default \
+  --authorized-network="$NETWORK" \
   --project="$PROJECT"
 set -e
+
+
+fi  # for Step 4: Configure service networking
 
 echo ""
 echo "Step 7: Configure routing, EXTERNAL"
