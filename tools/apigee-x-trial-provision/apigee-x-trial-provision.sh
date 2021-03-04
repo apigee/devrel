@@ -47,7 +47,6 @@ if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
 
 
   echo "Apigee Organization exists and is active"
-  echo "$ORG_JSON"
 
   echo "Taking AX_REGION, LOCATION, and .... from Organization Configuration "
 
@@ -101,7 +100,7 @@ fi
 echo "Step 2: Enable APIs"
 gcloud services enable apigee.googleapis.com servicenetworking.googleapis.com compute.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
-if [ "$APIGEE_PROVISIONED" = "F" ]; then
+if [ "$APIGEE_PROVISIONED" = "T" ]; then
 
   echo "Apigee Organization is already provisioned."
   echo "Reserved IP addresses for network $NETWORK:"
