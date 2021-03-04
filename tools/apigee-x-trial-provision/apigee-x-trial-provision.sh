@@ -35,17 +35,49 @@ fi
 # Step 1: Define functions and environment variables
 function token { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
 
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT" --format="value(projectNumber)")
-export PROJECT_NUMBER
-
-export NETWORK=${NETWORK:-default}
-export SUBNET=${SUBNET:-default}
-
-export REGION=${REGION:-europe-west1}
-export ZONE=${ZONE:-europe-west1-b}
-export AX_REGION=${AX_REGION:-europe-west1}
 
 export ORG=$PROJECT
+
+echo "CHECK: Checking if organization $ORG is already provisioned"
+ORG_JSON=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG")
+
+if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
+  echo "Apigee Organization exists and is active"
+  echo "$ORG_JSON"
+
+  echo "Taking AX_REGION, LOCATION, and .... from Organization Configuration "
+
+  NETWORK=$(echo "$ORG_JSON" | jq --raw-output .authorizedNetwork)
+  AX_REGION=$(echo "$ORG_JSON" | jq --raw-output .analyticsRegion)
+
+# TODO: [ ] right now single instance is expected
+  ZONE=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances|jq --raw-output '.instances[0].location')
+  
+  echo "Deriving REGION from ZONE, as Envoy instances should be in the same region as your Apigee runtime instance"
+  REGION=$(echo "$ZONE" | awk '{gsub(/-[a-z]+$/,"");print}')
+else
+  echo "Didn't find an active Apigee Organization. Using environment variable defaults"
+  
+  REGION=${REGION:-europe-west1}
+  NETWORK=${NETWORK:-default}
+  
+  ZONE=${ZONE:-europe-west1-b}
+  AX_REGION=${AX_REGION:-europe-west1}
+fi
+
+export NETWORK
+export REGION
+export ZONE
+export AX_REGION
+
+export SUBNET=${SUBNET:-default}
+
+echo "Resolved Configuration: "
+echo "  NETWORK=$NETWORK"
+echo "  REGION=$REGION"
+echo "  ZONE=$ZONE"
+echo "  AX_REGION=$AX_REGION"
+echo ""
 
 export MIG=apigee-envoy-$REGION
 
@@ -95,6 +127,7 @@ gcloud alpha apigee organizations provision \
   --project="$PROJECT"
 set -e
 
+echo ""
 echo "Step 7: Configure routing, EXTERNAL"
 # https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli#external
 
@@ -230,18 +263,20 @@ echo "Almost done. It take some time (another 5-8 minutes) to provision load bal
 echo ""
 
 echo ""
-echo "# To send an INTERNAL test request (from a VM at the private network, execute following commands:"
+echo "# To send an INTERNAL test request (from a VM at the private network)"
+echo " copy $RUNTIME_SSL_CERT and execute following commands:"
 echo ""
 echo "export RUNTIME_IP=$APIGEE_ENDPOINT"
 
 echo "export RUNTIME_SSL_CERT=~/mig-cert.pem"
-echo "export RUNTIME_SSL_KEY=~/mig-key.pem"
 echo "export RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 
 echo 'curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
-
 echo ""
+echo "You can also skip server certificate validation for testing purposes:"
 
+echo 'curl -k https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
+echo ""
 
 echo ""
 echo "# To send a EXTERNAL test request, execute following commands:"
@@ -249,7 +284,6 @@ echo ""
 echo "export RUNTIME_IP=$RUNTIME_IP"
 
 echo "export RUNTIME_SSL_CERT=~/mig-cert.pem"
-echo "export RUNTIME_SSL_KEY=~/mig-key.pem"
 echo "export RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 
 echo 'curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
