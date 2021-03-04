@@ -69,7 +69,7 @@ Sample Output:
 export RUNTIME_IP=203.0.113.10
 
 export RUNTIME_SSL_CERT=~/mig-cert.pem
-export RUNTIME_HOST_ALIAS=$PROJECT-eval.apigee.net 
+export RUNTIME_HOST_ALIAS=$PROJECT-eval.apigee.net
 
 curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"
 ```
