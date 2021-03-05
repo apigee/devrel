@@ -6,12 +6,12 @@
 
 This script creates an Apigee X trial organization and instance. It uses
 gcloud command to create a hybrid runtime and adds an enovoy proxy and
-google cloud load balancer for external exposure.
+Google Cloud Load Balancer, [GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
 
 The script follows the documentation installation steps. The relevant step
 numbers are added for easier cross-reference.
 
-If you provisioned organization using [Apigee eval provisioning wizard](https://cloud.google.com/apigee/docs/api-platform/get-started/eval-orgs#wiz),
+If you provisioned an organization using [Apigee eval provisioning wizard](https://cloud.google.com/apigee/docs/api-platform/get-started/eval-orgs#wiz),
 you can run this script to add envoy proxies and GCLB configuration for
 external exposure.
 
@@ -25,7 +25,7 @@ Please refer to the documentation for the latest usage.
 You need to set up a PROJECT environment variable.
 
 ```sh
-PROJECT=gcpprojectname ./apigee-x-trial-provision.sh
+export PROJECT=<gcp-project-name>
 ```
 
 ## Optional Arguments
@@ -41,7 +41,7 @@ export AX_REGION=
 ```
 
 ```sh
-./bin/apigee-ngsaas-trial-install.sh
+ ./apigee-x-trial-provision.sh
 ```
 
 > NOTE: To invoke the script directly from the github repo, use
@@ -59,8 +59,8 @@ used `RUNTIME_HOST_ALIAS`, as well as an example of send a test
 request to an automatically deployed hello-world proxy.
 
 When the script finishes, it takes extra 5-7 minutes to provision
-load balancers infrastructure. You can use following curl command
-to run it until 200 OK is returned to ensure that the ngSaas install
+the load balancing infrastructure. You can use the following curl command
+to run it until 200 OK is returned to ensure that Apigee X install
 is fully completed.
 
 Sample Output:
