@@ -1,0 +1,65 @@
+#  Copyright 2021 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+steps:
+# Install node dependencies for linting and testing
+- name: gcr.io/cloud-builders/gcloud
+  id: 'Hybrid Install'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      apt-get update && apt-get install zip -y
+      ./initialize-runtime-gke.sh
+  env:
+    - 'ENV_NAME=$_QUICKSTART_ENV_NAME'
+    - 'ENV_GROUP_NAME=$_QUICKSTART_ENV_GROUP_NAME'
+
+# Test that the proxy is successfully deployed
+- name: gcr.io/cloud-builders/gcloud
+  id: 'Smoke Test'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      INGRESS_IP="$$(gcloud compute addresses list --format json \
+        --filter "name=apigee-ingress-ip" --format="get(address)")"
+
+      TEST_HOST="$_QUICKSTART_ENV_GROUP_NAME.$PROJECT_ID.example.com"
+
+      echo "testing proxy depoyment: curl -f -k --resolve $$TEST_HOST:443:$$INGRESS_IP
+        https://$$TEST_HOST/httpbin/v0/anything"
+
+      for i in {1..60};
+      do
+        curl -f -k -s --resolve "$$TEST_HOST:443:$$INGRESS_IP" \
+        "https://$$TEST_HOST/httpbin/v0/anything" && break || sleep 5;
+      done
+
+# (Optional) destroy the deployed Apigee runtime cluster
+- name: gcr.io/cloud-builders/gcloud
+  id: 'Hybrid Destroy'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+      if [ "$_DESTROY_AFTER_VALIDATION" == "true" ]
+      then
+        ./destroy-runtime-gke.sh
+      fi
+timeout: 1800s #30min
+substitutions:
+  _QUICKSTART_ENV_NAME: test1
+  _QUICKSTART_ENV_GROUP_NAME: test
+  _DESTROY_AFTER_VALIDATION: "false"

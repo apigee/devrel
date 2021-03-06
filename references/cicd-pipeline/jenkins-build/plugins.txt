@@ -1,0 +1,8 @@
+cucumber-reports:5.3.0
+git:4.3.0
+htmlpublisher:1.23
+junit:1.47
+matrix-project:1.18
+script-security:1.75
+token-macro:2.12
+workflow-step-api:2.23

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2020 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<ProxyEndpoint name="default">
+    <Flows>
+        <Flow name="GET /authorize">
+            <Condition>(proxy.pathsuffix MatchesPath "/authorize") and 
+            (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>JS-SanitizeClientId</Name>
+                </Step>
+                <Step>
+                    <Name>VAK-VerifyAPIKey-ClientId</Name>
+                </Step>
+                <Step>
+                    <Name>EV-InputQueryParams</Name>
+                </Step>
+                <Step>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != oidc.flow.authorize.redirect_uri )</Condition>
+                    <Name>RF-InvalidRequest</Name>
+                </Step>
+                <Step>
+                    <Condition>( oidc.flow.authorize.response_type != "code" ) and 
+                    ( oidc.flow.authorize.response_type != "token" )</Condition>
+                    <Name>RF-UnsupportedResponseType-Redirect</Name>
+                </Step>
+                <Step>
+                    <Condition>( oidc.flow.authorize.state1 Is null ) or 
+                    ( oidc.flow.authorize.state1 = "" )</Condition>
+                    <Name>RF-InvalidRequest-Redirect</Name>
+                </Step>
+                <Step>
+                    <Condition>( oidc.flow.authorize.scope Is null ) or 
+                    ( oidc.flow.authorize.scope = "" )</Condition>
+                    <Name>RF-InvalidRequest-Redirect</Name>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GenerateAzCode-State2</Name>
+                </Step>
+                <Step>
+                    <Name>AM-GenerateState2ForIdp</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-RedirectToIdpAuth</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="GET /callback">
+            <Condition>(proxy.pathsuffix MatchesPath "/callback") and 
+            (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>EV-InputQueryParamsCallback</Name>
+                </Step>
+                <Step>
+                    <Condition>( request.queryparam.code Is null ) or 
+                    ( request.queryparam.code = "" )</Condition>
+                    <Name>RF-InvalidGrant</Name>
+                </Step>
+                <Step>
+                    <Condition>( request.queryparam.state Is null ) or 
+                    ( request.queryparam.state = "" )</Condition>
+                    <Name>RF-InvalidRequest</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-AttributesFromAzCode-State2</Name>
+                </Step>
+                <Step>
+                    <Name>AM-StateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetExternalAuthorizationStatus</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-StoreExternalAuthorizationCode</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-RedirectToApp</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="POST /token">
+            <Condition>(proxy.pathsuffix MatchesPath "/token") and 
+            (request.verb = "POST")</Condition>
+            <Request>
+                <Step>
+                    <Name>BA-GetClientCredentials</Name>
+                </Step>
+                <Step>
+                    <Name>VAK-VerifyAPIKey-ClientId</Name>
+                </Step>
+                <Step>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.client_secret != oidc.flow.client_secret )</Condition>
+                    <Name>RF-InvalidClient</Name>
+                </Step>
+                <Step>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != request.formparam.redirect_uri )</Condition>
+                    <Name>RF-InvalidRequest</Name>
+                </Step>
+                <Step>
+                    <Condition>( request.formparam.grant_type != "authorization_code" )</Condition>
+                    <Name>RF-UnsupportedGrantType</Name>
+                </Step>
+                <Step>
+                <Condition>( request.formparam.code Is null ) or 
+                ( request.formparam.code = "" )</Condition>
+                    <Name>RF-InvalidGrant</Name>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GetOriginalStateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SanitizeRequest</Name>
+                </Step>
+                <Step>
+                    <Name>BA-AddClientID-ClientSecret-AzHeader</Name>
+                </Step>
+                <Step>
+                    <Name>AM-BuildIdpRequest</Name>
+                </Step>
+                <Step>
+                    <Name>SC-IdpTokenIssuance</Name>
+                </Step>
+                <Step>
+                    <Name>EV-JwtFromIdpResponse</Name>
+                </Step>
+                <Step>
+                    <Name>JS-GetScopeFromIdpResponse</Name>
+                </Step>
+                <Step>
+                    <Name>LC-GetJWKS</Name>
+                </Step>
+                <Step>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                    <Name>SC-GetJwksFromIdp</Name>  
+                </Step>
+                <Step>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                    <Name>EV-ExtractJWKS</Name>  
+                </Step>
+                <Step>
+                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
+                    <Name>PC-CacheJWKS</Name>
+                </Step>
+                <Step>
+                    <Name>VJ-VerifyJwtFromIdp</Name>
+                </Step>
+                <Step>
+                    <Name>JS-SetAccessTokenExpiry</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetClientIdAsFormParam</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GenerateAccessToken</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+        <Flow name="GET /protected">
+            <Condition>(proxy.pathsuffix MatchesPath "/protected") and 
+            (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>OA2-VerifyAccessToken</Name>
+                </Step>
+                <Step>
+                    <Name>KVM-IdpParameters</Name>
+                </Step>
+                <Step>
+                    <Name>SC-GetUserInfoFromIdp</Name>
+                </Step>
+                <Step>
+                    <Name>EV-ExtractUserInfo</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetDummyResponse</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+        <Flow name="404 - Not Found">
+            <Request>
+                <Step>
+                    <Name>RF-404NotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <HTTPProxyConnection>
+        <BasePath>/v1/oauth20</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="noroute"/>
+</ProxyEndpoint>

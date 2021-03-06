@@ -2,15 +2,22 @@
 
 /references/apigee-sandbox-v1         @laughingbiscuit
 /references/apimocker-hostedtargets   @laughingbiscuit
-/references/cicd-jenkins              @danistrebel
+/references/cicd-pipeline             @danistrebel
 /references/common-shared-flows       @laughingbiscuit
 /references/gcp-sa-auth-shared-flow   @danistrebel
+/references/identity-facade           @joelgauci
 /references/java-callout              @laughingbiscuit
 /references/js-callout                @seymen
+/references/oidc-mock                 @joelgauci
+/references/kvm-admin-api             @danistrebel
 /references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
-/labs/best-practices-hackathon	      @laughingbiscuit @sauliuz @seymen
+/labs/best-practices-hackathon        @laughingbiscuit @sauliuz @seymen
 /tools/organization-cleanup           @laughingbiscuit
-/tools/pipeline-runner                @laughingbiscuit @seymen
+/tools/pipeline-runner                @laughingbiscuit @seymen @danistrebel
+/tools/pipeline-linter                @laughingbiscuit @seymen @danistrebel
 /tools/another-apigee-client          @laughingbiscuit
 /tools/hybrid-quickstart              @danistrebel
+/tools/decrypt-hybrid-assets          @yuriylesyuk
+/tools/oas-to-am                      @laughingbiscuit
+/tools/apigee-x-trial-provision       @yuriylesyuk

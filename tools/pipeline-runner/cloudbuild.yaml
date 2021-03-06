@@ -1,0 +1,104 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Turnstyle DevRel Pipeline'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    if [ "$(gcloud builds list --ongoing --format='value(id)' | wc  -l | xargs)" -gt "1" ]; then
+      echo "Pipeline is already running";
+      exit -1;
+    fi
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Image'
+  args:
+  - 'build'
+  - '-f'
+  - './tools/pipeline-runner/Dockerfile'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  - './tools/pipeline-runner'
+- name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Load Secrets'
+  entrypoint: "sh"
+  args:
+    - "-c"
+    - |-
+      echo "export APIGEE_PASS=\"$(gcloud secrets versions access latest \
+        --secret=devrel_apigee_pass --format="get(payload.data)" | \
+        base64 -d)\"" >> env.txt
+
+      echo "export APIGEE_USER=\"$(gcloud secrets versions access latest \
+        --secret=devrel_apigee_user --format="get(payload.data)" | \
+        base64 -d)\"" >> env.txt
+
+      echo "export GITHUB_TOKEN=\"$(gcloud secrets versions access latest \
+        --secret=devrel_github_token --format="get(payload.data)" | \
+        base64 -d )\"" >> env.txt
+- name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Run Pipeline'
+  entrypoint: "sh"
+  args:
+    - "-c"
+    - |-
+      source env.txt && \
+      if [ -n "$_PR_NUMBER" ]; then
+        PROJECTS=$(list-repo-changes.sh)
+        echo "PR includes changes in $$PROJECTS"
+        run-pipelines.sh "$$PROJECTS" || true
+      elif [ "$_CI_PROJECT" = "all" ]; then
+        run-pipelines.sh || true
+      else
+        run-pipelines.sh "$_CI_PROJECT" || true
+      fi
+  env:
+  - 'APIGEE_ORG=$_APIGEE_ORG'
+  - 'APIGEE_ENV=$_APIGEE_ENV'
+  - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
+- name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Create GH Comment or Issue'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      source env.txt && cat ./pipeline-result.txt | github-api.sh
+  env:
+  - 'BUILD_ID=$BUILD_ID'
+  - 'PROJECT_ID=$PROJECT_ID'
+  - 'PR_NUMBER=$_PR_NUMBER'
+  - 'SHORT_SHA=$SHORT_SHA'
+  - 'REPO_GH_ISSUE=$_REPO_GH_ISSUE'
+  - 'CREATE_GH_ISSUE=$_CREATE_GH_ISSUE'
+  - 'GH_BOT_NAME=$_GH_BOT_NAME'
+- name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+  id: 'Explicitly Fail'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      ! grep -q "fail" ./pipeline-result.txt
+timeout: 2400s #40min
+substitutions:
+  _APIGEE_ORG: my-org
+  _APIGEE_ENV: my-env
+  _HYBRID_GCP_PROJECT: my-gcp-project
+  _CI_PROJECT: "all" # all|[path]
+  _CREATE_GH_ISSUE: "false" # true|false
+  _REPO_GH_ISSUE: "apigee/devrel"
+  _GH_BOT_NAME: "apigee-devrel-bot"
+  # _PR_NUMBER: # automatically set for PRs

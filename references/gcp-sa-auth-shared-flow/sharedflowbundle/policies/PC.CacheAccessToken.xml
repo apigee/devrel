@@ -21,4 +21,7 @@
     </CacheKey>
     <CacheResource>gcp-tokens</CacheResource>
     <Source>private.gcp.access_token</Source>
+    <ExpirySettings>
+        <TimeoutInSec>300</TimeoutInSec>
+    </ExpirySettings>
 </PopulateCache>

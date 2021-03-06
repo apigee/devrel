@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2021 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>EV-PathParameters</Name>
+            </Step>
+        </Request>
+    </PreFlow>
+    <Flows>
+        <Flow name="GET /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and  (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>KV-GetEntryDynamic</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="POST /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries") and (request.verb = "POST")</Condition>
+            <Request>
+                <Step>
+                    <Name>EV-ParseRequestBody</Name>
+                </Step>
+                <Step>
+                    <Name>KV-PostEntryDynamic</Name>
+                </Step>
+            </Request>
+        </Flow>
+        <Flow name="DELETE /kvms/*/entries/*">
+            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "DELETE")</Condition>
+            <Request>
+                <Step>
+                    <Name>KV-DeleteEntryDynamic</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="fallback 404">
+            <Request>
+                <Step>
+                    <Name>RF-404</Name>
+                </Step>
+            </Request>
+        </Flow>
+    </Flows>
+
+    <FaultRules>
+        <FaultRule name="Missing KVM">
+            <Condition>(fault.name = "MapNotFound")</Condition>
+            <Step>
+                <Name>RF-404</Name>
+            </Step>
+        </FaultRule>
+     </FaultRules>
+
+    <HTTPProxyConnection>
+        <BasePath>/kvm-admin/v1</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="noroute"/>
+</ProxyEndpoint>

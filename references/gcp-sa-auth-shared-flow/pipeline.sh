@@ -13,30 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# REQUIREMENT:
-# Populate a service account key into the environment variable "REF_GCP_SA_SF" e.g. by:
-# $ REF_GCP_SA_SF=$(cat /path/to/gcp-sa-key.json | jq '. | tostring')
-#
-# Hint:
-# Make sure that newline characters are properly escaped with `\\n` within
-# the content of REF_GCP_SA_SF
+PROJECT_ID="$(gcloud config get-value project)"
+KVM_NAME='gcp-sa-devrel'
+SA_NAME='no-roles-sa'
+SA_EMAIL="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 
-# Ensure REF_GCP_SA_SF is set correctly
-if [ -z "$REF_GCP_SA_SF" ]; then
-    echo "REF_GCP_SA_SF is not set. Please add it to your environment." 1>&2
-    exit 1
+# create a service account without any roles if it doesn't exist
+EXISTING_EMAIL=$(gcloud iam service-accounts list --filter="email=$SA_EMAIL" --format="get(email)")
+if [ "$EXISTING_EMAIL" != "$SA_EMAIL" ]; then
+  gcloud iam service-accounts create "$SA_NAME"
 fi
 
-deleteKVM() {
-    curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$1"
-}
+# create a service account key
+gcloud iam service-accounts keys create "./$SA_NAME-key.json" \
+  --iam-account "$SA_EMAIL"
+GCP_SA_KEY=$(jq '. | tostring' < "./$SA_NAME-key.json")
+rm "./$SA_NAME-key.json"
 
 #clean up if the KVM and create cache if not already exists
-deleteKVM 'gcp-sa-devrel'
+curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$KVM_NAME" || true
 
-curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
+curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
   -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- << EOF
+  --data-binary @- > /dev/null << EOF
 {
   "name":"gcp-tokens",
   "description":"GCP service account tokens",
@@ -51,16 +50,16 @@ EOF
 #don't continue on failure
 set -e
 
-curl -XPOST -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
+curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
   -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- << EOF
+  --data-binary @- > /dev/null << EOF
 {
-  "name": "gcp-sa-devrel",
+  "name": "$KVM_NAME",
   "encrypted": "true",
   "entry": [
     {
       "name": "cantdonothing@iam.gserviceaccount.com",
-      "value": $REF_GCP_SA_SF
+      "value": $GCP_SA_KEY
     }
   ]
 }
@@ -69,4 +68,9 @@ EOF
 npm run test
 
 # clean up
-deleteKVM 'gcp-sa-devrel'
+curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$KVM_NAME"
+
+for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --format="get(name)" --filter="keyType=USER_MANAGED")
+do
+  gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA_EMAIL" -q
+done
