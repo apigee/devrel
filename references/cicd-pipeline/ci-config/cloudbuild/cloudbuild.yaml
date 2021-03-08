@@ -50,14 +50,14 @@ steps:
       # Config based on branch name
       if [ "$BRANCH_NAME" = "main" ]
       then
-        echo "APIGEE_BUILD_PROFILE=test" >> env.txt
+        echo "APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
         echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
       elif [ "$BRANCH_NAME" = "prod" ]
       then
-        echo "APIGEE_BUILD_PROFILE=prod" >> env.txt
+        echo "APIGEE_ENV=$_APIGEE_PROD_ENV" >> env.txt
         echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
       else
-        echo "APIGEE_BUILD_PROFILE=test" >> env.txt
+        echo "APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
         echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=\"-$(echo $BRANCH_NAME | \
         sed "s/[^A-Za-z0-9]/-/g")\"" >> env.txt
       fi
@@ -90,7 +90,8 @@ steps:
       then
         source env.txt && \
         mvn clean install -ntp \
-          -P"apigeeapi,$${APIGEE_BUILD_PROFILE}" \
+          -P"apigeeapi" \
+          -Denv="$${APIGEE_ENV}" \
           -Dpassword="$${APIGEE_BUILD_PASS}" \
           -Dusername="$${APIGEE_BUILD_USER}" \
           -Dorg="$_DEPLOYMENT_ORG" \
@@ -99,7 +100,8 @@ steps:
       else
         source env.txt && \
         mvn clean install -ntp \
-          -P"googleapi,$${APIGEE_BUILD_PROFILE}" \
+          -P"googleapi" \
+          -Denv="$${APIGEE_ENV}" \
           -Dtoken="$${APIGEE_BUILD_TOKEN}" \
           -Dorg="$_DEPLOYMENT_ORG" \
           -Ddeployment.suffix="$${APIGEE_BUILD_DEPLOYMENT_SUFFIX}" \
@@ -131,6 +133,9 @@ steps:
 substitutions:
     # Apigee Org for where to deploy to
     _DEPLOYMENT_ORG: my-org
+    # (Optional) Apigee Environment overrides
+    _APIGEE_TEST_ENV: test
+    _APIGEE_PROD_ENV: prod
     # Managment API version use:
     # 'apigee' for current version SaaS
     # 'google' for next version SaaS and hybrid
