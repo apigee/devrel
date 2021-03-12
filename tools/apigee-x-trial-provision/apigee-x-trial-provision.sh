@@ -175,7 +175,7 @@ gcloud compute instance-templates create "$MIG" \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
   --machine-type n1-standard-1 --image-family centos-7 \
   --image-project centos-cloud --boot-disk-size 20GB \
-  --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script-envoy.sh --project "$PROJECT"
+  --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script.sh --project "$PROJECT"
 
 echo "Step 7c.2: Create a managed instance group"
 gcloud compute instance-groups managed create "$MIG" \
