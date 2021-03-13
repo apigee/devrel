@@ -14,9 +14,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables name="EV-PathParameters">
-    <URIPath>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-    </URIPath>
-</ExtractVariables>
+
+<RaiseFault name="RF-403">
+    <FaultResponse>
+        <Set>
+            <StatusCode>403</StatusCode>
+            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Payload contentType="application/json">{"code": "403.99.01", "message": "Unauthorized"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
