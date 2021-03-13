@@ -65,17 +65,25 @@ export $API_HOSTNAME=api.my-domain.com
 ## Create or Update a KVM entry
 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d '{ "name": "foo", "value": "bar" }' "https://$API_HOSTNAME/kvm-admin/v1/kvms/$KVM_NAME/entries"
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d '{ "name": "foo", "value": "bar" }' \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
 ```
 
 ## Read a KVM entry
 
 ```sh
-curl -X GET "https://$API_HOSTNAME/kvm-admin/v1/kvms/$KVM_NAME/entries/foo"
+curl -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries/foo"
 ```
 
 ## Delete a KVM entry
 
 ```sh
-curl -X DELETE "https://$API_HOSTNAME/kvm-admin/v1/kvms/$KVM_NAME/entries/foo"
+curl -X DELETE \
+    -H "Authorization: Bearer $TOKEN" \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries/foo"
 ```
