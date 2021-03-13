@@ -14,7 +14,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
 <AssignMessage name="AM-SetResponse">
     <Set>
         <Payload contentType="application/json">{"name": "{kvm-entry.key}", "value": "{private.kvm-entry.value}"}</Payload>
