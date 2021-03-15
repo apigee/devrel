@@ -1,16 +1,16 @@
 # Contributing
 
 - We welcome any Pull Requests that help the Apigee community. Our focus is:
-  - _reference_ code that can be used by others to solve a specific problem
-  - _labs_ that are intended to teach others about specific features
-  - _tools_ that automate a specific task or improve productivity
+  - reference code that can be used by others to solve a specific problem
+  - labs that are intended to teach others about specific features
+  - tools that automate a specific task or improve productivity
 - Projects should be small and simple. A 10 line bash script is often easier to
  understand and maintain than a full NodeJS app!
 - We follow the [Google Open Source Community Guidelines](https://opensource.google/conduct/)
 
 ## Quickstart
 
-- [Fork](<https://docs.github.com/en/github/getting-started-with-github/fork-a-repo>]
+- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo)
  the repository and make your contribution - please don't make changes to
  multiple projects in the same Pull Request!
 - Ensure that your project has a [`pipeline.sh`](./PIPELINES.md) in the root of
@@ -22,10 +22,10 @@
 - Create a [Pull Request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
  with a description of your contribution
 - At this stage, CI will run the below Pull Request Checks and we will do code
- reviews.
+ reviews
 - Once any issues found are resolved, your change will be merged!
 
-## Automated Pull Request Checks
+## Pull Request Checks
 
 - GitHub [Super Linter](https://github.com/github/super-linter)
 - Apache 2.0 [License](https://opensource.google/docs/releasing/preparing/#license-file)
