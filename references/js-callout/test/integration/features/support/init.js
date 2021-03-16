@@ -23,8 +23,7 @@ before(function () {
     process.env.APIGEE_ORG +
     "-" +
     process.env.APIGEE_ENV +
-    ".apigee.net" +
-    process.env.PROXY_BASE_PATH || '/js-callout/v1'
+    ".apigee.net/js-callout/v1"
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
