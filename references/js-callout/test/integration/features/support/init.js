@@ -21,9 +21,10 @@ before(function () {
   this.apickli = new apickli.Apickli(
     "https",
     process.env.APIGEE_ORG +
-      "-" +
-      process.env.APIGEE_ENV +
-      ".apigee.net/apigee-java/v1"
+    "-" +
+    process.env.APIGEE_ENV +
+    ".apigee.net" +
+    process.env.PROXY_BASE_PATH || '/js-callout/v1'
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
