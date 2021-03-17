@@ -7,7 +7,7 @@ install and test your code and alert if there are regression failures.
 
 The `pipeline.sh` script:
 
-- is run whenever a Pull Request changes that projects
+- is run whenever a Pull Request changes that project
 - is run for all projects each night
 - is run on a private continuous integration server after an initial code
  review, to reduce the risk of exposing secrets
@@ -42,5 +42,5 @@ Static code checks such as [Super Linter](https://github.com/github/super-linter
 
 If you would like to generate static HTML as part of your project, you can
 create a `generate-docs.sh` script. This script should generate static HTML in
- the subdirectory `./generated/docs`, after which it will be deployed to GitHub
+ the subdirectory `./generated/docs`, which is deployed to GitHub
  pages. You can see an example using CodeLabs [here](./labs/best-practices-hackathon/generate-docs.sh).

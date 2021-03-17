@@ -15,10 +15,10 @@
  multiple projects in the same Pull Request!
 - Ensure that your project has a [`pipeline.sh`](./PIPELINES.md) in the root of
  your project - see [here](./PIPELINES.md) for more
-- Put the [Apache](https://opensource.google/docs/releasing/preparing/#Apache-header)
+- Put the [Apache 2.0](https://opensource.google/docs/releasing/preparing/#Apache-header)
  license header in your source files (you might [automate](https://github.com/google/addlicense)
  this!)
-- Put a new line in the [CODEOWNERS](./CODEOWNERS) file to declare [ownership](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners)
+- New projects, need a line in the [CODEOWNERS](./CODEOWNERS) file to declare [ownership](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners)
 - Create a [Pull Request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
  with a description of your contribution
 - At this stage, CI will run the below Pull Request Checks and we will do code
