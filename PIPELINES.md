@@ -10,7 +10,7 @@ The `pipeline.sh` script:
 - is run whenever a Pull Request changes that project
 - is run for all projects each night
 - is run on a private continuous integration server after an initial code
- review, to reduce the risk of exposing secrets
+ review
 - has access to an Apigee Edge organization, accessed with the variables
  below.
 - runs in a Docker container that you can see [here](./tools/pipeline-runner/Dockerfile).
