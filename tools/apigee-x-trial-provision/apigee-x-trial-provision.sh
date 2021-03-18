@@ -113,7 +113,7 @@ echo "Step 4: Configure service networking"
 
 echo "Step 4.1: Define a range of reserved IP addresses for your network. "
 set +e
-OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=16 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
+OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=23 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
 if [ "$?" != 0 ]; then
    if [[ "$OUTPUT" =~ " already exists" ]]; then
       echo "google-managed-services-default already exists"
