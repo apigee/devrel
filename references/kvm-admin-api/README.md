@@ -11,10 +11,10 @@ This project provides a reference implementation for how to read, write and
 delete entries within environment scoped KVMs inside Apigee regardless of the
 deployment model and the existence of KVM management APIs.
 
-**Note:** This reference implementation does not include authentication or
-authorization controls. Before exposing this API proxy, think about how you
-would secure it from anonymous clients. Use of this proxy as-is, without
-such controls, could lead to unauthorized manipulation of KVMs within your org.
+**Note:** This reference implementation leverages cloud based Apigee API 
+[organizations.environments.testIamPermissions](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments/testIamPermissions) for authorization. 
+The GET, POST, DELETE operations correspond to list, create and delete 
+permissions. The proxy needs access to apigee.googleapis.com to work correctly.
 
 ## (Prerequisite) Create a KVM
 
@@ -65,10 +65,15 @@ export $API_HOSTNAME=api.my-domain.com
 ## Create or Update a KVM entry
 
 ```sh
+export TOKEN=$(gcloud auth print-access-token)
+export APIGEE_ORG=my-org-name
+export APIGEE_ENV=my-env
+export KVM_NAME=my-kvm
+
 curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
-    -d '{ "name": "foo", "value": "bar" }' \
+    -d '{ "key": "foo", "value": "bar" }' \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
 ```
 

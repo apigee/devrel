@@ -21,8 +21,12 @@ before(function () {
   this.apickli = new apickli.Apickli(
     "https",
     process.env.APIGEE_ORG + "-" + process.env.APIGEE_ENV +
-    ".apigee.net/kvm-admin/v1"
+    ".apigee.net/kvm-admin/v1/organizations/" +
+    process.env.APIGEE_ORG +
+    "/environments/" + process.env.APIGEE_ENV
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
+  this.apickli.addRequestHeader("Authorization", "Bearer " + 
+  	process.env.APIGEE_TOKEN);
 });

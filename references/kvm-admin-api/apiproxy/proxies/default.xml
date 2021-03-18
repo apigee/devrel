@@ -36,26 +36,18 @@
                 <Condition>kvm.orgname != organization.name or kvm.envname != environment.name</Condition>
             </Step>
             <Step>
-                <Name>ValidateToken</Name>
-            </Step>
-            <Step>
-                <Name>AM-RemoveAuthzHeader</Name>
-            </Step>
-            <Step>
-                <Name>RF-401</Name>
-                <Condition>servicecallout.ValidateToken.failed = true</Condition>
+                <Name>AM-OriginalRequest</Name>
             </Step>
         </Request>
     </PreFlow>
     <Flows>
         <Flow name="GET /keyvaluemaps/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and  (request.verb = "GET")</Condition>
-            <Request>
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "GET")</Condition>
+            <Request/>
+            <Response>
                 <Step>
                     <Name>KV-GetEntryDynamic</Name>
                 </Step>
-            </Request>
-            <Response>
                 <Step>
                     <Name>RF-404Entry</Name>
                     <Condition>private.kvm-entry.value is null</Condition>
@@ -66,24 +58,28 @@
             </Response>
         </Flow>
         <Flow name="POST /keyvaluemaps/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries") and (request.verb = "POST")</Condition>
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries") and (kvmreq.verb = "POST")</Condition>
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
                 </Step>
+            </Request>
+            <Response>
                 <Step>
                     <Name>KV-PostEntryDynamic</Name>
                 </Step>
-            </Request>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
         </Flow>
         <Flow name="DELETE /keyvaluemaps/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (request.verb = "DELETE")</Condition>
-            <Request>
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "DELETE")</Condition>
+            <Request/>
+            <Response>
                 <Step>
                     <Name>KV-DeleteEntryDynamic</Name>
                 </Step>
-            </Request>
-            <Response>
                 <Step>
                     <Name>RF-404Entry</Name>
                     <Condition>private.kvm-entry.value is null</Condition>
@@ -101,6 +97,11 @@
             </Request>
         </Flow>
     </Flows>
+    <PostFlow>
+        <Step>
+            <Name>AM-RemoveAuthzHeader</Name>
+        </Step>
+    </PostFlow>
     <FaultRules>
         <FaultRule name="Missing KVM">
             <Condition>(fault.name = "MapNotFound")</Condition>
@@ -109,9 +110,17 @@
             </Step>
         </FaultRule>
     </FaultRules>
+    <DefaultFaultRule name="fault-rule">
+        <Step>
+            <Name>RF-500</Name>
+            <Condition>fault.name != "RaiseFault"</Condition>
+        </Step>
+    </DefaultFaultRule>
     <HTTPProxyConnection>
         <BasePath>/kvm-admin/v1</BasePath>
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
-    <RouteRule name="noroute"/>
+    <RouteRule name="default">
+        <TargetEndpoint>default</TargetEndpoint>
+    </RouteRule>
 </ProxyEndpoint>

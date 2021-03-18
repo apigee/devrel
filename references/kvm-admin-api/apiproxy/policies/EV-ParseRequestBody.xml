@@ -14,14 +14,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
 <ExtractVariables name="EV-ParseRequestBody">
     <JSONPayload>
         <Variable name="private.kvm-entry.value" type="string">
             <JSONPath>$.value</JSONPath>
         </Variable>
         <Variable name="kvm-entry.key" type="string">
-            <JSONPath>$.name</JSONPath>
+            <JSONPath>$.key</JSONPath>
         </Variable>
     </JSONPayload>
 </ExtractVariables>

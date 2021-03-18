@@ -14,10 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage continueOnError="false" enabled="true" name="AM-RemoveAuthzHeader">
-    <Remove>
-        <Headers>
-            <Header name="Authorization"/>
-        </Headers>
-    </Remove>
-</AssignMessage>
+<RaiseFault name="RF-500">
+    <FaultResponse>
+        <Set>
+            <StatusCode>500</StatusCode>
+            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error. If persists, check access to apigee.googleapis.com from Apigee runtime"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TargetEndpoint name="default">
+    <Description/>
+    <FaultRules/>
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>JS-IAMPermission</Name>
+            </Step>
+            <Step>
+                <Name>AM-IAMPermissionCheck</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response>
+            <Step>
+                <Name>RF-403</Name>
+                <Condition>response.status.code = 401 or response.status.code = 403</Condition>
+            </Step>
+        </Response>
+    </PostFlow>
+    <Flows/>
+    <HTTPTargetConnection>
+        <Properties>
+            <Property name="success.codes">1xx,2xx,3xx,4xx</Property>
+        </Properties>
+        <URL>https://apigee.googleapis.com/v1/organizations/{kvm.orgname}/environments/{kvm.envname}:testIamPermissions</URL>
+    </HTTPTargetConnection>
+</TargetEndpoint>

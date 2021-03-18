@@ -14,12 +14,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault name="RF-401">
-    <FaultResponse>
-        <Set>
-            <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthenticated</ReasonPhrase>
-            <Payload contentType="application/json">{"code": "401.99.01", "message": "Unauthenticated"}</Payload>
-        </Set>
-    </FaultResponse>
-</RaiseFault>
+<AssignMessage name="AM-IAMPermissionCheck">
+    <Set>
+        <Verb>POST</Verb>
+        <Payload contentType="application/json">{iam.permissionPayload}</Payload>
+    </Set>
+    <AssignVariable>
+        <Name>target.copy.pathsuffix</Name>
+        <Value>false</Value>
+    </AssignVariable>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>
