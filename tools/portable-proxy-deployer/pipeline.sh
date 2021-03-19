@@ -16,17 +16,20 @@
 
 set -e
 
+# validate docker build
+docker build -t apigeedeploy .
+
 BASE_PATH="/portable-deployer/v1/airports"
 
-# Using another DevRel API Proxy for testig this tool
-./deploy.sh -d ../../references/cicd-pipeline/apiproxy \
-    --description "testing the Apigee DevRel portable deployer" \
-    -n portable-airports-v0 \
-    -b "$BASE_PATH" \
-    -u "$APIGEE_USER" \
-    -p "$APIGEE_PASS" \
-    -o "$APIGEE_ORG" \
-    -e "$APIGEE_ENV"
+# Using another DevRel API Proxy for testing this tool
+docker run apigeedeploy \
+  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
+  -n portable-airports-v0 \
+  -b "$BASE_PATH" \
+  -u "$APIGEE_USER" \
+  -p "$APIGEE_PASS" \
+  -o "$APIGEE_ORG" \
+  -e "$APIGEE_ENV"
 
 (cd ../../references/cicd-pipeline && \
   npm i && \

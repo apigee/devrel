@@ -1,8 +1,8 @@
 # Apigee Portable Proxy Deployment Utility
 
 The Apigee portable deployment utility lets you deploy API proxies to Apigee
-Edge as well as hybrid/X without configuring any additional resources and
-provides a docker container that contains all necessary dependencies.
+Edge as well as hybrid/X without writing any additional configuration files. It
+can be used either as a commandline tool or a Docker container.
 
 ```sh
 $ deploy -h
@@ -25,9 +25,18 @@ Options:
 --description, Human friendly proxy description
 ```
 
+## How does this compare to the Apigee Maven Plugin
+
+The portable deployment utility is implemented as a wrapper for the Apigee Maven
+that simplifies Apigee deployments by eliminating the need for you to create and
+maintain pom files. It supports proxy deployments to Apigee Edge, hybrid and X
+products. It also provides a Docker container that removes the need for you to
+install Java and Maven and its dependencies on your build machines with m2 cache
+initialised at the time of docker build.
+
 ## Example usages as a script
 
-### Secenario: Deploy a proxy on Github to Apigee X / hybrid
+### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
 ./deploy.sh -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
@@ -37,7 +46,7 @@ Options:
 -b "/airports/v1"
 ```
 
-### Scenario: Deploy a local proxy to Apigee Edge
+### Scenario: Deploy a proxy from the local machine to Apigee Edge
 
 ```sh
 MFA=<MFA token goes here>
@@ -55,13 +64,13 @@ MFA=<MFA token goes here>
 
 ## Example usages as a Docker Container
 
-### Build the docker image
+### Build the Docker image
 
 ```sh
 docker build -t apigeedeploy .
 ```
 
-### Secenario: Deploy a proxy on Github to Apigee X / hybrid
+### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
 docker run apigeedeploy \
@@ -72,7 +81,7 @@ docker run apigeedeploy \
 -b "/airports/v1"
 ```
 
-### Scenario: Deploy a local proxy to Apigee Edge
+### Scenario: Deploy a proxy from the local machine to Apigee Edge
 
 ```sh
 docker run \
