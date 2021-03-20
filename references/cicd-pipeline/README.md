@@ -49,7 +49,7 @@ The instructions below explain how to trigger an Apigee CI/CD pipeline manually
 via the gcloud command. You can obviously also configure Cloud Build triggers on
 your SCM tool to automatically trigger a deployment.
 
-### Apigee hybrid
+### Apigee hybrid / Apigee X
 
 Requires the Cloud Build API to be enabled and a Service Account with the
 following roles (or a custom role with all required permissions):
@@ -112,7 +112,7 @@ echo "$APIGEE_PASS" | gcloud secrets create devrel_apigee_pass --data-file=-
 Run the deployment (with a simulated git branch name)
 
 ```sh
-gcloud builds submit --config=cloudbuild.yaml --substitutions=_API_VERSION=apigee,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net,_INT_TEST_BASE_PATH=/airports-cicd-experiment/v1,_DEPLOYMENT_ORG=$APIGEE_ORG,BRANCH_NAME=experiment
+gcloud builds submit  --config=./ci-config/cloudbuild/cloudbuild.yaml --substitutions=_API_VERSION=apigee,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net,_INT_TEST_BASE_PATH=/airports-cicd-experiment/v1,_DEPLOYMENT_ORG=$APIGEE_ORG,BRANCH_NAME=experiment
 ```
 
 ## Run a Jenkins Deployment

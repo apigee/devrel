@@ -5,7 +5,7 @@
 ## Description
 
 This script creates an Apigee X trial organization and instance. It uses
-gcloud command to create a hybrid runtime and adds an enovoy proxy and
+gcloud command to create a hybrid runtime and adds an envoy proxy and
 Google Cloud Load Balancer,
 [GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
 

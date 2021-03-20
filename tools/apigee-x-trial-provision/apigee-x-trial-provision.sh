@@ -114,7 +114,7 @@ echo "Step 4: Configure service networking"
 
 echo "Step 4.1: Define a range of reserved IP addresses for your network. "
 set +e
-OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=16 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
+OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=23 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
 if [ "$?" != 0 ]; then
    if [[ "$OUTPUT" =~ " already exists" ]]; then
       echo "google-managed-services-default already exists"
@@ -175,7 +175,7 @@ gcloud compute instance-templates create "$MIG" \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
   --machine-type n1-standard-1 --image-family centos-7 \
   --image-project centos-cloud --boot-disk-size 20GB \
-  --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script-envoy.sh --project "$PROJECT"
+  --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script.sh --project "$PROJECT"
 
 echo "Step 7c.2: Create a managed instance group"
 gcloud compute instance-groups managed create "$MIG" \
