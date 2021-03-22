@@ -1,0 +1,18 @@
+<pcml version="4.0">
+   <!-- RPG program: GETCST  -->
+   <!-- created: 2020-12-14-10.49.27 -->
+   <!-- source: OPENLEGA11/QRPGLESRC(GETCST) -->
+   <!-- 38 -->
+   <program name="GETCST" path="/QSYS.LIB/OPENLEGA11.LIB/GETCST.PGM">
+      <data name="CUSTOMERID" type="char" length="4" usage="input" />
+      <data name="FIRSTNAME" type="char" length="16" usage="inputoutput" />
+      <data name="LASTNAME" type="char" length="16" usage="inputoutput" />
+      <data name="ADDRESS" type="char" length="20" usage="inputoutput" />
+      <data name="CREDIT" type="char" length="2" usage="inputoutput" />
+      <data name="DISCOUNT" type="packed" length="5" precision="4" usage="inputoutput" />
+      <data name="BALANCE" type="packed" length="7" precision="2" usage="inputoutput" />
+      <data name="PHONE" type="char" length="16" usage="inputoutput" />
+      <data name="STATUS" type="char" length="10" usage="inputoutput" />
+   </program>
+</pcml>
+

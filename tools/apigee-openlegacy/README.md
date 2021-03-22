@@ -8,7 +8,7 @@ A common pattern in a Digital Transformation is the Facade pattern. This allows 
 by an API Management platform, regardless of the technology used in the backend. This might be a collection of
 Microservices in Cloud Functions, SOAP services and even mainframe integrations.
 
-<diagram>
+![Mainframe Modernization](https://cloudx-bricks-prod-bucket.storage.googleapis.com/ae75bf0d3a5f305db7989c35f15d36839e46828ff0ff6bc93a0803df11001217.svg)
 
 By combining Apigee and OpenLegacy, we can apply API Management policies such as OAuth 2.0 security, Developer Portal
 onboarding, Analytics and Traffic Management to our mainframe!
@@ -53,11 +53,21 @@ export GCP_PROJECT=
 ``` 
 ## Result
 
-<screenshot of OpenLegacy openapi spec>
-<screenshot of Apigee trace>
+- OpenLegacy Module and Project created
+- OpenLegacy connector deployed to Cloud Run
+- Apigee Proxy Configured with service account keys to connect to Cloud Run
 
 ## Extend
 
-- pointer to API Jam material for Developer Portal, Ax, Traffic Management etc.
-- discussion of defining OpenLegacy as a target server for a large org
-- discussion of Apigee Proxy templating for a large org
+Consider adding or customising policies for:
+- Northbound API Security
+- Traffic Management
+- Custom Analytics
+- Mediation and Orchestration
+- API Versioning
+- Developer Portal
+- Monetization
+
+You may also consider configuring OpenLegacy as a TargetServer to be shared by 
+proxies developed by multiple teams in a large organization.
+
