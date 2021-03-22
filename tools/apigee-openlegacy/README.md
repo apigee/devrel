@@ -9,7 +9,7 @@ by an API Management platform, regardless of the technology used in the backend.
 Microservices in Cloud Functions, SOAP services and even mainframe integrations.
 
 <p align="center">
-<img alt="Modernization" src="https://cloudx-bricks-prod-bucket.storage.googleapis.com/ae75bf0d3a5f305db7989c35f15d36839e46828ff0ff6bc93a0803df11001217.svg" width="40%">
+<img alt="Modernization" src="https://cloudx-bricks-prod-bucket.storage.googleapis.com/ae75bf0d3a5f305db7989c35f15d36839e46828ff0ff6bc93a0803df11001217.svg" width="75%">
 </p>
 
 By combining Apigee and OpenLegacy, we can apply API Management policies such as OAuth 2.0 security, Developer Portal
