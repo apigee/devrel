@@ -15,20 +15,6 @@ Microservices in Cloud Functions, SOAP services and even mainframe integrations.
 By combining Apigee and OpenLegacy, we can apply API Management policies such as OAuth 2.0 security, Developer Portal
 onboarding, Analytics and Traffic Management to our mainframe!
 
-## Architecture Patterns
-
-### Serverless
-
-<diagram of Managed Apigee with Cloud Functions and Service Accounts>
-
-### Hybrid
-
-<diagram of Apigee Hybrid with OpenLegacy in GKE>
-
-### On Premise
-
-<diagram of Apigee with OpenLegacy on premise with MTLS>
-
 ## Prerequisites
 
 - Create a free Apigee Account
