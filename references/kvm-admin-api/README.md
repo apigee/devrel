@@ -14,7 +14,7 @@ deployment model and the existence of KVM management APIs.
 
 **Note:** This reference implementation leverages cloud based Apigee API
 [organizations.environments.testIamPermissions](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments/testIamPermissions)
-for authorization. The GET, POST, DELETE operations of this API correspond 
+for authorization. The GET, POST, DELETE operations of this API correspond
 to list, create and delete IAM permissions on keyvaluemaps. The proxy needs
 access to apigee.googleapis.com to work correctly.
 
@@ -117,5 +117,5 @@ Role and permission changes to the user account in IAM usually reflect
 instantaneously.
 
 KVM is backed by an eventually consistent store and hence a KVM entry may
-appear to be still around for a brief moment after being deleted. This is 
+appear to be still around for a brief moment after being deleted. This is
 expected.
