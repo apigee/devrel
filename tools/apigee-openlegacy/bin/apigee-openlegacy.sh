@@ -34,7 +34,7 @@ fi
 # Check for required tools on path
 ###
 
-for TOOL in mvn ol gcloud oas-to-am.sh jq; do
+for TOOL in mvn ol gcloud jq; do
   if ! which $TOOL > /dev/null; then
     echo "Please ensure $TOOL is installed and on your PATH"
     exit 1
@@ -46,7 +46,7 @@ done
 ###
 
 ol login --api-key "$OPENLEGACY_APIKEY"
-ol create module --connector IBMi-as400-pcml --name aok-module
+ol create module --connector IBMi-as400-pcml aok-module
 cp $SCRIPTPATH/../res/getcst.pcml aok-module/
 ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS"
 ol push module
