@@ -90,10 +90,8 @@ pipeline {
         stage('Env Config') {
           steps {
             script {
-              if (env.AUTHOR_EMAIL) {
-                AUTHOR_EMAIL = env.AUTHOR_EMAIL
-              } else {
-                AUTHOR_EMAIL = sh (
+              if (!env.AUTHOR_EMAIL) {
+                env.AUTHOR_EMAIL = sh (
                   script: 'git --no-pager show -s --format=\'%ae\'',
                   returnStdout: true
                 ).trim()
