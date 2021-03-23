@@ -6,7 +6,8 @@
 
 This script creates an Apigee X evaluation organization and instance. It uses
 `gcloud` commands to create an Apigee runtime instance,
-a proxy [MIG](https://cloud.google.com/compute/docs/instance-groups) and a [GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
+a proxy [MIG](https://cloud.google.com/compute/docs/instance-groups) and a 
+[GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
 
 The script follows the documentation installation steps. The relevant step
 numbers are added for easier cross-referencing.
