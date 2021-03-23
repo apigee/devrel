@@ -4,7 +4,7 @@ Depending on the Apigee deployment model you might have Management APIs for
 accessing and modifying the entries of Apigee Key Value Maps (KVMs). In Apigee
 hybrid and Apigee X the access to entries of the KVMs is not provided via the
 Apigee APIs and you will need to leverage Apigee policies to perform CRUD
-operations on the KVM contents. 
+operations on the KVM contents.
 For more background information, please see [this](https://community.apigee.com/articles/89782/providing-kvm-content-apis-for-apigee-x-and-hybrid.html)
 article in the Apigee community.
 
