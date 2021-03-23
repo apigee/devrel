@@ -20,8 +20,8 @@ const { Before: before } = require("cucumber");
 before(function () {
   this.apickli = new apickli.Apickli(
     "https",
-    process.env.APIGEE_ORG + "-" + process.env.APIGEE_ENV +
-    ".apigee.net/kvm-admin/v1/organizations/" +
+    process.env.APIGEE_HOSTNAME +
+    "/kvm-admin/v1/organizations/" +
     process.env.APIGEE_ORG +
     "/environments/" + process.env.APIGEE_ENV
   );
