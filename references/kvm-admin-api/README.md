@@ -4,18 +4,19 @@ Depending on the Apigee deployment model you might have Management APIs for
 accessing and modifying the entries of Apigee Key Value Maps (KVMs). In Apigee
 hybrid and Apigee X the access to entries of the KVMs is not provided via the
 Apigee APIs and you will need to leverage Apigee policies to perform CRUD
-operations on the KVM contents. For more background information, please see
-[this](https://community.apigee.com/articles/89782/providing-kvm-content-apis-for-apigee-x-and-hybrid.html) article in the Apigee community.
+operations on the KVM contents. 
+For more background information, please see [this](https://community.apigee.com/articles/89782/providing-kvm-content-apis-for-apigee-x-and-hybrid.html)
+article in the Apigee community.
 
 This project provides a reference implementation for how to read, write and
 delete entries within environment scoped KVMs inside Apigee regardless of the
 deployment model and the existence of KVM management APIs.
 
 **Note:** This reference implementation leverages cloud based Apigee API
-[organizations.environments.testIamPermissions](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments/testIamPermissions) for authorization.
-The GET, POST, DELETE operations of this API correspond to list, create and
-delete IAM permissions on keyvaluemaps. The proxy needs access to
-apigee.googleapis.com to work correctly.
+[organizations.environments.testIamPermissions](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments/testIamPermissions)
+for authorization. The GET, POST, DELETE operations of this API correspond 
+to list, create and delete IAM permissions on keyvaluemaps. The proxy needs
+access to apigee.googleapis.com to work correctly.
 
 ## (Prerequisite) Create a KVM
 
@@ -107,8 +108,14 @@ Removing all entries in a keyvaluemap does not remove the keyvaluemap. You will
 have to use the UI or the corresponding management API to delete the
 keyvaluemap.
 
-A 403 or 401 error is returned when the token provided does not have
-permissions to perform the corresponding operation on the keyvaluemap. Contact
+A 403 or 401 error is returned when the token provided does not have the
+permission to perform the corresponding operation on the keyvaluemap. Contact
 your Google Cloud admin to check if the GCP user has permissions to update the
 keyvaluemap.
 
+Role and permission changes to the user account in IAM usually reflect
+instantaneously.
+
+KVM is backed by an eventually consistent store and hence a KVM entry may
+appear to be still around for a brief moment after being deleted. This is 
+expected.

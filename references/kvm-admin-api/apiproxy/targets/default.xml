@@ -20,6 +20,14 @@
                 <Name>RF-403</Name>
                 <Condition>response.status.code = 401 or response.status.code = 403</Condition>
             </Step>
+            <Step>
+                <Name>EV-AvailablePermissions</Name>
+                <Condition>response.status.code = 200</Condition>
+            </Step>
+            <Step>
+                <Name>RF-403</Name>
+                <Condition>response.status.code = 200 and iam.grantedPermission != iam.permission</Condition>
+            </Step>
         </Response>
     </PostFlow>
     <Flows/>
