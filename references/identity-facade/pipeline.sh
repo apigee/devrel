@@ -21,13 +21,12 @@ set -e
 set_idp_env_var() {
 
     # discovery document of an OIDC compliant IdP
-    idp_discovery_document=https://"$APIGEE_ORG"-"$APIGEE_ENV".apigee.net/v1/openid-connect/.well-known/openid-configuration
-
+    idp_discovery_document="${TEST_IDP_DISCOVERY_DOCUMENT:-https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/openid-connect/.well-known/openid-configuration}"
     # retrieve configuration data from a discovery document
     response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" "$idp_discovery_document")
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
-        
+
         exit 1
     fi
 
@@ -41,38 +40,38 @@ set_idp_env_var() {
     # set env variables for kvm (idpConfig)
     TEST_IDP_ISSUER=$(printf '%s' "$issuer" | awk -F\" '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_ISSUER
-    
+
     TEST_IDP_APIGEE_REDIRECT_URI="https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/oauth20/callback"
     export TEST_IDP_APIGEE_REDIRECT_URI
-    
+
     TEST_IDP_AZ_HOSTNAME=$(printf '%s' "$authorization_endpoint" | awk -F\"https:// '{print $2}' | awk -F\" '{print $1}' | awk -F/ '{print $1}')
     export TEST_IDP_AZ_HOSTNAME
-    
+
     TEST_IDP_TOKEN_HOSTNAME=$(printf '%s' "$token_endpoint" | awk -F\"https:// '{print $2}' | awk -F\" '{print $1}' | awk -F/ '{print $1}')
     export TEST_IDP_TOKEN_HOSTNAME
-    
+
     TEST_IDP_JWKS_HOSTNAME=$(printf '%s' "$jwks_uri" | awk -F\"https:// '{print $2}' | awk -F\" '{print $1}' | awk -F/ '{print $1}')
     export TEST_IDP_JWKS_HOSTNAME
-    
+
     TEST_IDP_USERINFO_HOSTNAME=$(printf '%s' "$userinfo_endpoint" | awk -F\"https://  '{print $2}' | awk -F\" '{print $1}' | awk -F/ '{print $1}')
     export TEST_IDP_USERINFO_HOSTNAME
-    
+
     TEST_IDP_TOKEN_URI=$(printf '%s' "$token_endpoint" | awk -F "$TEST_IDP_TOKEN_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_TOKEN_URI
-    
+
     TEST_IDP_AZ_URI=$(printf '%s' "$authorization_endpoint" | awk -F "$TEST_IDP_AZ_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_AZ_URI
-    
+
     TEST_IDP_JWKS_URI=$(printf '%s' "$jwks_uri" | awk -F "$TEST_IDP_JWKS_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_JWKS_URI
-    
-    TEST_IDP_USERINFO_URI=$(printf '%s' "$userinfo_endpoint" | awk -F "$TEST_IDP_USERINFO_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}') 
+
+    TEST_IDP_USERINFO_URI=$(printf '%s' "$userinfo_endpoint" | awk -F "$TEST_IDP_USERINFO_HOSTNAME"'/' '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_USERINFO_URI
 
-    TEST_IDP_APIGEE_CLIENT_ID="dummy-client_id-apigee123"
+    TEST_IDP_APIGEE_CLIENT_ID="${TEST_IDP_APIGEE_CLIENT_ID:=dummy-client_id-apigee123}"
     export TEST_IDP_APIGEE_CLIENT_ID
 
-    TEST_IDP_APIGEE_CLIENT_SECRET="dummy-client_secret_apigee456"
+    TEST_IDP_APIGEE_CLIENT_SECRET="${TEST_IDP_APIGEE_CLIENT_SECRET:=dummy-client_secret_apigee456}"
     export TEST_IDP_APIGEE_CLIENT_SECRET
 }
 
@@ -287,24 +286,11 @@ EOF
 ####################################################
 ### function: generate_post_data_app_credentials ###
 ####################################################
-generate_post_data_app_credentials()
-{
-  cat <<EOF
+generate_post_data_app_credentials() {
+cat <<EOF
 {
   "consumerKey": "$TEST_APP_CONSUMER_KEY",
   "consumerSecret": "xsecret"
-}
-EOF
-}
-
-#########################################################
-### function: generate_post_data_app_identity_product ###
-#########################################################
-generate_post_data_app_identity_product()
-{
-  cat <<EOF
-{ 
-    "apiProducts": ["IdentityFacade"] 
 }
 EOF
 }
@@ -313,11 +299,15 @@ EOF
 ### function: set_devapp_credentials ###
 ########################################
 set_devapp_credentials() {
-    # retrieve configuration data from a keycloak endpoint
-    response=$(curl --silent -X POST --data "$(generate_post_data_app_credentials)" -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create)
+
+    # set credentials for 'identityApp'
+    response=$(curl --silent -X POST \
+    -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
+    --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
+    https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create)
+
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
-        
         exit 1
     fi
 }
@@ -326,8 +316,13 @@ set_devapp_credentials() {
 ### function: set_devapp_product ###
 ####################################
 set_devapp_product() {
-    # retrieve configuration data from a keycloak endpoint
-    response=$(curl --silent -X POST --data "$(generate_post_data_app_identity_product)" -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY")
+
+    # Set identity product for 'identityApp'
+    response=$(curl --silent -X POST \
+        -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
+        --data "{ \"apiProducts\": [\"IdentityFacade\"] }" \
+        https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY")
+
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
 
@@ -343,14 +338,18 @@ set_functional_test_env_var() {
     # use timestamp (parameter) to create a unique value
     TEST_APP_CONSUMER_KEY="xkey-$1"
     export TEST_APP_CONSUMER_KEY
+    TEST_APP_CONSUMER_SECRET='xsecret'
+    export TEST_APP_CONSUMER_SECRET
 }
 
-
 # deploy the OIDC mock identity provider...
-cd ../oidc-mock
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
-npm i
-npm test
+if [ -z ${TEST_IDP_DISCOVERY_DOCUMENT+x} ];
+then
+    cd ../oidc-mock
+    mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+    npm i
+    npm test
+fi
 
 #...then deploy the identity-facade proxy
 cd ../identity-facade
@@ -375,6 +374,11 @@ set_devapp_credentials
 # set developer app (apigeee_client) product
 set_devapp_product
 
-# execute integration tests
-npm i
-npm run test
+if [ -z ${TEST_IDP_DISCOVERY_DOCUMENT+x} ];
+then
+   # execute integration tests
+    npm i
+    npm run test
+else
+    echo "no tests run for custom OIDC Idp: $TEST_IDP_DISCOVERY_DOCUMENT"
+fi

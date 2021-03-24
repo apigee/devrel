@@ -1,3 +1,3 @@
-configuration-as-code:1.46
+configuration-as-code:1.47
 workflow-aggregator:2.6
 workflow-multibranch:2.22

@@ -18,17 +18,17 @@ pipeline {
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.MAVEN_PROFILE = "test"
+                  env.APIGEE_ENV = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'
               // Prod branch for Apigee prod environment
               } else if (env.GIT_BRANCH == "prod") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.MAVEN_PROFILE = "prod"
+                  env.APIGEE_ENV = "prod"
                   // env.APIGEE_ORG = 'apigee-org-name'
               // All other branches are deployed as separate proxies with suffix in the test environment
               } else {
                   env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-devrel-jenkins"
-                  env.MAVEN_PROFILE = "test"
+                  env.APIGEE_ENV = "test"
                   // env.APIGEE_ORG = 'apigee-org-name'
               }
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
@@ -90,10 +90,8 @@ pipeline {
         stage('Env Config') {
           steps {
             script {
-              if (env.AUTHOR_EMAIL) {
-                AUTHOR_EMAIL = env.AUTHOR_EMAIL
-              } else {
-                AUTHOR_EMAIL = sh (
+              if (!env.AUTHOR_EMAIL) {
+                env.AUTHOR_EMAIL = sh (
                   script: 'git --no-pager show -s --format=\'%ae\'',
                   returnStdout: true
                 ).trim()
@@ -102,8 +100,9 @@ pipeline {
 
             sh """
               mvn clean install \
-                -P"apigeeapi,${env.MAVEN_PROFILE}" \
+                -P"apigeeapi" \
                 -Dpassword="${APIGEE_CREDS_PSW}" \
+                -Denv="${env.APIGEE_ENV}" \
                 -Dusername="${APIGEE_CREDS_USR}" \
                 -Dorg="${env.APIGEE_ORG}" \
                 -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \

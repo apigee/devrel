@@ -17,6 +17,4 @@
 set -e
 set -x
 
-mvn clean install -ntp -B -Papigeeapi -Dorg="$APIGEE_ORG" -Denv="$APIGEE_ENV" \
-  -Dusername="$APIGEE_USER" -Dpassword="$APIGEE_PASS"
-npm run test
+echo "Needs to be tested on either X or hybrid"
