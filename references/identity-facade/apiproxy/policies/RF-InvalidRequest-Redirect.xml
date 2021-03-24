@@ -20,7 +20,6 @@
             <StatusCode>302</StatusCode>
             <ReasonPhrase>Found</ReasonPhrase>
         </Set>
-        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-        <AssignTo createNew="false" type="response"/>
     </FaultResponse>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
 </RaiseFault>
