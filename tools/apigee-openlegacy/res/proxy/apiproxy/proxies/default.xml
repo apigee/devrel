@@ -19,10 +19,10 @@
   <PreFlow>
     <Request>
       <Step>
-        <Name>VerifyAPIKey</Name>
+        <Name>SpikeArrest</Name>
       </Step>
       <Step>
-        <Name>SpikeArrest</Name>
+        <Name>VerifyAPIKey</Name>
       </Step>
     </Request>
   </PreFlow>
