@@ -50,7 +50,7 @@ sh ./devrel/tools/apigee-openlegacy/pipeline.sh
 
 - OpenLegacy Module and Project created
 - OpenLegacy connector deployed to Cloud Run
-- Apigee Proxy Configured with service account keys to connect to Cloud Run, 
+- Apigee Proxy Configured with service account keys to connect to Cloud Run,
   Spike Arrest and API Key check
 - API Product, Developer and App configured
 
