@@ -14,9 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables name="EV-PathParameters">
-    <URIPath>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-    </URIPath>
-</ExtractVariables>
+<RaiseFault name="RF-500">
+    <FaultResponse>
+        <Set>
+            <StatusCode>500</StatusCode>
+            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error. If persists, check access to apigee.googleapis.com from Apigee runtime"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
