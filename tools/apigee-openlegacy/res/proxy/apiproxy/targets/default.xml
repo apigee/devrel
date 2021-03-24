@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2021 Google LLC
+ Copyright 2020 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,7 +14,28 @@
  limitations under the License.
 -->
 
-<APIProxy revision="1" name="apigee-openlegacy-v1">
-    <ConfigurationVersion minorVersion="0" majorVersion="4"/>
-	<Description>@description</Description>
-</APIProxy>
+<TargetEndpoint name="default">
+
+  <PreFlow>
+    <Request>
+      <Step>
+        <Name>KV.LookupSAKey</Name>
+      </Step>
+      <Step>
+        <Name>AM.GCPAudience</Name>
+      </Step>
+      <Step>
+        <Name>FC.GetGCPToken</Name>
+      </Step>
+      <Step>
+        <Name>AM.SetGCPToken</Name>
+      </Step>
+    </Request>
+    <Response/>
+  </PreFlow>
+
+  <HTTPTargetConnection>
+    <URL>@TargetURL@</URL>
+  </HTTPTargetConnection>
+
+</TargetEndpoint>

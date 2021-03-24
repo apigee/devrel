@@ -1,0 +1,9 @@
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM.SetGCPToken">
+    <Properties/>
+    <Set>
+        <Headers>
+            <Header name="Authorization">Bearer {private.gcp.access_token}</Header>
+        </Headers>
+    </Set>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

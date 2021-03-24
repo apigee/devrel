@@ -34,7 +34,7 @@ fi
 # Check for required tools on path
 ###
 
-for TOOL in mvn ol gcloud jq; do
+for TOOL in unzip ol gcloud jq nodejs npm; do
   if ! which $TOOL > /dev/null; then
     echo "Please ensure $TOOL is installed and on your PATH"
     exit 1
@@ -45,21 +45,20 @@ done
 # Configure OpenLegacy
 ###
 
-ol login --api-key "$OPENLEGACY_APIKEY"
-ol create module --connector as400-pcml aok-module
-cp $SCRIPTPATH/../res/getcst.pcml aok-module/
-(cd aok-module/ && ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS")
-(cd aok-module/ && ol push module)
-ol create project aok-project --modules aok-module
+#ol login --api-key "$OPENLEGACY_APIKEY"
+#ol create module --connector as400-pcml aok-module
+#cp $SCRIPTPATH/../res/getcst.pcml aok-module/
+#(cd aok-module/ && ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS")
+#(cd aok-module/ && ol push module)
+#ol create project aok-project --modules aok-module
 
 ###
 # Push OpenLegacy Image
 ###
 
-gcloud services enable containerregistry.googleapis.com run.googleapis.com
-gcloud auth configure-docker
+#gcloud services enable containerregistry.googleapis.com run.googleapis.com
+#gcloud auth configure-docker -q
 
-# TODO switch project-id to project-name  in json
 cat > Dockerfile <<EOF
 FROM openlegacy/as400-rpc:1.1.2
 RUN mkdir -p /tmp/data
@@ -71,40 +70,41 @@ RUN echo '{ \
       "api-key": "$OPENLEGACY_APIKEY" \
     } \
   } \
-}" > /tmp/data/config.json
+}' > /tmp/data/config.json
 EOF
 
-docker build -t gcr.io/$GCP_PROJECT/aok-image:latest .
-docker push gcr.io/$GCP_PROJECT/aok-image:latest
+#docker build -t gcr.io/$GCP_PROJECT/aok-image:latest .
+#docker push gcr.io/$GCP_PROJECT/aok-image:latest
+
 
 ###
 # Deploy OpenLegacy
 ###
 
-gcloud run deploy aok-service --image gcr.io/$GCP_PROJECT/aok-image:latest --platform managed --region europe-west1 -q
+#gcloud run deploy aok-service --image gcr.io/$GCP_PROJECT/aok-image:latest --platform managed --region europe-west1 -q
 FUNCTION_URL=$(gcloud run services describe aok-service --platform managed --region europe-west1 --format json | jq -r '.status.url')
 
 ###
 # Get OpenLegacy OpenAPI Specification
 ###
 
-curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  "$FUNCTION_URL/openapi/openapi.yaml" \
-  -o openapi.yaml
+#curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
+#  "$FUNCTION_URL/openapi/openapi.yaml" \
+#  -o openapi.yaml
 
 ###
 ## Generate Service Account for Apigee to call Cloud Run
 ###
 
-gcloud iam service-accounts create apigee-to-backend --project $GCP_PROJECT
-gcloud iam service-accounts keys create credentials.json --iam-account apigee-to-backend@$GCP_PROJECT.iam.gserviceaccount.com
-gcloud run services add-iam-policy-binding apigee-to-backend --region europe-west1 --member serviceAccount:apigee-to-backend@$.iam.gserviceaccount.com --role roles/run.invoker --platform managed
+#gcloud iam service-accounts create aok-sa --project $GCP_PROJECT
+#gcloud iam service-accounts keys create credentials.json --iam-account aok-sa@$GCP_PROJECT.iam.gserviceaccount.com
+#gcloud run services add-iam-policy-binding aok-service --region europe-west1 --member serviceAccount:aok-sa@$GCP_PROJECT.iam.gserviceaccount.com --role roles/run.invoker --platform managed
 
 ###
 # Create Apigee Cache for Service Account
 ###
 
-npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -z gcp-tokens
+npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -z aok-gcp-tokens
 
 ###
 # Push service account json to KVM
@@ -115,7 +115,7 @@ curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com
   -H 'Content-Type: application/json; charset=utf-8' \
   --data-binary @- > /dev/null << EOF
 {
-  "name": "service-accounts",
+  "name": "aok-service-accounts",
   "encrypted": "true",
   "entry": [
     {
@@ -124,6 +124,7 @@ curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com
     }
   ]
 }
+EOF
 
 ###
 # Deploy Shared Flow to manage JWT token to OpenLegacy
@@ -135,19 +136,28 @@ npm run deploy --prefix $SCRIPTPATH/../../references/gcp-sa-auth-shared-flow
 # Generate the Apigee Proxy
 ###
 
-cp -r proxy target/proxy
-SPEC=./target/openapi.json OPERATION=operationId oas-to-am > target/proxy/policies/Assign.OpenLegacy.xml
+cp -r $SCRIPTPATH/res/proxy aok-v1
+#SPEC=./target/openapi.json OPERATION=operationId oas-to-am > target/proxy/policies/Assign.OpenLegacy.xml
 
 ###
-# deploy and test apigee
+# deploy apigee proxy
 ###
 
-mvn clean install \
-  -P"apigeeapi" \
-  -Dpassword="${APIGEE_PASS}" \
-  -Denv="${env.APIGEE_ENV}" \
-  -Dusername="${APIGEE_USER}" \
-  -Dorg="${env.APIGEE_ORG}"
+npm run deploy --prefix ./aok-v1
+
+###
+# Create Apigee Developer, App and Product
+###
+
+npx apigeetool createProduct -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --productName "ApigeeOpenLegacy" --proxies "aok-v1" --environments "test"
+npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com" --firstName "AOK" --lastName "Developer"
+npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com " --apiProducts "ApigeeOpenLegacy" --name "AOKApp" > app.json
+
+###
+# run some smoke tests
+###
+
+#npm test --prefix ./aok-v1
 
 ### print result
 echo "Successfully Apigee OpenLegacy Kickstarter"

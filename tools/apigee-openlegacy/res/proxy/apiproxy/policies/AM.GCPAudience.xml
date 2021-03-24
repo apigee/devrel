@@ -1,0 +1,7 @@
+<AssignMessage name="AM.GCPAudience">
+    <AssignVariable>
+        <Name>gcp.target_audience</Name>
+        <Value>@TargetURL@</Value>
+    </AssignVariable>
+</AssignMessage>
+

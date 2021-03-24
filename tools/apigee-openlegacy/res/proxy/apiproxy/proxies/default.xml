@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
  Copyright 2020 Google LLC
 
@@ -16,21 +15,23 @@
 -->
 
 <ProxyEndpoint name="default">
-  <PreFlow name="PreFlow">
+
+  <PreFlow>
+        <Name>VerifyAPIKey</Name>
+      </Step>
+      <Step>
+        <Name>SpikeArrest</Name>
+      </Step>
+    </Request>
   </PreFlow>
-  <Flows>
-    <Flow name="unknown-path-suffix">
-      <Request>
-        <Step>
-          <Name>RaiseFault.404</Name>
-        </Step>
-      </Request>
-    </Flow>
-  </Flows>
-  <PostFlow name="PostFlow"/>
+
   <HTTPProxyConnection>
     <BasePath>/apigee-openlegacy/v1</BasePath>
     <VirtualHost>secure</VirtualHost>
   </HTTPProxyConnection>
-  <RouteRule name="no-target" />
+
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
+  </RouteRule>
+
 </ProxyEndpoint>

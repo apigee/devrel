@@ -1,0 +1,3 @@
+<FlowCallout async="false" continueOnError="false" enabled="true" name="FC.GetGCPToken">
+  <SharedFlowBundle>gcp-sa-auth-v1</SharedFlowBundle>
+</FlowCallout>
