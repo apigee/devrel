@@ -19,7 +19,7 @@ set -e
 
 if ! [ -x "$(command -v jq)" ]; then
   >&2 echo "ABORTED: Required command is not on your PATH: jq."
-  >&2 echo "         Please install it before continue."
+  >&2 echo "         Please install it before you continue."
 
   exit 2
 fi
@@ -48,7 +48,7 @@ if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
 
   echo "Apigee Organization exists and is active"
 
-  echo "Taking AX_REGION, LOCATION, and .... from Organization Configuration "
+  echo "Taking AX_REGION, LOCATION, and NETWORK from existing Organization Configuration"
 
   NETWORK=$(echo "$ORG_JSON" | jq --raw-output .authorizedNetwork)
   AX_REGION=$(echo "$ORG_JSON" | jq --raw-output .analyticsRegion)
@@ -84,7 +84,6 @@ echo ""
 
 export MIG=apigee-envoy-$REGION
 
-# 
 export RUNTIME_SSL_CERT=${RUNTIME_SSL_CERT:-~/mig-cert.pem}
 export RUNTIME_SSL_KEY=${RUNTIME_SSL_KEY:-~/mig-key.pem}
 export RUNTIME_HOST_ALIAS=${RUNTIME_HOST_ALIAS:-$ORG-eval.apigee.net}

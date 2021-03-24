@@ -14,24 +14,40 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
 <ProxyEndpoint name="default">
     <PreFlow name="PreFlow">
         <Request>
             <Step>
+                <Name>SpikeArrest</Name>
+            </Step>
+            <Step>
+                <Name>RF-401</Name>
+                <Condition>request.header.Authorization = null</Condition>
+            </Step>
+            <Step>
                 <Name>EV-PathParameters</Name>
+            </Step>
+            <Step>
+                <Name>RF-404</Name>
+                <Condition>kvm.orgname is null or kvm.envname is null</Condition>
+            </Step>
+            <Step>
+                <Name>RF-403</Name>
+                <Condition>kvm.orgname != organization.name or kvm.envname != environment.name</Condition>
+            </Step>
+            <Step>
+                <Name>AM-OriginalRequest</Name>
             </Step>
         </Request>
     </PreFlow>
     <Flows>
-        <Flow name="GET /kvms/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and  (request.verb = "GET")</Condition>
-            <Request>
+        <Flow name="GET /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "GET")</Condition>
+            <Request/>
+            <Response>
                 <Step>
                     <Name>KV-GetEntryDynamic</Name>
                 </Step>
-            </Request>
-            <Response>
                 <Step>
                     <Name>RF-404Entry</Name>
                     <Condition>private.kvm-entry.value is null</Condition>
@@ -41,25 +57,29 @@
                 </Step>
             </Response>
         </Flow>
-        <Flow name="POST /kvms/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries") and (request.verb = "POST")</Condition>
+        <Flow name="POST /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries") and (kvmreq.verb = "POST")</Condition>
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
                 </Step>
+            </Request>
+            <Response>
                 <Step>
                     <Name>KV-PostEntryDynamic</Name>
                 </Step>
-            </Request>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
         </Flow>
-        <Flow name="DELETE /kvms/*/entries/*">
-            <Condition>(proxy.pathsuffix MatchesPath "/kvms/*/entries/*") and (request.verb = "DELETE")</Condition>
-            <Request>
+        <Flow name="DELETE /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "DELETE")</Condition>
+            <Request/>
+            <Response>
                 <Step>
                     <Name>KV-DeleteEntryDynamic</Name>
                 </Step>
-            </Request>
-            <Response>
                 <Step>
                     <Name>RF-404Entry</Name>
                     <Condition>private.kvm-entry.value is null</Condition>
@@ -77,7 +97,11 @@
             </Request>
         </Flow>
     </Flows>
-
+    <PostFlow>
+        <Step>
+            <Name>AM-RemoveAuthzHeader</Name>
+        </Step>
+    </PostFlow>
     <FaultRules>
         <FaultRule name="Missing KVM">
             <Condition>(fault.name = "MapNotFound")</Condition>
@@ -85,11 +109,18 @@
                 <Name>RF-404</Name>
             </Step>
         </FaultRule>
-     </FaultRules>
-
+    </FaultRules>
+    <DefaultFaultRule name="fault-rule">
+        <Step>
+            <Name>RF-500</Name>
+            <Condition>fault.name != "RaiseFault"</Condition>
+        </Step>
+    </DefaultFaultRule>
     <HTTPProxyConnection>
         <BasePath>/kvm-admin/v1</BasePath>
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
-    <RouteRule name="noroute"/>
+    <RouteRule name="default">
+        <TargetEndpoint>default</TargetEndpoint>
+    </RouteRule>
 </ProxyEndpoint>
