@@ -26,7 +26,9 @@ Management to our mainframe!
 - Download OpenLegacy CLI from [the hub](https://app.ol-hub.com/)
 - Install Maven and Git
 
-## Usage
+## Quickstart Usage
+
+For the best compatibility, run from a Google Cloud Shell
 
 ```sh
 export OPENLEGACY_APIKEY=
@@ -40,15 +42,17 @@ export APIGEE_ORG=
 export APIGEE_ENV=
 export GCP_PROJECT=
 
-./apigee-openlegacy 
-
+git clone https://github.com/apigee/devrel
+sh ./devrel/tools/apigee-openlegacy/bin/apigee-openlegacy.xh
 ```
 
 ## Result
 
 - OpenLegacy Module and Project created
 - OpenLegacy connector deployed to Cloud Run
-- Apigee Proxy Configured with service account keys to connect to Cloud Run
+- Apigee Proxy Configured with service account keys to connect to Cloud Run, 
+  Spike Arrest and API Key check
+- API Product, Developer and App configured
 
 ## Extend
 
