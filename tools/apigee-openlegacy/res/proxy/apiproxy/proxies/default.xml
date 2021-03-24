@@ -17,6 +17,8 @@
 <ProxyEndpoint name="default">
 
   <PreFlow>
+    <Request>
+      <Step>
         <Name>VerifyAPIKey</Name>
       </Step>
       <Step>

@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2230
 
 ###
 # Apigee OpenLegacy Kickstart (aok) CLI
@@ -13,18 +14,16 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 # Check for required variables
 ###
 
-if [ \
-    -z "$OPENLEGACY_APIKEY" -o \
-    -z "$OPENLEGACY_HOST" -o \
-    -z "$OPENLEGACY_USER" -o \
-    -z "$OPENLEGACY_PASS" -o \
-    -z "$OPENLEGACY_CODEPAGE" -o \
-    -z "$APIGEE_USER" -o \
-    -z "$APIGEE_PASS" -o \
-    -z "$APIGEE_ORG" -o \
-    -z "$APIGEE_ENV" -o \
-    -z "$GCP_PROJECT" \
-  ]; then
+if [ -z "$OPENLEGACY_APIKEY"   ] || \
+   [ -z "$OPENLEGACY_HOST"     ] || \
+   [ -z "$OPENLEGACY_USER"     ] || \
+   [ -z "$OPENLEGACY_PASS"     ] || \
+   [ -z "$OPENLEGACY_CODEPAGE" ] || \
+   [ -z "$APIGEE_USER"         ] || \
+   [ -z "$APIGEE_PASS"         ] || \
+   [ -z "$APIGEE_ORG"          ] || \
+   [ -z "$APIGEE_ENV"          ] || \
+   [ -z "$GCP_PROJECT"         ]; then
   echo "A required variable is missing"; 
   exit 1
 fi
@@ -47,7 +46,7 @@ done
 
 ol login --api-key "$OPENLEGACY_APIKEY"
 ol create module --connector as400-pcml aok-module
-cp $SCRIPTPATH/../res/getcst.pcml aok-module/
+cp "$SCRIPTPATH"/../res/getcst.pcml aok-module/
 (cd aok-module/ && ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS")
 (cd aok-module/ && ol push module)
 ol create project aok-project --modules aok-module
@@ -73,15 +72,15 @@ RUN echo '{ \
 }' > /tmp/data/config.json
 EOF
 
-docker build -t gcr.io/$GCP_PROJECT/aok-image:latest .
-docker push gcr.io/$GCP_PROJECT/aok-image:latest
+docker build -t gcr.io/"$GCP_PROJECT"/aok-image:latest .
+docker push gcr.io/"$GCP_PROJECT"/aok-image:latest
 
 
 ###
 # Deploy OpenLegacy
 ###
 
-gcloud run deploy aok-service --image gcr.io/$GCP_PROJECT/aok-image:latest --platform managed --region europe-west1 -q
+gcloud run deploy aok-service --image gcr.io/"$GCP_PROJECT"/aok-image:latest --platform managed --region europe-west1 -q
 TARGET_URL=$(gcloud run services describe aok-service --platform managed --region europe-west1 --format json | jq -r '.status.url')
 
 ###
@@ -96,15 +95,15 @@ curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
 ## Generate Service Account for Apigee to call Cloud Run
 ###
 
-gcloud iam service-accounts create aok-sa --project $GCP_PROJECT || true
-gcloud iam service-accounts keys create credentials.json --iam-account aok-sa@$GCP_PROJECT.iam.gserviceaccount.com
-gcloud run services add-iam-policy-binding aok-service --region europe-west1 --member serviceAccount:aok-sa@$GCP_PROJECT.iam.gserviceaccount.com --role roles/run.invoker --platform managed || true
+gcloud iam service-accounts create aok-sa --project "$GCP_PROJECT" || true
+gcloud iam service-accounts keys create credentials.json --iam-account aok-sa@"$GCP_PROJECT".iam.gserviceaccount.com
+gcloud run services add-iam-policy-binding aok-service --region europe-west1 --member serviceAccount:aok-sa@"$GCP_PROJECT".iam.gserviceaccount.com --role roles/run.invoker --platform managed
 
 ###
 # Create Apigee Cache for Service Account
 ###
 
-npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -z gcp-tokens || true
+npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -z gcp-tokens
 
 ###
 # Push service account json to KVM
@@ -130,15 +129,15 @@ EOF
 # Deploy Shared Flow to manage JWT token to OpenLegacy
 ###
 
-npm run deploy --prefix $SCRIPTPATH/../../../references/gcp-sa-auth-shared-flow
+npm run deploy --prefix "$SCRIPTPATH"/../../../references/gcp-sa-auth-shared-flow
 
 ###
 # Generate the Apigee Proxy
 ###
 
-cp -r $SCRIPTPATH/../res/proxy aok-v1
-sed -i.bak "s|@TargetURL@|$TARGETURL|" ./aok-v1/apiproxy/targets/default.xml
-sed -i.bak "s|@TargetURL@|$TARGETURL|" ./aok-v1/apiproxy/policies/AM.GCPAudience.xml
+cp -r "$SCRIPTPATH"/../res/proxy aok-v1
+sed -i.bak "s|@TargetURL@|$TARGET_URL|" ./aok-v1/apiproxy/targets/default.xml
+sed -i.bak "s|@TargetURL@|$TARGET_URL|" ./aok-v1/apiproxy/policies/AM.GCPAudience.xml
 rm ./aok-v1/apiproxy/targets/default.xml.bak ./aok-v1/apiproxy/policies/AM.GCPAudience.xml.bak
 
 ###
@@ -152,14 +151,16 @@ npm run deploy --prefix ./aok-v1
 ###
 
 npx apigeetool createProduct -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --productName "ApigeeOpenLegacy" --proxies "aok-v1" --environments "test"
-npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com" --firstName "AOK" --lastName "Developer"
-npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com " --apiProducts "ApigeeOpenLegacy" --name "AOKApp" > app.json
+npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com" --userName "aok@example.com" --firstName "AOK" --lastName "Developer"
+npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com" --apiProducts "ApigeeOpenLegacy" --name "AOKApp" > app.json
+
+APIKEY=$(jq '.credentials[0].consumerKey' -r < app.json )
 
 ###
 # run some smoke tests
 ###
 
-#npm test --prefix ./aok-v1
+APIKEY=APIKEY npm test --prefix ./aok-v1
 
 ### print result
-echo "Successfully Apigee OpenLegacy Kickstarter"
+echo "Successfully Apigee OpenLegacy Kickstarter. API key is $APIKEY"

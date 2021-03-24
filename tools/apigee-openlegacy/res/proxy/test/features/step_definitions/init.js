@@ -23,8 +23,11 @@ before(function () {
     process.env.APIGEE_ORG +
       "-" +
       process.env.APIGEE_ENV +
-      ".apigee.net/@Proxy@/@Version@"
+      ".apigee.net/apigee-openlegacy/v1"
   );
+  this.apickli.scenarioVariables = {
+    apikey: process.env.APIKEY
+  }
 });
 
 setDefaultTimeout(60 * 1000);

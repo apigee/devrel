@@ -5,11 +5,11 @@ Feature:
 
   Scenario: Successfully use Apigee OpenLegacy Kickstart
     Given I set request body to { "customerid": "0001" }
-    When I POST /getcst
+    When I POST /getcst?apikey=`apikey`
     Then response code should be 200
     And response body path $.status should be OK
     
-  Scenario: Invalid payload
-    Given I set request body to { }
+  Scenario: Missing API Key
+    Given I set request body to { "customerid": "0001" }
     When I POST /getcst
-    Then response code should be 500
+    Then response code should be 401
