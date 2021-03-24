@@ -43,7 +43,7 @@ export APIGEE_ENV=
 export GCP_PROJECT=
 
 git clone https://github.com/apigee/devrel
-sh ./devrel/tools/apigee-openlegacy/bin/apigee-openlegacy.xh
+sh ./devrel/tools/apigee-openlegacy/pipeline.sh
 ```
 
 ## Result
