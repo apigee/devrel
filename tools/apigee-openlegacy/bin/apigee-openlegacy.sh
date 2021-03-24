@@ -46,12 +46,11 @@ done
 ###
 
 ol login --api-key "$OPENLEGACY_APIKEY"
-ol create module --connector IBMi-as400-pcml aok-module
+ol create module --connector as400-pcml aok-module
 cp $SCRIPTPATH/../res/getcst.pcml aok-module/
-ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS"
-ol push module
-MODULE_ID=$(./ol/bin/ol modules | grep "aok-module" | awk '{ print $1 }')
-ol create project --name aok-project --modules "$MODULE_ID"
+(cd aok-module/ && ol add --source-path getcst.pcml --host "$OPENLEGACY_HOST" --code-page "$OPENLEGACY_CODEPAGE" --user "$OPENLEGACY_USER" --password "$OPENLEGACY_PASS")
+(cd aok-module/ && ol push module)
+ol create project aok-project --modules aok-module
 
 ###
 # Push OpenLegacy Image
@@ -60,17 +59,19 @@ ol create project --name aok-project --modules "$MODULE_ID"
 gcloud services enable containerregistry.googleapis.com run.googleapis.com
 gcloud auth configure-docker
 
+# TODO switch project-id to project-name  in json
 cat > Dockerfile <<EOF
-FROM openlegacy/as400-rpc
-RUN echo "{
-  "source-provider": {
-    "type": "HUB",
-    "hub": {
-      "project-id": "$PROJECT_ID",
-      "api-key": "$OPENLEGACY_APIKEY"
-    }
-  }
-}" > /app/config/config.json
+FROM openlegacy/as400-rpc:1.1.2
+RUN mkdir -p /tmp/data
+RUN echo '{ \
+  "source-provider": { \
+    "type": "HUB", \
+    "hub": { \
+      "project-name": "aok-project", \
+      "api-key": "$OPENLEGACY_APIKEY" \
+    } \
+  } \
+}" > /tmp/data/config.json
 EOF
 
 docker build -t gcr.io/$GCP_PROJECT/aok-image:latest .
@@ -88,17 +89,16 @@ FUNCTION_URL=$(gcloud run services describe aok-service --platform managed --reg
 ###
 
 curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  "$FUNCTION_URL" \
-  -o /tmp/openapi.json
+  "$FUNCTION_URL/openapi/openapi.yaml" \
+  -o openapi.yaml
 
 ###
 ## Generate Service Account for Apigee to call Cloud Run
 ###
 
-gcloud iam service-accounts create apigee-to-backend --project $(gcloud config get-value project)
-gcloud iam service-accounts keys create credentials.json --iam-account apigee-to-backend@$(gcloud config get-value project).iam.gserviceaccount.com
-gcloud run services add-iam-policy-binding pets-backend --region europe-west1 --member serviceAccount:apigee-to-backend@$(gcloud config get-value project).iam.gserviceaccount.com --role roles/run.invoker --platform managed
-
+gcloud iam service-accounts create apigee-to-backend --project $GCP_PROJECT
+gcloud iam service-accounts keys create credentials.json --iam-account apigee-to-backend@$GCP_PROJECT.iam.gserviceaccount.com
+gcloud run services add-iam-policy-binding apigee-to-backend --region europe-west1 --member serviceAccount:apigee-to-backend@$.iam.gserviceaccount.com --role roles/run.invoker --platform managed
 
 ###
 # Create Apigee Cache for Service Account
@@ -150,4 +150,4 @@ mvn clean install \
   -Dorg="${env.APIGEE_ORG}"
 
 ### print result
-echo "Successfully Apigee OpenLegacy Kickstarter... time to add some policies!"
+echo "Successfully Apigee OpenLegacy Kickstarter"
