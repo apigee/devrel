@@ -26,7 +26,7 @@ before(function () {
       ".apigee.net/apigee-openlegacy/v1"
   );
   this.apickli.scenarioVariables = {
-    apikey: process.env.APIKEY
+    apikey: "@APIKEY@"
   }
 });
 

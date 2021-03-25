@@ -168,6 +168,10 @@ npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_O
 npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com" --apiProducts "ApigeeOpenLegacy" --name "AOKApp" > app.json
 
 APIKEY=$(jq '.credentials[0].consumerKey' -r < app.json )
+echo "APIKEY is $APIKEY"
+sed -i.bak "s|@APIKEY@|$APIKEY|" ./aok-v1/test/features/step_definitions/init.js
+rm ./aok-v1/test/features/step_definitions/init.js.bak
+
 
 ###
 # run some smoke tests
