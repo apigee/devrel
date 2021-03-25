@@ -7,11 +7,13 @@ can be used either as a commandline tool or a Docker container.
 ```sh
 $ deploy -h
 
-usage: deploy.sh -e ENV -o ORG [-t TOKEN | -u USER -p PASSWORD] [options]
+usage: deploy.sh -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
-Apigee portable deployment utility.
+Apigee deployment utility.
 
 Options:
+--googleapi (default), use apigee.googleapi.com (for X, hybrid)
+--apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy folder to be deployed
 -e,--environment, Apigee environment name
@@ -21,7 +23,7 @@ Options:
 -u,--username, Apigee User Name (Edge only)
 -p,--password, Apigee User Password (Edge only)
 -m,--mfa, Apigee MFA code (Edge only)
--t,--token, GCP Token (X,hybrid only)
+-t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
 --description, Human friendly proxy description
 ```
 
@@ -40,9 +42,10 @@ initialised at the time of docker build.
 
 ```sh
 ./deploy.sh -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
--t $TOKEN \
--o $APIGEE_ORG \
--e $APIGEE_ENV \
+--googleapi \
+-t "$TOKEN" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV" \
 -b "/airports/v1"
 ```
 
@@ -51,15 +54,16 @@ initialised at the time of docker build.
 ```sh
 MFA=<MFA token goes here>
 
-./deploy.sh -d $PWD/../../references/cicd-pipeline/apiproxy \
+./deploy.sh -d "$PWD/../../references/cicd-pipeline/apiproxy" \
+--apigeeapi \
 --description "deployment from local folder" \
 -n test-cicd-v0 \
 -b "/airports/test-v1" \
--u $APIGEE_USER \
--p $APIGEE_PASS \
--m $MFA \
--o $APIGEE_ORG \
--e $APIGEE_ENV
+-u "$APIGEE_USER" \
+-p "$APIGEE_PASS" \
+-m "$MFA" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV"
 ```
 
 ## Example usages as a Docker Container
@@ -74,10 +78,11 @@ docker build -t apigeedeploy .
 
 ```sh
 docker run apigeedeploy \
+--googleapi \
 -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
--t $TOKEN \
--o $APIGEE_ORG \
--e $APIGEE_ENV \
+-t "$TOKEN" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV" \
 -b "/airports/v1"
 ```
 
@@ -87,10 +92,11 @@ docker run apigeedeploy \
 docker run \
 -v $PWD/../../references/cicd-pipeline/apiproxy:/opt/apigee/apiproxy \
 apigeedeploy \
+--apigeeapi \
 -n test-cicd-v0 \
 -b "/airports/test-v1" \
--u $APIGEE_USER \
--p $APIGEE_PASS \
--o $APIGEE_ORG \
--e $APIGEE_ENV
+-u "$APIGEE_USER" \
+-p "$APIGEE_PASS" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV"
 ```

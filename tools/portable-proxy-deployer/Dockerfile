@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM maven:3.6.3-jdk-11
+FROM maven:3.6.3-slim
+
+RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee
 
 RUN apt-get update && \
-  apt-get install libxml-xpath-perl=1.44* --no-install-recommends -y \
+  apt-get install git=* libxml-xpath-perl=* --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /opt/apigee
+
+RUN mkdir /opt/apigee && chown -R apigee /opt/apigee
+
+USER apigee
 
 WORKDIR /opt/apigee
+
 COPY pom.xml ./pom.xml
 
 # Pre-warm maven cache

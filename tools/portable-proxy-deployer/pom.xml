@@ -64,6 +64,7 @@ limitations under the License.
 				<apigee.authtype>oauth</apigee.authtype>
 				<apigee.username>${username}</apigee.username>
 				<apigee.password>${password}</apigee.password>
+				<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
 				<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
 			</properties>
 		</profile>
@@ -74,7 +75,6 @@ limitations under the License.
 				<apigee.plugin.version>2.1.0</apigee.plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
-				<apigee.serviceaccount.file>${sa}</apigee.serviceaccount.file>
 			</properties>
 		</profile>
 	</profiles>

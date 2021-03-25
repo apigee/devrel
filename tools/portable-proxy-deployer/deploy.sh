@@ -18,11 +18,13 @@ set -e
 
 print_usage() {
     cat << EOF
-usage: deploy.sh -e ENV -o ORG [-t TOKEN | -u USER -p PASSWORD] [options]
+usage: deploy.sh -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
 Apigee deployment utility.
 
 Options:
+--googleapi (default), use apigee.googleapi.com (for X, hybrid)
+--apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy folder to be deployed
 -e,--environment, Apigee environment name
@@ -32,7 +34,7 @@ Options:
 -u,--username, Apigee User Name (Edge only)
 -p,--password, Apigee User Password (Edge only)
 -m,--mfa, Apigee MFA code (Edge only)
--t,--token, GCP Token (X,hybrid only)
+-t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
 --description, Human friendly proxy description
 EOF
 }
@@ -40,6 +42,12 @@ EOF
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     print_usage
     exit 0
+fi
+
+if ! command -v xpath &> /dev/null
+then
+    echo "[FATAL] please install xpath command before continuing"
+    exit 1
 fi
 
 while [ "$#" -gt 0 ]; do
@@ -67,21 +75,36 @@ while [ "$#" -gt 0 ]; do
     --organization) organization="${1}"; shift 2;;
     --description) description="${2}"; shift 2;;
 
+    --apigeeapi) apiversion="apigee"; shift 1;;
+    --googleapi) apiversion="google"; shift 1;;
+
     -*) echo "[FATAL] unknown option: $1" >&2; exit 1;;
-    *) echo "[INFO] additional argument $1"; shift 1;;
+    *) echo "[FATAL] unknown positional argument $1"; exit 1;;
   esac
 done
 
 if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
-    echo "[FATAL] required either -t (GCP access token) or -u and -p (Edge username and password)"
+    echo "[FATAL] required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
     exit 1
 fi
 
+if [[ -z "$apiversion" ]]; then
+    echo "[INFO] using default API version: Google API (apigee.googleapi.com)"
+    echo "[INFO] for Apigee Edge (api.enterprise.apigee.com) please specify --apigeeapi"
+    apiversion="google"
+fi
+
 # Make temp 'deploy-me' directory to keep things clean
-mkdir -p ./deploy-me
+TEMP_FOLDER="$PWD/deploy-me"
+rm -rf "$TEMP_FOLDER" && mkdir -p "$TEMP_FOLDER"
+cleanup() {
+  echo "[INFO] removing $TEMP_FOLDER"
+  rm  -rf "$TEMP_FOLDER"
+}
+trap cleanup EXIT
+
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
-cp "$SCRIPT_FOLDER/pom.xml" ./deploy-me/
-cd deploy-me
+cp "$SCRIPT_FOLDER/pom.xml" "$TEMP_FOLDER/"
 
 if [ -n "$url" ]; then
     pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*\/apiproxy)'
@@ -91,56 +114,54 @@ if [ -n "$url" ]; then
     git_branch="${BASH_REMATCH[3]}"
     git_path="${BASH_REMATCH[4]}"
 
-    git clone "https://github.com/${git_org}/${git_repo}.git"
-    (cd "$git_repo" && git checkout "$git_branch")
-    cp -r "$git_repo/$git_path" .
+    git clone "https://github.com/${git_org}/${git_repo}.git" "$TEMP_FOLDER/$git_repo"
+    (cd "$TEMP_FOLDER/$git_repo" && git checkout "$git_branch")
+    cp -r "$TEMP_FOLDER/$git_repo/$git_path" "$TEMP_FOLDER/"
 elif [ -n "$directory" ]; then
     echo "[INFO] using local directory: $directory"
-    (cd .. && cp -r "$directory" ./deploy-me/apiproxy)
+    cp -r "$directory" "$TEMP_FOLDER/apiproxy"
 else
-    cp -r ../apiproxy ./apiproxy
+    echo "[INFO] using local directory: $PWD/apiproxy"
+    cp -r ./apiproxy "$TEMP_FOLDER/apiproxy"
 fi
 
 # Determine Proxy name
-proxy_name_in_bundle="$(xpath -q -e 'string(//APIProxy/@name)' ./apiproxy/*.xml)"
+proxy_name_in_bundle="$(xpath -q -e 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
 api_name=${api_name:=$proxy_name_in_bundle}
 
 # (optional) Override base path
 if [ -n "$base_path" ]; then
     echo "[INFO] Setting base path: $base_path"
-    sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" ./apiproxy/proxies/*.xml
-    rm ./apiproxy/proxies/*.xml.bak
+    sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" "$TEMP_FOLDER"/apiproxy/proxies/*.xml
+    rm "$TEMP_FOLDER"/apiproxy/proxies/*.xml.bak
 fi
 
 # (optional) Set Proxy Description
 if [ -n "$description" ]; then
     echo "[INFO] Setting description: $description"
-    sed -i.bak "s|^.*<Description>.*</Description>||g" ./apiproxy/*.xml
-    sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" ./apiproxy/*.xml
-    rm ./apiproxy/*.xml.bak
+    sed -i.bak "s|^.*<Description>.*</Description>||g" "$TEMP_FOLDER"/apiproxy/*.xml
+    sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$TEMP_FOLDER"/apiproxy/*.xml
+    rm "$TEMP_FOLDER"/apiproxy/*.xml.bak
 fi
 
-if [ -n "$token" ]; then
+if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
-    mvn install -B -ntp -Pgoogleapi \
+    (cd "$TEMP_FOLDER" && mvn install -B -ntp -Pgoogleapi \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \
-        -Dtoken="$token"
-elif [ -n "$username" ] && [ -n "$password" ]; then
+        -Dtoken="$token")
+elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
-    sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" ./pom.xml
-    rm ./pom.xml.bak
+    sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml
+    rm "$TEMP_FOLDER"/pom.xml.bak
 
-    mvn install -B -ntp -Papigeeapi \
+    (cd "$TEMP_FOLDER" && mvn install -B -ntp -Papigeeapi \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \
         -Dusername="$username" \
         -Dpassword="$password" \
-        -Dmfa="$mfa"
+        -Dtoken="$token" \
+        -Dmfa="$mfa")
 fi
-
-#clean up temp 'deploy-me' folder
-cd ..
-rm -rdf ./deploy-me

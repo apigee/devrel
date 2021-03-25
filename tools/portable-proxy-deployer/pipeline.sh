@@ -23,6 +23,7 @@ BASE_PATH="/portable-deployer/v1/airports"
 
 # Using another DevRel API Proxy for testing this tool
 docker run apigeedeploy \
+  --apigeeapi \
   -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
   -n portable-airports-v0 \
   -b "$BASE_PATH" \
