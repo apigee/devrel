@@ -14,9 +14,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables name="EV-PathParameters">
-    <URIPath>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-    </URIPath>
+<ExtractVariables name="EV-AvailablePermissions">
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <JSONPayload>
+        <Variable name="iam.grantedPermission">
+            <JSONPath>$.permissions[0]</JSONPath>
+        </Variable>
+    </JSONPayload>
+    <Source clearPayload="true">response</Source>
 </ExtractVariables>

@@ -14,9 +14,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables name="EV-PathParameters">
-    <URIPath>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-    </URIPath>
-</ExtractVariables>
+<AssignMessage name="AM-IAMPermissionCheck">
+    <Set>
+        <Verb>POST</Verb>
+        <Payload contentType="application/json">{iam.permissionPayload}</Payload>
+    </Set>
+    <AssignVariable>
+        <Name>target.copy.pathsuffix</Name>
+        <Value>false</Value>
+    </AssignVariable>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

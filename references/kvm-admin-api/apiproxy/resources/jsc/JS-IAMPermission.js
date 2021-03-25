@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-const apickli = require("apickli");
-const { Before: before } = require("cucumber");
+var reqMethod = context.getVariable("request.verb");
+var iamPermission = "apigee.keyvaluemaps.";
 
-before(function () {
-  this.apickli = new apickli.Apickli(
-    "https",
-    process.env.APIGEE_HOSTNAME +
-    "/kvm-admin/v1/organizations/" +
-    process.env.APIGEE_ORG +
-    "/environments/" + process.env.APIGEE_ENV
-  );
+if(reqMethod === "POST")
+    iamPermission += "create";
+else if(reqMethod === "GET")
+    iamPermission += "list";
+else if(reqMethod === "DELETE")
+    iamPermission += "delete";
+else
+    iamPermission += "noop";
 
-  this.apickli.addRequestHeader("Cache-Control", "no-cache");
-  this.apickli.addRequestHeader("Authorization", "Bearer " + 
-  	process.env.APIGEE_TOKEN);
-});
+var reqPayload = {permissions: [iamPermission]};
+context.setVariable("iam.permission", iamPermission);
+context.setVariable("iam.permissionPayload", JSON.stringify(reqPayload, null, 2));
