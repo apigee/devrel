@@ -41,6 +41,11 @@ if [ -z "$OPENLEGACY_APIKEY"   ] || \
   exit 1
 fi
 
+###
+# Manage optional variables
+###
+
+GCP_REGION=${GCP_REGION:-europe-west1}
 
 ###
 # Check for required tools on path
@@ -93,8 +98,8 @@ docker push gcr.io/"$GCP_PROJECT"/aok-image:latest
 # Deploy OpenLegacy
 ###
 
-gcloud run deploy aok-service --image gcr.io/"$GCP_PROJECT"/aok-image:latest --platform managed --region europe-west1 -q
-TARGET_URL=$(gcloud run services describe aok-service --platform managed --region europe-west1 --format json | jq -r '.status.url')
+gcloud run deploy aok-service --image gcr.io/"$GCP_PROJECT"/aok-image:latest --platform managed --region "$GCP_REGION" -q
+TARGET_URL=$(gcloud run services describe aok-service --platform managed --region "$GCP_REGION" --format json | jq -r '.status.url')
 
 ###
 # Get OpenLegacy OpenAPI Specification
@@ -110,7 +115,7 @@ curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
 
 gcloud iam service-accounts create aok-sa --project "$GCP_PROJECT" || true
 gcloud iam service-accounts keys create credentials.json --iam-account aok-sa@"$GCP_PROJECT".iam.gserviceaccount.com
-gcloud run services add-iam-policy-binding aok-service --region europe-west1 --member serviceAccount:aok-sa@"$GCP_PROJECT".iam.gserviceaccount.com --role roles/run.invoker --platform managed
+gcloud run services add-iam-policy-binding aok-service --region "$GCP_REGION" --member serviceAccount:aok-sa@"$GCP_PROJECT".iam.gserviceaccount.com --role roles/run.invoker --platform managed
 
 ###
 # Create Apigee Cache for Service Account
