@@ -16,6 +16,7 @@
 /tools/organization-cleanup           @laughingbiscuit
 /tools/pipeline-runner                @laughingbiscuit @seymen @danistrebel
 /tools/pipeline-linter                @laughingbiscuit @seymen @danistrebel
+/tools/portable-proxy-deployer        @danistrebel
 /tools/another-apigee-client          @laughingbiscuit
 /tools/hybrid-quickstart              @danistrebel
 /tools/decrypt-hybrid-assets          @yuriylesyuk
