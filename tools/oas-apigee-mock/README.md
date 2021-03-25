@@ -8,16 +8,17 @@ A tool which generates an Apigee API Proxy bundle from an Open API 3 specificati
 - Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Prerequisites
+
 Clone the code from this GitHub repo and run `npm install` to download and install the required dependencies.
 
 ## Usage
 
 ```bash
-$ node bin/oas-apigee-mock <proxy-name> -s <api-spec> -d <destination-dir>
+node bin/oas-apigee-mock <proxy-name> -s <api-spec> -d <destination-dir>
 ```
 
 ### Example
 
 ```bash
-$ node bin/oas-apigee-mock retail -s test/orders.yaml
+node bin/oas-apigee-mock retail -s test/orders.yaml
 ```

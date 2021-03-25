@@ -11,16 +11,16 @@ paths:
       operationId: Get all orders
       description: Get all orders
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
-                items: 
-                  $ref: '#/components/schemas/orders'
+                items:
+                  $ref: "#/components/schemas/orders"
               example:
                 orders:
                   - orderId: 61knu8gol56
@@ -46,7 +46,7 @@ paths:
       summary: Get a specific order
       operationId: Get a specific order
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -55,12 +55,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/orders'
+                $ref: "#/components/schemas/orders"
               example:
                 orderId: 61knu8gol56
                 billingAddress: 999 Nobel Road
@@ -76,7 +76,7 @@ paths:
       operationId: Create order
       description: Create a new order.
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -86,16 +86,16 @@ paths:
             type: string
       requestBody:
         content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/orders'
+          application/json:
+            schema:
+              $ref: "#/components/schemas/orders"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/orders'
+                $ref: "#/components/schemas/orders"
               example:
                 orderId: 61knu8gol56
                 billingAddress: 999 Nobel Road
@@ -110,7 +110,7 @@ paths:
       summary: Update a specific order
       operationId: Update an order
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -123,16 +123,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/orders'
+              $ref: "#/components/schemas/orders"
       responses:
-        '200':
+        "200":
           description: OK
 components:
   securitySchemes:
-      ApiKeyAuth: 
-        type: apiKey
-        in: query     
-        name: apikey  
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: apikey
   schemas:
     orders:
       type: object
@@ -147,7 +147,7 @@ components:
           type: string
           description: Date when the customer purchased this cart.
         currency:
-          type: string  
+          type: string
           description: Status of the package
         paymentDetails:
           type: string
@@ -157,15 +157,15 @@ components:
           description: Shipping address.
         totalPrice:
           type: string
-          description: Total price of the order.  
+          description: Total price of the order.
         userId:
           type: string
           description: User ID that purchased the order
       required:
-      - cartToken
-      - billingAddress
-      - currency
-      - paymentDetails
-      - shippingAddress
-      - totalPrice
-      - userId
+        - cartToken
+        - billingAddress
+        - currency
+        - paymentDetails
+        - shippingAddress
+        - totalPrice
+        - userId
