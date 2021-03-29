@@ -15,6 +15,11 @@
 
 set -e
 
+if [ -z "$OPENLEGACY_HOST" ]; then
+  echo "OpenLegacy backend not found - skipping pipeline"
+  exit 0
+fi
+
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
