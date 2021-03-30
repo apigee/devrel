@@ -65,6 +65,7 @@ Feature:
     Then response code should be 403
 
   Scenario: Retrieve an entry after deleting it
+    Given I waited for 2 seconds
     When I GET /keyvaluemaps/kvmtestmap/entries/test-entry
     Then response code should be 404
 

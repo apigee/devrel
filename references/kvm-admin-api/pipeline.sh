@@ -17,4 +17,21 @@
 set -e
 set -x
 
-echo "Needs to be tested on either X or hybrid"
+TOKEN=$(gcloud auth print-access-token)
+
+# Deploy the proxy
+mvn clean install -ntp -B -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \
+  -Dtoken="$TOKEN"
+
+# Run the integration test
+curl -X POST \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    --data "{\"name\":\"kvmtestmap\",\"encrypted\": true}"
+
+APIGEE_TOKEN=$TOKEN npm run test
+
+curl -X DELETE \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps/kvmtestmap" \
+    -H "Authorization: Bearer $TOKEN"
