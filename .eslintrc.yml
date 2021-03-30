@@ -22,5 +22,5 @@ overrides:
   - files: "**/resources/jsc/*.js"
     rules:
       no-var: 0
-      node: false
-      es6: false
+      node: 0
+      es6: 0
