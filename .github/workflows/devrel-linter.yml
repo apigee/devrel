@@ -32,6 +32,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Check all files are licensed
+        uses: ./tools/pipeline-linter
+        with:
+          pipeline-action: check-license.sh
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -49,11 +54,6 @@ jobs:
           VALIDATE_GHERKIN: false
           VALIDATE_JSCPD: false
           LINTER_RULES_PATH: '.'
-
-      - name: Check all files are licensed
-        uses: ./tools/pipeline-linter
-        with:
-          pipeline-action: check-license.sh
 
       - name: Check README and CODEOWNER index
         uses: ./tools/pipeline-linter
