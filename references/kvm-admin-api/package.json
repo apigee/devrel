@@ -7,7 +7,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "apickli": "^2.3.1",
-    "cucumber": "^5.1.0"
+    "apickli": "^2.3.3",
+    "cucumber": "^6.0.5"
   }
 }
