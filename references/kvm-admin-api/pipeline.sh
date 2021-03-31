@@ -15,7 +15,6 @@
 # limitations under the License.
 
 set -e
-set -x
 
 TOKEN=$(gcloud auth print-access-token)
 
@@ -23,12 +22,12 @@ TOKEN=$(gcloud auth print-access-token)
 mvn clean install -ntp -B -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \
   -Dtoken="$TOKEN"
 
-# Run the integration test
+# Run the Integration test
 curl -X POST \
     "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps" \
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
-    --data "{\"name\":\"kvmtestmap\",\"encrypted\": true}"
+    --data '{"name": "kvmtestmap", "encrypted": true}'
 
 APIGEE_TOKEN=$TOKEN npm run test
 

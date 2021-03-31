@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Proxy to administer KVM entries",
   "scripts": {
-    "test": "npm i && npx cucumber-js test"
+    "test": "npm i && npx cucumber-js --retry 10 --retry-tag-filter '@flaky' test"
   },
   "license": "Apache-2.0",
   "dependencies": {
