@@ -64,6 +64,7 @@ Feature:
     When I PUT to /keyvaluemaps/kvmtestmap/entries
     Then response code should be 403
 
+  @flaky
   Scenario: Retrieve an entry after deleting it
     When I GET /keyvaluemaps/kvmtestmap/entries/test-entry
     Then response code should be 404
