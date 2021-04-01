@@ -26,6 +26,8 @@ Please refer to the documentation for the latest usage.
 **Note:** To customize your installation with optional configuration parameters
 see below.
 
+### Run locally
+
 You need to set up a `PROJECT` environment variable.
 
 ```sh
@@ -38,6 +40,31 @@ confirmation step.
 ```sh
  ./apigee-x-trial-provision.sh
 ```
+
+### Run as a Google Cloud Build
+
+You need to set up a `PROJECT` environment variable.
+And prepare your cloud build environment:
+
+```sh
+gcloud services enable cloudbuild.googleapis.com --project $PROJECT
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
+CLOUD_BUILD_SA="$PROJECT_NUMBER@cloudbuild.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding "$PROJECT" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/owner"
+```
+
+And run a build:
+
+```sh
+gcloud builds submit --project $PROJECT
+# use substitutions for optional parameters
+# gcloud builds submit --project $PROJECT --substitutions=_CERIFICATES=generated
+```
+
+### Run locally with script on Github
 
 To invoke the script directly from the github repo, use
 

@@ -169,7 +169,7 @@ if [ "$ZONE" != "$CHECK_ZONE" ]; then
 fi
 
 echo "Step 2: Enable APIs"
-gcloud services enable apigee.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
+gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
 if [ "$APIGEE_PROVISIONED" = "T" ]; then
 
@@ -355,10 +355,28 @@ gcloud compute forwarding-rules create apigee-proxy-https-lb-rule \
 
 set -e
 
-# TODO: [ ] wait till LB is ready
 echo ""
-echo "Almost done. It take some time (another 5-8 minutes) to provision load balancer infrastructure."
+echo "Almost done. It take some time (another 5-8 minutes) to provision the load balancer infrastructure."
 echo ""
+
+# TODO: more intelligent wait until LB is ready
+
+set +e
+while true
+do
+  SSL_STATUS="$(gcloud compute ssl-certificates list --format=json | jq -r '.[0].type')"
+  if [ "$SSL_STATUS" = "MANAGED" ]; then
+    SSL_STATUS="$SSL_STATUS $(gcloud compute ssl-certificates list --format=json | jq -r '.[0].managed.status')"
+  fi
+  DEPLOYMENT_STATUS="$(gcloud alpha apigee deployments describe 2>/dev/null --api hello-world --environment eval --format=json | jq -r '.state')"
+  CURL_STATUS=$(curl -k -o /dev/null -s -w "%{http_code}\n" "https://$RUNTIME_HOST_ALIAS/hello-world" --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP")
+  echo "Test Curl Status: $CURL_STATUS, Deployment Status: $DEPLOYMENT_STATUS, Cert Status: $SSL_STATUS"
+  if [ "$CURL_STATUS" = "200" ]; then
+    break
+  fi
+  sleep 10
+done
+set -e
 
 if [ "$CERTIFICATES" = "managed" ]; then
   echo "# To send an EXTERNAL test request, execute following command:"
