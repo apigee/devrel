@@ -20,15 +20,21 @@ A simple example of a pipeline can be found [here](./references/js-callout/pipel
 
 ### Variables
 
-Currently an Apigee Edge (4G) is used to run the tests. The following variables
- are available for this.
+Currently, pipelines tests can run against Apigee Edge or Apigee X. The
+ following variables are available for this:
 
-| Variable    | Description                               |
-| ----------- | ----------------------------------------- |
-| APIGEE_ORG  | The name of the Apigee organization       |
-| APIGEE_ENV  | The name of the Apigee environment        |
-| APIGEE_USER | The username of an admin user in this org |
-| APIGEE_PASS | The password for the admin user           |
+| Variable          | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| APIGEE_ORG        | The name of the Apigee Edge organization              |
+| APIGEE_ENV        | The name of the Apigee Edge environment               |
+| APIGEE_USER       | The username of an admin user in this Apigee Edge org |
+| APIGEE_PASS       | The password of the user above                        |
+| APIGEE_X_ORG      | The name of the Apigee X organization                 |
+| APIGEE_X_ENV      | The name of the Apigee X environment                  |
+| APIGEE_X_HOSTNAME | The hostname of the corresponding Apigee X env group  |
+
+The pipeline context also has the `gcloud` context of a serviceaccount user
+ that is an Apigee Administrator for the `APIGEE_X_ORG` Apigee organization.
 
 ## Static Checks
 

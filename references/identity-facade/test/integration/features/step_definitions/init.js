@@ -17,7 +17,6 @@
 const apickli = require('apickli')
 const {
   Before,
-  Given,
   setDefaultTimeout
 } = require('cucumber')
 
@@ -25,7 +24,6 @@ const org = process.env.APIGEE_ORG
 const env = process.env.APIGEE_ENV
 const clientId = process.env.TEST_APP_CONSUMER_KEY
 const clientSecret = process.env.TEST_APP_CONSUMER_SECRET
-const spaceCharacters = '  '
 const username = 'johndoe'
 const password = 'dummy-password'
 const basePath = '/v1/oauth20'

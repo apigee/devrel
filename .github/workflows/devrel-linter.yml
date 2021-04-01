@@ -32,18 +32,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Run Super-Linter
-        uses: docker://github/super-linter:v3.13.1
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_JAVASCRIPT_STANDARD: false
-          MARKDOWN_CONFIG_FILE: .markdown-lint.yml
-
       - name: Check all files are licensed
         uses: ./tools/pipeline-linter
         with:
           pipeline-action: check-license.sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Linter dependencies
+        run: npm install
+
+      - name: Run Super-Linter
+        uses: docker://github/super-linter:v3
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          VALIDATE_GHERKIN: false
+          VALIDATE_JSCPD: false
+          LINTER_RULES_PATH: '.'
 
       - name: Check README and CODEOWNER index
         uses: ./tools/pipeline-linter

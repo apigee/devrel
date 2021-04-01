@@ -19,8 +19,17 @@ extends:
   - google
   - prettier
 overrides:
+  - files:
+      [
+        "references/identity-facade/test/integration/features/step_definitions/*.js",
+        "references/oidc-mock/test/integration/features/step_definitions/*.js",
+      ]
+    parserOptions:
+      ecmaVersion: 8
+    rules:
+      new-cap: 0
   - files: "**/resources/jsc/*.js"
     rules:
       no-var: 0
-      node: false
-      es6: false
+      node: 0
+      es6: 0

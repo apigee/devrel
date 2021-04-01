@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
  Copyright 2020 Google LLC
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +10,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault name="RF-InvalidRequest-Redirect">
-    <FaultResponse>
-        <Set>
-            <Headers>
-                <Header name="Location">{oidc.flow.authorize.redirect_uri}?error=invalid_request</Header>
-            </Headers>
-            <StatusCode>302</StatusCode>
-            <ReasonPhrase>Found</ReasonPhrase>
-        </Set>
-    </FaultResponse>
-    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
-</RaiseFault>
+<AssignMessage name="AM.GCPAudience">
+    <AssignVariable>
+        <Name>gcp.target_audience</Name>
+        <Value>@TargetURL@</Value>
+    </AssignVariable>
+</AssignMessage>
+

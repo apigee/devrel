@@ -23,22 +23,13 @@ Please refer to the documentation for the latest usage.
 
 ## Usage
 
-You need to set up a PROJECT environment variable.
+**Note:** To customize your installation with optional configuration parameters
+see below.
+
+You need to set up a `PROJECT` environment variable.
 
 ```sh
 export PROJECT=<gcp-project-name>
-```
-
-### Optional Arguments
-
-The following arguments can all be overridden:
-
-```sh
-export NETWORK=
-export SUBNET=
-export REGION=
-export ZONE=
-export AX_REGION=
 ```
 
 ```sh
@@ -65,7 +56,7 @@ the load balancing infrastructure. You can use the example `curl` command
 to run it until 200 OK is returned to ensure that Apigee X install
 is fully completed.
 
-Sample Output:
+Sample Output (using the self-signed certificate option, see below):
 
 ```sh
 export RUNTIME_IP=203.0.113.10
@@ -90,3 +81,45 @@ you need:
 1. Add the `RUNTIME_SSL_CERT` certificate your machine truststore;
 2. Add the `RUNTIME_IP` with the `RUNTIME_HOST_ALIAS` to
 your machine's `/etc/hosts` file.
+
+## Optional Customization
+
+The following arguments can all be overridden (otherwise the indicated defaults
+are used):
+
+### Networking
+
+You can override the network and subnetwork used to peer your Apigee X organization:
+
+```sh
+export NETWORK=default
+export SUBNET=default
+
+export ENVOY_MACHINE_TYPE=e2-micro
+export ENVOY_PREEMPTIBLE=true
+```
+
+### Regions and Zones
+
+You can override the following locations:
+
+```sh
+# Used for regional resources like routers and subnets
+export REGION=europe-west1
+# Used as the Apigee X runtime location (trial orgs are zonal only)
+export ZONE=europe-west1-b
+# Used as the Apigee alalytics region (see docs for allowed values)
+export AX_REGION=europe-west1
+```
+
+### Certificates and Hostname
+
+The following certificate options are supported:
+
+<!-- markdownlint-disable MD013 -->
+|Mode|Enviromment Variables Provided|Hostname|Certificates|
+|---|---|---|---|
+|Default|None|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|self-signed|
+|User-supplied|RUNTIME_SSL_CERT and RUNTIME_SSL_KEY|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|as supplied|
+|Google Managed|MANAGED_CERTS=true|\[external ip\].nip.io (use nip.io for test purposes only)|Google managed|
+<!-- markdownlint-enable MD013 -->
