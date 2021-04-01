@@ -72,20 +72,35 @@ export NETWORK
 export REGION
 export ZONE
 export AX_REGION
-
 export SUBNET=${SUBNET:-default}
+export ENVOY_MACHINE_TYPE=${ENVOY_MACHINE_TYPE:-e2-micro}
+export ENVOY_PREEMPTIBLE=${ENVOY_PREEMPTIBLE:-true}
+export MANAGED_CERTS=${MANAGED_CERTS:-false}
 
+echo ""
 echo "Resolved Configuration: "
 echo "  NETWORK=$NETWORK"
 echo "  REGION=$REGION"
 echo "  ZONE=$ZONE"
 echo "  AX_REGION=$AX_REGION"
+echo "  ENVOY_MACHINE_TYPE=$ENVOY_MACHINE_TYPE"
+echo "  ENVOY_PREEMPTIBLE=$ENVOY_PREEMPTIBLE"
+echo "  MANAGED_CERTS=$MANAGED_CERTS"
 echo ""
+
+echo "Do you want to continue with the config above? (y/N)"
+
+read -n 1 -r REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "starting provisioning"
+else
+  exit 1
+fi
 
 export MIG=apigee-envoy-$REGION
 
 if [ "$MANAGED_CERTS" = "true" ]; then
-  echo "Using Google Managed certificates"
+  echo "Using Google-managed certificates"
 else
   export RUNTIME_SSL_CERT=${RUNTIME_SSL_CERT:-~/mig-cert.pem}
   export RUNTIME_SSL_KEY=${RUNTIME_SSL_KEY:-~/mig-key.pem}
@@ -174,11 +189,15 @@ set +e
 
 echo "Step 7c.1: Create an instance template"
 
+if [ "$ENVOY_PREEMPTIBLE" = "true" ]; then
+  PREEMPTIBLE_FLAG="--preemptible"
+fi
+
 gcloud compute instance-templates create "$MIG" \
   --region "$REGION" --network "$NETWORK" \
   --subnet "$SUBNET" \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
-  --machine-type n1-standard-1 --image-family centos-7 \
+  --machine-type "$ENVOY_MACHINE_TYPE" "$PREEMPTIBLE_FLAG" --image-family centos-7 \
   --image-project centos-cloud --boot-disk-size 20GB \
   --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script.sh --project "$PROJECT"
 
