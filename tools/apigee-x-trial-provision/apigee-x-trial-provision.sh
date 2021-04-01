@@ -56,7 +56,7 @@ if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
 # TODO: [ ] right now single instance is expected
   ZONE=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances|jq --raw-output '.instances[0].location')
 
-  echo "Deriving REGION from ZONE, as Envoy instances should be in the same region as your Apigee runtime instance"
+  echo "Deriving REGION from ZONE, as Proxy instances should be in the same region as your Apigee runtime instance"
   REGION=$(echo "$ZONE" | awk '{gsub(/-[a-z]+$/,"");print}')
 else
   echo "Didn't find an active Apigee Organization. Using environment variable defaults"
@@ -72,8 +72,8 @@ export REGION
 export ZONE
 export AX_REGION
 export SUBNET=${SUBNET:-default}
-export ENVOY_MACHINE_TYPE=${ENVOY_MACHINE_TYPE:-e2-micro}
-export ENVOY_PREEMPTIBLE=${ENVOY_PREEMPTIBLE:-false}
+export PROXY_MACHINE_TYPE=${PROXY_MACHINE_TYPE:-e2-micro}
+export PROXY_PREEMPTIBLE=${PROXY_PREEMPTIBLE:-false}
 export CERTIFICATES=${CERTIFICATES:-managed}
 
 CERT_DISPLAY=$CERTIFICATES
@@ -99,24 +99,24 @@ echo "  ORG=$ORG"
 echo "  REGION=$REGION"
 echo "  ZONE=$ZONE"
 echo "  AX_REGION=$AX_REGION"
-echo "  ENVOY_MACHINE_TYPE=$ENVOY_MACHINE_TYPE"
-echo "  ENVOY_PREEMPTIBLE=$ENVOY_PREEMPTIBLE"
+echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
+echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
 echo "  CERTIFICATES=$CERT_DISPLAY"
 echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 echo ""
 
 if [ "$1" != "--quiet" ]; then
-  echo "Do you want to continue with the config above? (y/N)"
+  read -p "Do you want to continue with the config above? [Y/n]: " -n 1 -r REPLY; printf "\n"
+  REPLY=${REPLY:-Y}
 
-  read -n 1 -r REPLY
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     echo "starting provisioning"
   else
     exit 1
   fi
 fi
 
-export MIG=apigee-envoy-$REGION
+export MIG=apigee-proxy-$REGION
 
 
 
@@ -196,28 +196,28 @@ if [ "$APIGEE_ENDPOINT" == "null" ]; then
 fi
 
 
-echo "Step 7c: Launch the Envoy proxy"
+echo "Step 7c: Launch the Load Balancer proxy VMs"
 
 set +e # TODO: [ ] Properly handle existing GCP resources
 
 echo "Step 7c.1: Create an instance template"
 
-if [ "$ENVOY_PREEMPTIBLE" = "true" ]; then
+if [ "$PROXY_PREEMPTIBLE" = "true" ]; then
   PREEMPTIBLE_FLAG=" --preemptible"
 fi
 
 gcloud compute instance-templates create "$MIG" \
   --region "$REGION" --network "$NETWORK" \
   --subnet "$SUBNET" \
-  --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
-  --machine-type "$ENVOY_MACHINE_TYPE""$PREEMPTIBLE_FLAG" \
+  --tags=https-server,apigee-network-proxy,gke-apigee-proxy \
+  --machine-type "$PROXY_MACHINE_TYPE""$PREEMPTIBLE_FLAG" \
   --image-family centos-7 \
   --image-project centos-cloud --boot-disk-size 20GB \
   --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script.sh --project "$PROJECT"
 
 echo "Step 7c.2: Create a managed instance group"
 gcloud compute instance-groups managed create "$MIG" \
-  --base-instance-name apigee-envoy \
+  --base-instance-name apigee-proxy \
   --size 2 --template "$MIG" --region "$REGION" --project "$PROJECT"
 
 echo "Step 7c.3: Configure autoscaling for the group"
@@ -240,8 +240,8 @@ echo "Step 7d.2: Get a reserved IP address"
 RUNTIME_IP=$(gcloud compute addresses describe lb-ipv4-vip-1 --format="get(address)" --global --project "$PROJECT")
 export RUNTIME_IP
 
-echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Envoy"
-gcloud compute firewall-rules create k8s-allow-lb-to-apigee-envoy \
+echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
+gcloud compute firewall-rules create k8s-allow-lb-to-apigee-proxy \
   --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" \
   --network "$NETWORK" --allow=tcp:443 \
   --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy --project "$PROJECT"
@@ -283,35 +283,35 @@ fi
 echo "Step 7f: Create a global Load Balancer"
 
 echo "Step 7f.1: Create a health check"
-gcloud compute health-checks create https hc-apigee-envoy-443 \
+gcloud compute health-checks create https hc-apigee-proxy-443 \
   --port 443 --global \
   --request-path /healthz/ingress --project "$PROJECT"
 
-echo "Step 7f.2: Create a backend service called 'apigee-envoy-backend'"
+echo "Step 7f.2: Create a backend service called 'apigee-proxy-backend'"
 
-gcloud compute backend-services create apigee-envoy-backend \
-  --protocol HTTPS --health-checks hc-apigee-envoy-443 \
+gcloud compute backend-services create apigee-proxy-backend \
+  --protocol HTTPS --health-checks hc-apigee-proxy-443 \
   --port-name https --timeout 60s --connection-draining-timeout 300s --global --project "$PROJECT"
 
-echo "Step 7f.3: Add the Envoy instance group to your backend service"
-gcloud compute backend-services add-backend apigee-envoy-backend \
+echo "Step 7f.3: Add the Load Balancer Proxy VM instance group to your backend service"
+gcloud compute backend-services add-backend apigee-proxy-backend \
   --instance-group "$MIG" \
   --instance-group-region "$REGION" \
   --balancing-mode UTILIZATION --max-utilization 0.8 --global --project "$PROJECT"
 
 echo "Step 7f.4: Create a Load Balancing URL map"
-gcloud compute url-maps create apigee-envoy-proxy-map \
-  --default-service apigee-envoy-backend --project "$PROJECT"
+gcloud compute url-maps create apigee-proxy-map \
+  --default-service apigee-proxy-backend --project "$PROJECT"
 
 echo "Step 7f.5: Create a Load Balancing target HTTPS proxy"
-gcloud compute target-https-proxies create apigee-envoy-https-proxy \
-  --url-map apigee-envoy-proxy-map \
+gcloud compute target-https-proxies create apigee-proxy-https-proxy \
+  --url-map apigee-proxy-map \
   --ssl-certificates apigee-ssl-cert --project "$PROJECT"
 
 echo "Step 7f.6: Create a global forwarding rule"
-gcloud compute forwarding-rules create apigee-envoy-https-lb-rule \
+gcloud compute forwarding-rules create apigee-proxy-https-lb-rule \
   --address lb-ipv4-vip-1 --global \
-  --target-https-proxy apigee-envoy-https-proxy --ports 443 --project "$PROJECT"
+  --target-https-proxy apigee-proxy-https-proxy --ports 443 --project "$PROJECT"
 
 set -e
 
