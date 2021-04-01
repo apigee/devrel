@@ -32,6 +32,9 @@ You need to set up a `PROJECT` environment variable.
 export PROJECT=<gcp-project-name>
 ```
 
+Then you can run the script. You can use the `--quiet` option to skip the manual
+confirmation step.
+
 ```sh
  ./apigee-x-trial-provision.sh
 ```
@@ -114,12 +117,13 @@ export AX_REGION=europe-west1
 
 ### Certificates and Hostname
 
-The following certificate options are supported:
+The following certificate options are supported and can be configured through
+the `CERTIFICATES` environment variable:
 
 <!-- markdownlint-disable MD013 -->
-|Mode|Enviromment Variables Provided|Hostname|Certificates|
-|---|---|---|---|
-|Default|None|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|self-signed|
-|User-supplied|RUNTIME_SSL_CERT and RUNTIME_SSL_KEY|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|as supplied|
-|Google Managed|MANAGED_CERTS=true|\[external ip\].nip.io (use nip.io for test purposes only)|Google managed|
+|`CERTIFICATES` value|Description|Hostname|
+|---|---|---|
+|`managed` (default)|Google-managed Certificates|\[external ip\].nip.io (use nip.io for test purposes only)|
+|`generated`|Auto-Generated Self-Signed Certs|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
+|`supplied`|User-supplied in `RUNTIME_SSL_CERT` and `RUNTIME_SSL_KEY`|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
 <!-- markdownlint-enable MD013 -->
