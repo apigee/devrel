@@ -14,9 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if ! [ -x "$(command -v jq)" ]; then
+  >&2 echo "ABORTED: Required command is not on your PATH: jq."
+  >&2 echo "         Please install it before you continue."
+  exit 2
+fi
 
 if [ "$1" != "--quiet" ]; then
-  read -p "Are you sure you want to delete your entire Apigee trial setup? [Y/n]: " -n 1 -r REPLY; printf "\n"
+  read -p "Are you sure you want to delete your entire Apigee trial setup? [y/N]: " -n 1 -r REPLY; printf "\n"
   REPLY=${REPLY:-Y}
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -26,7 +31,7 @@ if [ "$1" != "--quiet" ]; then
   fi
 fi
 
-gcloud compute forwarding-rules delete apigee-proxy-https-lb-rule --global -q --project "$PROJECT"
+gcloud compute forwarding-rules delete apigee-proxy-https-lb-rule --global -q --project "$PROJECT" || echo ""
 gcloud compute target-https-proxies delete apigee-proxy-https-proxy -q --project "$PROJECT"
 gcloud compute url-maps delete apigee-proxy-map -q --project "$PROJECT"
 gcloud compute backend-services delete apigee-proxy-backend --global -q --project "$PROJECT"

@@ -28,8 +28,8 @@ steps:
   - 'REGION=$_REGION'
   - 'ZONE=$_ZONE'
   - 'AX_REGION=$_AX_REGION'
-  - 'RUNTIME_SSL_CERT=$_RUNTIME_SSL_CERT'
-  - 'RUNTIME_SSL_KEY=$_RUNTIME_SSL_KEY'
+  - 'RUNTIME_TLS_CERT=$_RUNTIME_TLS_CERT'
+  - 'RUNTIME_TLS_KEY=$_RUNTIME_TLS_KEY'
   - 'CERTIFICATES=$_CERTIFICATES'
 - name: gcr.io/cloud-builders/gcloud
   id: 'Delete Resources'
@@ -39,9 +39,11 @@ steps:
     - |
       if [ "$_DELETE_AFTER_VALIDATION" == "true" ]
       then
-        ./apigee-x-trial-delete.sh --quiet
+        apt-get update && apt-get install jq -y && \
+          ./apigee-x-trial-delete.sh --quiet
       fi
   env:
+    - 'PROJECT=$PROJECT_ID'
     - 'DELETE_APIGEE_ORG=$_DELETE_APIGEE_ORG'
 timeout: 1800s #30min
 substitutions:
@@ -50,8 +52,8 @@ substitutions:
     _REGION: europe-west1
     _ZONE: europe-west1-b
     _AX_REGION: europe-west1
-    _RUNTIME_SSL_CERT: ''
-    _RUNTIME_SSL_KEY: ''
+    _RUNTIME_TLS_CERT: ''
+    _RUNTIME_TLS_KEY: ''
     _CERTIFICATES: ''
     _DELETE_AFTER_VALIDATION: 'false'
     _DELETE_APIGEE_ORG: 'false'
