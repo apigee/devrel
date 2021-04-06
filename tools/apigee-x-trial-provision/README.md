@@ -94,6 +94,9 @@ You can override the network and subnetwork used to peer your Apigee X organizat
 ```sh
 export NETWORK=default
 export SUBNET=default
+
+export ENVOY_MACHINE_TYPE=e2-micro
+export ENVOY_PREEMPTIBLE=true
 ```
 
 ### Regions and Zones

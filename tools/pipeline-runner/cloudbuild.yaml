@@ -69,6 +69,9 @@ steps:
   env:
   - 'APIGEE_ORG=$_APIGEE_ORG'
   - 'APIGEE_ENV=$_APIGEE_ENV'
+  - 'APIGEE_X_ORG=$_APIGEE_X_ORG'
+  - 'APIGEE_X_ENV=$_APIGEE_X_ENV'
+  - 'APIGEE_X_HOSTNAME=$_APIGEE_X_HOSTNAME'
   - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   id: 'Create GH Comment or Issue'
@@ -96,6 +99,9 @@ timeout: 2400s #40min
 substitutions:
   _APIGEE_ORG: my-org
   _APIGEE_ENV: my-env
+  _APIGEE_X_ORG: my-org
+  _APIGEE_X_ENV: my-env
+  _APIGEE_X_HOSTNAME: my-hostname
   _HYBRID_GCP_PROJECT: my-gcp-project
   _CI_PROJECT: "all" # all|[path]
   _CREATE_GH_ISSUE: "false" # true|false
