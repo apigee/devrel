@@ -142,7 +142,6 @@ CIDR: 10.0.0.0/16 CIDR IP Range: 10.0.0.0 - 10.0.255.255
 
 NOTE: GCP recommended naming convention: <https://cloud.google.com/solutions/best-practices-vpc-design>
 
-
 ### Bastion VM in a default network
 
 As Apigee X instance provisioning is a long-running operation, we would recommend to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting.
