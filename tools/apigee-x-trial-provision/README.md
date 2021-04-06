@@ -152,7 +152,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
 
 1. Accept defaults and press Create button at the bottom of the page
 
-1. SSH into the Bastion VM instance-1. Press the SSH button. 
+1. SSH into the Bastion VM instance-1. Press the SSH button.
 
 1. Login into your account to have necessary permissions.
 
@@ -280,7 +280,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
 
 ### Send request to a private endpoint
 
-1. In the GCP Console, Open Compute Engine/Instance templates page. 
+1. In the GCP Console, Open Compute Engine/Instance templates page.
 
 1. Click at the apigee-proxy-us-central1 template to open its properties.
 
