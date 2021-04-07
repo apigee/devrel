@@ -46,9 +46,9 @@ export GKE_CLUSTER_MACHINE_TYPE='e2-standard-4'
 # Apigee Config
 export ENV_NAME='test1'
 export ENV_GROUP_NAME='test'
-# Subdomain will be created for every environment group
-# e.g. test.$PROJECT_ID.example.com
-export DNS_NAME="$PROJECT_ID.example.com"
+# A subdomain will be created for every environment group
+# e.g. test.1-2-3-4.nip.io (where 1.2.3.4 is the IP of the isto ingress)
+export DNS_NAME="my-ingress-ip.nip.io" # where `my-ingress-ip` is determined at runtime
 # Choose between 'external' and 'internal' ingress
 export INGRESS_TYPE="external"
 ```
