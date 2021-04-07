@@ -145,7 +145,7 @@ echo "  CERTIFICATES=$CERT_DISPLAY"
 echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 echo ""
 
-if [ ! "$QUIET" == "Y" ]; then
+if [ ! "$QUIET" = "Y" ]; then
   read -p "Do you want to continue with the config above? [Y/n]: " -n 1 -r REPLY; printf "\n"
   REPLY=${REPLY:-Y}
 

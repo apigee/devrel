@@ -131,16 +131,20 @@ the `CERTIFICATES` environment variable:
 ## Apigee X instance with Custom Networking Provisioning
 <!-- markdownlint-disable MD013 -->
 
-## VPC Network Planning
+### VPC Network Planning
 
-There is always a step to plan your network with regards to CIDR allocations.
+When working with custom networks, the first step we do is to plan a layout of your your network with regards to CIDR allocations. It is important because as a rule, allocated CIDR ranges should not overlap between VPCs and Kubernetes clusters. In oour case, there are three decisions to make:
 
-GCP/GKE
-CIDR: 10.0.0.0/14 CIDR IP Range: 10.0.0.0 - 10.3.255.255
+| Custom Network | exco-vpc |
+|---|---|
+| Network CIDR | 10.0.0.0/14 For routes and firewall rules, etc |
+|Subnet | exco-vpc-dev-subnet |
+| Subnet Primary Range | CIDR: 10.0.0.0/16 CIDR IP Range: 10.0.0.0 - 10.0.255.255, 65,536 IP addresses |
+| Apigee X Peering Range | /32 -- a default peering range for Apigee X Trial installation |
 
-CIDR: 10.0.0.0/16 CIDR IP Range: 10.0.0.0 - 10.0.255.255
+For details on peering range, see: [Understanding of Peering Ranges](https://cloud.google.com/apigee/docs/api-platform/system-administration/peering-ranges)
 
-NOTE: GCP recommended naming convention: <https://cloud.google.com/solutions/best-practices-vpc-design>
+For extended advise on the topic, including GCP recommended naming convention, see: <https://cloud.google.com/solutions/best-practices-vpc-design>
 
 ### Bastion VM in a default network
 
@@ -175,7 +179,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
     export SUBNET=exco-vpc-dev-subnet
 
     export REGION=us-central1
-    export ZONE=us-central1
+    export ZONE=us-central1-b
     export AX_REGION=us-central1
 
     export NETWORK_CIDR=10.0.0.0/14
@@ -194,7 +198,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
     Output:
 
     ```sh
-    Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-da1a8d6ae8b2/global/networks/exco-vpc].
+    Created [https://www.googleapis.com/compute/v1/projects/<project>/global/networks/exco-vpc].
     NAME      SUBNET_MODE  BGP_ROUTING_MODE  IPV4_RANGE  GATEWAY_IPV4
     exco-vpc  CUSTOM       REGIONAL
     ...
@@ -209,7 +213,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
     Output:
 
     ```sh
-    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-da1a8d6ae8b2/global/firewalls/exco-vpc-allow-internal].
+    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/exco-vpc-allow-internal].
     Creating firewall...done.                                                                                                
     NAME                     NETWORK   DIRECTION  PRIORITY  ALLOW         DENY  DISABLED
     exco-vpc-allow-internal  exco-vpc  INGRESS    1000      tcp,udp,icmp        False
@@ -222,7 +226,7 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
     Output:
 
     ```sh
-    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-da1a8d6ae8b2/global/firewalls/fr-exco-vpc-ssh].
+    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/fr-exco-vpc-ssh].
     Creating firewall...done.                                                                                                
     NAME             NETWORK   DIRECTION  PRIORITY  ALLOW   DENY  DISABLED
     fr-exco-vpc-ssh  exco-vpc  INGRESS    1000      tcp:22        False
@@ -240,12 +244,12 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
       Output:
 
       ```sh
-      Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-da1a8d6ae8b2/regions/us-central1/subnetworks/exco-vpc-dev-subnet].
+      Created [https://www.googleapis.com/compute/v1/projects/<project>/regions/us-central1/subnetworks/exco-vpc-dev-subnet].
       NAME                 REGION       NETWORK   RANGE
       exco-vpc-dev-subnet  us-central1  exco-vpc  10.0.0.0/16
       ```
 
-### Apigee X Org and GXLB
+### Create Apigee X org and LB in custom network
 
 1. Install required utilities
 
@@ -278,11 +282,11 @@ As Apigee X instance provisioning is a long-running operation, we would recommen
 
 ## Troubleshooting section
 
-### Send request to a private endpoint
+### Test connectivity from proxy VM to private Apigee endpoint
 
 1. In the GCP Console, Open Compute Engine/Instance templates page.
 
-1. Click at the apigee-proxy-us-central1 template to open its properties.
+1. Click on the apigee-proxy-[region] template
 
 1. Identify and make a note of the `Custom Metadata` section property called `ENDPOINT`, an IP address that server API requests.
 
