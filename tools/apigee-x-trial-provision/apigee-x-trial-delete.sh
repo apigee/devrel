@@ -40,12 +40,12 @@ gcloud compute ssl-certificates delete apigee-ssl-cert --global -q --project "$P
 gcloud compute firewall-rules delete k8s-allow-lb-to-apigee-proxy -q --project "$PROJECT"
 gcloud compute addresses delete lb-ipv4-vip-1 --global -q --project "$PROJECT"
 
-INSTANCE_GROUP_RESPONSE="$(gcloud compute instance-groups managed list --format="json")"
+INSTANCE_GROUP_RESPONSE="$(gcloud compute instance-groups managed list --format="json" --project "$PROJECT")"
 gcloud compute instance-groups managed delete "$(echo "$INSTANCE_GROUP_RESPONSE" | jq -r '.[0].name')" \
-  --region "$(echo "$INSTANCE_GROUP_RESPONSE" | jq -r '.[0].region')" -q
+  --region "$(echo "$INSTANCE_GROUP_RESPONSE" | jq -r '.[0].region')" -q --project "$PROJECT"
 
-INSTANCE_TEMPLATE_RESPONSE="$(gcloud compute instance-templates list --format="json")"
-gcloud compute instance-templates delete "$(echo "$INSTANCE_TEMPLATE_RESPONSE" | jq -r '.[0].name')" -q
+INSTANCE_TEMPLATE_RESPONSE="$(gcloud compute instance-templates list --format="json" --project "$PROJECT")"
+gcloud compute instance-templates delete "$(echo "$INSTANCE_TEMPLATE_RESPONSE" | jq -r '.[0].name')" -q --project "$PROJECT"
 
 if [ "$DELETE_APIGEE_ORG" = "true" ]; then
     gcloud alpha apigee organizations delete "$PROJECT" --project "$PROJECT"

@@ -116,6 +116,7 @@ export PROXY_MACHINE_TYPE=${PROXY_MACHINE_TYPE:-e2-micro}
 export PROXY_PREEMPTIBLE=${PROXY_PREEMPTIBLE:-false}
 export PROXY_MIG_MIN_SIZE=${PROXY_MIG_MIN_SIZE:-1}
 export CERTIFICATES=${CERTIFICATES:-managed}
+export ENV_GROUP_NAME='eval-group'
 
 CERT_DISPLAY=$CERTIFICATES
 
@@ -129,7 +130,7 @@ if [ "$CERTIFICATES" = "provided" ];then
 fi
 
 if [ "$CERTIFICATES" = "managed" ]; then
-  export RUNTIME_HOST_ALIAS="[external-ip].nip.io"
+  export RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME.[external-ip].nip.io"
 else
   export RUNTIME_HOST_ALIAS=${RUNTIME_HOST_ALIAS:-$ORG-eval.apigee.net}
 fi
@@ -160,7 +161,6 @@ if [ ! "$QUIET" = "Y" ]; then
 fi
 
 export MIG=apigee-proxy-$REGION
-
 
 
 echo "Validation: valid zone value: $ZONE"
@@ -293,7 +293,7 @@ echo "Step 7e: Upload credentials:"
 
 if [ "$CERTIFICATES" = "managed" ]; then
   echo "Step 7e.1: Using Google managed certificate:"
-  RUNTIME_HOST_ALIAS=$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
+  RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME".$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
   gcloud compute ssl-certificates create apigee-ssl-cert \
     --domains="$RUNTIME_HOST_ALIAS" --project "$PROJECT"
 elif [ "$CERTIFICATES" = "generated" ]; then
@@ -314,12 +314,12 @@ else
 fi
 
 CURRENT_HOST_ALIAS=$(curl -X GET --silent -H "Authorization: Bearer $(token)"  \
-    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/eval-group | jq -r '.hostnames[0]')
+    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/$ENV_GROUP_NAME | jq -r '.hostnames[0]')
 
 if [ "$RUNTIME_HOST_ALIAS" != "$CURRENT_HOST_ALIAS" ]; then
   echo "setting hostname on env group to $RUNTIME_HOST_ALIAS"
   curl -X PATCH --silent -H "Authorization: Bearer $(token)"  \
-    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/eval-group \
+    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/$ENV_GROUP_NAME \
     -d "{\"hostnames\": [\"$RUNTIME_HOST_ALIAS\"]}"
 fi
 
