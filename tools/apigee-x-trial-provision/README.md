@@ -150,19 +150,17 @@ For extended advise on the topic, including GCP recommended naming convention, s
 
 As Apigee X instance provisioning is a long-running operation, we would recommend to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting.
 
+We are following Best Security Practices here to use a Bastion host and a Service Account to execute gcloud commands and not to expose operator credentials.
+
 1. In the GCP Console, select Compute Engine/VM instances hamburger menu item.
+
+1. At the Identity and API Access section, select `Allow full access to all Cloud APIs` for the selected by default `Compute Engine Default Service Account`
 
 1. Press Create Instance button
 
 1. Accept defaults and press Create button at the bottom of the page
 
 1. SSH into the Bastion VM instance-1. Press the SSH button.
-
-1. Login into your account to have necessary permissions.
-
-    ```sh
-    gcloud auth login --quiet
-    ```
 
 ### Custom Network and Subnet Creation
 
