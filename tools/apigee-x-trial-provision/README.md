@@ -158,7 +158,7 @@ We are going to:
 
 * create a Service Account;
 * add Editor and Network Admin roles to it;
-* provision a VM with scope and service account that will allow execute the provisioning script successfully; 
+* provision a VM with scope and service account that will allow execute the provisioning script successfully;
 * invoke SSH session at the VM.
 
 1. In the GCP Console, activate Cloud Shell
@@ -169,7 +169,7 @@ We are going to:
 export PROJECT=<your-project-id>
 ```
 
-1. Create a service account for installation purposes. 
+1. Create a service account for installation purposes.
 
 Click at the Authorize button when asked.
 
@@ -177,7 +177,8 @@ Click at the Authorize button when asked.
 export INSTALLER_SA_ID=installer-sa
 
 gcloud iam service-accounts create $INSTALLER_SA_ID
-````
+```
+
 1. Add IAM policy bindings with required roles
 
 ```sh
