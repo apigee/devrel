@@ -204,7 +204,7 @@ gcloud compute instances create bastion \
 
 ### Custom Network and Subnet Creation
 
-1. Define PROJECT variable by the ID of your project
+1. Define a `PROJECT` variable that holds the ID of your project.
 
     ```sh
     export PROJECT=<project-id>
@@ -228,9 +228,7 @@ gcloud compute instances create bastion \
 
     ```sh
     gcloud compute networks create $NETWORK \
-        --subnet-mode=custom \
-        --bgp-routing-mode=regional \
-        --mtu=1460
+        --subnet-mode=custom
     ```
 
     Output:
