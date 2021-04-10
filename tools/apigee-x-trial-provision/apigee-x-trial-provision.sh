@@ -17,6 +17,46 @@
 
 set -e
 
+# options
+pps=""
+while(($#)); do
+case "$1" in
+  -p|--project)
+    PROJECT="$2"
+    shift 2;;
+
+  -n|--network)
+    NETWORK="$2"
+    shift 2;;
+
+  -r|--region)
+    REGION="$2"
+    shift 2;;
+
+  -z|--zone)
+    ZONE="$2"
+    shift 2;;
+
+  -x|--ax-region)
+    AX_REGION="$2"
+    shift 2;;
+
+  -c|--certificates)
+    CERTIFICATES="$2"
+    shift 2;;
+    
+  -q|--quiet)
+    QUIET=Y
+    shift;;
+
+  *)
+    pps="$pps $1"
+    shift;;
+esac
+done
+eval set -- "$pps"
+
+
 if ! [ -x "$(command -v jq)" ]; then
   >&2 echo "ABORTED: Required command is not on your PATH: jq."
   >&2 echo "         Please install it before you continue."
@@ -105,7 +145,7 @@ echo "  CERTIFICATES=$CERT_DISPLAY"
 echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 echo ""
 
-if [ "$1" != "--quiet" ]; then
+if [ ! "$QUIET" = "Y" ]; then
   read -p "Do you want to continue with the config above? [Y/n]: " -n 1 -r REPLY; printf "\n"
   REPLY=${REPLY:-Y}
 

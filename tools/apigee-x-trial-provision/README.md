@@ -127,3 +127,182 @@ the `CERTIFICATES` environment variable:
 |`generated`|Auto-Generated Self-Signed Certs|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
 |`supplied`|User-supplied in `RUNTIME_SSL_CERT` and `RUNTIME_SSL_KEY`|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
 <!-- markdownlint-enable MD013 -->
+
+## Apigee X instance with Custom Networking Provisioning
+<!-- markdownlint-disable MD013 -->
+
+### VPC Network Planning
+
+When working with custom networks, the first step we do is to plan a layout of your your network with regards to CIDR allocations. It is important because as a rule, allocated CIDR ranges should not overlap between VPCs and Kubernetes clusters. In oour case, there are three decisions to make:
+
+| Custom Network | exco-vpc |
+|---|---|
+| Network CIDR | 10.0.0.0/14 For routes and firewall rules, etc |
+|Subnet | exco-vpc-dev-subnet |
+| Subnet Primary Range | CIDR: 10.0.0.0/16 CIDR IP Range: 10.0.0.0 - 10.0.255.255, 65,536 IP addresses |
+| Apigee X Peering Range | /32 -- a default peering range for Apigee X Trial installation |
+
+For details on peering range, see: [Understanding of Peering Ranges](https://cloud.google.com/apigee/docs/api-platform/system-administration/peering-ranges)
+
+For extended advise on the topic, including GCP recommended naming convention, see: <https://cloud.google.com/solutions/best-practices-vpc-design>
+
+### Bastion VM in a default network
+
+As Apigee X instance provisioning is a long-running operation, we would recommend to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting.
+
+We are following Best Security Practices here to use a Bastion host and a Service Account to execute gcloud commands and not to expose operator credentials.
+
+1. In the GCP Console, select Compute Engine/VM instances hamburger menu item.
+
+1. At the Identity and API Access section, select `Allow full access to all Cloud APIs` for the selected by default `Compute Engine Default Service Account`
+
+1. Press Create Instance button
+
+1. Accept defaults and press Create button at the bottom of the page
+
+1. SSH into the Bastion VM instance-1. Press the SSH button.
+
+### Custom Network and Subnet Creation
+
+1. Define PROJECT variable by the ID of your project
+
+    ```sh
+    export PROJECT=<project-id>
+    ```
+
+1. Define environment variables that describe network topology
+
+    ```sh
+    export NETWORK=exco-vpc
+    export SUBNET=exco-vpc-dev-subnet
+
+    export REGION=us-central1
+    export ZONE=us-central1-b
+    export AX_REGION=us-central1
+
+    export NETWORK_CIDR=10.0.0.0/14
+    export SUBNET_CIDR=10.0.0.0/16
+    ```
+
+1. GCP: Create a VPC Network
+
+    ```sh
+    gcloud compute networks create $NETWORK \
+        --subnet-mode=custom \
+        --bgp-routing-mode=regional \
+        --mtu=1460
+    ```
+
+    Output:
+
+    ```sh
+    Created [https://www.googleapis.com/compute/v1/projects/<project>/global/networks/exco-vpc].
+    NAME      SUBNET_MODE  BGP_ROUTING_MODE  IPV4_RANGE  GATEWAY_IPV4
+    exco-vpc  CUSTOM       REGIONAL
+    ...
+    ```
+
+1. Firewall Rules for internal, 22, and icmp traffic
+
+    ```sh
+    gcloud compute firewall-rules create $NETWORK-allow-internal --network $NETWORK --allow tcp,udp,icmp --source-ranges $NETWORK_CIDR
+    ```
+
+    Output:
+
+    ```sh
+    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/exco-vpc-allow-internal].
+    Creating firewall...done.                                                                                                
+    NAME                     NETWORK   DIRECTION  PRIORITY  ALLOW         DENY  DISABLED
+    exco-vpc-allow-internal  exco-vpc  INGRESS    1000      tcp,udp,icmp        False
+    ```
+
+    ```sh
+    gcloud compute firewall-rules create fr-$NETWORK-ssh --network $NETWORK --allow tcp:22
+    ```
+
+    Output:
+
+    ```sh
+    Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/fr-exco-vpc-ssh].
+    Creating firewall...done.                                                                                                
+    NAME             NETWORK   DIRECTION  PRIORITY  ALLOW   DENY  DISABLED
+    fr-exco-vpc-ssh  exco-vpc  INGRESS    1000      tcp:22        False
+    ```
+
+1. GCP: Create a network subnet
+
+      ```sh
+      gcloud compute networks subnets create $SUBNET \
+          --network=$NETWORK \
+          --range=$SUBNET_CIDR \
+          --region=$REGION
+      ```
+
+      Output:
+
+      ```sh
+      Created [https://www.googleapis.com/compute/v1/projects/<project>/regions/us-central1/subnetworks/exco-vpc-dev-subnet].
+      NAME                 REGION       NETWORK   RANGE
+      exco-vpc-dev-subnet  us-central1  exco-vpc  10.0.0.0/16
+      ```
+
+### Create Apigee X org and LB in custom network
+
+1. Install required utilities
+
+    ```sh
+    sudo apt install -y git jq
+    ```
+
+1. Fetch apigee-x-provision utility
+
+    ```sh
+    git clone https://github.com/apigee/devrel.git
+
+    cd ~/devrel/tools/apigee-x-trial-provision/
+    ```
+
+1. With Google-managed certificate
+
+    ```sh
+    ./apigee-x-trial-provision.sh \
+    --network $NETWORK \
+    --subnet $SUBNET \
+    --region $REGION \
+    --zone $ZONE \
+    --ax-region $AX_REGION \
+    --certificates=managed
+
+    ```
+
+1. Output of the provisioning command will provide you with a test request you can use to verify functionality of the Apigee X organization.
+
+## Troubleshooting section
+
+### Test connectivity from proxy VM to private Apigee endpoint
+
+1. In the GCP Console, Open Compute Engine/Instance templates page.
+
+1. Click on the apigee-proxy-[region] template
+
+1. Identify and make a note of the `Custom Metadata` section property called `ENDPOINT`, an IP address that server API requests.
+
+1. Open Compute Engine/VM instances page. Choose any of the `apigee-proxy-xxxx` VMs.
+
+1. SSH into it.
+
+1. Define convenience environment variables
+
+    ```sh
+    export ENDPOINT=10.229.56.2
+    export HOSTNAME=34-117-239-61.nip.io
+    ```
+
+1. Execute API request directly against apigee x runtime endpoint
+
+  ```sh
+  curl -k https://$HOSTNAME/hello-world  --resolve "$HOSTNAME:443:$ENDPOINT"
+  ```
+
+<!-- markdownlint-enable MD013 -->
