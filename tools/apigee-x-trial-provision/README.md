@@ -150,7 +150,7 @@ For extended advise on the topic, including GCP recommended naming convention, s
 
 This is an optional section. You can skip it if you know what you are doing. If it is your first time in GCP, follow these instructions.
 
-As Apigee X instance provisioning is a long-running operation, it is recommended to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting, at it would be able to access private networks IP addresses.
+As Apigee X instance provisioning is a long-running operation, it is recommended to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting, at it would be able to access private network addresses.
 
 We are following Best Security Practices here to use a Bastion host and a Service Account to execute gcloud commands and not to expose operator credentials. For Details, see <https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#best_practices>.
 
@@ -205,10 +205,12 @@ gcloud compute instances create bastion \
 
 ### Custom Network and Subnet Creation
 
-1. Define a `PROJECT` variable that holds the ID of your project.
+1. Define a `PROJECT` variable that holds the ID of your project and set $PROJECT as default.
 
     ```sh
     export PROJECT=<project-id>
+
+    gcloud config set project $PROJECT
     ```
 
 1. Define environment variables that describe network topology
