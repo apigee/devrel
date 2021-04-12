@@ -33,7 +33,6 @@ set_config_params() {
     export INGRESS_TYPE=${INGRESS_TYPE:='external'} # internal|external
 
     echo "🔧 Configuring Apigee hybrid"
-    export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:=e2-standard-4}
 
@@ -276,6 +275,13 @@ configure_network() {
     fi
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
     export INGRESS_IP
+
+    export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
+
+    echo "setting hostname on env group to $ENV_GROUP_NAME.$DNS_NAME"
+    curl -X PATCH --silent -H "Authorization: Bearer $(token)"  \
+      -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$PROJECT_ID"/envgroups/"$ENV_GROUP_NAME" \
+      -d "{\"hostnames\": [\"$ENV_GROUP_NAME.$DNS_NAME\"]}"
 
     if [ -z "$(gcloud dns managed-zones list --filter 'name=apigee-dns-zone' --format='get(name)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" ]]; then
@@ -529,7 +535,7 @@ EOF
     -d "{\"identities\":[\"serviceAccount:apigee-synchronizer@${PROJECT_ID}.iam.gserviceaccount.com\"]}"
 
     echo -n "🕵️‍♀️ Turn on trace logs"
-    curl -X POST -H "Authorization: Bearer $(token)" \
+    curl -X PATCH -H "Authorization: Bearer $(token)" \
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/traceConfig" \
     -d "{\"exporter\":\"CLOUD_TRACE\",\"endpoint\":\"${PROJECT_ID}\",\"sampling_config\":{\"sampler\":\"PROBABILITY\",\"sampling_rate\":0.5}}"
@@ -561,9 +567,13 @@ deploy_example_proxy() {
   echo "✅ Sample Proxy Deployed"
 
   echo "🤓 Try without DNS (first deployment takes a few seconds. Relax and breathe!):"
-  echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
 
-  echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
+  if echo "$DNS_NAME" | grep -q ".nip.io"; then
+   echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+  else
+    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+    echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
+  fi
 }
 
 delete_apigee_keys() {

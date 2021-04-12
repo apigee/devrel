@@ -79,7 +79,7 @@ gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
   --substitutions=_API_VERSION=google,_DEPLOYMENT_ORG=$PROJECT_ID,_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd-experiment/v1,BRANCH_NAME=experiment
 ```
 
-### Apigee SaaS
+### Apigee Edge
 
 Requires the Cloud Build API to be enabled and a Service Account with the
 following role:
