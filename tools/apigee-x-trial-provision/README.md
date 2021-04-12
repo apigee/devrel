@@ -148,26 +148,69 @@ For extended advise on the topic, including GCP recommended naming convention, s
 
 ### Bastion VM in a default network
 
-As Apigee X instance provisioning is a long-running operation, we would recommend to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting.
+This is an optional section. You can skip it if you know what you are doing. If it is your first time in GCP, follow these instructions.
 
-We are following Best Security Practices here to use a Bastion host and a Service Account to execute gcloud commands and not to expose operator credentials.
+As Apigee X instance provisioning is a long-running operation, it is recommended to use your working PC terminal or to provision a bastion VM. Bastion VM is also useful for troubleshooting, at it would be able to access private network addresses.
 
-1. In the GCP Console, select Compute Engine/VM instances hamburger menu item.
+We are following Best Security Practices here to use a Bastion host and a Service Account to execute gcloud commands and not to expose operator credentials. For Details, see <https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#best_practices>.
 
-1. At the Identity and API Access section, select `Allow full access to all Cloud APIs` for the selected by default `Compute Engine Default Service Account`
+We are going to:
 
-1. Press Create Instance button
+* create a Service Account;
+* add Editor and Network Admin roles to it;
+* provision a VM with scope and service account that will allow execute the provisioning script successfully;
+* invoke SSH session at the VM.
 
-1. Accept defaults and press Create button at the bottom of the page
+1. In the GCP Console, activate Cloud Shell
 
-1. SSH into the Bastion VM instance-1. Press the SSH button.
+1. Define PROJECT variable
+
+```sh
+export PROJECT=<your-project-id>
+```
+
+1. Create a service account for installation purposes.
+
+Click at the Authorize button when asked.
+
+```sh
+export INSTALLER_SA_ID=installer-sa
+
+gcloud iam service-accounts create $INSTALLER_SA_ID
+```
+
+1. Add IAM policy bindings with required roles
+
+```sh
+roles='roles/editor roles/compute.networkAdmin'
+
+for r in $roles; do
+    gcloud projects add-iam-policy-binding $PROJECT \
+        --member=serviceAccount:$INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com \
+        --role=$r
+done
+```
+
+1. Create a compute instance with installer SA identity that will be used to execute script.
+
+```sh
+gcloud compute instances create bastion \
+    --service-account $INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com \
+    --scopes cloud-platform
+```
+
+1. In GCP Console, open Compute Engine/VM instances page, using hamburger menu.
+
+1. The for bastion host, click SSH button to open an SSH session.
 
 ### Custom Network and Subnet Creation
 
-1. Define PROJECT variable by the ID of your project
+1. Define a `PROJECT` variable that holds the ID of your project and set $PROJECT as default.
 
     ```sh
     export PROJECT=<project-id>
+
+    gcloud config set project $PROJECT
     ```
 
 1. Define environment variables that describe network topology
@@ -188,9 +231,7 @@ We are following Best Security Practices here to use a Bastion host and a Servic
 
     ```sh
     gcloud compute networks create $NETWORK \
-        --subnet-mode=custom \
-        --bgp-routing-mode=regional \
-        --mtu=1460
+        --subnet-mode=custom
     ```
 
     Output:
@@ -267,12 +308,12 @@ We are following Best Security Practices here to use a Bastion host and a Servic
 
     ```sh
     ./apigee-x-trial-provision.sh \
-    --network $NETWORK \
-    --subnet $SUBNET \
-    --region $REGION \
-    --zone $ZONE \
-    --ax-region $AX_REGION \
-    --certificates=managed
+      --network $NETWORK \
+      --subnet $SUBNET \
+      --region $REGION \
+      --zone $ZONE \
+      --ax-region $AX_REGION \
+      --certificates=managed
 
     ```
 
