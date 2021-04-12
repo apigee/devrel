@@ -95,7 +95,7 @@ steps:
     - "-c"
     - |-
       ! grep -q "fail" ./pipeline-result.txt
-timeout: 2400s #40min
+timeout: 3600s # 60min
 substitutions:
   _APIGEE_ORG: my-org
   _APIGEE_ENV: my-env
