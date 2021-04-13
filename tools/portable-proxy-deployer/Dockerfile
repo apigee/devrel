@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MD013:
-  code_blocks: false
-MD024:
-  siblings_only: true
-MD041: false
+FROM maven:3.6.3-slim
+
+RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee
+
+RUN apt-get update && \
+  apt-get install git=* libxml-xpath-perl=* --no-install-recommends -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+
+RUN mkdir /opt/apigee && chown -R apigee /opt/apigee
+
+USER apigee
+
+WORKDIR /opt/apigee
+
+COPY pom.xml ./pom.xml
+
+# Pre-warm maven cache
+RUN mvn clean -Papigeeapi
+RUN mvn clean -Pgoogleapi
+
+COPY deploy.sh ./deploy.sh
+
+ENTRYPOINT [ "./deploy.sh" ]

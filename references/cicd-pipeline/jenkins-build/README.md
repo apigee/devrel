@@ -20,14 +20,14 @@ instance.
 #### Option A: Use a pre-built image
 
 ```bash
-docker pull ghcr.io/danistrebel/devrel/jenkins:latest
-docker tag ghcr.io/danistrebel/devrel/jenkins:latest devrel/jenkins:latest
+docker pull ghcr.io/apigee/devrel-jenkins:latest
+docker tag ghcr.io/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 ```
 
 #### Option B: Local Build
 
 ```bash
-docker build -f jenkins-web/Dockerfile -t devrel/jenkins:latest .
+docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 ```
 
 #### Option C: Cloud Build on GCP
@@ -35,8 +35,8 @@ docker build -f jenkins-web/Dockerfile -t devrel/jenkins:latest .
 ```bash
 PROJECT_ID=$(gcloud config get-value project)
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml
-docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest
-docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkins:latest devrel/jenkins:latest
+docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
+docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 ```
 
 ### Run the Jenkins Container
@@ -65,7 +65,7 @@ docker run \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
   -e JENKINS_ADMIN_PASS \
-  devrel/jenkins:latest
+  apigee/devrel-jenkins:latest
 ```
 
 After the initialization is completed, you can login with the Jenkins web UI
@@ -81,14 +81,14 @@ Follow these instructions to build and run an ephemeral Jenkinsfile runtime.
 #### Option A: Use a pre-built image
 
 ```bash
-docker pull ghcr.io/danistrebel/devrel/jenkins:latest
-docker tag ghcr.io/danistrebel/devrel/jenkins:latest devrel/jenkinsfile-runner:latest
+docker pull ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
+docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
 ```
 
 #### Option B: Local Build
 
 ```bash
-docker build -f jenkinsfile-runner/Dockerfile -t devrel/jenkinsfile-runner:latest .
+docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runner:latest
 ```
 
 #### Option C: Cloud Build on GCP
@@ -96,8 +96,8 @@ docker build -f jenkinsfile-runner/Dockerfile -t devrel/jenkinsfile-runner:lates
 ```bash
 PROJECT_ID=$(gcloud config get-value project)
 gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml
-docker pull gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest
-docker tag gcr.io/$PROJECT_ID/apigee-cicd/jenkinsfile-runner:latest devrel/jenkinsfile-runner:latest
+docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest
+docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
 ```
 
 ### Example Run
@@ -111,5 +111,5 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -it devrel/jenkinsfile-runner:latest
+  -it apigee/devrel-jenkinsfile-runner:latest
 ```

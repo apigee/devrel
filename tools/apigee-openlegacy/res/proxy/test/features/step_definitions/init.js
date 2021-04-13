@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@
  */
 
 const apickli = require("apickli");
-const { Before: before } = require("cucumber");
+const { Before: before, setDefaultTimeout } = require("cucumber");
 
 before(function () {
-  const host = process.env.APIGEE_X_HOSTNAME;
-  const org = process.env.APIGEE_X_ORG;
-  const env = process.env.APIGEE_X_ENV;
-
   this.apickli = new apickli.Apickli(
     "https",
-    `${host}/kvm-admin/v1/organizations/${org}/environments/${env}`
+    process.env.APIGEE_ORG +
+      "-" +
+      process.env.APIGEE_ENV +
+      ".apigee.net/apigee-openlegacy/v1"
   );
-
-  this.apickli.addRequestHeader("Cache-Control", "no-cache");
-  this.apickli.addRequestHeader("Authorization", "Bearer " +
-  	process.env.APIGEE_TOKEN);
+  this.apickli.scenarioVariables = {
+    apikey: "@APIKEY@"
+  }
 });
+
+setDefaultTimeout(60 * 1000);
