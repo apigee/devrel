@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<ProxyEndpoint name="default">
+  <Description>Orders</Description>
+  <PreFlow name="PreFlow">
+    <Request/>
+    <Response/>
+  </PreFlow>
+  <Flows>
+    <Flow name="Get all orders">
+      <Condition>(proxy.pathsuffix MatchesPath &quot;/orders&quot;) and (request.verb = &quot;GET&quot;)</Condition>
+      <Description>Get all orders</Description>
+      <Response>
+        <Step>
+          <Name>am-get-all-orders-200</Name>
+        </Step>
+      </Response>
+    </Flow>
+    <Flow name="Get a specific order">
+      <Condition>(proxy.pathsuffix MatchesPath &quot;/orders/{orderId}&quot;) and (request.verb = &quot;GET&quot;)</Condition>
+      <Description>Get a specific order</Description>
+      <Response>
+        <Step>
+          <Name>am-get-a-specific-order-200</Name>
+        </Step>
+      </Response>
+    </Flow>
+    <Flow name="Create order">
+      <Condition>(proxy.pathsuffix MatchesPath &quot;/orders/{orderId}&quot;) and (request.verb = &quot;POST&quot;)</Condition>
+      <Description>Create a new order</Description>
+      <Response>
+        <Step>
+          <Name>am-create-order-201</Name>
+        </Step>
+      </Response>
+    </Flow>
+    <Flow name="Update an order">
+      <Condition>(proxy.pathsuffix MatchesPath &quot;/orders/{orderId}&quot;) and (request.verb = &quot;PUT&quot;)</Condition>
+      <Description>Update a specific order</Description>
+      <Response>
+        <Step>
+          <Name>am-update-an-order-200</Name>
+        </Step>
+      </Response>
+    </Flow>
+  </Flows>
+  <HTTPProxyConnection>
+    <BasePath>/oas-apigee-mock-orders</BasePath>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+  <RouteRule name="noroute"/>
+</ProxyEndpoint>

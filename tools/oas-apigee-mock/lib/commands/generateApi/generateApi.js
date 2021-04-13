@@ -16,7 +16,6 @@
 
 const parser = require('swagger-parser')
 const generateSkeleton = require('./generateSkeleton.js')
-const generateProxy = require('./generateProxy.js')
 const generateProxyEndPoint = require('./generateProxyEndPoint.js')
 const async = require('async')
 const path = require('path')
@@ -29,42 +28,27 @@ module.exports = {
  * Generates an API Proxy bundle
  * @param  {string} apiProxy - The name of the API proxy to be generated.
  * @param  {object} options - Command line options provided
- * @param  {callback} cb
  */
-function generateApi(apiProxy, options, cb) {
+async function generateApi(apiProxy, options) {
   console.log("generateApi")
 
-  let destination = options.destination || path.join(__dirname, '../../../api_bundles')
-  if (destination.substr(-1) === '/') {
-    destination = destination.substr(0, destination.length - 1)
-  }
+  try {
+    let destination = options.destination || path.join(__dirname, '../../../api_bundles')
 
-  parser.parse(options.source, function (err, api, metadata) {
-    if (!err) {
-      console.log('Source specification is via: %s %s', (api.openapi ? 'OAS' : 'Swagger'), (api.openapi ? api.openapi : api.swagger))
-      console.log('API name: %s, Version: %s', api.info.title, api.info.version)
-      console.log('Destination: %s', destination)
-
-      generateSkeleton(apiProxy, options, function (err, reply) {
-        if (err) return cb(err)
-        async.parallel([
-          function (callback) {
-            generateProxy(apiProxy, options, api, function (err, reply) {
-              if (err) return callback(err)
-              callback(null, 'genProxy')
-            })
-          },
-          function (callback) {
-            generateProxyEndPoint(apiProxy, options, api, function (err, reply) {
-              if (err) return callback(err)
-              callback(null, 'genProxyEndPoint')
-            })
-          }
-        ]
-        )
-      })
-    } else {
-      return cb(err, { error: 'openapi parsing failed..' })
+    if (destination.substr(-1) === '/') {
+      destination = destination.substr(0, destination.length - 1)
     }
-  })
+
+    let api = await parser.validate(options.source);
+    console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+    console.log('Source specification is via: %s %s', (api.openapi ? 'OAS' : 'Swagger'), (api.openapi ? api.openapi : api.swagger))
+    console.log('API name: %s, Version: %s', api.info.title, api.info.version)
+    console.log('Destination: %s', destination)
+
+    generateSkeleton(apiProxy, options)
+    await generateProxyEndPoint(apiProxy, options, api)
+  }
+  catch (err) {
+    console.error(err);
+  }
 }

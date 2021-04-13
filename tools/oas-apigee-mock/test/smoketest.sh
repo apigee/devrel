@@ -19,9 +19,9 @@ set -x
 # clean up
 rm -rf ../api_bundles
 
-node ../bin/oas-apigee-mock generateApi retail -s orders.yaml
+node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s orders.yaml
 
-RESULT="$(diff -r --exclude retail.xml ../api_bundles/ api_bundles/ )"
+RESULT="$(diff -r ../api_bundles/ api_bundles/ )"
 EXPECT=""
 
 # assert that the result matches the expected bundle
@@ -31,6 +31,6 @@ else
   echo "FAIL"
 fi
 
-#apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n retail -d ../api_bundles/retail -V
+apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d ../api_bundles/oas-apigee-mock-orders -V
 
-#npm test
+npm test

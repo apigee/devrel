@@ -27,7 +27,7 @@ module.exports = {
  * @param  {object} options - Policy Options
  * @return {string}
  */
-function spikeArrestTemplate (options) {
+function spikeArrestTemplate(options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
@@ -45,8 +45,8 @@ function spikeArrestTemplate (options) {
 
   spike.ele('DisplayName', {}, displayName)
   spike.ele('Properties', {})
-  spike.ele('Identifier', {ref: identifierRef})
-  spike.ele('MessageWeight', {ref: messageWeightRef})
+  spike.ele('Identifier', { ref: identifierRef })
+  spike.ele('MessageWeight', { ref: messageWeightRef })
   spike.ele('Rate', {}, rate)
   const xmlString = spike.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
@@ -58,7 +58,7 @@ function spikeArrestTemplate (options) {
  * @param  {string} name
  * @return {string}
  */
-function spikeArrestGenTemplate (options, name) {
+function spikeArrestGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.name = name
   if (options.timeUnit === 'minute') {

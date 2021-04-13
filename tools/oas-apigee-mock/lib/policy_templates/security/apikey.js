@@ -27,7 +27,7 @@ module.exports = {
  * @param  {object} options - Policy Options
  * @return {string}
  */
-function apiKeyTemplate (options) {
+function apiKeyTemplate(options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
@@ -41,7 +41,7 @@ function apiKeyTemplate (options) {
   apiKey.att('name', name)
 
   apiKey.ele('Properties', {})
-  apiKey.ele('APIKey', {ref: keyRef})
+  apiKey.ele('APIKey', { ref: keyRef })
 
   const xmlString = apiKey.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
@@ -53,7 +53,7 @@ function apiKeyTemplate (options) {
  * @param  {string} name
  * @return {string}
  */
-function apiKeyGenTemplate (options, name) {
+function apiKeyGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.name = name
   if (name === 'apiKeyHeader') {

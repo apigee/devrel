@@ -33,9 +33,8 @@ function assignMessageTemplate(options) {
   const name = options.name || 'AM-' + random.randomText()
   const displayName = options.displayName || name
   const content = options.payload || ''
-  
-  const assignMessage = builder.create('AssignMessage')
 
+  const assignMessage = builder.create('AssignMessage')
   assignMessage.att('name', name)
   assignMessage.ele('DisplayName', {}, displayName)
   assignMessage.ele('IgnoreUnresolvedVariables', {}, ignoreUnresolvedVariables)

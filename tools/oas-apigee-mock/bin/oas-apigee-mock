@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Copyright 2021 Google LLC
  *
@@ -16,11 +18,11 @@
 
 'use strict';
 
-var program = require('commander');
-var command = require('../lib/commands/generateApi/generateApi.js');
-var version = require('../lib/util/cli').version();
+const program = require('commander');
+const command = require('../lib/commands/generateApi/generateApi.js');
+const version = require('../lib/util/cli').version();
 
-var executed = false;
+let executed = false;
 
 program
   .version(version);

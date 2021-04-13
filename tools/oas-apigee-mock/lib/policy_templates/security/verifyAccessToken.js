@@ -27,7 +27,7 @@ module.exports = {
  * @param  {object} options - Policy Options
  * @return {string}
  */
-function verifyAccessTokenTemplate (options) {
+function verifyAccessTokenTemplate(options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
@@ -44,7 +44,7 @@ function verifyAccessTokenTemplate (options) {
   verifyAccessToken.ele('ExternalAuthorization', {}, false)
   verifyAccessToken.ele('Operation', {}, 'VerifyAccessToken')
   verifyAccessToken.ele('SupportedGrantTypes', {})
-  verifyAccessToken.ele('GenerateResponse', {enabled: true})
+  verifyAccessToken.ele('GenerateResponse', { enabled: true })
   verifyAccessToken.ele('Tokens', {})
 
   const xmlString = verifyAccessToken.end({ pretty: true, indent: '  ', newline: '\n' })
@@ -57,7 +57,7 @@ function verifyAccessTokenTemplate (options) {
  * @param  {string} name
  * @return {string}
  */
-function verifyAccessTokenGenTemplate (options, name) {
+function verifyAccessTokenGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.name = name || 'verifyAccessToken'
   return verifyAccessTokenTemplate(templateOptions)

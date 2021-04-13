@@ -16,8 +16,6 @@ openapi: 3.0.0
 info:
   title: "Orders"
   version: "1.0"
-servers:
-  - url: https://dpc-api-marketplace-dev.apigee.net/orders
 paths:
   /orders:
     get:

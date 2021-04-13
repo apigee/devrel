@@ -26,7 +26,7 @@ module.exports = {
  * @param  {object} options - Policy Options
  * @return {string}
  */
-function raiseFaultTemplate (options) {
+function raiseFaultTemplate(options) {
   const name = options.name
   const displayName = options.displayName || name
   const statusCode = options.statusCode || '500'
@@ -50,7 +50,7 @@ function raiseFaultTemplate (options) {
  * @param  {string} name
  * @return {string}
  */
-function raiseFaultGenTemplate (options, name) {
+function raiseFaultGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.count = options.allow
   templateOptions.name = name

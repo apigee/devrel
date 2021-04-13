@@ -27,7 +27,7 @@ module.exports = {
  * @param  {object} options - Policy Options
  * @return {string}
  */
-function quotaTemplate (options) {
+function quotaTemplate(options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
@@ -44,7 +44,7 @@ function quotaTemplate (options) {
   const timeUnitRef = options.timeUnitRef || 'request.header.quota_timeout'
   const d = new Date()
   const dateString = d.getFullYear() + '-' + (('0' + (d.getMonth() + 1)).slice(-2)) + '-' + ('0' + d.getDate()).slice(-2) +
-                   ' ' + d.getHours() + ':' + (d.getMinutes() - 2) + ':' + d.getSeconds()
+    ' ' + d.getHours() + ':' + (d.getMinutes() - 2) + ':' + d.getSeconds()
   const startTime = options.startTime || dateString
   const quota = builder.create('Quota')
   quota.att('async', aysnc)
@@ -53,11 +53,11 @@ function quotaTemplate (options) {
   quota.att('name', name)
   quota.att('type', qType)
   quota.ele('DisplayName', {}, displayName)
-  quota.ele('Allow', {count: count, countRef: countRef})
-  quota.ele('Interval', {ref: intervalRef}, interval)
+  quota.ele('Allow', { count: count, countRef: countRef })
+  quota.ele('Interval', { ref: intervalRef }, interval)
   quota.ele('Distributed', {}, distributed)
   quota.ele('Synchronous', {}, sync)
-  quota.ele('TimeUnit', {ref: timeUnitRef}, timeUnit)
+  quota.ele('TimeUnit', { ref: timeUnitRef }, timeUnit)
   quota.ele('StartTime', {}, startTime)
   const xmlString = quota.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
@@ -69,7 +69,7 @@ function quotaTemplate (options) {
  * @param  {string} name
  * @return {string}
  */
-function quotaGenTemplate (options, name) {
+function quotaGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.count = options.allow
   templateOptions.name = name

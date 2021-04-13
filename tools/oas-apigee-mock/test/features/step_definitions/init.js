@@ -23,7 +23,7 @@ before(function () {
     process.env.APIGEE_ORG +
       "-" +
       process.env.APIGEE_ENV +
-      ".apigee.net/retail"
+      ".apigee.net/oas-apigee-mock-orders"
   );
 });
 

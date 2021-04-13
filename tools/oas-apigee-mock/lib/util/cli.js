@@ -21,6 +21,6 @@ module.exports = {
 /**
  * @return {string}
  */
-function version () {
+function version() {
   return require('../../package.json').version
 }
