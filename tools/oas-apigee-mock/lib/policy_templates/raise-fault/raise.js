@@ -21,6 +21,11 @@ module.exports = {
   raiseFaultGenTemplate: raiseFaultGenTemplate
 }
 
+/**
+ * Generates XML for Raise Fault policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function raiseFaultTemplate (options) {
   const name = options.name
   const displayName = options.displayName || name
@@ -39,6 +44,12 @@ function raiseFaultTemplate (options) {
   return xmlString
 }
 
+/**
+ * Generates XML for Raise Fault policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function raiseFaultGenTemplate (options, name) {
   const templateOptions = options
   templateOptions.count = options.allow

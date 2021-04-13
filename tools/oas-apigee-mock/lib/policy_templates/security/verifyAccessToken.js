@@ -22,6 +22,11 @@ module.exports = {
   verifyAccessTokenGenTemplate: verifyAccessTokenGenTemplate
 }
 
+/**
+ * Generates XML for Verify Access Token policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function verifyAccessTokenTemplate (options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
@@ -46,6 +51,12 @@ function verifyAccessTokenTemplate (options) {
   return xmlString
 }
 
+/**
+ * Generates XML for Verify Access Token policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function verifyAccessTokenGenTemplate (options, name) {
   const templateOptions = options
   templateOptions.name = name || 'verifyAccessToken'

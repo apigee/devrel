@@ -40,53 +40,60 @@ module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
 
   const allowedVerbs = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT', 'PATCH']
   for (const apiPath in api.paths) {
+    if (Object.prototype.hasOwnProperty.call(api.paths, apiPath)) {
+      
+      for (const resource in api.paths[apiPath]) {
+        if (Object.prototype.hasOwnProperty.call(api.paths[apiPath], resource)) {
 
-    for (const resource in api.paths[apiPath]) {
+          if (allowedVerbs.indexOf(resource.toUpperCase()) >= 0) {
 
-      if (allowedVerbs.indexOf(resource.toUpperCase()) >= 0) {
+            const resourceItem = api.paths[apiPath][resource]
+            resourceItem.operationId = resourceItem.operationId || resource.toUpperCase() + ' ' + apiPath
+            const flow = flows.ele('Flow', { name: resourceItem.operationId })
+            const flowCondition = '(proxy.pathsuffix MatchesPath &quot;' + apiPath + '&quot;) and (request.verb = &quot;' + resource.toUpperCase() + '&quot;)'
+            flow.ele('Condition').raw(flowCondition)
+            flow.ele('Description', {}, resourceItem.summary)
 
-        const resourceItem = api.paths[apiPath][resource]
-        resourceItem.operationId = resourceItem.operationId || resource.toUpperCase() + ' ' + apiPath
-        const flow = flows.ele('Flow', { name: resourceItem.operationId })
-        const flowCondition = '(proxy.pathsuffix MatchesPath &quot;' + apiPath + '&quot;) and (request.verb = &quot;' + resource.toUpperCase() + '&quot;)'
-        flow.ele('Condition').raw(flowCondition)
-        flow.ele('Description', {}, resourceItem.summary)
+            // Adding AM Policies to response
+            responsePipe = flow.ele('Response')
 
-        // Adding AM Policies to response
-        responsePipe = flow.ele('Response')
+            if (resourceItem['responses']) {
 
-        if (resourceItem['responses']) {
+              for (const service in resourceItem['responses']) {
+                if (Object.prototype.hasOwnProperty.call(resourceItem['responses'], service)) {
+                
+                  step = responsePipe.ele('Step', {})
+                  const stepName = ('AM-' + resourceItem.operationId + '-' + service).replace(/\s+/g, '-').toLowerCase()
+                  step.ele('Name', {}, stepName)
 
-          for (const service in resourceItem['responses']) {
-            step = responsePipe.ele('Step', {})
-            const stepName = ('AM-' + resourceItem.operationId + '-' + service).replace(/\s+/g, '-').toLowerCase()
-            step.ele('Name', {}, stepName)
+                  // Create Policy
+                  const options = {};
+                  options.name = stepName
+                  options.statusCode = service
 
-            // Create Policy
-            const options = {};
-            options.name = stepName
-            options.statusCode = service
+                  if (resourceItem['responses'][service].content != null) {
+                    options.payload = JSON.stringify(resourceItem['responses'][service].content["application/json"].example)
+                  } else {
 
-            if (resourceItem['responses'][service].content != null) {
-              options.payload = JSON.stringify(resourceItem['responses'][service].content["application/json"].example)
-            } else {
+                    options.payload = '';
+                  }
 
-              options.payload = '';
+                  const xmlString = assignMessage.assignMessageTemplate(options)
+
+                  fs.writeFile(rootDirectory + '/policies/' + stepName + '.xml', xmlString, function (err) {
+                    if (err) {
+                      callback(err, {})
+                    }
+                  })
+
+                }
+              }
             }
 
-            const xmlString = assignMessage.assignMessageTemplate(options)
-
-            fs.writeFile(rootDirectory + '/policies/' + stepName + '.xml', xmlString, function (err) {
-              if (err) {
-                callback(err, {})
-              }
-            })
-
-          }
-        }
-
-      }  // methods check ends here
-    }  // for loop for resources ends here
+          }  // methods check ends here
+          }  // for loop for resources ends here
+      }
+    }
   }  // for loop for paths ends here
 
   const httpProxyConn = root.ele('HTTPProxyConnection')

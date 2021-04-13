@@ -21,7 +21,7 @@ exports.servicesToArray = function (api) {
   } else {
     if (api['x-a127-services']) {
       Object.keys(api['x-a127-services']).forEach(function (key) {
-        let service = api['x-a127-services'][key]
+        const service = api['x-a127-services'][key]
         service['name'] = key
         services.push(service)
       })

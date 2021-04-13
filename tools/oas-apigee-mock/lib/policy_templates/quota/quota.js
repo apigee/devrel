@@ -22,6 +22,11 @@ module.exports = {
   quotaGenTemplate: quotaGenTemplate
 }
 
+/**
+ * Generates XML for quota policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function quotaTemplate (options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
@@ -58,6 +63,12 @@ function quotaTemplate (options) {
   return xmlString
 }
 
+/**
+ * Generates XML for quota policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function quotaGenTemplate (options, name) {
   const templateOptions = options
   templateOptions.count = options.allow

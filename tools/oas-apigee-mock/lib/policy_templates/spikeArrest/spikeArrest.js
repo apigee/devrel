@@ -22,6 +22,11 @@ module.exports = {
   spikeArrestGenTemplate: spikeArrestGenTemplate
 }
 
+/**
+ * Generates XML for Spike Arrest policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function spikeArrestTemplate (options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
@@ -47,6 +52,12 @@ function spikeArrestTemplate (options) {
   return xmlString
 }
 
+/**
+ * Generates XML for Spike Arrest policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function spikeArrestGenTemplate (options, name) {
   const templateOptions = options
   templateOptions.name = name

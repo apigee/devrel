@@ -21,5 +21,8 @@
   },
   "scripts": {
     "test": "npx cucumber-js test"
+  },
+  "devDependencies": {
+    "eslint-config-eslint": "^7.0.0"
   }
 }

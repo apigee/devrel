@@ -22,6 +22,11 @@ module.exports = {
   apiKeyGenTemplate: apiKeyGenTemplate
 }
 
+/**
+ * Generates XML for API Key Validation policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function apiKeyTemplate (options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
@@ -42,6 +47,12 @@ function apiKeyTemplate (options) {
   return xmlString
 }
 
+/**
+ * Generates XML for API Key Validation policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function apiKeyGenTemplate (options, name) {
   const templateOptions = options
   templateOptions.name = name

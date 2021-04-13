@@ -22,6 +22,11 @@ module.exports = {
   assignMessageGenTemplate: assignMessageGenTemplate
 }
 
+/**
+ * Generates XML for Assign Message policy
+ * @param  {object} options - Policy Options
+ * @return {string}
+ */
 function assignMessageTemplate(options) {
 
   const ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
@@ -29,7 +34,7 @@ function assignMessageTemplate(options) {
   const displayName = options.displayName || name
   const content = options.payload || ''
   
-  let assignMessage = builder.create('AssignMessage')
+  const assignMessage = builder.create('AssignMessage')
 
   assignMessage.att('name', name)
   assignMessage.ele('DisplayName', {}, displayName)
@@ -44,6 +49,12 @@ function assignMessageTemplate(options) {
   return xmlString
 }
 
+/**
+ * Generates XML for Assign Message policy
+ * @param  {object} options
+ * @param  {string} name
+ * @return {string}
+ */
 function assignMessageGenTemplate(options, name) {
   const templateOptions = options
   templateOptions.name = name

@@ -18,6 +18,9 @@ module.exports = {
   randomText: randomText
 }
 
+/**
+ * @return {string}
+ */
 function randomText () {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'

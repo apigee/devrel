@@ -25,6 +25,12 @@ module.exports = {
   generateApi: generateApi
 }
 
+/**
+ * Generates an API Proxy bundle
+ * @param  {string} apiProxy - The name of the API proxy to be generated.
+ * @param  {object} options - Command line options provided
+ * @param  {callback} cb
+ */
 function generateApi(apiProxy, options, cb) {
   console.log("generateApi")
 
