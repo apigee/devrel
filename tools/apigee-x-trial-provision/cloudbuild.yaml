@@ -1,0 +1,59 @@
+#  Copyright 2021 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  id: "Provisioning"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      apt-get update && apt-get install jq -y && \
+        ./apigee-x-trial-provision.sh --quiet
+  env:
+  - 'PROJECT=$PROJECT_ID'
+  - 'NETWORK=$_NETWORK'
+  - 'SUBNET=$_SUBNET'
+  - 'REGION=$_REGION'
+  - 'ZONE=$_ZONE'
+  - 'AX_REGION=$_AX_REGION'
+  - 'RUNTIME_TLS_CERT=$_RUNTIME_TLS_CERT'
+  - 'RUNTIME_TLS_KEY=$_RUNTIME_TLS_KEY'
+  - 'CERTIFICATES=$_CERTIFICATES'
+- name: gcr.io/cloud-builders/gcloud
+  id: 'Delete Resources'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+      if [ "$_DELETE_AFTER_VALIDATION" == "true" ]
+      then
+        apt-get update && apt-get install jq -y && \
+          ./apigee-x-trial-delete.sh --quiet
+      fi
+  env:
+    - 'PROJECT=$PROJECT_ID'
+    - 'DELETE_APIGEE_ORG=$_DELETE_APIGEE_ORG'
+timeout: 1800s #30min
+substitutions:
+    _NETWORK: default
+    _SUBNET: default
+    _REGION: europe-west1
+    _ZONE: europe-west1-b
+    _AX_REGION: europe-west1
+    _RUNTIME_TLS_CERT: ''
+    _RUNTIME_TLS_KEY: ''
+    _CERTIFICATES: ''
+    _DELETE_AFTER_VALIDATION: 'false'
+    _DELETE_APIGEE_ORG: 'false'

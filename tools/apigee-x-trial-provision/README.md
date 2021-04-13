@@ -26,6 +26,8 @@ Please refer to the documentation for the latest usage.
 **Note:** To customize your installation with optional configuration parameters
 see below.
 
+### Run locally
+
 You need to set up a `PROJECT` environment variable.
 
 ```sh
@@ -39,6 +41,31 @@ confirmation step.
  ./apigee-x-trial-provision.sh
 ```
 
+### Run as a Google Cloud Build
+
+You need to set up a `PROJECT` environment variable.
+And prepare your cloud build environment:
+
+```sh
+gcloud services enable cloudbuild.googleapis.com --project $PROJECT
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
+CLOUD_BUILD_SA="$PROJECT_NUMBER@cloudbuild.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding "$PROJECT" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/owner"
+```
+
+And run a build:
+
+```sh
+gcloud builds submit --project $PROJECT
+# use substitutions for optional parameters
+# gcloud builds submit --project $PROJECT --substitutions=_CERIFICATES=generated
+```
+
+### Run locally with script on Github
+
 To invoke the script directly from the github repo, use
 
 ```sh
@@ -50,7 +77,7 @@ WARNING: A successful `Provisioning organization...` step takes 25-30 minutes
 to complete. According to the documentation: "This is a long running operation
 and could take anywhere from 10 minutes to 1 hour to complete." [->](https://cloud.google.com/sdk/gcloud/reference/alpha/apigee/organizations/provision)
 
-After the script runs, it displays your `RUNTIME_IP`, `RUNTIME_SSL_CERT`
+After the script runs, it displays your `RUNTIME_IP`, `RUNTIME_TLS_CERT`
 location, your `RUNTIME_HOST_ALIAS`, and an example `curl` command to send a test
 request to an automatically deployed hello-world proxy.
 
@@ -64,16 +91,16 @@ Sample Output (using the self-signed certificate option, see below):
 ```sh
 export RUNTIME_IP=203.0.113.10
 
-export RUNTIME_SSL_CERT=~/mig-cert.pem
+export RUNTIME_TLS_CERT=~/mig-cert.pem
 export RUNTIME_HOST_ALIAS=$PROJECT-eval.apigee.net
 
-curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v \
+curl --cacert $RUNTIME_TLS_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v \
   --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"
 ```
 
 A self-signed key and certificate are generated for your convenience. You can
-use your own certificate and key if you override `$RUNTIME_SSL_CERT` and
-`$RUNTIME_SSL_KEY` environment variables.
+use your own certificate and key if you override `$RUNTIME_TLS_CERT` and
+`$RUNTIME_TLS_KEY` environment variables.
 
 The curl command above uses `--resolve` for ip address resolution
 and `--cacert` for trusting the certificate.
@@ -81,7 +108,7 @@ and `--cacert` for trusting the certificate.
 To be able to execute requests transparantly at your development machine,
 you need:
 
-1. Add the `RUNTIME_SSL_CERT` certificate your machine truststore;
+1. Add the `RUNTIME_TLS_CERT` certificate your machine truststore;
 2. Add the `RUNTIME_IP` with the `RUNTIME_HOST_ALIAS` to
 your machine's `/etc/hosts` file.
 
@@ -99,7 +126,8 @@ export NETWORK=default
 export SUBNET=default
 
 export PROXY_MACHINE_TYPE=e2-micro
-export PROXY_PREEMPTIBLE=true
+export PROXY_PREEMPTIBLE=false
+export PROXY_MIG_MIN_SIZE=1
 ```
 
 ### Regions and Zones
@@ -125,7 +153,7 @@ the `CERTIFICATES` environment variable:
 |---|---|---|
 |`managed` (default)|Google-managed Certificates|\[external ip\].nip.io (use nip.io for test purposes only)|
 |`generated`|Auto-Generated Self-Signed Certs|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
-|`supplied`|User-supplied in `RUNTIME_SSL_CERT` and `RUNTIME_SSL_KEY`|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
+|`supplied`|User-supplied in `RUNTIME_TLS_CERT` and `RUNTIME_TLS_KEY`|$RUNTIME_HOST_ALIAS or else $ORG-eval.apigee.net|
 <!-- markdownlint-enable MD013 -->
 
 ## Apigee X instance with Custom Networking Provisioning
