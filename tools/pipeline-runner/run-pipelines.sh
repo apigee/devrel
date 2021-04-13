@@ -35,7 +35,7 @@ if [ -z "$DIRS" ]; then
       DIRS="$DIRS,$D"
     done
   done
-  DIRS="${DIRS:1}"
+  DIRS=$(echo "$DIRS" | cut -c 2-)
 fi
 
 for DIR in $(echo "$DIRS" | sed "s/,/ /g")
@@ -48,7 +48,7 @@ do
     run_single_pipeline "$DIR"
     PIPELINE_EXIT=$?
     ENDTIME=$(date +%s)
-    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR,$PIPELINE_EXIT,$(($ENDTIME-$STARTTIME))s"
+    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
   fi
 done
 
