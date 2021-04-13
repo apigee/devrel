@@ -44,7 +44,7 @@ case "$1" in
   -c|--certificates)
     CERTIFICATES="$2"
     shift 2;;
-    
+
   -q|--quiet)
     QUIET=Y
     shift;;
@@ -56,14 +56,14 @@ esac
 done
 eval set -- "$pps"
 
-
-if ! [ -x "$(command -v jq)" ]; then
-  >&2 echo "ABORTED: Required command is not on your PATH: jq."
-  >&2 echo "         Please install it before you continue."
-
-  exit 2
-fi
-
+for dependency in jq openssl
+do
+  if ! [ -x "$(command -v $dependency)" ]; then
+    >&2 echo "ABORTED: Required command is not on your PATH: $dependency."
+    >&2 echo "         Please install it before you continue."
+    exit 2
+  fi
+done
 
 if [ -z "$PROJECT" ]; then
    >&2 echo "ERROR: Environment variable PROJECT is not set."
