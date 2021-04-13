@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-./apigee-x-trial-provision.sh --quiet --certificates=generated
+set -e
 
-./apigee-x-trial-delete.sh --quiet
+./apigee-x-trial-provision.sh --quiet --certificates generated --project "$X_TRIAL_GCP_PROJECT"
+
+./apigee-x-trial-delete.sh --quiet --project "$X_TRIAL_GCP_PROJECT"

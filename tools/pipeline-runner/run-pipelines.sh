@@ -42,13 +42,13 @@ for DIR in $(echo "$DIRS" | sed "s/,/ /g")
 do
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"
-    PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR Pipeline,0,0s"
+    PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR,0,0s"
   else
     STARTTIME=$(date +%s)
     run_single_pipeline "$DIR"
     PIPELINE_EXIT=$?
     ENDTIME=$(date +%s)
-    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$PIPELINE_EXIT,$(($ENDTIME-$STARTTIME))s"
+    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR,$PIPELINE_EXIT,$(($ENDTIME-$STARTTIME))s"
   fi
 done
 
@@ -56,7 +56,7 @@ done
 echo "$PIPELINE_REPORT" | tr ";" "\n" | awk 'NF' | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" > pipeline-result.txt
 echo
 echo "FINAL RESULT"
-cat ./pipeline-result.txt | column -s ";" -t
+column -s ";" -t ./pipeline-result.txt
 echo
 
 # set exit code

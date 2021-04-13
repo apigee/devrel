@@ -18,8 +18,8 @@ REPORT_ROWS=$(echo "$buildresult" | awk -F";" '$0="|"$1"|"$2"|"$3"|"' OFS="|")
 REPORT=$(cat <<EOF
 ### Pipeline Report
 
-|Pipeline|Result|Elapsed Time|
-|--------|------|------------|
+|Pipeline |Result |Elapsed Time |
+|---------|-------|-------------|
 $REPORT_ROWS
 
 [View details in Cloud Build (permission required)](https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=$PROJECT_ID)
