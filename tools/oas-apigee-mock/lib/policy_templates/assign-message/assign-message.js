@@ -24,11 +24,10 @@ module.exports = {
 
 function assignMessageTemplate(options) {
 
-  let continueOnError = options.continueOnError || 'false'
-  let ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
-  let name = options.name || 'AM-' + random.randomText()
-  let displayName = options.displayName || name
-  let content = options.payload || ''
+  const ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
+  const name = options.name || 'AM-' + random.randomText()
+  const displayName = options.displayName || name
+  const content = options.payload || ''
   
   let assignMessage = builder.create('AssignMessage')
 
@@ -37,16 +36,16 @@ function assignMessageTemplate(options) {
   assignMessage.ele('IgnoreUnresolvedVariables', {}, ignoreUnresolvedVariables)
   assignMessage.ele('Set')
     .ele('Payload').att('contentType', 'application/json')
-    .txt(options.payload)
+    .txt(content)
     .up()
     .ele('StatusCode').txt(options.statusCode)
 
-  let xmlString = assignMessage.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = assignMessage.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function assignMessageGenTemplate(options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.name = name
 
   return assignMessageTemplate(templateOptions)

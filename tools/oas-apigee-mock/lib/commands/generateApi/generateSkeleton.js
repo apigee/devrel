@@ -23,10 +23,10 @@ module.exports = function generateSkeleton (apiProxy, options, cb) {
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
   }
-  let rootDirectory = destination + '/' + apiProxy + '/apiproxy'
+  const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
   mkdirp.sync(rootDirectory)
   // Generate sub folders..
-  let subFolders = ['proxies', 'targets', 'policies']
+  const subFolders = ['proxies', 'targets', 'policies']
 
   async.map(subFolders, function (item, callback) {
     callback(null, this.rootDirectory + '/' + item)

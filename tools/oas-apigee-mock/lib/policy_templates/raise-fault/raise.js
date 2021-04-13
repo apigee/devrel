@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
+const builder = require('xmlbuilder')
 
 module.exports = {
   raiseFaultTemplate: raiseFaultTemplate,
@@ -26,21 +26,21 @@ function raiseFaultTemplate (options) {
   const displayName = options.displayName || name
   const statusCode = options.statusCode || '500'
   const reasonPhrase = options.reasonPhrase || 'Ooops'
-  let msg = builder.create('RaiseFault')
+  const msg = builder.create('RaiseFault')
   msg.att('name', displayName)
   msg.ele('DisplayName', {}, displayName)
   msg.ele('Properties', {})
-  let FaultResponse = msg.ele('FaultResponse').ele('Set')
+  const FaultResponse = msg.ele('FaultResponse').ele('Set')
   FaultResponse.ele('Headers')
   FaultResponse.ele('Payload', { contentType: 'text/plain' })
   FaultResponse.ele('StatusCode', statusCode)
   FaultResponse.ele('ReasonPhrase', reasonPhrase)
-  let xmlString = msg.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = msg.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function raiseFaultGenTemplate (options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.count = options.allow
   templateOptions.name = name
 

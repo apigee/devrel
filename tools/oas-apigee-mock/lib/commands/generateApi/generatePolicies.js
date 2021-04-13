@@ -35,18 +35,18 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
   }
-  let rootDirectory = destination + '/' + apiProxy + '/apiproxy'
+  const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
   let validationCount = 0
-  let services = serviceUtils.servicesToArray(api)
+  const services = serviceUtils.servicesToArray(api)
 
   console.log("services.length:" + services.length)
 
   async.each(services, function (service, callback) {
     // Perform operation on file here.
-    let xmlStrings = []
-    let serviceName = service.name
-    let provider = service.provider
-    let serviceOptions = service.options
+    const xmlStrings = []
+    const serviceName = service.name
+    const provider = service.provider
+    const serviceOptions = service.options
     let xmlString = ''
 
     if (provider.indexOf('assignMessage') > -1) {
@@ -84,13 +84,13 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       xmlStrings.push({ xmlString: xmlString, serviceName: serviceName })
       // filter
       mkdirp.sync(rootDirectory + '/resources/jsc')
-      let js = path.join(__dirname, '../../resource_templates/jsc/JavaScriptFilter.js')
+      const js = path.join(__dirname, '../../resource_templates/jsc/JavaScriptFilter.js')
       fs.createReadStream(js).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/' + serviceName + '.js'))
       // regex
-      var qs = path.join(__dirname, '../../resource_templates/jsc/querystringDecode.js')
+      const qs = path.join(__dirname, '../../resource_templates/jsc/querystringDecode.js')
       fs.createReadStream(qs).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/' + serviceName + '-querystring.js'))
-      let x = regex.regularExpressions()
-      let wstream = fs.createWriteStream(rootDirectory + '/resources/jsc/regex.js')
+      const x = regex.regularExpressions()
+      const wstream = fs.createWriteStream(rootDirectory + '/resources/jsc/regex.js')
       wstream.write(new Buffer('var elements = ' + JSON.stringify(x) + ';'))
       wstream.end()
     }
@@ -103,7 +103,7 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       assign(serviceOptions, { resourceUrl: 'jsc://input-validation.js' })
       xmlString = validations.validationsGenTemplate(serviceOptions, serviceName)
       xmlStrings.push({ xmlString: xmlString, serviceName: serviceName })
-      let extractVarsOptions = {
+      const extractVarsOptions = {
         name: 'Extract-Path-Parameters',
         displayName: 'Extract Path Parameters',
         api: api
@@ -120,7 +120,7 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       validationCount++ // Only do this once.
       mkdirp.sync(rootDirectory + '/resources/jsc')
       // output validation
-      let bu = path.join(__dirname, '../../resource_templates/jsc/bundle-policify.js')
+      const bu = path.join(__dirname, '../../resource_templates/jsc/bundle-policify.js')
       fs.createReadStream(bu).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/bundle-policify.js'))
       js = path.join(__dirname, '../../resource_templates/jsc/SchemaValidation.js')
       fs.createReadStream(js).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/schema-validation.js'))

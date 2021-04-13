@@ -29,7 +29,7 @@ function apiKeyTemplate (options) {
   const name = options.name || 'apiKey-' + random.randomText()
   const keyRef = options.keyRef || 'request.queryparam.apikey'
 
-  let apiKey = builder.create('VerifyAPIKey')
+  const apiKey = builder.create('VerifyAPIKey')
   apiKey.att('async', aysnc)
   apiKey.att('continueOnError', continueOnError)
   apiKey.att('enabled', enabled)
@@ -38,12 +38,12 @@ function apiKeyTemplate (options) {
   apiKey.ele('Properties', {})
   apiKey.ele('APIKey', {ref: keyRef})
 
-  let xmlString = apiKey.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = apiKey.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function apiKeyGenTemplate (options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.name = name
   if (name === 'apiKeyHeader') {
     templateOptions.keyRef = 'request.header.apikey'

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+const builder = require('xmlbuilder')
+const random = require('../../util/random.js')
 
 module.exports = {
   quotaTemplate: quotaTemplate,
@@ -54,12 +54,12 @@ function quotaTemplate (options) {
   quota.ele('Synchronous', {}, sync)
   quota.ele('TimeUnit', {ref: timeUnitRef}, timeUnit)
   quota.ele('StartTime', {}, startTime)
-  let xmlString = quota.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = quota.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function quotaGenTemplate (options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.count = options.allow
   templateOptions.name = name
 

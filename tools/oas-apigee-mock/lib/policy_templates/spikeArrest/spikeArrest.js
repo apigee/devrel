@@ -32,7 +32,7 @@ function spikeArrestTemplate (options) {
   const messageWeightRef = options.intervalRef || 'request.header.weight'
   const rate = options.rate || '30ps'
 
-  let spike = builder.create('SpikeArrest')
+  const spike = builder.create('SpikeArrest')
   spike.att('async', aysnc)
   spike.att('continueOnError', continueOnError)
   spike.att('enabled', enabled)
@@ -43,12 +43,12 @@ function spikeArrestTemplate (options) {
   spike.ele('Identifier', {ref: identifierRef})
   spike.ele('MessageWeight', {ref: messageWeightRef})
   spike.ele('Rate', {}, rate)
-  let xmlString = spike.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = spike.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function spikeArrestGenTemplate (options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.name = name
   if (options.timeUnit === 'minute') {
     templateOptions.rate = options.allow + 'pm'

@@ -15,7 +15,7 @@
  */
 
 exports.servicesToArray = function (api) {
-  let services = []
+  const services = []
   if (Array.isArray(api['x-a127-services'])) {
     services = api['x-a127-services']
   } else {

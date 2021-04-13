@@ -17,7 +17,6 @@
 const builder = require('xmlbuilder')
 const fs = require('fs')
 const path = require('path')
-const serviceUtils = require('../../util/service.js')
 const assignMessage = require('../../policy_templates/assign-message/assign-message.js')
 
 module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
@@ -27,29 +26,29 @@ module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
     destination = destination.substr(0, destination.length - 1)
   }
 
-  let rootDirectory = destination + '/' + apiProxy + '/apiproxy'
-  let root = builder.create('ProxyEndpoint')
+  const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
+  const root = builder.create('ProxyEndpoint')
   root.att('name', 'default')
   root.ele('Description', {}, api.info.title)
-  let preFlow = root.ele('PreFlow', { name: 'PreFlow' })
+  const preFlow = root.ele('PreFlow', { name: 'PreFlow' })
 
   // Add steps to preflow.
   preFlow.ele('Request')
   preFlow.ele('Response')
 
-  let flows = root.ele('Flows', {})
+  const flows = root.ele('Flows', {})
 
-  let allowedVerbs = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT', 'PATCH']
-  for (let apiPath in api.paths) {
+  const allowedVerbs = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT', 'PATCH']
+  for (const apiPath in api.paths) {
 
-    for (let resource in api.paths[apiPath]) {
+    for (const resource in api.paths[apiPath]) {
 
       if (allowedVerbs.indexOf(resource.toUpperCase()) >= 0) {
 
-        let resourceItem = api.paths[apiPath][resource]
+        const resourceItem = api.paths[apiPath][resource]
         resourceItem.operationId = resourceItem.operationId || resource.toUpperCase() + ' ' + apiPath
-        let flow = flows.ele('Flow', { name: resourceItem.operationId })
-        let flowCondition = '(proxy.pathsuffix MatchesPath &quot;' + apiPath + '&quot;) and (request.verb = &quot;' + resource.toUpperCase() + '&quot;)'
+        const flow = flows.ele('Flow', { name: resourceItem.operationId })
+        const flowCondition = '(proxy.pathsuffix MatchesPath &quot;' + apiPath + '&quot;) and (request.verb = &quot;' + resource.toUpperCase() + '&quot;)'
         flow.ele('Condition').raw(flowCondition)
         flow.ele('Description', {}, resourceItem.summary)
 
@@ -58,13 +57,13 @@ module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
 
         if (resourceItem['responses']) {
 
-          for (let service in resourceItem['responses']) {
+          for (const service in resourceItem['responses']) {
             step = responsePipe.ele('Step', {})
-            let stepName = ('AM-' + resourceItem.operationId + '-' + service).replace(/\s+/g, '-').toLowerCase()
+            const stepName = ('AM-' + resourceItem.operationId + '-' + service).replace(/\s+/g, '-').toLowerCase()
             step.ele('Name', {}, stepName)
 
             // Create Policy
-            let options = new Object();
+            const options = {};
             options.name = stepName
             options.statusCode = service
 
@@ -75,7 +74,7 @@ module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
               options.payload = '';
             }
 
-            let xmlString = assignMessage.assignMessageTemplate(options)
+            const xmlString = assignMessage.assignMessageTemplate(options)
 
             fs.writeFile(rootDirectory + '/policies/' + stepName + '.xml', xmlString, function (err) {
               if (err) {
@@ -90,26 +89,26 @@ module.exports = function generateProxyEndPoint(apiProxy, options, api, cb) {
     }  // for loop for resources ends here
   }  // for loop for paths ends here
 
-  let httpProxyConn = root.ele('HTTPProxyConnection')
+  const httpProxyConn = root.ele('HTTPProxyConnection')
   if (api.basePath !== undefined) {
     httpProxyConn.ele('BasePath', {}, api.basePath)
   } else {
     httpProxyConn.ele('BasePath', {}, '/' + apiProxy)
   }
-  let virtualhosts = (options.virtualhosts) ? options.virtualhosts.split(',') : ['secure']
+  const virtualhosts = (options.virtualhosts) ? options.virtualhosts.split(',') : ['secure']
   virtualhosts.forEach(function (virtualhost) {
     httpProxyConn.ele('VirtualHost', {}, virtualhost)
   })
 
   if (useCors) {
-    let routeRule1 = root.ele('RouteRule', { name: 'noRoute' })
+    const routeRule1 = root.ele('RouteRule', { name: 'noRoute' })
     routeRule1.ele('Condition', {}, 'request.verb == "OPTIONS"')
   }
 
-  //No back end, Assign message policies are used for responses, add noroute RouteRule
+  // No back end, Assign message policies are used for responses, add noroute RouteRule
   root.ele('RouteRule', { name: 'noroute' })
 
-  let xmlString = root.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = root.end({ pretty: true, indent: '  ', newline: '\n' })
   fs.writeFile(rootDirectory + '/proxies/default.xml', xmlString, function (err) {
     if (err) {
       return cb(err, {})

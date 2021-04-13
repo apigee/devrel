@@ -28,7 +28,7 @@ function verifyAccessTokenTemplate (options) {
   const enabled = options.enabled || 'true'
   const name = options.name || 'verifyAccessToken-' + random.randomText()
 
-  let verifyAccessToken = builder.create('OAuthV2')
+  const verifyAccessToken = builder.create('OAuthV2')
   verifyAccessToken.att('async', aysnc)
   verifyAccessToken.att('continueOnError', continueOnError)
   verifyAccessToken.att('enabled', enabled)
@@ -42,12 +42,12 @@ function verifyAccessTokenTemplate (options) {
   verifyAccessToken.ele('GenerateResponse', {enabled: true})
   verifyAccessToken.ele('Tokens', {})
 
-  let xmlString = verifyAccessToken.end({ pretty: true, indent: '  ', newline: '\n' })
+  const xmlString = verifyAccessToken.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function verifyAccessTokenGenTemplate (options, name) {
-  let templateOptions = options
+  const templateOptions = options
   templateOptions.name = name || 'verifyAccessToken'
   return verifyAccessTokenTemplate(templateOptions)
 }
