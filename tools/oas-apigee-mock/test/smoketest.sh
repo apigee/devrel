@@ -31,6 +31,6 @@ else
   echo "FAIL"
 fi
 
-apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n retail -d ../api_bundles/retail -V
+#apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n retail -d ../api_bundles/retail -V
 
-npm test
+#npm test

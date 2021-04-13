@@ -15,13 +15,13 @@
  */
 
 exports.servicesToArray = function (api) {
-  var services = []
+  let services = []
   if (Array.isArray(api['x-a127-services'])) {
     services = api['x-a127-services']
   } else {
     if (api['x-a127-services']) {
       Object.keys(api['x-a127-services']).forEach(function (key) {
-        var service = api['x-a127-services'][key]
+        let service = api['x-a127-services'][key]
         service['name'] = key
         services.push(service)
       })

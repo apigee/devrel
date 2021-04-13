@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+const builder = require('xmlbuilder')
+const random = require('../../util/random.js')
 
 module.exports = {
   verifyAccessTokenTemplate: verifyAccessTokenTemplate,
@@ -23,12 +23,12 @@ module.exports = {
 }
 
 function verifyAccessTokenTemplate (options) {
-  var aysnc = options.async || 'false'
-  var continueOnError = options.continueOnError || 'false'
-  var enabled = options.enabled || 'true'
-  var name = options.name || 'verifyAccessToken-' + random.randomText()
+  const aysnc = options.async || 'false'
+  const continueOnError = options.continueOnError || 'false'
+  const enabled = options.enabled || 'true'
+  const name = options.name || 'verifyAccessToken-' + random.randomText()
 
-  var verifyAccessToken = builder.create('OAuthV2')
+  let verifyAccessToken = builder.create('OAuthV2')
   verifyAccessToken.att('async', aysnc)
   verifyAccessToken.att('continueOnError', continueOnError)
   verifyAccessToken.att('enabled', enabled)
@@ -42,12 +42,12 @@ function verifyAccessTokenTemplate (options) {
   verifyAccessToken.ele('GenerateResponse', {enabled: true})
   verifyAccessToken.ele('Tokens', {})
 
-  var xmlString = verifyAccessToken.end({ pretty: true, indent: '  ', newline: '\n' })
+  let xmlString = verifyAccessToken.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function verifyAccessTokenGenTemplate (options, name) {
-  var templateOptions = options
+  let templateOptions = options
   templateOptions.name = name || 'verifyAccessToken'
   return verifyAccessTokenTemplate(templateOptions)
 }

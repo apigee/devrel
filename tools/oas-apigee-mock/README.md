@@ -1,6 +1,8 @@
 # oas-apigee-mock
 
-A tool which generates an Apigee API Proxy bundle from an Open API 3 specification, with mock responses using Assign Message policies from the examples provided in the specification.
+A tool which generates an Apigee API Proxy bundle from an Open API 3 
+specification, with mock responses using Assign Message policies from the 
+examples provided in the specification.
 
 ## Dependencies
 
@@ -9,7 +11,8 @@ A tool which generates an Apigee API Proxy bundle from an Open API 3 specificati
 
 ## Prerequisites
 
-Clone the code from this GitHub repo and run `npm install` to download and install the required dependencies.
+Clone the code from this GitHub repo and run `npm install` to download and 
+install the required dependencies.
 
 ## Usage
 

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-var parser = require('swagger-parser')
-var generateSkeleton = require('./generateSkeleton.js')
-var generateProxy = require('./generateProxy.js')
-var generatePolicies = require('./generatePolicies.js')
-var generateProxyEndPoint = require('./generateProxyEndPoint.js')
-var async = require('async')
-var path = require('path')
+const parser = require('swagger-parser')
+const generateSkeleton = require('./generateSkeleton.js')
+const generateProxy = require('./generateProxy.js')
+const generateProxyEndPoint = require('./generateProxyEndPoint.js')
+const async = require('async')
+const path = require('path')
 
 module.exports = {
   generateApi: generateApi
@@ -29,11 +28,10 @@ module.exports = {
 function generateApi(apiProxy, options, cb) {
   console.log("generateApi")
 
-  var destination = options.destination || path.join(__dirname, '../../../api_bundles')
+  let destination = options.destination || path.join(__dirname, '../../../api_bundles')
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
   }
-  var srcDirectory = destination + '/' + apiProxy + '/apiproxy/'
 
   parser.parse(options.source, function (err, api, metadata) {
     if (!err) {

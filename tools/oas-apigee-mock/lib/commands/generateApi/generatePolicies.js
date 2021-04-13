@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-var fs = require('fs')
-var path = require('path')
-var mkdirp = require('mkdirp')
-var assign = require('lodash.assign')
-var serviceUtils = require('../../util/service.js')
-var quota = require('../../policy_templates/quota/quota.js')
-var spike = require('../../policy_templates/spikeArrest/spikeArrest.js')
-var raiseFault = require('../../policy_templates/raise-fault/raise.js')
-var verifyApiKey = require('../../policy_templates/security/apikey.js')
-var oauth2 = require('../../policy_templates/security/verifyAccessToken.js')
-var assignMessage = require('../../policy_templates/assign-message/assign-message.js')
-var async = require('async')
+const fs = require('fs')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const assign = require('lodash.assign')
+const serviceUtils = require('../../util/service.js')
+const quota = require('../../policy_templates/quota/quota.js')
+const spike = require('../../policy_templates/spikeArrest/spikeArrest.js')
+const raiseFault = require('../../policy_templates/raise-fault/raise.js')
+const verifyApiKey = require('../../policy_templates/security/apikey.js')
+const oauth2 = require('../../policy_templates/security/verifyAccessToken.js')
+const assignMessage = require('../../policy_templates/assign-message/assign-message.js')
+const async = require('async')
 
 module.exports = function generatePolicies(apiProxy, options, api, cb) {
 
   console.log("generatePolicies")
 
-  var destination = options.destination || path.join(__dirname, '../../../api_bundles')
+  let destination = options.destination || path.join(__dirname, '../../../api_bundles')
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
   }
-  var rootDirectory = destination + '/' + apiProxy + '/apiproxy'
-  var validationCount = 0
-  var services = serviceUtils.servicesToArray(api)
+  let rootDirectory = destination + '/' + apiProxy + '/apiproxy'
+  let validationCount = 0
+  let services = serviceUtils.servicesToArray(api)
 
   console.log("services.length:" + services.length)
 
   async.each(services, function (service, callback) {
     // Perform operation on file here.
-    var xmlStrings = []
-    var serviceName = service.name
-    var provider = service.provider
-    var serviceOptions = service.options
-    var xmlString = ''
+    let xmlStrings = []
+    let serviceName = service.name
+    let provider = service.provider
+    let serviceOptions = service.options
+    let xmlString = ''
 
     if (provider.indexOf('assignMessage') > -1) {
       xmlString = assignMessage.assignMessageTemplate(serviceOptions, serviceName)
@@ -84,13 +84,13 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       xmlStrings.push({ xmlString: xmlString, serviceName: serviceName })
       // filter
       mkdirp.sync(rootDirectory + '/resources/jsc')
-      var js = path.join(__dirname, '../../resource_templates/jsc/JavaScriptFilter.js')
+      let js = path.join(__dirname, '../../resource_templates/jsc/JavaScriptFilter.js')
       fs.createReadStream(js).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/' + serviceName + '.js'))
       // regex
       var qs = path.join(__dirname, '../../resource_templates/jsc/querystringDecode.js')
       fs.createReadStream(qs).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/' + serviceName + '-querystring.js'))
-      var x = regex.regularExpressions()
-      var wstream = fs.createWriteStream(rootDirectory + '/resources/jsc/regex.js')
+      let x = regex.regularExpressions()
+      let wstream = fs.createWriteStream(rootDirectory + '/resources/jsc/regex.js')
       wstream.write(new Buffer('var elements = ' + JSON.stringify(x) + ';'))
       wstream.end()
     }
@@ -103,7 +103,7 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       assign(serviceOptions, { resourceUrl: 'jsc://input-validation.js' })
       xmlString = validations.validationsGenTemplate(serviceOptions, serviceName)
       xmlStrings.push({ xmlString: xmlString, serviceName: serviceName })
-      var extractVarsOptions = {
+      let extractVarsOptions = {
         name: 'Extract-Path-Parameters',
         displayName: 'Extract Path Parameters',
         api: api
@@ -120,7 +120,7 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       validationCount++ // Only do this once.
       mkdirp.sync(rootDirectory + '/resources/jsc')
       // output validation
-      var bu = path.join(__dirname, '../../resource_templates/jsc/bundle-policify.js')
+      let bu = path.join(__dirname, '../../resource_templates/jsc/bundle-policify.js')
       fs.createReadStream(bu).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/bundle-policify.js'))
       js = path.join(__dirname, '../../resource_templates/jsc/SchemaValidation.js')
       fs.createReadStream(js).pipe(fs.createWriteStream(rootDirectory + '/resources/jsc/schema-validation.js'))
@@ -157,7 +157,7 @@ module.exports = function generatePolicies(apiProxy, options, api, cb) {
       xmlStrings.push({ xmlString: xmlString, serviceName: serviceName })
     }
 
-    var writeCnt = 0
+    let writeCnt = 0
     xmlStrings.forEach(function writeFile(xmlString) {
       fs.writeFile(rootDirectory + '/policies/' + xmlString.serviceName + '.xml', xmlString.xmlString, function (err) {
         if (err) {

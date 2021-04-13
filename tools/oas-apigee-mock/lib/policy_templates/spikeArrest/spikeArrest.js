@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+const builder = require('xmlbuilder')
+const random = require('../../util/random.js')
 
 module.exports = {
   spikeArrestTemplate: spikeArrestTemplate,
@@ -23,16 +23,16 @@ module.exports = {
 }
 
 function spikeArrestTemplate (options) {
-  var aysnc = options.async || 'false'
-  var continueOnError = options.continueOnError || 'false'
-  var enabled = options.enabled || 'true'
-  var name = options.name || 'SpikeArrest-' + random.randomText()
-  var displayName = options.displayName || name
-  var identifierRef = options.identifierRef || 'request.header.some-header-name'
-  var messageWeightRef = options.intervalRef || 'request.header.weight'
-  var rate = options.rate || '30ps'
+  const aysnc = options.async || 'false'
+  const continueOnError = options.continueOnError || 'false'
+  const enabled = options.enabled || 'true'
+  const name = options.name || 'SpikeArrest-' + random.randomText()
+  const displayName = options.displayName || name
+  const identifierRef = options.identifierRef || 'request.header.some-header-name'
+  const messageWeightRef = options.intervalRef || 'request.header.weight'
+  const rate = options.rate || '30ps'
 
-  var spike = builder.create('SpikeArrest')
+  let spike = builder.create('SpikeArrest')
   spike.att('async', aysnc)
   spike.att('continueOnError', continueOnError)
   spike.att('enabled', enabled)
@@ -43,12 +43,12 @@ function spikeArrestTemplate (options) {
   spike.ele('Identifier', {ref: identifierRef})
   spike.ele('MessageWeight', {ref: messageWeightRef})
   spike.ele('Rate', {}, rate)
-  var xmlString = spike.end({ pretty: true, indent: '  ', newline: '\n' })
+  let xmlString = spike.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function spikeArrestGenTemplate (options, name) {
-  var templateOptions = options
+  let templateOptions = options
   templateOptions.name = name
   if (options.timeUnit === 'minute') {
     templateOptions.rate = options.allow + 'pm'

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+const builder = require('xmlbuilder')
+const random = require('../../util/random.js')
 
 module.exports = {
   assignMessageTemplate: assignMessageTemplate,
@@ -24,14 +24,13 @@ module.exports = {
 
 function assignMessageTemplate(options) {
 
-  var continueOnError = options.continueOnError || 'false'
-
-  var ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
-  var name = options.name || 'AM-' + random.randomText()
-  var displayName = options.displayName || name
-  var content = options.payload || ''
+  let continueOnError = options.continueOnError || 'false'
+  let ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
+  let name = options.name || 'AM-' + random.randomText()
+  let displayName = options.displayName || name
+  let content = options.payload || ''
   
-  var assignMessage = builder.create('AssignMessage')
+  let assignMessage = builder.create('AssignMessage')
 
   assignMessage.att('name', name)
   assignMessage.ele('DisplayName', {}, displayName)
@@ -42,14 +41,12 @@ function assignMessageTemplate(options) {
     .up()
     .ele('StatusCode').txt(options.statusCode)
 
-  var xmlString = assignMessage.end({ pretty: true, indent: '  ', newline: '\n' })
-  // console.log("xmlString")
-  // console.log(xmlString)
+  let xmlString = assignMessage.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function assignMessageGenTemplate(options, name) {
-  var templateOptions = options
+  let templateOptions = options
   templateOptions.name = name
 
   return assignMessageTemplate(templateOptions)

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+const builder = require('xmlbuilder')
+const random = require('../../util/random.js')
 
 module.exports = {
   apiKeyTemplate: apiKeyTemplate,
@@ -23,13 +23,13 @@ module.exports = {
 }
 
 function apiKeyTemplate (options) {
-  var aysnc = options.async || 'false'
-  var continueOnError = options.continueOnError || 'false'
-  var enabled = options.enabled || 'true'
-  var name = options.name || 'apiKey-' + random.randomText()
-  var keyRef = options.keyRef || 'request.queryparam.apikey'
+  const aysnc = options.async || 'false'
+  const continueOnError = options.continueOnError || 'false'
+  const enabled = options.enabled || 'true'
+  const name = options.name || 'apiKey-' + random.randomText()
+  const keyRef = options.keyRef || 'request.queryparam.apikey'
 
-  var apiKey = builder.create('VerifyAPIKey')
+  let apiKey = builder.create('VerifyAPIKey')
   apiKey.att('async', aysnc)
   apiKey.att('continueOnError', continueOnError)
   apiKey.att('enabled', enabled)
@@ -38,12 +38,12 @@ function apiKeyTemplate (options) {
   apiKey.ele('Properties', {})
   apiKey.ele('APIKey', {ref: keyRef})
 
-  var xmlString = apiKey.end({ pretty: true, indent: '  ', newline: '\n' })
+  let xmlString = apiKey.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
 }
 
 function apiKeyGenTemplate (options, name) {
-  var templateOptions = options
+  let templateOptions = options
   templateOptions.name = name
   if (name === 'apiKeyHeader') {
     templateOptions.keyRef = 'request.header.apikey'
