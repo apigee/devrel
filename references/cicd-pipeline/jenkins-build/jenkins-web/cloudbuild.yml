@@ -16,8 +16,8 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args:
       - build
-      - "--tag=gcr.io/$PROJECT_ID/apigee-cicd/jenkins"
+      - "--tag=gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest"
       - "--file=./jenkins-web/Dockerfile"
       - .
 images:
-  - "gcr.io/$PROJECT_ID/apigee-cicd/jenkins"
+  - "gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest"
