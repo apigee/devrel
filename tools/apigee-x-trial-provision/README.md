@@ -43,29 +43,6 @@ confirmation step.
  ./apigee-x-trial-provision.sh
 ```
 
-### Run as a Google Cloud Build
-
-You need to set up a `PROJECT` environment variable.
-And prepare your cloud build environment:
-
-```sh
-gcloud services enable cloudbuild.googleapis.com --project $PROJECT
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
-CLOUD_BUILD_SA="$PROJECT_NUMBER@cloudbuild.gserviceaccount.com"
-
-gcloud projects add-iam-policy-binding "$PROJECT" \
-  --member="serviceAccount:$CLOUD_BUILD_SA" \
-  --role="roles/owner"
-```
-
-And run a build:
-
-```sh
-gcloud builds submit --project $PROJECT
-# use substitutions for optional parameters
-# gcloud builds submit --project $PROJECT --substitutions=_CERIFICATES=generated
-```
-
 ### Run locally with script on Github
 
 To invoke the script directly from the github repo, use
@@ -283,7 +260,7 @@ gcloud compute instances create bastion \
 
     ```sh
     Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/exco-vpc-allow-internal].
-    Creating firewall...done.                                                                                                
+    Creating firewall...done.
     NAME                     NETWORK   DIRECTION  PRIORITY  ALLOW         DENY  DISABLED
     exco-vpc-allow-internal  exco-vpc  INGRESS    1000      tcp,udp,icmp        False
     ```
@@ -296,7 +273,7 @@ gcloud compute instances create bastion \
 
     ```sh
     Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<project>/global/firewalls/fr-exco-vpc-ssh].
-    Creating firewall...done.                                                                                                
+    Creating firewall...done.
     NAME             NETWORK   DIRECTION  PRIORITY  ALLOW   DENY  DISABLED
     fr-exco-vpc-ssh  exco-vpc  INGRESS    1000      tcp:22        False
     ```
