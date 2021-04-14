@@ -9,7 +9,9 @@ This script creates an Apigee X evaluation organization and instance. It uses
 a proxy [MIG](https://cloud.google.com/compute/docs/instance-groups) and a
 [GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
 
-The script follows the documentation installation steps. The relevant step
+![Apigee X Ingress Diagram](apigee-x-ingress-diagram.png)
+
+The script follows the [documentation installation steps](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli#external). The relevant step
 numbers are added for easier cross-referencing.
 
 If you provisioned an organization using the [Apigee eval provisioning wizard](https://cloud.google.com/apigee/docs/api-platform/get-started/eval-orgs#wiz),
