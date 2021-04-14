@@ -16,6 +16,8 @@
 
 set -e
 
-./apigee-x-trial-provision.sh --quiet --certificates generated --project "$X_TRIAL_GCP_PROJECT"
+SCRIPT_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-./apigee-x-trial-delete.sh --quiet --project "$X_TRIAL_GCP_PROJECT"
+"$SCRIPT_ROOT"/apigee-x-trial-provision.sh --quiet --certificates generated --project "$X_TRIAL_GCP_PROJECT"
+
+"$SCRIPT_ROOT"/apigee-x-trial-delete.sh --quiet --project "$X_TRIAL_GCP_PROJECT"
