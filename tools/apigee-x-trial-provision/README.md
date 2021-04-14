@@ -11,8 +11,8 @@ a proxy [MIG](https://cloud.google.com/compute/docs/instance-groups) and a
 
 ![Apigee X Ingress Diagram](apigee-x-ingress-diagram.png)
 
-The script follows the [documentation installation steps](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli#external). The relevant step
-numbers are added for easier cross-referencing.
+The script follows the [documentation installation steps](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli#external).
+The relevant step numbers are added for easier cross-referencing.
 
 If you provisioned an organization using the [Apigee eval provisioning wizard](https://cloud.google.com/apigee/docs/api-platform/get-started/eval-orgs#wiz),
 you can run this script to add the proxy MIG and GCLB configuration for
