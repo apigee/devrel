@@ -170,7 +170,7 @@ When working with custom networks, the first step we do is to plan a layout of y
 | Network CIDR | 10.0.0.0/14 For routes and firewall rules, etc |
 |Subnet | exco-vpc-dev-subnet |
 | Subnet Primary Range | CIDR: 10.0.0.0/16 CIDR IP Range: 10.0.0.0 - 10.0.255.255, 65,536 IP addresses |
-| Apigee X Peering Range | /32 -- a default peering range for Apigee X Trial installation |
+| Apigee X Peering Range | /23 -- a default peering range for [Apigee X Trial installation](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli-eval) |
 
 For details on peering range, see: [Understanding of Peering Ranges](https://cloud.google.com/apigee/docs/api-platform/system-administration/peering-ranges)
 
