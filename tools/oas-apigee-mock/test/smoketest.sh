@@ -21,7 +21,7 @@ rm -rf ../api_bundles
 
 node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s orders.yaml
 
-RESULT="$(diff -r ../api_bundles/ api_bundles/ )"
+RESULT="$(diff -I '<!--[\s\S\n]*?-->' -r ../api_bundles/ api_bundles/ )"
 EXPECT=""
 
 # assert that the result matches the expected bundle
