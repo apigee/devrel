@@ -14,7 +14,7 @@
 # limitations under the License.
 
 DIRS="$1"
-PIPELINE_REPORT="run-pipelines,0"
+PIPELINE_REPORT=""
 DEVREL_ROOT="$PWD"
 
 run_single_pipeline() {
@@ -25,32 +25,38 @@ run_single_pipeline() {
 }
 
 if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
-  echo "NO CREDENTIALS - SKIPPING PIPELINES"
-elif [ -n "$DIRS" ]; then
-  for DIR in $(echo "$DIRS" | sed "s/,/ /g")
-  do
-    if ! test -f  "$DIR/pipeline.sh"; then
-      echo "[WARN] $DIR/pipeline.sh NOT FOUND"
-      PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR Pipeline,0"
-    else
-      run_single_pipeline "$DIR"
-      PIPELINE_REPORT="$PIPELINE_REPORT;$DIR Pipeline,$?"
-    fi
-  done
-else
-  for TYPE in references labs tools; do
-    for D in "$DEVREL_ROOT"/"$TYPE"/*; do
-      run_single_pipeline "$D"
-      PIPELINE_REPORT="$PIPELINE_REPORT;$D Pipeline,$?"
-    done
-  done
+  echo "[WARN] NO CREDENTIALS - SKIPPING PIPELINES"
+  exit 0
 fi
 
+if [ -z "$DIRS" ]; then
+  for TYPE in references labs tools; do
+    for D in "$DEVREL_ROOT"/"$TYPE"/*; do
+      DIRS="$DIRS,$D"
+    done
+  done
+  DIRS=$(echo "$DIRS" | cut -c 2-)
+fi
+
+for DIR in $(echo "$DIRS" | sed "s/,/ /g")
+do
+  if ! test -f  "$DIR/pipeline.sh"; then
+    echo "[WARN] $DIR/pipeline.sh NOT FOUND"
+    PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR,0,0s"
+  else
+    STARTTIME=$(date +%s)
+    run_single_pipeline "$DIR"
+    PIPELINE_EXIT=$?
+    ENDTIME=$(date +%s)
+    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
+  fi
+done
+
 # print report
-echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" | column -s ";" -t > pipeline-result.txt
+echo "$PIPELINE_REPORT" | tr ";" "\n" | awk 'NF' | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" > pipeline-result.txt
 echo
 echo "FINAL RESULT"
-cat ./pipeline-result.txt
+column -s ";" -t ./pipeline-result.txt
 echo
 
 # set exit code

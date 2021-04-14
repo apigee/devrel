@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-gcloud builds submit --config ./cloudbuild.yaml \
-  --substitutions="_DELETE_AFTER_VALIDATION=true,_CERTIFICATES=generated" \
-  --project "$X_TRIAL_GCP_PROJECT"
+set -e
+
+SCRIPT_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
+"$SCRIPT_ROOT"/apigee-x-trial-provision.sh --quiet --certificates generated --project "$X_TRIAL_GCP_PROJECT"
+
+"$SCRIPT_ROOT"/apigee-x-trial-delete.sh --quiet --project "$X_TRIAL_GCP_PROJECT"
