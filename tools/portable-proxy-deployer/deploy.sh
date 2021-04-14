@@ -123,6 +123,9 @@ elif [ -n "$directory" ]; then
 else
     echo "[INFO] using local directory: $PWD/apiproxy"
     cp -r ./apiproxy "$TEMP_FOLDER/apiproxy"
+    if [ -e "./edge.json" ]
+        then cp ./edge.json "$TEMP_FOLDER"
+    fi
 fi
 
 # Determine Proxy name
@@ -147,6 +150,7 @@ fi
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     (cd "$TEMP_FOLDER" && mvn install -B -ntp -Pgoogleapi \
+        -Dapigee.config.options=update \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \
@@ -157,6 +161,7 @@ elif [ "$apiversion" = "apigee" ]; then
     rm "$TEMP_FOLDER"/pom.xml.bak
 
     (cd "$TEMP_FOLDER" && mvn install -B -ntp -Papigeeapi \
+        -Dapigee.config.options=update \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \

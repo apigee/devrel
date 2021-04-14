@@ -20,7 +20,37 @@ set -x
 mkdir -p ./tmp
 curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12
 
-mvn install -ntp -B -Ptest -Dapigee.config.options=update
+# Apigee Edge
+
+TEST_BASEPATH='/badssl/v0'
+
+../../tools/portable-proxy-deployer/deploy.sh \
+--apigeeapi \
+--description "deployment from local folder" \
+-n mtls-demo \
+-b "$TEST_BASEPATH" \
+-u "$APIGEE_USER" \
+-p "$APIGEE_PASS" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV"
 
 npm i
-npm run test
+TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+TEST_HOST=$TEST_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test
+
+# Apigee X
+
+APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+../../tools/portable-proxy-deployer/deploy.sh \
+--googleapi \
+--description "deployment from local folder" \
+-n mtls-demo \
+-b "$TEST_BASEPATH" \
+-t "$APIGEE_TOKEN" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV"
+
+npm i
+TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+TEST_HOST=$TEST_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test

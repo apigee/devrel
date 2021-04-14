@@ -1,7 +1,7 @@
 {
    "version":"1.0",
    "envConfig":{
-      "test":{
+      "dev1":{
          "targetServers":[
             {
                "host" : "client.badssl.com",
