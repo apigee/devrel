@@ -114,20 +114,23 @@ export AX_REGION
 export SUBNET=${SUBNET:-default}
 export PROXY_MACHINE_TYPE=${PROXY_MACHINE_TYPE:-e2-micro}
 export PROXY_PREEMPTIBLE=${PROXY_PREEMPTIBLE:-false}
+export PROXY_MIG_MIN_SIZE=${PROXY_MIG_MIN_SIZE:-1}
 export CERTIFICATES=${CERTIFICATES:-managed}
+export ENV_GROUP_NAME='eval-group'
 
 CERT_DISPLAY=$CERTIFICATES
 
 if [ "$CERTIFICATES" = "provided" ];then
-  if [ -f "$RUNTIME_SSL_KEY" ] && [ -f "$RUNTIME_SSL_CERT" ]; then
-    CERT_DISPLAY="$CERT_DISPLAY key: $RUNTIME_SSL_KEY, cert $RUNTIME_SSL_CERT"
+  if [ -f "$RUNTIME_TLS_KEY" ] && [ -f "$RUNTIME_TLS_CERT" ]; then
+    CERT_DISPLAY="$CERT_DISPLAY key: $RUNTIME_TLS_KEY, cert $RUNTIME_TLS_CERT"
   else
-    echo "you selected CERTIFICATES=$CERTIFICATES but RUNTIME_SSL_KEY and/or RUNTIME_SSL_CERT is missing"
+    echo "you selected CERTIFICATES=$CERTIFICATES but RUNTIME_TLS_KEY and/or RUNTIME_TLS_CERT is missing"
+    exit 1
   fi
 fi
 
 if [ "$CERTIFICATES" = "managed" ]; then
-  export RUNTIME_HOST_ALIAS="[external-ip].nip.io"
+  export RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME.[external-ip].nip.io"
 else
   export RUNTIME_HOST_ALIAS=${RUNTIME_HOST_ALIAS:-$ORG-eval.apigee.net}
 fi
@@ -141,6 +144,7 @@ echo "  ZONE=$ZONE"
 echo "  AX_REGION=$AX_REGION"
 echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
 echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
+echo "  PROXY_MIG_MIN_SIZE=$PROXY_MIG_MIN_SIZE"
 echo "  CERTIFICATES=$CERT_DISPLAY"
 echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 echo ""
@@ -159,7 +163,6 @@ fi
 export MIG=apigee-proxy-$REGION
 
 
-
 echo "Validation: valid zone value: $ZONE"
 gcloud services enable compute.googleapis.com  --project="$PROJECT"
 CHECK_ZONE=$(gcloud compute zones list --filter="name=( \"$ZONE\" )" --format="table[no-heading](name)" --project="$PROJECT")
@@ -169,7 +172,7 @@ if [ "$ZONE" != "$CHECK_ZONE" ]; then
 fi
 
 echo "Step 2: Enable APIs"
-gcloud services enable apigee.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
+gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
 if [ "$APIGEE_PROVISIONED" = "T" ]; then
 
@@ -258,7 +261,7 @@ gcloud compute instance-templates create "$MIG" \
 echo "Step 7c.2: Create a managed instance group"
 gcloud compute instance-groups managed create "$MIG" \
   --base-instance-name apigee-proxy \
-  --size 2 --template "$MIG" --region "$REGION" --project "$PROJECT"
+  --size "$PROXY_MIG_MIN_SIZE" --template "$MIG" --region "$REGION" --project "$PROJECT"
 
 echo "Step 7c.3: Configure autoscaling for the group"
 gcloud compute instance-groups managed set-autoscaling "$MIG" \
@@ -290,33 +293,33 @@ echo "Step 7e: Upload credentials:"
 
 if [ "$CERTIFICATES" = "managed" ]; then
   echo "Step 7e.1: Using Google managed certificate:"
-  RUNTIME_HOST_ALIAS=$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
+  RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME".$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
   gcloud compute ssl-certificates create apigee-ssl-cert \
     --domains="$RUNTIME_HOST_ALIAS" --project "$PROJECT"
 elif [ "$CERTIFICATES" = "generated" ]; then
   echo "Step 7e.1: Generate eval certificate and key"
-  export RUNTIME_SSL_CERT=~/mig-cert.pem
-  export RUNTIME_SSL_KEY=~/mig-key.pem
-  openssl req -x509 -out "$RUNTIME_SSL_CERT" -keyout "$RUNTIME_SSL_KEY" -newkey rsa:2048 -nodes -sha256 -subj '/CN='"$RUNTIME_HOST_ALIAS"'' -extensions EXT -config <( printf "[dn]\nCN=$RUNTIME_HOST_ALIAS\n[req]\ndistinguished_name=dn\n[EXT]\nbasicConstraints=critical,CA:TRUE,pathlen:1\nsubjectAltName=DNS:$RUNTIME_HOST_ALIAS\nkeyUsage=digitalSignature,keyCertSign\nextendedKeyUsage=serverAuth")
+  export RUNTIME_TLS_CERT=~/mig-cert.pem
+  export RUNTIME_TLS_KEY=~/mig-key.pem
+  openssl req -x509 -out "$RUNTIME_TLS_CERT" -keyout "$RUNTIME_TLS_KEY" -newkey rsa:2048 -nodes -sha256 -subj '/CN='"$RUNTIME_HOST_ALIAS"'' -extensions EXT -config <( printf "[dn]\nCN=$RUNTIME_HOST_ALIAS\n[req]\ndistinguished_name=dn\n[EXT]\nbasicConstraints=critical,CA:TRUE,pathlen:1\nsubjectAltName=DNS:$RUNTIME_HOST_ALIAS\nkeyUsage=digitalSignature,keyCertSign\nextendedKeyUsage=serverAuth")
 
-  echo "Step 7e.2: Upload your SSL server certificate and key to GCP"
+  echo "Step 7e.2: Upload your TLS server certificate and key to GCP"
   gcloud compute ssl-certificates create apigee-ssl-cert \
-    --certificate="$RUNTIME_SSL_CERT" \
-    --private-key="$RUNTIME_SSL_KEY" --project "$PROJECT"
+    --certificate="$RUNTIME_TLS_CERT" \
+    --private-key="$RUNTIME_TLS_KEY" --project "$PROJECT"
 else
-  echo "Step 7e.2: Upload your SSL server certificate and key to GCP"
+  echo "Step 7e.2: Upload your TLS server certificate and key to GCP"
   gcloud compute ssl-certificates create apigee-ssl-cert \
-    --certificate="$RUNTIME_SSL_CERT" \
-    --private-key="$RUNTIME_SSL_KEY" --project "$PROJECT"
+    --certificate="$RUNTIME_TLS_CERT" \
+    --private-key="$RUNTIME_TLS_KEY" --project "$PROJECT"
 fi
 
 CURRENT_HOST_ALIAS=$(curl -X GET --silent -H "Authorization: Bearer $(token)"  \
-    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/eval-group | jq -r '.hostnames[0]')
+    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/$ENV_GROUP_NAME | jq -r '.hostnames[0]')
 
 if [ "$RUNTIME_HOST_ALIAS" != "$CURRENT_HOST_ALIAS" ]; then
   echo "setting hostname on env group to $RUNTIME_HOST_ALIAS"
   curl -X PATCH --silent -H "Authorization: Bearer $(token)"  \
-    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/eval-group \
+    -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/envgroups/$ENV_GROUP_NAME \
     -d "{\"hostnames\": [\"$RUNTIME_HOST_ALIAS\"]}"
 fi
 
@@ -355,10 +358,26 @@ gcloud compute forwarding-rules create apigee-proxy-https-lb-rule \
 
 set -e
 
-# TODO: [ ] wait till LB is ready
 echo ""
-echo "Almost done. It take some time (another 5-8 minutes) to provision load balancer infrastructure."
+echo "Almost done. It take some time (another 5-8 minutes) to provision the load balancer infrastructure."
 echo ""
+
+# TODO: more intelligent wait until LB is ready
+
+while true
+do
+  TLS_STATUS="$(gcloud compute ssl-certificates list --format=json  --project "$PROJECT" | jq -r '.[0].type')"
+  if [ "$TLS_STATUS" = "MANAGED" ]; then
+    TLS_STATUS="$TLS_STATUS ($(gcloud compute ssl-certificates list --format=json --project "$PROJECT" | jq -r '.[0].managed.status'))"
+  fi
+  DEPLOYMENT_STATUS="$(gcloud alpha apigee deployments describe 2>/dev/null --api hello-world --environment eval --format=json | jq -r '.state')"
+  CURL_STATUS=$(curl -k -o /dev/null -s -w "%{http_code}\n" "https://$RUNTIME_HOST_ALIAS/hello-world" --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP" || true)
+  echo "Test Curl Status: $CURL_STATUS, Deployment Status: $DEPLOYMENT_STATUS, Cert Status: $TLS_STATUS"
+  if [ "$CURL_STATUS" = "200" ]; then
+    break
+  fi
+  sleep 10
+done
 
 if [ "$CERTIFICATES" = "managed" ]; then
   echo "# To send an EXTERNAL test request, execute following command:"
@@ -366,14 +385,14 @@ if [ "$CERTIFICATES" = "managed" ]; then
 else
   echo ""
   echo "# To send an INTERNAL test request (from a VM at the private network)"
-  echo " copy $RUNTIME_SSL_CERT and execute following commands:"
+  echo " copy $RUNTIME_TLS_CERT and execute following commands:"
   echo ""
   echo "export RUNTIME_IP=$APIGEE_ENDPOINT"
 
-  echo "export RUNTIME_SSL_CERT=~/mig-cert.pem"
+  echo "export RUNTIME_TLS_CERT=~/mig-cert.pem"
   echo "export RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 
-  echo 'curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
+  echo 'curl --cacert $RUNTIME_TLS_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
   echo ""
   echo "You can also skip server certificate validation for testing purposes:"
 
@@ -385,8 +404,8 @@ else
   echo ""
   echo "export RUNTIME_IP=$RUNTIME_IP"
 
-  echo "export RUNTIME_SSL_CERT=~/mig-cert.pem"
+  echo "export RUNTIME_TLS_CERT=~/mig-cert.pem"
   echo "export RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 
-  echo 'curl --cacert $RUNTIME_SSL_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
+  echo 'curl --cacert $RUNTIME_TLS_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"'
 fi
