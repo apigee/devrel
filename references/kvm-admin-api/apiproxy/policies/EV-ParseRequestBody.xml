@@ -15,6 +15,7 @@
  limitations under the License.
 -->
 <ExtractVariables name="EV-ParseRequestBody">
+    <Source>request</Source>
     <JSONPayload>
         <Variable name="private.kvm-entry.value" type="string">
             <JSONPath>$.value</JSONPath>
