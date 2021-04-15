@@ -1,7 +1,5 @@
 # Apigee X Trial Provisioning
 
-> Note - this script is not subject to pipelines
-
 ## Description
 
 This script creates an Apigee X evaluation organization and instance. It uses
@@ -9,7 +7,7 @@ This script creates an Apigee X evaluation organization and instance. It uses
 a proxy [MIG](https://cloud.google.com/compute/docs/instance-groups) and a
 [GCLB](https://cloud.google.com/load-balancing/docs) for external exposure.
 
-![Apigee X Ingress Diagram](apigee-x-ingress-diagram.png)
+![Apigee X Ingress Diagram](images/apigee-x-ingress-diagram.png)
 
 The script follows the [documentation installation steps](https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli#external).
 The relevant step numbers are added for easier cross-referencing.
@@ -47,10 +45,11 @@ confirmation step.
 
 To invoke the script directly from the github repo, use
 
+<!-- markdownlint-disable MD013 -->
 ```sh
-<!-- markdownlint-disable-next-line MD013 -->
 curl -L https://raw.githubusercontent.com/apigee/devrel/main/tools/apigee-x-trial-provision/apigee-x-trial-provision.sh | bash -
 ```
+<!-- markdownlint-enable MD013 -->
 
 WARNING: A successful `Provisioning organization...` step takes 25-30 minutes
 to complete. According to the documentation: "This is a long running operation
@@ -232,6 +231,8 @@ gcloud compute instances create bastion \
 
     export NETWORK_CIDR=10.0.0.0/14
     export SUBNET_CIDR=10.0.0.0/16
+
+    export PEERING_CIDR=10.111.0.0/23
     ```
 
 1. GCP: Create a VPC Network
@@ -320,9 +321,49 @@ gcloud compute instances create bastion \
       --region $REGION \
       --zone $ZONE \
       --ax-region $AX_REGION \
-      --certificates=managed
+      --certificates=managed \
+      --peering-cidr $PEERING_CIDR
 
     ```
+
+### Shared VPCs
+
+This section explains how to install Apigee X in a service project of a shared
+VPC.
+
+![Apigee X Shared VPC Diagram](images/apigee-x-shared-vpc-diagram.png)
+
+First create network and subnet in your `HOST_PROJECT`
+and share it with your `APIGEE_SERVICE_PROJECT`.
+
+```sh
+export HOST_PROJECT=<your-Apigee-Host-Project>
+export SERVICE_PROJECT=<your-Apigee-Service-Project>
+```
+
+To configure the VPC peering of Apigee X and firewall you first configure the
+host project:
+
+```sh
+export NETWORK=<your-shared-vpc>
+export SUBNET=<your-shared-subnet>
+./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p $HOST_PROJECT --shared-vpc-host-config
+```
+
+Once the script is done it will tell you the fully qualified NETWORK and SUBNET
+variables that you will need to provide:
+
+```sh
+# Sample output
+export NETWORK=projects/<your Apigee Host Project>/global/networks/<your-shared-vpc>
+export SUBNET=projects/<your Apigee Host Project>/regions/<your-gcp-region>/subnetworks/<your-shared-subnet>
+```
+
+Make sure you **execute these exports** and continue with the following script:
+
+```sh
+./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p $SERVICE_PROJECT
+```
 
 1. Output of the provisioning command will provide you with a test request you can use to verify functionality of the Apigee X organization.
 
