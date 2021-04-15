@@ -15,6 +15,7 @@
  limitations under the License.
 -->
 <ExtractVariables name="EV-PathParameters">
+    <Source>request</Source>
     <URIPath>
         <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
         <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
