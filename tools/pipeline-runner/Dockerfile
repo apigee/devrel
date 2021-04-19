@@ -22,6 +22,7 @@ RUN apk add --no-cache \
   nodejs \
   npm \
   openjdk11-jre-headless \
+  openssl \
   util-linux \
   # add chromium and dependencies for UI testing
   chromium \
