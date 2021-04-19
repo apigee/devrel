@@ -70,9 +70,9 @@ Sample Output (using the self-signed certificate option, see below):
 export RUNTIME_IP=203.0.113.10
 
 export RUNTIME_TLS_CERT=~/mig-cert.pem
-export RUNTIME_HOST_ALIAS=$PROJECT-eval.apigee.net
+export RUNTIME_HOST_ALIAS="$PROJECT-eval.apigee.net"
 
-curl --cacert $RUNTIME_TLS_CERT https://$RUNTIME_HOST_ALIAS/hello-world -v \
+curl --cacert "$RUNTIME_TLS_CERT" "https://$RUNTIME_HOST_ALIAS/hello-world" -v \
   --resolve "$RUNTIME_HOST_ALIAS:443:$RUNTIME_IP"
 ```
 
@@ -192,7 +192,7 @@ roles='roles/editor roles/compute.networkAdmin'
 
 for r in $roles; do
     gcloud projects add-iam-policy-binding $PROJECT \
-        --member=serviceAccount:$INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com \
+        --member="serviceAccount:$INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com" \
         --role=$r
 done
 ```
@@ -201,7 +201,7 @@ done
 
 ```sh
 gcloud compute instances create bastion \
-    --service-account $INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com \
+    --service-account "$INSTALLER_SA_ID@$PROJECT.iam.gserviceaccount.com" \
     --scopes cloud-platform
 ```
 
@@ -238,7 +238,7 @@ gcloud compute instances create bastion \
 1. GCP: Create a VPC Network
 
     ```sh
-    gcloud compute networks create $NETWORK \
+    gcloud compute networks create "$NETWORK" \
         --subnet-mode=custom
     ```
 
@@ -254,7 +254,7 @@ gcloud compute instances create bastion \
 1. Firewall Rules for internal, 22, and icmp traffic
 
     ```sh
-    gcloud compute firewall-rules create $NETWORK-allow-internal --network $NETWORK --allow tcp,udp,icmp --source-ranges $NETWORK_CIDR
+    gcloud compute firewall-rules create "$NETWORK-allow-internal" --network "$NETWORK" --allow tcp,udp,icmp --source-ranges "$NETWORK_CIDR"
     ```
 
     Output:
@@ -267,7 +267,7 @@ gcloud compute instances create bastion \
     ```
 
     ```sh
-    gcloud compute firewall-rules create fr-$NETWORK-ssh --network $NETWORK --allow tcp:22
+    gcloud compute firewall-rules create "fr-$NETWORK-ssh" --network "$NETWORK" --allow tcp:22
     ```
 
     Output:
@@ -282,10 +282,10 @@ gcloud compute instances create bastion \
 1. GCP: Create a network subnet
 
       ```sh
-      gcloud compute networks subnets create $SUBNET \
-          --network=$NETWORK \
-          --range=$SUBNET_CIDR \
-          --region=$REGION
+      gcloud compute networks subnets create "$SUBNET" \
+          --network="$NETWORK" \
+          --range="$SUBNET_CIDR" \
+          --region="$REGION"
       ```
 
       Output:
@@ -316,14 +316,13 @@ gcloud compute instances create bastion \
 
     ```sh
     ./apigee-x-trial-provision.sh \
-      --network $NETWORK \
-      --subnet $SUBNET \
-      --region $REGION \
-      --zone $ZONE \
-      --ax-region $AX_REGION \
+      --network "$NETWORK" \
+      --subnet "$SUBNET" \
+      --region "$REGION" \
+      --zone "$ZONE" \
+      --ax-region "$AX_REGION" \
       --certificates=managed \
-      --peering-cidr $PEERING_CIDR
-
+      --peering-cidr "$PEERING_CIDR"
     ```
 
 ### Shared VPCs
@@ -347,7 +346,7 @@ host project:
 ```sh
 export NETWORK=<your-shared-vpc>
 export SUBNET=<your-shared-subnet>
-./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p $HOST_PROJECT --shared-vpc-host-config
+./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p "$HOST_PROJECT" --shared-vpc-host-config
 ```
 
 Once the script is done it will tell you the fully qualified NETWORK and SUBNET
@@ -362,7 +361,7 @@ export SUBNET=projects/<your Apigee Host Project>/regions/<your-gcp-region>/subn
 Make sure you **execute these exports** and continue with the following script:
 
 ```sh
-./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p $SERVICE_PROJECT
+./tools/apigee-x-trial-provision/apigee-x-trial-provision.sh -p "$SERVICE_PROJECT"
 ```
 
 1. Output of the provisioning command will provide you with a test request you can use to verify functionality of the Apigee X organization.
@@ -391,7 +390,7 @@ Make sure you **execute these exports** and continue with the following script:
 1. Execute API request directly against apigee x runtime endpoint
 
   ```sh
-  curl -k https://$HOSTNAME/hello-world  --resolve "$HOSTNAME:443:$ENDPOINT"
+  curl -k "https://$HOSTNAME/hello-world"  --resolve "$HOSTNAME:443:$ENDPOINT"
   ```
 
 <!-- markdownlint-enable MD013 -->

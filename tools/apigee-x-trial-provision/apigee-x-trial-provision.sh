@@ -83,18 +83,6 @@ fi
 # Step 1: Define functions and environment variables
 function token { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
 
-function gcloud_ignore_exist {
-  set +e
-  OUTPUT=$(eval gcloud "$1" 2>&1)
-  EVAL_EXIT="$?"
-  if [ "$EVAL_EXIT" != 0 ]; then
-    echo "${OUTPUT//ERROR:/WARNING:}"
-    if [[ ! "$OUTPUT" =~ " already exists" ]]; then
-      exit 1
-    fi
-  fi
-}
-
 export ORG=$PROJECT
 
 echo "CHECK: Checking if organization $ORG is already provisioned"
@@ -203,9 +191,9 @@ if [[ "$NETWORK" =~ ^projects/.*/networks.*$ ]]; then
   SUBNET_FOUND=$?
   set -e
   if [ "$SUBNET_FOUND" = "0" ]; then
-    echo "[INFO] using existing shared VPC subnet $SUBNET"
+    echo "using existing shared VPC subnet $SUBNET"
   else
-    echo "[FATAL] $SUBNET is not shared with this project"
+    echo "$SUBNET is not shared with this project"
     exit 1
   fi
 else
@@ -213,19 +201,26 @@ else
   if [ -z "$PEERING_CIDR" ]; then
     PEERING_CIDR_FLAGS="--prefix-length=23"
   else
-    CIDR_ADDRESS=$(echo "$PEERING_CIDR" | cut -d '/' -f 1)
-    CIDR_MASK=$(echo "$PEERING_CIDR" | cut -d '/' -f 2)
+    CIDR_ADDRESS=$(echo "$PEERING_CIDR" | cut -d/ -f1)
+    CIDR_MASK=$(echo "$PEERING_CIDR" | cut -d/ -f2)
     PEERING_CIDR_FLAGS="--prefix-length=$CIDR_MASK --addresses=$CIDR_ADDRESS"
   fi
 
-  echo "[INFO] peering CIDR flags: $PEERING_CIDR_FLAGS"
-  gcloud_ignore_exist 'compute addresses create google-managed-services-default --global "$PEERING_CIDR_FLAGS" --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT"'
+  echo "peering CIDR flags: $PEERING_CIDR_FLAGS"
+  gcloud compute addresses create google-managed-services-default --global "$PEERING_CIDR_FLAGS" \
+    --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
+    --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
 
   echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
-  gcloud_ignore_exist 'services vpc-peerings connect --service=servicenetworking.googleapis.com --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT"'
+  gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com \
+    --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT" ||
+    echo "Failed to create - ingoring assuming it already exists"
 
   echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
-  gcloud_ignore_exist 'compute firewall-rules create k8s-allow-lb-to-apigee-proxy --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" --network "$NETWORK" --allow=tcp:443 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy --project "$PROJECT"'
+  gcloud compute firewall-rules create k8s-allow-lb-to-apigee-proxy \
+    --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" --network "$NETWORK" \
+    --allow=tcp:443 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy \
+    --project "$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
 fi
 
 if [ "$SHARED_HOST_ONLY" = "Y" ]; then
