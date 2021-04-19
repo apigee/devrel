@@ -49,6 +49,14 @@ case "$1" in
     QUIET=Y
     shift;;
 
+  --shared-vpc-host-config)
+    SHARED_HOST_ONLY=Y
+    shift;;
+
+  --peering-cidr)
+    PEERING_CIDR="$2"
+    shift 2;;
+
   *)
     pps="$pps $1"
     shift;;
@@ -74,7 +82,6 @@ fi
 
 # Step 1: Define functions and environment variables
 function token { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
-
 
 export ORG=$PROJECT
 
@@ -129,6 +136,12 @@ if [ "$CERTIFICATES" = "provided" ];then
   fi
 fi
 
+if [ -z "$PEERING_CIDR" ]; then
+  PEERING_CIDR_DISPLAY="[automatic /23 block]"
+else
+  PEERING_CIDR_DISPLAY="$PEERING_CIDR"
+fi
+
 if [ "$CERTIFICATES" = "managed" ]; then
   export RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME.[external-ip].nip.io"
 else
@@ -138,15 +151,22 @@ fi
 echo ""
 echo "Resolved Configuration: "
 echo "  PROJECT=$PROJECT"
-echo "  ORG=$ORG"
-echo "  REGION=$REGION"
-echo "  ZONE=$ZONE"
-echo "  AX_REGION=$AX_REGION"
-echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
-echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
-echo "  PROXY_MIG_MIN_SIZE=$PROXY_MIG_MIN_SIZE"
-echo "  CERTIFICATES=$CERT_DISPLAY"
-echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
+echo "  NETWORK=$NETWORK"
+echo "  SUBNET=$SUBNET"
+echo "  PEERING_CIDR=$PEERING_CIDR_DISPLAY"
+if [ "$SHARED_HOST_ONLY" = "Y" ]; then
+  echo "provisioning shared VPC host project only"
+else
+  echo "  ORG=$ORG"
+  echo "  REGION=$REGION"
+  echo "  ZONE=$ZONE"
+  echo "  AX_REGION=$AX_REGION"
+  echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
+  echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
+  echo "  PROXY_MIG_MIN_SIZE=$PROXY_MIG_MIN_SIZE"
+  echo "  CERTIFICATES=$CERT_DISPLAY"
+  echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
+fi
 echo ""
 
 if [ ! "$QUIET" = "Y" ]; then
@@ -160,19 +180,68 @@ if [ ! "$QUIET" = "Y" ]; then
   fi
 fi
 
+echo "Step 2: Enable APIs"
+gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
+
+echo "Step 4: Configure service networking"
+
+if [[ "$NETWORK" =~ ^projects/.*/networks.*$ ]]; then
+  set +e
+  gcloud compute networks describe "$NETWORK" --project "$PROJECT" | grep -q "$SUBNET"
+  SUBNET_FOUND=$?
+  set -e
+  if [ "$SUBNET_FOUND" = "0" ]; then
+    echo "using existing shared VPC subnet $SUBNET"
+  else
+    echo "$SUBNET is not shared with this project"
+    exit 1
+  fi
+else
+  echo "Step 4.1: Define a range of reserved IP addresses for your network. "
+  if [ -z "$PEERING_CIDR" ]; then
+    PEERING_CIDR_FLAGS="--prefix-length=23"
+  else
+    CIDR_ADDRESS=$(echo "$PEERING_CIDR" | cut -d/ -f1)
+    CIDR_MASK=$(echo "$PEERING_CIDR" | cut -d/ -f2)
+    PEERING_CIDR_FLAGS="--prefix-length=$CIDR_MASK --addresses=$CIDR_ADDRESS"
+  fi
+
+  echo "peering CIDR flags: $PEERING_CIDR_FLAGS"
+  gcloud compute addresses create google-managed-services-default --global "$PEERING_CIDR_FLAGS" \
+    --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
+    --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
+
+  echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
+  gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com \
+    --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT" ||
+    echo "Failed to create - ingoring assuming it already exists"
+
+  echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
+  gcloud compute firewall-rules create k8s-allow-lb-to-apigee-proxy \
+    --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" --network "$NETWORK" \
+    --allow=tcp:443 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy \
+    --project "$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
+fi
+
+if [ "$SHARED_HOST_ONLY" = "Y" ]; then
+  echo ""
+  echo "Done provisioning shared VPC host project"
+  echo "Set the following environment variable and run this script again."
+  echo "export PROJECT=<your-apigee-x-service-project>"
+  echo "export NETWORK=projects/$PROJECT/global/networks/$NETWORK"
+  echo "export SUBNET=projects/$PROJECT/regions/$REGION/subnetworks/$SUBNET"
+  echo ""
+  exit 0;
+fi
+
 export MIG=apigee-proxy-$REGION
 
-
 echo "Validation: valid zone value: $ZONE"
-gcloud services enable compute.googleapis.com  --project="$PROJECT"
 CHECK_ZONE=$(gcloud compute zones list --filter="name=( \"$ZONE\" )" --format="table[no-heading](name)" --project="$PROJECT")
 if [ "$ZONE" != "$CHECK_ZONE" ]; then
   echo "ERROR: zone value is invalid: $ZONE"
   exit
 fi
-
-echo "Step 2: Enable APIs"
-gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
 if [ "$APIGEE_PROVISIONED" = "T" ]; then
 
@@ -184,23 +253,6 @@ if [ "$APIGEE_PROVISIONED" = "T" ]; then
   echo "Skipping Service networking and Organization Provisioning steps."
 else
 
-echo "Step 4: Configure service networking"
-
-echo "Step 4.1: Define a range of reserved IP addresses for your network. "
-set +e
-OUTPUT=$(gcloud compute addresses create google-managed-services-default --global --prefix-length=23 --description="Peering range for Google services" --network="$NETWORK" --purpose=VPC_PEERING --project="$PROJECT" 2>&1 )
-if [ "$?" != 0 ]; then
-   if [[ "$OUTPUT" =~ " already exists" ]]; then
-      echo "google-managed-services-default already exists"
-      set -e
-   else
-      echo "$OUTPUT"
-      exit 1
-   fi
-fi
-
-echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
-gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT"
 
 echo "Step 4.4: Create a new eval org [it takes time, 10-20 minutes. please wait...]"
 
@@ -252,6 +304,7 @@ fi
 gcloud compute instance-templates create "$MIG" \
   --region "$REGION" --network "$NETWORK" \
   --subnet "$SUBNET" \
+  --no-address \
   --tags=https-server,apigee-network-proxy,gke-apigee-proxy \
   --machine-type "$PROXY_MACHINE_TYPE""$PREEMPTIBLE_FLAG" \
   --image-family centos-7 \
@@ -283,11 +336,7 @@ echo "Step 7d.2: Get a reserved IP address"
 RUNTIME_IP=$(gcloud compute addresses describe lb-ipv4-vip-1 --format="get(address)" --global --project "$PROJECT")
 export RUNTIME_IP
 
-echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
-gcloud compute firewall-rules create k8s-allow-lb-to-apigee-proxy \
-  --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" \
-  --network "$NETWORK" --allow=tcp:443 \
-  --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy --project "$PROJECT"
+
 
 echo "Step 7e: Upload credentials:"
 
