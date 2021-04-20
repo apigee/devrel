@@ -17,7 +17,6 @@
 const parser = require('swagger-parser')
 const generateSkeleton = require('./generateSkeleton.js')
 const generateProxyEndPoint = require('./generateProxyEndPoint.js')
-const async = require('async')
 const path = require('path')
 
 module.exports = {
@@ -39,7 +38,7 @@ async function generateApi(apiProxy, options) {
       destination = destination.substr(0, destination.length - 1)
     }
 
-    let api = await parser.validate(options.source);
+    const api = await parser.validate(options.source);
     console.log("API name: %s, Version: %s", api.info.title, api.info.version);
     console.log('Source specification is via: %s %s', (api.openapi ? 'OAS' : 'Swagger'), (api.openapi ? api.openapi : api.swagger))
     console.log('API name: %s, Version: %s', api.info.title, api.info.version)

@@ -30,9 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/orders"
+                $ref: "#/components/schemas/orders"
               example:
                 orders:
                   - orderId: 61knu8gol56
@@ -72,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/orders"
+                $ref: "#/components/schemas/order"
               example:
                 orderId: 61knu8gol56
                 billingAddress: 999 Nobel Road
@@ -100,14 +98,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/orders"
+              $ref: "#/components/schemas/order"
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/orders"
+                $ref: "#/components/schemas/order"
               example:
                 orderId: 61knu8gol56
                 billingAddress: 999 Nobel Road
@@ -135,7 +133,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/orders"
+              $ref: "#/components/schemas/order"
       responses:
         "200":
           description: OK
@@ -146,7 +144,7 @@ components:
       in: query
       name: apikey
   schemas:
-    orders:
+    order:
       type: object
       properties:
         billingAddress:
@@ -181,3 +179,10 @@ components:
         - shippingAddress
         - totalPrice
         - userId
+    orders:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/order"
