@@ -19,12 +19,12 @@ set -x
 # clean up previously generated files
 rm -rf ../api_bundles
 
-node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s orders.yaml
+node bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s test/orders.yaml
 
 # Remove the licence from test files before comparing
 find . -name "*.xml" -exec sed -i '/<!--/,/-->/d' {} +
 
-RESULT="$(diff -r ../api_bundles/ api_bundles/)"
+RESULT="$(diff -r api_bundles/ test/api_bundles/)"
 EXPECT=""
 
 # assert that diff operation returned no results between generated and
@@ -36,6 +36,6 @@ else
   exit 1
 fi
 
-apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d ../api_bundles/oas-apigee-mock-orders -V
+apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d api_bundles/oas-apigee-mock-orders -V
 
 npm test
