@@ -1,4 +1,4 @@
-# oas-apigee-mock
+# OpenAPI to Apigee Mock Proxy
 
 A tool which generates an Apigee API Proxy bundle from an Open API 3
 specification, with mock responses using Assign Message policies from the
