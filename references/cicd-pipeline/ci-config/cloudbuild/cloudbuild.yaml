@@ -137,8 +137,8 @@ substitutions:
     _APIGEE_TEST_ENV: test
     _APIGEE_PROD_ENV: prod
     # Managment API version use:
-    # 'apigee' for current version SaaS
-    # 'google' for next version SaaS and hybrid
+    # 'apigee' for current Apigee Edge
+    # 'google' for Apigee X and hybrid
     _API_VERSION: apigee #apgiee|google
     # Host name for the integration test
     _INT_TEST_HOST: org-env.apigee.net

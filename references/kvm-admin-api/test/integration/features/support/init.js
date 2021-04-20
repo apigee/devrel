@@ -18,11 +18,16 @@ const apickli = require("apickli");
 const { Before: before } = require("cucumber");
 
 before(function () {
+  const host = process.env.APIGEE_X_HOSTNAME;
+  const org = process.env.APIGEE_X_ORG;
+  const env = process.env.APIGEE_X_ENV;
+
   this.apickli = new apickli.Apickli(
     "https",
-    process.env.APIGEE_ORG + "-" + process.env.APIGEE_ENV +
-    ".apigee.net/kvm-admin/v1"
+    `${host}/kvm-admin/v1/organizations/${org}/environments/${env}`
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
+  this.apickli.addRequestHeader("Authorization", "Bearer " +
+  	process.env.APIGEE_TOKEN);
 });

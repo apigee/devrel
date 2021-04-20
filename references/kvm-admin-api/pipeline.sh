@@ -15,8 +15,22 @@
 # limitations under the License.
 
 set -e
-set -x
 
-mvn clean install -ntp -B -Papigeeapi -Dorg="$APIGEE_ORG" -Denv="$APIGEE_ENV" \
-  -Dusername="$APIGEE_USER" -Dpassword="$APIGEE_PASS"
-npm run test
+TOKEN=$(gcloud auth print-access-token)
+
+# Deploy the proxy
+mvn clean install -ntp -B -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \
+  -Dtoken="$TOKEN"
+
+# Run the Integration test
+curl -X POST \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    --data '{"name": "kvmtestmap", "encrypted": true}'
+
+APIGEE_TOKEN=$TOKEN npm run test
+
+curl -X DELETE \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps/kvmtestmap" \
+    -H "Authorization: Bearer $TOKEN"

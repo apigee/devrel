@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jenkins/jenkins:2.249.1-alpine
+FROM jenkins/jenkins:2.285-alpine
 
 USER root
-RUN apk update && apk add --no-cache git=2.26.2-r0 maven=3.6.3-r0 nodejs=12.18.4-r0 npm=12.18.4-r0
+RUN apk update && apk add --no-cache git maven nodejs npm
 USER jenkins
 
 COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt

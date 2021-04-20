@@ -62,6 +62,10 @@ Apigee products.
   A utility to derive an AssignMessage policy from a spec
 - [Apigee X Trial Provisioning Reference](tools/apigee-x-trial-provision) -
   A reference provisioning script for Apigee X trial provisioning
+- [Portable Proxy Deployer](tools/portable-proxy-deployer) -
+  A unified proxy deployment utility for Edge, hybrid and X
+- [Apigee OpenLegacy Kickstart](tools/apigee-openlegacy) -
+  A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 
 ## Labs
 

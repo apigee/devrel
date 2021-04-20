@@ -18,21 +18,54 @@ Feature:
   So that I can use it to store config values
 
   Scenario: Create an entry in the KVM
-    Given I set body to {"name": "test-entry", "value":"test-value"}
+    Given I set body to {"key": "test-entry", "value":"test-value"}
     And I set Content-Type header to application/json
-    When I POST to /kvms/kvmap/entries
+    When I POST to /keyvaluemaps/kvmtestmap/entries
     Then response code should be 200
     And response body path $.value should be test-value
-    And response body path $.name should be test-entry
+    And response body path $.key should be test-entry
+    And response header Authorization should not exist
 
   Scenario: Retrieve an entry in the KVM
-    When I GET /kvms/kvmap/entries/test-entry
+    When I GET /keyvaluemaps/kvmtestmap/entries/test-entry
     Then response code should be 200
     And response body path $.value should be test-value
-    And response body path $.name should be test-entry
+    And response body path $.key should be test-entry
+
+  Scenario: Retrieve a wrong entry in the KVM
+    When I GET /keyvaluemaps/kvmtestmap/entries/wrong-entry
+    Then response code should be 404
+
+  Scenario: Retrieve with a wrong mapname
+    When I GET /keyvaluemaps/wrongtestmap/entries/test-entry
+    Then response code should be 404
 
   Scenario: Delete an entry in the KVM
-    When I DELETE /kvms/kvmap/entries/test-entry
+    When I DELETE /keyvaluemaps/kvmtestmap/entries/test-entry
     Then response code should be 200
     And response body path $.value should be test-value
-    And response body path $.name should be test-entry
+    And response body path $.key should be test-entry
+
+  Scenario: Delete an invalid entry in the KVM
+    When I DELETE /keyvaluemaps/kvmtestmap/entries/wrong-entry
+    Then response code should be 404
+
+  Scenario: Delete an entry with a wrong mapname
+    When I DELETE /keyvaluemaps/wrongtestmap/entries/test-entry
+    Then response code should be 404
+
+  Scenario: Query an invalid resource in the proxy
+    When I DELETE /keyvaluemaps/invalidresource
+    Then response code should be 404
+
+  Scenario: Invalid PUT call
+    Given I set body to {"key": "test-entry", "value":"test-value"}
+    And I set Content-Type header to application/json
+    When I PUT to /keyvaluemaps/kvmtestmap/entries
+    Then response code should be 403
+
+  @flaky
+  Scenario: Retrieve an entry after deleting it
+    When I GET /keyvaluemaps/kvmtestmap/entries/test-entry
+    Then response code should be 404
+
