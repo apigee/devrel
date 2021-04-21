@@ -27,6 +27,5 @@ module.exports = function generateSkeleton(apiProxy, options) {
 
   const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
   mkdirp.sync(rootDirectory + '/proxies')
-  mkdirp.sync(rootDirectory + '/targets')
   mkdirp.sync(rootDirectory + '/policies')
 }
