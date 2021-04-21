@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<AssignMessage name="am-get-a-specific-order-200">
+  <DisplayName>am-get-a-specific-order-200</DisplayName>
+  <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+  <Set>
+    <Payload contentType="application/json">{"orderId":"61knu8gol56","billingAddress":"999 Nobel Road","cartToken":"cHlwV0YX","datePurchased":"2020-07-22T12:45:03Z","currency":"AUD","paymentDetails":"jcb","shippingAddress":"874 Graceland Court","totalPrice":"$110.57","userId":"gfrayne9"}</Payload>
+    <StatusCode>200</StatusCode>
+  </Set>
+</AssignMessage>

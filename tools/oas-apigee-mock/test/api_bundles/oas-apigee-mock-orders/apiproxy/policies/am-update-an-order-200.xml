@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<AssignMessage name="am-update-an-order-200">
+  <DisplayName>am-update-an-order-200</DisplayName>
+  <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+  <Set>
+    <Payload contentType="application/json"/>
+    <StatusCode>200</StatusCode>
+  </Set>
+</AssignMessage>
