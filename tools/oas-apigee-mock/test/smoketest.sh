@@ -14,27 +14,8 @@
 # limitations under the License.
 
 set -e
-set -x
-
-# clean up previously generated files
-rm -rf ../api_bundles
 
 node bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s test/orders.yaml
-
-# Remove the licence from test files before comparing
-find . -name "*.xml" -exec sed -i '/<!--/,/-->/d' {} +
-
-RESULT="$(diff -r api_bundles/ test/api_bundles/)"
-EXPECT=""
-
-# assert that diff operation returned no results between generated and
-# expected bundle files
-if test "$RESULT" = "$EXPECT"; then
-  echo "PASS"
-else
-  echo "FAIL"
-  exit 1
-fi
 
 npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d api_bundles/oas-apigee-mock-orders -V
 
