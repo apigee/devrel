@@ -1,0 +1,28 @@
+{
+  "name": "oas-apigee-mock",
+  "version": "1.0.0",
+  "description": "A tool which generates an Apigee API Proxy bundle from an Open API 3 specification, with mock responses using Assign Message policies from the examples provided in the specification.",
+  "bin": {
+    "oas-apigee-mock": "bin/oas-apigee-mock"
+  },
+  "license": "Apache License Version 2.0",
+  "dependencies": {
+    "apickli": "^2.3.1",
+    "apigeetool": "^0.10.0",
+    "async": "^2.1.2",
+    "commander": "^2.8.1",
+    "cucumber": "^5.1.0",
+    "inquirer": "1.2.3",
+    "lodash.assign": "4.2.0",
+    "lodash.omit": "4.5.0",
+    "mkdirp": "0.5.1",
+    "swagger-parser": "10.0.0",
+    "xmlbuilder": "8.2.2"
+  },
+  "scripts": {
+    "test": "npx cucumber-js test"
+  },
+  "devDependencies": {
+    "eslint-config-eslint": "^7.0.0"
+  }
+}
