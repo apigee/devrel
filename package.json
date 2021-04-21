@@ -13,6 +13,7 @@
     "pipeline": "npm run build-pipeline-runner && docker run -e APIGEE_USER -e APIGEE_PASS -e APIGEE_ORG -e APIGEE_ENV -v $(pwd):/home -v /var/run/docker.sock:/var/run/docker.sock -it apigee/devrel run-pipelines.sh"
   },
   "dependencies": {
+    "apigeetool": "^0.15.0",
     "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.11.0",
