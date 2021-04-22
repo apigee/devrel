@@ -32,6 +32,7 @@ program
   .command('generateApi <apiProxy>')
   .option('-s, --source <source>', 'openapi File Source.')
   .option('-d, --destination <destination>', 'API Bundle destination location.')
+  .option('-b, --basepath <basepath>', 'API Proxy Base Path.')
 
   .description('Generates Apigee API Bundle')
   .action(function(apiProxy, options) {
