@@ -17,7 +17,10 @@ install the required dependencies.
 ## Usage
 
 ```bash
-node bin/oas-apigee-mock generateApi <proxy-name> -s <api-spec> -d <destination-dir>
+node bin/oas-apigee-mock generateApi <proxy-name> \
+  -s <api-spec> \
+  -d <destination-dir> \
+  -b <base-path>
 ```
 
 ### Example
