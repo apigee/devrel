@@ -102,9 +102,20 @@
     <TargetEndpoint>default</TargetEndpoint>
     <Condition> 
       request.verb != "OPTIONS" and 
-      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping")
+      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and
+      custom.alternateBackend = false
     </Condition>
   </RouteRule>
+
+  <RouteRule name="alternate">
+    <TargetEndpoint>alternate</TargetEndpoint>
+    <Condition>
+      request.verb != "OPTIONS" and
+      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and
+      custom.alternateBackend = true
+    </Condition>
+  </RouteRule>
+
 
   <RouteRule name="no target"/>
 

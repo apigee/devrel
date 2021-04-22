@@ -12,3 +12,8 @@ Feature:
     When I GET /Patient
     Then response status code should be 200
     And response body should contain generatePractitioner
+
+  Scenario: Get AllergyIntolerance from multiple sources
+    When I GET /AllergyIntolerance/zib-allergyintolerance-01
+    Then response status code should be 200
+    And response body path $.patient.display should be Mediated Display Name
