@@ -12,16 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: "Currency"
   version: "1.0"
+  contact:
+    url: https://github.com/apigee/devrel
+  description: Mock API Specification for a Currency Converter
+servers:
+- url: /mock/v1
+tags:
+- name: mock
+- name: currency
+- name: fintech
 paths:
-  /mock/v1/currency/latest:
+  /currency/latest:
     get:
       summary: Get latest exchange rates
-      operationId: Get latest exchange rates
+      operationId: get-latest-exchange-rates
       description: Get latest exchange rates
+      tags:
+      - currency
       responses:
         "200":
           description: OK
@@ -32,6 +43,7 @@ paths:
               example:
                 success: true
                 base: GBP
+                date: '2020-07-01'
                 rates:
                   AUD: 1.86
                   CAD: 1.69
@@ -41,10 +53,13 @@ paths:
                   JPY: 132.19
                   USD: 1.23
                 internal-traceid: 123e4567-e89b-12d3-a456-426614174000
-  /mock/v1/currency/convert:
+  /currency/convert:
     get:
       summary: Convert Currency
-      operationId: Convert Currency
+      operationId: convert-currency
+      description: Convert amount from base to target currency
+      tags:
+      - currency
       parameters:
         - name: from
           in: query
@@ -155,7 +170,7 @@ components:
           description: meta information on the conversion request
           properties:
             timestamp:
-              type: string
+              type: integer
               description: timestamp of the exchange rate update
             rate:
               type: number
