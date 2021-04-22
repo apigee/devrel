@@ -52,34 +52,11 @@ limitations under the License.
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
+		<apigee.plugin.version>2.1.0</apigee.plugin.version>
+		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
+		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 	</properties>
-
-	<profiles>
-		<profile>
-			<!-- Apigee Edge -->
-			<id>apigeeapi</id>
-			<properties>
-				<apigee.plugin.version>1.2.2</apigee.plugin.version>
-				<apigee.config-plugin.version>1.4.4</apigee.config-plugin.version>
-				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.authtype>oauth</apigee.authtype>
-				<apigee.username>${username}</apigee.username>
-				<apigee.password>${password}</apigee.password>
-				<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
-				<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
-			</properties>
-		</profile>
-		<profile>
-			<!-- Apigee X and hybrid -->
-			<id>googleapi</id>
-			<properties>
-				<apigee.plugin.version>2.1.0</apigee.plugin.version>
-				<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
-				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
-			</properties>
-		</profile>
-	</profiles>
 
 	<build>
 		<pluginManagement>
@@ -154,42 +131,28 @@ limitations under the License.
 				<executions>
                     <execution>
                         <id>create-config-references</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>references</goal>
                         </goals>
                     </execution>
-					<execution>
-                        <id>create-config-keystores</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>keystores</goal>
-                        </goals>
-                    </execution>
-					<execution>
-                        <id>create-config-aliases</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>aliases</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>targetservers</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-kvm</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>keyvaluemaps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-resourcefiles</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>resourcefiles</goal>
                         </goals>

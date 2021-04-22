@@ -104,7 +104,12 @@ cleanup() {
 trap cleanup EXIT
 
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
-cp "$SCRIPT_FOLDER/pom.xml" "$TEMP_FOLDER/"
+
+if [ "$apiversion" = "google" ]; then
+    cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$TEMP_FOLDER/pom.xml"
+else
+    cp "$SCRIPT_FOLDER/pom-edge.xml" "$TEMP_FOLDER/pom.xml"
+fi
 
 if [ -n "$url" ]; then
     pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*\/apiproxy)'
@@ -148,8 +153,37 @@ if [ -n "$description" ]; then
 fi
 
 if [ "$apiversion" = "google" ]; then
+    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[] | .' < edge.json | while read -r line; do
+        echo "[INFO] X/hybrid patch: adding keystore: $(echo "$line" | jq -r '.name')"
+        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores" \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json" \
+        --data "$line"
+    done
+
+    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[] | .' < edge.json | while read -r line; do
+        echo "[INFO] X/hybrid patch: adding key alias: $(echo "$line" | jq -r '.alias')"
+        keystorename="$(echo "$line" | jq -r '.keystorename')"
+        alias="$(echo "$line" | jq -r '.alias')"
+        format="$(echo "$line" | jq -r '.format')"
+        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores/$keystorename/aliases?alias=$alias&format=$format" \
+        -H "Authorization: Bearer $token" \
+        -F password="$(echo "$line" | jq -r '.password')" \
+        -F file=@"$(echo "$line" | jq -r '.filePath')"
+    done
+
+    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[] | .' < edge.json | while read -r line; do
+        echo "[INFO] X/hybrid patch: adding target server: $(echo "$line" | jq -r '.host')"
+        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/targetservers" \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json" \
+        --data "$line"
+    done
+fi
+
+if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
-    (cd "$TEMP_FOLDER" && mvn install -B -ntp -Pgoogleapi \
+    (cd "$TEMP_FOLDER" && mvn install -B -ntp \
         -Dapigee.config.options=update \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -160,7 +194,7 @@ elif [ "$apiversion" = "apigee" ]; then
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml
     rm "$TEMP_FOLDER"/pom.xml.bak
 
-    (cd "$TEMP_FOLDER" && mvn install -B -ntp -Papigeeapi \
+    (cd "$TEMP_FOLDER" && mvn install -B -ntp \
         -Dapigee.config.options=update \
         -Dorg="$organization" \
         -Denv="$environment" \
