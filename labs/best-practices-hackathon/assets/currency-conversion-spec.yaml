@@ -1,0 +1,193 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+openapi: 3.0.3
+info:
+  title: "Currency"
+  version: "1.0"
+  contact:
+    url: https://github.com/apigee/devrel
+  description: Mock API Specification for a Currency Converter
+servers:
+- url: /mock/v1
+tags:
+- name: mock
+- name: currency
+- name: fintech
+paths:
+  /currency/latest:
+    get:
+      summary: Get latest exchange rates
+      operationId: get-latest-exchange-rates
+      description: Get latest exchange rates
+      tags:
+      - currency
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/conversiontable"
+              example:
+                success: true
+                base: GBP
+                date: '2020-07-01'
+                rates:
+                  AUD: 1.86
+                  CAD: 1.69
+                  CHF: 1.17
+                  CNY: 8.73
+                  EUR: 1.10
+                  JPY: 132.19
+                  USD: 1.23
+                internal-traceid: 123e4567-e89b-12d3-a456-426614174000
+  /currency/convert:
+    get:
+      summary: Convert Currency
+      operationId: convert-currency
+      description: Convert amount from base to target currency
+      tags:
+      - currency
+      parameters:
+        - name: from
+          in: query
+          description: base currency
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: target currency
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: amount in base currency
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/conversionresult"
+              example:
+                success: true
+                query:
+                  from: GBP
+                  to: EUR
+                  amount: 100
+                info:
+                  timestamp: 1519328414
+                  rate: 1.10
+                date: 2020-07-01
+                result: 1110
+                internal-traceid: 123e4567-e89b-12d3-a456-679914174111
+components:
+  schemas:
+    conversiontable:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Success Status
+        base:
+          type: string
+          description: Base Currency
+        date:
+          type: string
+          description: Date of the conversion table
+        rates:
+          type: object
+          description: Exchange Rates
+          properties:
+            AUD:
+              type: number
+              description: AUD exchange rate
+            CAD:
+              type: number
+              description: CAD exchange rate
+            CHF:
+              type: number
+              description: CHF exchange rate
+            CNY:
+              type: number
+              description: CNY exchange rate
+            EUR:
+              type: number
+              description: EUR exchange rate
+            JPY:
+              type: number
+              description: JPY exchange rate
+            USD:
+              type: number
+              description: USD exchange rate
+        internal-traceid:
+          type: string
+          description: Internal tracing ID
+      required:
+        - success
+        - base
+        - date
+        - rates
+        - internal-traceid
+    conversionresult:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Success Status
+        query:
+          type: object
+          description: conversion request
+          properties:
+            from:
+              type: string
+              description: Base Currency
+            to:
+              type: string
+              description: Target Currency
+            amount:
+              type: number
+              description: Base Currency
+        info:
+          type: object
+          description: meta information on the conversion request
+          properties:
+            timestamp:
+              type: integer
+              description: timestamp of the exchange rate update
+            rate:
+              type: number
+              description: exchange rate used
+        date:
+          type: string
+          description: current date
+        result:
+          type: number
+          description: Amount in target currency
+        internal-traceid:
+          type: string
+          description: Internal tracing ID
+      required:
+        - success
+        - query
+        - info
+        - date
+        - result
+        - internal-traceid
