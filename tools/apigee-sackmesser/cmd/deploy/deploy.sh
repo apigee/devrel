@@ -44,9 +44,8 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     exit 0
 fi
 
-if ! command -v xmllint &> /dev/null
-then
-    echo "[FATAL] please install xmllint command before continuing"
+if ! which xmllint > /dev/null; then
+    echo "[FATAL] please install xmllint command"
     exit 1
 fi
 
@@ -99,14 +98,14 @@ TEMP_FOLDER="$PWD/deploy-me"
 rm -rf "$TEMP_FOLDER" && mkdir -p "$TEMP_FOLDER"
 cleanup() {
   echo "[INFO] removing $TEMP_FOLDER"
-  rm  -rf "$TEMP_FOLDER"
+#   rm  -rf "$TEMP_FOLDER"d
 }
 trap cleanup EXIT
 
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 
 if [ -n "$url" ]; then
-    pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*\/apiproxy)'
+    pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*)'
     [[ "$url" =~ $pattern ]]
     git_org="${BASH_REMATCH[1]}"
     git_repo="${BASH_REMATCH[2]}"
@@ -116,34 +115,42 @@ if [ -n "$url" ]; then
     git clone "https://github.com/${git_org}/${git_repo}.git" "$TEMP_FOLDER/$git_repo"
     (cd "$TEMP_FOLDER/$git_repo" && git checkout "$git_branch")
     cp -r "$TEMP_FOLDER/$git_repo/$git_path" "$TEMP_FOLDER/"
-elif [ -n "$directory" ]; then
-    echo "[INFO] using local directory: $directory"
-    cp -r "$directory" "$TEMP_FOLDER/apiproxy"
 else
-    echo "[INFO] using local directory: $PWD/apiproxy"
-    cp -r ./apiproxy "$TEMP_FOLDER/apiproxy"
-    if [ -e "./edge.json" ]; then
-        cp ./edge.json "$TEMP_FOLDER"
+    SOURCE_DIR="${directory:-$PWD}"
+    echo "[INFO] using local directory: $SOURCE_DIR"
+    [ -d "$SOURCE_DIR/apiproxy" ] && cp -r "$SOURCE_DIR/apiproxy" "$TEMP_FOLDER/apiproxy"
+    [ -d "$SOURCE_DIR/sharedflowbundle" ] && cp -r "$SOURCE_DIR/sharedflowbundle" "$TEMP_FOLDER/sharedflowbundle"
+    [ -e "$SOURCE_DIR/edge.json" ] && cp "$SOURCE_DIR/edge.json" "$TEMP_FOLDER"
+fi
+
+if [ -d "$TEMP_FOLDER/apiproxy" ]; then
+    API_TYPE="apiproxy"
+
+    # Determine Proxy name
+    proxy_name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
+    api_name=${api_name:=$proxy_name_in_bundle}
+
+    # (optional) Override base path
+    if [ -n "$base_path" ]; then
+        echo "[INFO] Setting base path: $base_path"
+        sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" "$TEMP_FOLDER"/apiproxy/proxies/*.xml
+        rm "$TEMP_FOLDER"/apiproxy/proxies/*.xml.bak
+    fi
+
+    # (optional) Set Proxy Description
+    if [ -n "$description" ]; then
+        echo "[INFO] Setting description: $description"
+        sed -i.bak "s|^.*<Description>.*</Description>||g" "$TEMP_FOLDER"/apiproxy/*.xml
+        sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$TEMP_FOLDER"/apiproxy/*.xml
+        rm "$TEMP_FOLDER"/apiproxy/*.xml.bak
     fi
 fi
 
-# Determine Proxy name
-proxy_name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
-api_name=${api_name:=$proxy_name_in_bundle}
+if [ -d "$TEMP_FOLDER/sharedflowbundle" ]; then
+    API_TYPE="sharedflow"
 
-# (optional) Override base path
-if [ -n "$base_path" ]; then
-    echo "[INFO] Setting base path: $base_path"
-    sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" "$TEMP_FOLDER"/apiproxy/proxies/*.xml
-    rm "$TEMP_FOLDER"/apiproxy/proxies/*.xml.bak
-fi
-
-# (optional) Set Proxy Description
-if [ -n "$description" ]; then
-    echo "[INFO] Setting description: $description"
-    sed -i.bak "s|^.*<Description>.*</Description>||g" "$TEMP_FOLDER"/apiproxy/*.xml
-    sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$TEMP_FOLDER"/apiproxy/*.xml
-    rm "$TEMP_FOLDER"/apiproxy/*.xml.bak
+    shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$TEMP_FOLDER"/sharedflowbundle/*.xml)"
+    api_name=${api_name:=$shared_flow_name_in_bundle}
 fi
 
 if [ "$apiversion" = "google" ]; then
@@ -178,7 +185,7 @@ fi
 if [ -f "$SCRIPT_FOLDER"/edge.json ]; then
     CONFIG_OPTION='update'
 else
-   CONFIG_OPTION='none'
+    CONFIG_OPTION='none'
 fi
 
 if [ "$apiversion" = "google" ]; then
@@ -186,6 +193,7 @@ if [ "$apiversion" = "google" ]; then
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$TEMP_FOLDER/pom.xml"
     (cd "$TEMP_FOLDER" && mvn install -B -ntp \
         -Dapigee.config.options=$CONFIG_OPTION \
+        -Dapitype="$API_TYPE" \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \
@@ -196,6 +204,7 @@ elif [ "$apiversion" = "apigee" ]; then
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml && rm "$TEMP_FOLDER"/pom.xml.bak
     (cd "$TEMP_FOLDER" && mvn install -B -ntp \
         -Dapigee.config.options=$CONFIG_OPTION \
+        -Dapitype="$API_TYPE" \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \

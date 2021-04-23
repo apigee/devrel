@@ -18,7 +18,7 @@ limitations under the License.
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee</groupId>
-	<artifactId>apigee-proxy-name</artifactId>
+	<artifactId>apigee-deployer</artifactId>
 	<version>v1</version>
 	<name>${proxy.name}</name><!--used-by-hybrid/x-->
 	<packaging>pom</packaging>
@@ -56,6 +56,7 @@ limitations under the License.
 		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
 		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
+		<apigee.apitype>${apitype}</apigee.apitype>
 	</properties>
 
 	<build>

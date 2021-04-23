@@ -28,13 +28,11 @@ USER apigee
 
 WORKDIR /opt/apigee
 
-COPY pom-edge.xml ./pom-edge.xml
-COPY pom-hybrid.xml ./pom-hybrid.xml
+COPY bin ./bin
+COPY cmd ./cmd
 
-# Pre-warm maven cache
-RUN mvn clean -f pom-hybrid.xml
-RUN mvn clean -f pom-edge.xml
+# Pre-warm maven cache for deploy
+RUN mvn clean -f ./cmd/deploy/pom-hybrid.xml
+RUN mvn clean -f ./cmd/deploy/pom-edge.xml
 
-COPY deploy.sh ./deploy.sh
-
-ENTRYPOINT [ "./deploy.sh" ]
+ENTRYPOINT [ "./bin/sackmesser" ]

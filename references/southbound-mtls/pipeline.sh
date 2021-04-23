@@ -27,7 +27,7 @@ cp edge.template.json edge.json
 TEST_BASEPATH='/badssl/v0'
 sed -i.bak "s/@ENV_NAME@/$APIGEE_ENV/g" edge.json && rm edge.json.bak
 
-../../tools/portable-proxy-deployer/deploy.sh \
+../../tools/apigee-sackmesser/bin/sackmesser deploy \
 --apigeeapi \
 --description "deployment from local folder" \
 -n mtls-demo \
@@ -47,7 +47,7 @@ APIGEE_TOKEN=$(gcloud auth print-access-token);
 cp edge.template.json edge.json
 sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" edge.json && rm edge.json.bak
 
-../../tools/portable-proxy-deployer/deploy.sh \
+../../tools/apigee-sackmesser/bin/sackmesser deploy \
 --googleapi \
 --description "deployment from local folder" \
 -n mtls-demo \

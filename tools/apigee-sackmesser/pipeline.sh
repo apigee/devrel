@@ -19,13 +19,13 @@ set -e
 # validate docker build
 docker build -t apigeedeploy .
 
-BASE_PATH="/portable-deployer/v1/airports"
+BASE_PATH="/sackmesser/v1/airports"
 
 # Using another DevRel API Proxy for testing this tool
 docker run apigeedeploy \
   --apigeeapi \
-  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
-  -n portable-airports-v0 \
+  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
+  -n sackmesser-airports-v0 \
   -b "$BASE_PATH" \
   -u "$APIGEE_USER" \
   -p "$APIGEE_PASS" \
