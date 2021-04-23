@@ -18,7 +18,5 @@ set -e
 
 npm install
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
-
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 PATH=$PATH:$SCRIPTPATH/bin "$SCRIPTPATH/test/smoketest.sh"

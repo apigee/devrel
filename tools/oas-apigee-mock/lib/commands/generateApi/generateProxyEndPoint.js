@@ -80,17 +80,30 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
               }
             }
           }
-        }  
+        }
       } // for loop for resources ends here
     }
   }  // for loop for paths ends here
 
   const httpProxyConn = root.ele('HTTPProxyConnection')
-  if (api.basePath !== undefined) {
-    httpProxyConn.ele('BasePath', {}, api.basePath)
+
+  let specBasePath = undefined
+  if (api.servers !== undefined && api.servers.length > 0 && api.servers[0].url !== undefined) {
+    try {
+      specBasePath = (new URL(api.servers[0].url, 'https://apigee.google.com')).pathname
+    } catch (error) {
+      // fail and use proxy name as fallback
+    }
+  }
+
+  if (options.basepath) {
+    httpProxyConn.ele('BasePath', {}, options.basepath)
+  } else if (specBasePath !== undefined) {
+    httpProxyConn.ele('BasePath', {}, specBasePath)
   } else {
     httpProxyConn.ele('BasePath', {}, '/' + apiProxy)
   }
+
   const virtualhosts = (options.virtualhosts) ? options.virtualhosts.split(',') : ['secure']
   virtualhosts.forEach(function (virtualhost) {
     httpProxyConn.ele('VirtualHost', {}, virtualhost)

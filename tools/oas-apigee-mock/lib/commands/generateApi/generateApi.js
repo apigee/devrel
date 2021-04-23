@@ -43,7 +43,6 @@ async function generateApi(apiProxy, options) {
     console.log('Source specification is via: %s %s', (api.openapi ? 'OAS' : 'Swagger'), (api.openapi ? api.openapi : api.swagger))
     console.log('API name: %s, Version: %s', api.info.title, api.info.version)
     console.log('Destination: %s', destination)
-
     generateSkeleton(apiProxy, options)
     await generateProxyEndPoint(apiProxy, options, api)
   }
