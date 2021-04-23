@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "envConfig": {
-    "myenv": {
+    "@ENV_NAME@": {
       "targetServers": [
         {
           "host": "client.badssl.com",

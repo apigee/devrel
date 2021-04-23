@@ -24,7 +24,6 @@ RUN apk add --no-cache \
   openjdk11-jre-headless \
   openssl \
   util-linux \
-  perl-xml-xpath \
   # add chromium and dependencies for UI testing
   chromium \
   nss \

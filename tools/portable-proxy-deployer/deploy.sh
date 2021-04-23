@@ -44,9 +44,9 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     exit 0
 fi
 
-if ! command -v xpath &> /dev/null
+if ! command -v xmllint &> /dev/null
 then
-    echo "[FATAL] please install xpath command before continuing"
+    echo "[FATAL] please install xmllint command before continuing"
     exit 1
 fi
 
@@ -105,12 +105,6 @@ trap cleanup EXIT
 
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 
-if [ "$apiversion" = "google" ]; then
-    cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$TEMP_FOLDER/pom.xml"
-else
-    cp "$SCRIPT_FOLDER/pom-edge.xml" "$TEMP_FOLDER/pom.xml"
-fi
-
 if [ -n "$url" ]; then
     pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*\/apiproxy)'
     [[ "$url" =~ $pattern ]]
@@ -128,13 +122,13 @@ elif [ -n "$directory" ]; then
 else
     echo "[INFO] using local directory: $PWD/apiproxy"
     cp -r ./apiproxy "$TEMP_FOLDER/apiproxy"
-    if [ -e "./edge.json" ]
-        then cp ./edge.json "$TEMP_FOLDER"
+    if [ -e "./edge.json" ]; then
+        cp ./edge.json "$TEMP_FOLDER"
     fi
 fi
 
 # Determine Proxy name
-proxy_name_in_bundle="$(xpath -q -e 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
+proxy_name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
 api_name=${api_name:=$proxy_name_in_bundle}
 
 # (optional) Override base path
@@ -181,21 +175,27 @@ if [ "$apiversion" = "google" ]; then
     done
 fi
 
+if [ -f "$SCRIPT_FOLDER"/edge.json ]; then
+    CONFIG_OPTION='update'
+else
+   CONFIG_OPTION='none'
+fi
+
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
+    cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$TEMP_FOLDER/pom.xml"
     (cd "$TEMP_FOLDER" && mvn install -B -ntp \
-        -Dapigee.config.options=update \
+        -Dapigee.config.options=$CONFIG_OPTION \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \
         -Dtoken="$token")
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
-    sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml
-    rm "$TEMP_FOLDER"/pom.xml.bak
-
+    cp "$SCRIPT_FOLDER/pom-edge.xml" "$TEMP_FOLDER/pom.xml"
+    sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml && rm "$TEMP_FOLDER"/pom.xml.bak
     (cd "$TEMP_FOLDER" && mvn install -B -ntp \
-        -Dapigee.config.options=update \
+        -Dapigee.config.options=$CONFIG_OPTION \
         -Dorg="$organization" \
         -Denv="$environment" \
         -Dproxy.name="$api_name" \

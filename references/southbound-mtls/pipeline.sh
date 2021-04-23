@@ -20,12 +20,12 @@ set -x
 mkdir -p ./tmp
 curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12
 
-mv edge.json edge_orig.json
+cp edge.template.json edge.json
 
 # Apigee Edge
 
 TEST_BASEPATH='/badssl/v0'
-jq --arg APIGEE_ENV "$APIGEE_ENV" '.envConfig[$APIGEE_ENV]=.envConfig.myenv | del(.envConfig.myenv)' < edge_orig.json > edge.json
+sed -i.bak "s/@ENV_NAME@/$APIGEE_ENV/g" edge.json && rm edge.json.bak
 
 ../../tools/portable-proxy-deployer/deploy.sh \
 --apigeeapi \
@@ -43,7 +43,9 @@ TEST_HOST=$TEST_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test
 # Apigee X
 
 APIGEE_TOKEN=$(gcloud auth print-access-token);
-jq --arg APIGEE_X_ENV "$APIGEE_X_ENV" '.envConfig[$APIGEE_X_ENV]=.envConfig.myenv | del(.envConfig.myenv)' < edge_orig.json > edge.json
+
+cp edge.template.json edge.json
+sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" edge.json && rm edge.json.bak
 
 ../../tools/portable-proxy-deployer/deploy.sh \
 --googleapi \
@@ -54,7 +56,7 @@ jq --arg APIGEE_X_ENV "$APIGEE_X_ENV" '.envConfig[$APIGEE_X_ENV]=.envConfig.myen
 -o "$APIGEE_X_ORG" \
 -e "$APIGEE_X_ENV"
 
-TEST_HOST=$APIGEE_X_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test
+TEST_HOST=$APIGEE_X_HOSTNAME TEST_BASEPATH=$TEST_BASEPATH npm run test
 
 # cleanup
-mv edge_orig.json edge.json
+rm edge.json
