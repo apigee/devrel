@@ -54,7 +54,6 @@ jq --arg APIGEE_X_ENV "$APIGEE_X_ENV" '.envConfig[$APIGEE_X_ENV]=.envConfig.myen
 -o "$APIGEE_X_ORG" \
 -e "$APIGEE_X_ENV"
 
-npm i
 TEST_HOST=$APIGEE_X_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test
 
 # cleanup

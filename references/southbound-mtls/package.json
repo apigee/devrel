@@ -1,7 +1,7 @@
 {
   "name": "js-callout",
   "scripts": {
-    "test": "./node_modules/.bin/cucumber-js test/integration/features"
+    "test": "npm i && npx cucumber-js test/integration/features"
   },
   "devDependencies": {
     "apickli": "^2.3.3",

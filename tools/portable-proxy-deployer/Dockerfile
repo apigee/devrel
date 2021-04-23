@@ -28,11 +28,12 @@ USER apigee
 
 WORKDIR /opt/apigee
 
-COPY pom.xml ./pom.xml
+COPY pom-edge.xml ./pom-edge.xml
+COPY pom-hybrid.xml ./pom-hybrid.xml
 
 # Pre-warm maven cache
-RUN mvn clean -Papigeeapi
-RUN mvn clean -Pgoogleapi
+RUN mvn clean
+RUN mvn clean
 
 COPY deploy.sh ./deploy.sh
 
