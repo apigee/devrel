@@ -54,7 +54,7 @@ export PROJECT_ID=PROJECT_NAME
 ## Override Default Config (if desired)
 
 The following environment variables are set by default.
-Export them to override the default values if neeed.
+Export them to override the default values if needed.
 
 ### Apigee analytics region see Apigee docs for full list
 
