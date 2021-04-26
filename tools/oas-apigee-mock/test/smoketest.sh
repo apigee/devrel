@@ -15,6 +15,9 @@
 
 set -e
 
+# clean up previously generated files
+rm -rf api_bundles
+
 node bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s test/orders.yaml
 
 npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d api_bundles/oas-apigee-mock-orders -V
