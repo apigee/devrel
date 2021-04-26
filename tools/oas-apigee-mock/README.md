@@ -7,7 +7,7 @@ examples provided in the specification.
 ## Dependencies
 
 - [NodeJS](https://nodejs.org/en/) LTS version or above
-- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- [Apigee Organization](https://cloud.google.com/apigee/pricing)
 
 ## Prerequisites
 
@@ -17,11 +17,14 @@ install the required dependencies.
 ## Usage
 
 ```bash
-node bin/oas-apigee-mock <proxy-name> -s <api-spec> -d <destination-dir>
+node bin/oas-apigee-mock generateApi <proxy-name> \
+  -s <api-spec> \
+  -d <destination-dir> \
+  -b <base-path>
 ```
 
 ### Example
 
 ```bash
-node bin/oas-apigee-mock retail -s test/orders.yaml
+node bin/oas-apigee-mock generateApi retail -s test/orders.yaml
 ```
