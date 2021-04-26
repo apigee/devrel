@@ -69,6 +69,9 @@ set_config_params() {
     export INGRESS_IP
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
+    export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
+    export DNS_NAME
+
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:=$PWD}"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
