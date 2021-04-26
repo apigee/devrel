@@ -52,32 +52,11 @@ limitations under the License.
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
+		<apigee.plugin.version>2.1.0</apigee.plugin.version>
+		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
+		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 	</properties>
-
-	<profiles>
-		<profile>
-			<!-- Apigee Edge -->
-			<id>apigeeapi</id>
-			<properties>
-				<apigee.plugin.version>1.2.2</apigee.plugin.version>
-				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.authtype>oauth</apigee.authtype>
-				<apigee.username>${username}</apigee.username>
-				<apigee.password>${password}</apigee.password>
-				<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
-				<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
-			</properties>
-		</profile>
-		<profile>
-			<!-- Apigee X and hybrid -->
-			<id>googleapi</id>
-			<properties>
-				<apigee.plugin.version>2.1.0</apigee.plugin.version>
-				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
-			</properties>
-		</profile>
-	</profiles>
 
 	<build>
 		<pluginManagement>
@@ -143,6 +122,78 @@ limitations under the License.
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+                <groupId>com.apigee.edge.config</groupId>
+                <artifactId>apigee-config-maven-plugin</artifactId>
+                <version>${apigee.config-plugin.version}</version>
+
+				<executions>
+                    <execution>
+                        <id>create-config-references</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>references</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-targetserver</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>targetservers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-kvm</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>keyvaluemaps</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-resourcefiles</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>resourcefiles</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-apiproduct</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apiproducts</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-developer</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>developers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-app</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apps</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-reports</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>reports</goal>
+                        </goals>
+                    </execution>
+                    <execution> 
+                        <id>create-config-flowhooks</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>flowhooks</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> 
 
 			<!-- cleaning dirs -->
 			<plugin>

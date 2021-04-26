@@ -17,7 +17,7 @@ FROM maven:3.6.3-slim
 RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee
 
 RUN apt-get update && \
-  apt-get install git=* libxml-xpath-perl=* --no-install-recommends -y \
+  apt-get install git=* libxml2-utils=* --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -28,11 +28,12 @@ USER apigee
 
 WORKDIR /opt/apigee
 
-COPY pom.xml ./pom.xml
+COPY pom-edge.xml ./pom-edge.xml
+COPY pom-hybrid.xml ./pom-hybrid.xml
 
 # Pre-warm maven cache
-RUN mvn clean -Papigeeapi
-RUN mvn clean -Pgoogleapi
+RUN mvn clean -f pom-hybrid.xml
+RUN mvn clean -f pom-edge.xml
 
 COPY deploy.sh ./deploy.sh
 
