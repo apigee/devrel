@@ -7,7 +7,7 @@ examples provided in the specification.
 ## Dependencies
 
 - [NodeJS](https://nodejs.org/en/) LTS version or above
-- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
+- [Apigee Organization](https://cloud.google.com/apigee/pricing)
 
 ## Prerequisites
 
