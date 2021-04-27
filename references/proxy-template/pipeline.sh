@@ -22,7 +22,7 @@ SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 rm -rf example-v1
 
 # deploy all shared flows
-(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi)
+(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
 
 # generate proxy
 PROXY=example VERSION=v1 VHOST=secure TARGETURL=https://httpbin.org/get sh ./generate-proxy.sh

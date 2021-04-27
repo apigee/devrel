@@ -36,9 +36,13 @@ cd "$SCRIPTPATH" || exit
 
 for SF in $SF_TO_DEPLOY; do
   if [ "$API" = "--googleapi" ]; then
-    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
+    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" \
+      -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
+      --description "See Apigee DevRel references/common-shared-flows"
   elif [ "$API" = "--apigeeapi" ]; then
-    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV"
+    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" \
+      -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" \
+      --description "See Apigee DevRel references/common-shared-flows" &
   else
     echo "[FATAL] unknown Apigee API argument: $API"
     exit 1

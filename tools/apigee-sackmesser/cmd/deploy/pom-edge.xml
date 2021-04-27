@@ -43,7 +43,6 @@ limitations under the License.
 
 	<properties>
 		<apigee.plugin.version>1.2.2</apigee.plugin.version>
-		<apigee.config-plugin.version>1.4.4</apigee.config-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
@@ -126,92 +125,6 @@ limitations under the License.
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-                <groupId>com.apigee.edge.config</groupId>
-                <artifactId>apigee-config-maven-plugin</artifactId>
-                <version>${apigee.config-plugin.version}</version>
-
-				<executions>
-                    <execution>
-                        <id>create-config-references</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>references</goal>
-                        </goals>
-                    </execution>
-					<execution>
-                        <id>create-config-keystores</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>keystores</goal>
-                        </goals>
-                    </execution>
-					<execution>
-                        <id>create-config-aliases</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>aliases</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>targetservers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-kvm</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>keyvaluemaps</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-resourcefiles</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>resourcefiles</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-apiproduct</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>apiproducts</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-developer</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>developers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-app</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>apps</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-reports</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>reports</goal>
-                        </goals>
-                    </execution>
-                    <execution> 
-                        <id>create-config-flowhooks</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>flowhooks</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> 
 
 			<!-- cleaning dirs -->
 			<plugin>

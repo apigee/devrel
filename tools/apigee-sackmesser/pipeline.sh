@@ -22,7 +22,7 @@ docker build -t apigeedeploy .
 BASE_PATH="/sackmesser/v1/airports"
 
 # Using another DevRel API Proxy for testing this tool
-docker run apigeedeploy \
+docker run apigeedeploy deploy \
   --apigeeapi \
   -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
   -n sackmesser-airports-v0 \

@@ -18,7 +18,7 @@ limitations under the License.
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee</groupId>
-	<artifactId>apigee-deployer</artifactId>
+	<artifactId>apigee-config</artifactId>
 	<version>v1</version>
 	<name>${proxy.name}</name><!--used-by-hybrid/x-->
 	<packaging>pom</packaging>
@@ -52,26 +52,15 @@ limitations under the License.
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
-		<apigee.plugin.version>2.1.0</apigee.plugin.version>
+		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
 		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
-		<apigee.apitype>${apitype}</apigee.apitype>
 	</properties>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>io.apigee.build-tools.enterprise4g</groupId>
-					<artifactId>apigee-edge-maven-plugin</artifactId>
-					<version>${apigee.plugin.version}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
+		
 		<plugins>
 
-			<!-- copy the full apiproxy folder to target folder -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
@@ -89,8 +78,6 @@ limitations under the License.
 									<directory>${project.root.dir}</directory>
 									<filtering>true</filtering>
 									<includes>
-										<include>apiproxy/**</include>
-										<include>sharedflowbundle/**</include>
 										<include>resources/**</include>
 									</includes>
 								</resource>
@@ -101,27 +88,76 @@ limitations under the License.
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>io.apigee.build-tools.enterprise4g</groupId>
-				<artifactId>apigee-edge-maven-plugin</artifactId>
-				<version>${apigee.plugin.version}</version>
+                <groupId>com.apigee.edge.config</groupId>
+                <artifactId>apigee-config-maven-plugin</artifactId>
+                <version>${apigee.config-plugin.version}</version>
+
 				<executions>
-					<execution>
-						<id>configure-bundle-step</id>
-						<phase>package</phase>
-						<goals>
-							<goal>configure</goal>
-						</goals>
-					</execution>
-					<!--deploy bundle -->
-					<execution>
-						<id>deploy-bundle-step</id>
-						<phase>install</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+                    <execution>
+                        <id>create-config-references</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>references</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-targetserver</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>targetservers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-kvm</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>keyvaluemaps</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-resourcefiles</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>resourcefiles</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-apiproduct</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apiproducts</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-developer</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>developers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-app</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apps</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-reports</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>reports</goal>
+                        </goals>
+                    </execution>
+                    <execution> 
+                        <id>create-config-flowhooks</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>flowhooks</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> 
 
 			<!-- cleaning dirs -->
 			<plugin>

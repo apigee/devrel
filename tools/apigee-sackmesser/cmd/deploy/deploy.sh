@@ -26,16 +26,16 @@ Options:
 --googleapi (default), use apigee.googleapi.com (for X, hybrid)
 --apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy
--d,--directory, path to the apiproxy folder to be deployed
+-d,--directory, path to the apiproxy or shared flow bundle to be deployed
 -e,--environment, Apigee environment name
--g,--github, Link to proxy bundle on github
--n,--api, Overrides the default API proxy name
+-g,--github, Link to proxy or shared flow bundle on github
+-n,--name, Overrides the default API proxy or shared flow name
 -o,--organization, Apigee organization name
 -u,--username, Apigee User Name (Edge only)
 -p,--password, Apigee User Password (Edge only)
 -m,--mfa, Apigee MFA code (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
---description, Human friendly proxy description
+--description, Human friendly proxy or proxy description
 EOF
 }
 
@@ -56,7 +56,7 @@ while [ "$#" -gt 0 ]; do
     -e) environment="$2"; shift 2;;
     -g) url="$2"; shift 2;;
     -m) mfa="$2"; shift 2;;
-    -n) api_name="$2"; shift 2;;
+    -n) bundle_name="$2"; shift 2;;
     -o) organization="$2"; shift 2;;
     -p) password="$2"; shift 2;;
     -t) token="$2"; shift 2;;
@@ -66,7 +66,7 @@ while [ "$#" -gt 0 ]; do
     --github) url="${1}"; shift 2;;
     --token) token="${1}"; shift 2;;
     --mfa) mfa="${1}"; shift 2;;
-    --api) api_name="${1}"; shift 2;;
+    --name) bundle_name="${1}"; shift 2;;
     --base-path) base-path="${1}"; shift 2;;
     --username) username="${1}"; shift 2;;
     --password) password="${1}"; shift 2;;
@@ -93,17 +93,18 @@ if [[ -z "$apiversion" ]]; then
     apiversion="google"
 fi
 
-# Make temp 'deploy-me' directory to keep things clean
-TEMP_FOLDER="$PWD/deploy-me"
-rm -rf "$TEMP_FOLDER" && mkdir -p "$TEMP_FOLDER"
+# Make temp 'deploy' directory to keep things clean
+temp_folder="$PWD/deploy-$(date +%s)-$RANDOM"
+rm -rf "$temp_folder" && mkdir -p "$temp_folder"
 cleanup() {
-  echo "[INFO] removing $TEMP_FOLDER"
-  rm  -rf "$TEMP_FOLDER"
+  echo "[INFO] removing $temp_folder"
+  rm  -rf "$temp_folder"
 }
 trap cleanup EXIT
 
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 
+# copy resources to temp directory
 if [ -n "$url" ]; then
     pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*)'
     [[ "$url" =~ $pattern ]]
@@ -112,104 +113,134 @@ if [ -n "$url" ]; then
     git_branch="${BASH_REMATCH[3]}"
     git_path="${BASH_REMATCH[4]}"
 
-    git clone "https://github.com/${git_org}/${git_repo}.git" "$TEMP_FOLDER/$git_repo"
-    (cd "$TEMP_FOLDER/$git_repo" && git checkout "$git_branch")
-    cp -r "$TEMP_FOLDER/$git_repo/$git_path" "$TEMP_FOLDER/"
+    git clone "https://github.com/${git_org}/${git_repo}.git" "$temp_folder/$git_repo"
+    (cd "$temp_folder/$git_repo" && git checkout "$git_branch")
+    cp -r "$temp_folder/$git_repo/$git_path" "$temp_folder/"
 else
-    SOURCE_DIR="${directory:-$PWD}"
-    echo "[INFO] using local directory: $SOURCE_DIR"
-    [ -d "$SOURCE_DIR/apiproxy" ] && cp -r "$SOURCE_DIR/apiproxy" "$TEMP_FOLDER/apiproxy"
-    [ -d "$SOURCE_DIR/sharedflowbundle" ] && cp -r "$SOURCE_DIR/sharedflowbundle" "$TEMP_FOLDER/sharedflowbundle"
-    [ -e "$SOURCE_DIR/edge.json" ] && cp "$SOURCE_DIR/edge.json" "$TEMP_FOLDER"
+    source_dir="${directory:-$PWD}"
+    echo "[INFO] using local directory: $source_dir"
+    [ -d "$source_dir/apiproxy" ] && cp -r "$source_dir/apiproxy" "$temp_folder/apiproxy"
+    [ -d "$source_dir/sharedflowbundle" ] && cp -r "$source_dir/sharedflowbundle" "$temp_folder/sharedflowbundle"
+    [ -e "$source_dir/edge.json" ] && cp "$source_dir/edge.json" "$temp_folder/"
 fi
 
-if [ -d "$TEMP_FOLDER/apiproxy" ]; then
-    API_TYPE="apiproxy"
+# Config Deployment
+if [ -f "$temp_folder"/edge.json ]; then
+    echo "[INFO] Deploying config $temp_folder/edge.json"
 
-    # Determine Proxy name
-    proxy_name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$TEMP_FOLDER"/apiproxy/*.xml)"
-    api_name=${api_name:=$proxy_name_in_bundle}
+    if [ "$apiversion" = "google" ]; then
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[] | .' < edge.json | while read -r line; do
+            echo "[INFO] X/hybrid patch: adding keystore: $(echo "$line" | jq -r '.name')"
+            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            --data "$line"
+        done
 
-    # (optional) Override base path
-    if [ -n "$base_path" ]; then
-        echo "[INFO] Setting base path: $base_path"
-        sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" "$TEMP_FOLDER"/apiproxy/proxies/*.xml
-        rm "$TEMP_FOLDER"/apiproxy/proxies/*.xml.bak
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[] | .' < edge.json | while read -r line; do
+            echo "[INFO] X/hybrid patch: adding key alias: $(echo "$line" | jq -r '.alias')"
+            keystorename="$(echo "$line" | jq -r '.keystorename')"
+            alias="$(echo "$line" | jq -r '.alias')"
+            format="$(echo "$line" | jq -r '.format')"
+            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores/$keystorename/aliases?alias=$alias&format=$format" \
+            -H "Authorization: Bearer $token" \
+            -F password="$(echo "$line" | jq -r '.password')" \
+            -F file=@"$(echo "$line" | jq -r '.filePath')"
+        done
+
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[] | .' < edge.json | while read -r line; do
+            echo "[INFO] X/hybrid patch: adding target server: $(echo "$line" | jq -r '.host')"
+            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/targetservers" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            --data "$line"
+        done
+
+        cp "$SCRIPT_FOLDER/pom-config-hybrid.xml" "$temp_folder"
+        (cd "$temp_folder" && mvn install -B -ntp -f ./pom-config-hybrid.xml \
+            -Dapigee.config.options=update \
+            -Dorg="$organization" \
+            -Denv="$environment" \
+            -Dproxy.name="$bundle_name" \
+            -Dtoken="$token")
+    else
+        cp "$SCRIPT_FOLDER/pom-config-edge.xml" "$temp_folder"
+        (cd "$temp_folder" && mvn install -B -ntp -f ./pom-config-edge.xml \
+            -Dapigee.config.options=update \
+            -Dorg="$organization" \
+            -Denv="$environment" \
+            -Dproxy.name="$bundle_name" \
+            -Dtoken="$token")
+    fi
+fi
+
+if [ -d "$temp_folder/apiproxy" ] || [ -d "$temp_folder/sharedflowbundle" ]; then
+    echo "[INFO] running deployment in $temp_folder"
+
+    if [ -d "$temp_folder/apiproxy" ]; then
+        api_type="apiproxy"
+
+        # Determine Proxy name
+        name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$temp_folder"/apiproxy/*.xml)"
+        bundle_name=${bundle_name:=$name_in_bundle}
+
+        # (optional) Override base path
+        if [ -n "$base_path" ]; then
+            echo "[INFO] Setting base path: $base_path"
+            sed -i.bak "s|<BasePath>.*</BasePath>|<BasePath>$base_path<\/BasePath>|g" "$temp_folder"/apiproxy/proxies/*.xml
+            rm "$temp_folder"/apiproxy/proxies/*.xml.bak
+        fi
+
+        # (optional) Set Proxy Description
+        if [ -n "$description" ]; then
+            echo "[INFO] Setting description: $description"
+            sed -i.bak "s|^.*<Description>.*</Description>||g" "$temp_folder"/apiproxy/*.xml
+            sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$temp_folder"/apiproxy/*.xml
+            rm "$temp_folder"/apiproxy/*.xml.bak
+        fi
     fi
 
-    # (optional) Set Proxy Description
-    if [ -n "$description" ]; then
-        echo "[INFO] Setting description: $description"
-        sed -i.bak "s|^.*<Description>.*</Description>||g" "$TEMP_FOLDER"/apiproxy/*.xml
-        sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$TEMP_FOLDER"/apiproxy/*.xml
-        rm "$TEMP_FOLDER"/apiproxy/*.xml.bak
+    if [ -d "$temp_folder/sharedflowbundle" ]; then
+        api_type="sharedflow"
+
+        shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$temp_folder"/sharedflowbundle/*.xml)"
+        bundle_name=${bundle_name:=$shared_flow_name_in_bundle}
+
+            # (optional) Set Proxy Description
+        if [ -n "$description" ]; then
+            echo "[INFO] Setting description: $description"
+            sed -i.bak "s|^.*<Description>.*</Description>||g" "$temp_folder"/sharedflowbundle/*.xml
+            sed -i.bak "s|</APIProxy>|  <Description>$description</Description>\\n</APIProxy>|g" "$temp_folder"/sharedflowbundle/*.xml
+            rm "$temp_folder"/sharedflowbundle/*.xml.bak
+        fi
+    fi
+
+    echo "[INFO] Deploying $api_type $bundle_name to $apiversion API"
+
+    if [ "$apiversion" = "google" ]; then
+        # install for apigee x/hybrid
+        cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
+        (cd "$temp_folder" && mvn install -B -ntp \
+            -Dapigee.config.options=$CONFIG_OPTION \
+            -Dapitype="$api_type" \
+            -Dorg="$organization" \
+            -Denv="$environment" \
+            -Dproxy.name="$bundle_name" \
+            -Dtoken="$token")
+    elif [ "$apiversion" = "apigee" ]; then
+        # install for apigee Edge
+        cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
+        sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
+        (cd "$temp_folder" && mvn install -B -ntp \
+            -Dapigee.config.options=$CONFIG_OPTION \
+            -Dapitype="$api_type" \
+            -Dorg="$organization" \
+            -Denv="$environment" \
+            -Dproxy.name="$bundle_name" \
+            -Dusername="$username" \
+            -Dpassword="$password" \
+            -Dtoken="$token" \
+            -Dmfa="$mfa")
     fi
 fi
 
-if [ -d "$TEMP_FOLDER/sharedflowbundle" ]; then
-    API_TYPE="sharedflow"
-
-    shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$TEMP_FOLDER"/sharedflowbundle/*.xml)"
-    api_name=${api_name:=$shared_flow_name_in_bundle}
-fi
-
-if [ "$apiversion" = "google" ]; then
-    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[] | .' < edge.json | while read -r line; do
-        echo "[INFO] X/hybrid patch: adding keystore: $(echo "$line" | jq -r '.name')"
-        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores" \
-        -H "Authorization: Bearer $token" \
-        -H "Content-Type: application/json" \
-        --data "$line"
-    done
-
-    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[] | .' < edge.json | while read -r line; do
-        echo "[INFO] X/hybrid patch: adding key alias: $(echo "$line" | jq -r '.alias')"
-        keystorename="$(echo "$line" | jq -r '.keystorename')"
-        alias="$(echo "$line" | jq -r '.alias')"
-        format="$(echo "$line" | jq -r '.format')"
-        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores/$keystorename/aliases?alias=$alias&format=$format" \
-        -H "Authorization: Bearer $token" \
-        -F password="$(echo "$line" | jq -r '.password')" \
-        -F file=@"$(echo "$line" | jq -r '.filePath')"
-    done
-
-    jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[] | .' < edge.json | while read -r line; do
-        echo "[INFO] X/hybrid patch: adding target server: $(echo "$line" | jq -r '.host')"
-        curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/targetservers" \
-        -H "Authorization: Bearer $token" \
-        -H "Content-Type: application/json" \
-        --data "$line"
-    done
-fi
-
-if [ -f "$SCRIPT_FOLDER"/edge.json ]; then
-    CONFIG_OPTION='update'
-else
-    CONFIG_OPTION='none'
-fi
-
-if [ "$apiversion" = "google" ]; then
-    # install for apigee x/hybrid
-    cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$TEMP_FOLDER/pom.xml"
-    (cd "$TEMP_FOLDER" && mvn install -B -ntp \
-        -Dapigee.config.options=$CONFIG_OPTION \
-        -Dapitype="$API_TYPE" \
-        -Dorg="$organization" \
-        -Denv="$environment" \
-        -Dproxy.name="$api_name" \
-        -Dtoken="$token")
-elif [ "$apiversion" = "apigee" ]; then
-    # install for apigee Edge
-    cp "$SCRIPT_FOLDER/pom-edge.xml" "$TEMP_FOLDER/pom.xml"
-    sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$api_name<\/artifactId>|g" "$TEMP_FOLDER"/pom.xml && rm "$TEMP_FOLDER"/pom.xml.bak
-    (cd "$TEMP_FOLDER" && mvn install -B -ntp \
-        -Dapigee.config.options=$CONFIG_OPTION \
-        -Dapitype="$API_TYPE" \
-        -Dorg="$organization" \
-        -Denv="$environment" \
-        -Dproxy.name="$api_name" \
-        -Dusername="$username" \
-        -Dpassword="$password" \
-        -Dtoken="$token" \
-        -Dmfa="$mfa")
-fi
