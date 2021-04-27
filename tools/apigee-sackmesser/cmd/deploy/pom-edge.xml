@@ -18,7 +18,7 @@ limitations under the License.
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee</groupId>
-	<artifactId>apigee-deployer</artifactId>
+	<artifactId>apigee-deployer</artifactId><!--used-by-edge-->
 	<version>v1</version>
 	<packaging>pom</packaging>
 	<pluginRepositories>
@@ -93,8 +93,8 @@ limitations under the License.
 									<directory>${project.root.dir}</directory>
 									<filtering>true</filtering>
 									<includes>
-										<include>sharedflowbundle/**</include>
 										<include>apiproxy/**</include>
+										<include>sharedflowbundle/**</include>
 										<include>resources/**</include>
 									</includes>
 								</resource>

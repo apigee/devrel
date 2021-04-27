@@ -98,7 +98,7 @@ TEMP_FOLDER="$PWD/deploy-me"
 rm -rf "$TEMP_FOLDER" && mkdir -p "$TEMP_FOLDER"
 cleanup() {
   echo "[INFO] removing $TEMP_FOLDER"
-#   rm  -rf "$TEMP_FOLDER"d
+  rm  -rf "$TEMP_FOLDER"
 }
 trap cleanup EXIT
 

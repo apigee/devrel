@@ -91,7 +91,7 @@ limitations under the License.
 									<filtering>true</filtering>
 									<includes>
 										<include>apiproxy/**</include>
-										<include>test/integration/**</include>
+										<include>sharedflowbundle/**</include>
 										<include>resources/**</include>
 									</includes>
 								</resource>
