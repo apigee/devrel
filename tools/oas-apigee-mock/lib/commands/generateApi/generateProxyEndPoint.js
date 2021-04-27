@@ -34,6 +34,16 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
 
   // Add steps to preflow.
   preFlow.ele('Request')
+
+  if(api.security && api.components.securitySchemes) {
+    for (const apiSecurity of api.security) {
+        if(Object.keys(apiSecurity) == 'ApiKeyAuth' && api.components.securitySchemes.ApiKeyAuth) {
+
+          // TODO: Add Verify API Key Policy to preflow
+        }
+    }
+  }
+
   preFlow.ele('Response')
 
   const flows = root.ele('Flows', {})
