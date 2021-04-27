@@ -32,6 +32,8 @@ COPY bin ./bin
 COPY cmd ./cmd
 
 # Pre-warm maven cache for deploy
+RUN mvn clean -f ./cmd/deploy/pom-config-hybrid.xml
+RUN mvn clean -f ./cmd/deploy/pom-config-edge.xml
 RUN mvn clean -f ./cmd/deploy/pom-hybrid.xml
 RUN mvn clean -f ./cmd/deploy/pom-edge.xml
 

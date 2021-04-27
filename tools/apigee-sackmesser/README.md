@@ -33,7 +33,7 @@ Options:
 ### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
-bin/sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
+bin/sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
 --googleapi \
 -t "$TOKEN" \
 -o "$APIGEE_X_ORG" \
@@ -71,7 +71,7 @@ docker build -t sackmesser .
 ```sh
 docker run sackmesser deploy \
 --googleapi \
--g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
+-g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
 -t "$TOKEN" \
 -o "$APIGEE_X_ORG" \
 -e "$APIGEE_X_ENV" \

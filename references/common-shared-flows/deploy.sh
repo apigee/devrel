@@ -42,7 +42,7 @@ for SF in $SF_TO_DEPLOY; do
   elif [ "$API" = "--apigeeapi" ]; then
     ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" \
       -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" \
-      --description "See Apigee DevRel references/common-shared-flows" &
+      --description "See Apigee DevRel references/common-shared-flows"
   else
     echo "[FATAL] unknown Apigee API argument: $API"
     exit 1

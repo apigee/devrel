@@ -115,7 +115,8 @@ if [ -n "$url" ]; then
 
     git clone "https://github.com/${git_org}/${git_repo}.git" "$temp_folder/$git_repo"
     (cd "$temp_folder/$git_repo" && git checkout "$git_branch")
-    cp -r "$temp_folder/$git_repo/$git_path" "$temp_folder/"
+    cp -R "$temp_folder/$git_repo/$git_path/"* "$temp_folder"
+    ls -la "$temp_folder"
 else
     source_dir="${directory:-$PWD}"
     echo "[INFO] using local directory: $source_dir"
@@ -161,7 +162,6 @@ if [ -f "$temp_folder"/edge.json ]; then
             -Dapigee.config.options=update \
             -Dorg="$organization" \
             -Denv="$environment" \
-            -Dproxy.name="$bundle_name" \
             -Dtoken="$token")
     else
         cp "$SCRIPT_FOLDER/pom-config-edge.xml" "$temp_folder"
@@ -169,7 +169,8 @@ if [ -f "$temp_folder"/edge.json ]; then
             -Dapigee.config.options=update \
             -Dorg="$organization" \
             -Denv="$environment" \
-            -Dproxy.name="$bundle_name" \
+            -Dusername="$username" \
+            -Dpassword="$password" \
             -Dtoken="$token")
     fi
 fi
@@ -221,7 +222,6 @@ if [ -d "$temp_folder/apiproxy" ] || [ -d "$temp_folder/sharedflowbundle" ]; the
         # install for apigee x/hybrid
         cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
         (cd "$temp_folder" && mvn install -B -ntp \
-            -Dapigee.config.options=$CONFIG_OPTION \
             -Dapitype="$api_type" \
             -Dorg="$organization" \
             -Denv="$environment" \
@@ -232,7 +232,6 @@ if [ -d "$temp_folder/apiproxy" ] || [ -d "$temp_folder/sharedflowbundle" ]; the
         cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
         sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
         (cd "$temp_folder" && mvn install -B -ntp \
-            -Dapigee.config.options=$CONFIG_OPTION \
             -Dapitype="$api_type" \
             -Dorg="$organization" \
             -Denv="$environment" \
