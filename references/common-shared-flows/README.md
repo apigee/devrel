@@ -11,7 +11,7 @@ A set of useful shared flows for Apigee.
 
 ### Deploy to Apigee X or hybrid
 
-#### Set Cofig Variables
+#### Set Config Variables
 
     export APIGEE_X_ORG=xxx
     export APIGEE_X_ENV=xxx
@@ -21,7 +21,7 @@ A set of useful shared flows for Apigee.
 
 ### Deploy to Apigee Edge
 
-#### Set Cofig Variables
+#### Set Config Variables
 
     export APIGEE_ORG=xxx
     export APIGEE_ENV=xxx

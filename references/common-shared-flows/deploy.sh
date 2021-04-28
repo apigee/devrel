@@ -17,34 +17,41 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-if [ "$2" = "--googleapi" ] || [ "$2" = "--apigeeapi" ]; then
-  API="$2"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --apigeeapi) apiversion="$1"; shift 1;;
+    --googleapi) apiversion="$1"; shift 1;;
+    *) sf_to_deploy="$1"; shift 1;;
+  esac
+done
+
+if [ "$apiversion" = "--googleapi" ] || [ "$apiversion" = "--apigeeapi" ]; then
+  echo "[INFO] using API version $apiversion"
 else
-  echo "[FATAL] chose either --googleapi (for Apigee X or hybrid) or --apigeeapi (for Edge)"
+  echo "[FATAL] choose either --googleapi (for Apigee X or hybrid) or --apigeeapi (for Edge)"
   exit 1
 fi
 
-if [ "$1" = "all" ]; then
-  SF_TO_DEPLOY="$(cd "$SCRIPTPATH" && echo ./*/)"
-else
-  SF_TO_DEPLOY="$1"
+if [ "$sf_to_deploy" = "all" ]; then
+  sf_to_deploy="$(cd "$SCRIPTPATH" && echo ./*/)"
 fi
 
-echo "[INFO] deploying $SF_TO_DEPLOY"
+echo "[INFO] deploying $sf_to_deploy"
 
 cd "$SCRIPTPATH" || exit
+export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
-for SF in $SF_TO_DEPLOY; do
-  if [ "$API" = "--googleapi" ]; then
-    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" \
+for SF in $sf_to_deploy; do
+  if [ "$apiversion" = "--googleapi" ]; then
+    sackmesser deploy -d "$SF" "$apiversion" \
       -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
       --description "See Apigee DevRel references/common-shared-flows"
-  elif [ "$API" = "--apigeeapi" ]; then
-    ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "$SF" "$API" \
+  elif [ "$apiversion" = "--apigeeapi" ]; then
+    sackmesser deploy -d "$SF" "$apiversion" \
       -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" \
       --description "See Apigee DevRel references/common-shared-flows"
   else
-    echo "[FATAL] unknown Apigee API argument: $API"
+    echo "[FATAL] unknown Apigee API argument: $apiversion"
     exit 1
   fi
 done

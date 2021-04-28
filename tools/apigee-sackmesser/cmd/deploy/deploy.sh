@@ -18,7 +18,7 @@ set -e
 
 print_usage() {
     cat << EOF
-usage: deploy.sh -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
+usage: sackmesser deploy -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
 Apigee deployment utility.
 

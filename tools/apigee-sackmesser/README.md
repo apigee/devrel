@@ -1,16 +1,28 @@
-# Apigee Sackmesser (Swiss Army Knife)
+# Apigee Sackmesser
 
 The Apigee Sackmesser lets you deploy API proxies, shared flows and
 configuration to Apigee Edge as well as hybrid/X without writing any additional
-configuration files. It can be used either as a commandline tool or a Docker
-container.
+manifest files.
+
+Sackmesser can be used either as a commandline tool or a Docker
+container. To use it as a CLI you sould add it to your path:
+
+```sh
+PATH="$PATH:$PWD/bin"
+```
+
+To use it as a Docker container you can build the image:
+
+```sh
+docker build -t apigee-sackmesser .
+```
 
 ## Deploy Command
 
 ```sh
-$ bin/sackmesser deploy -h
+$ sackmesser deploy -h
 
-usage: deploy.sh -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
+usage: sackmesser deploy -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
 Apigee deployment utility
 
@@ -30,10 +42,12 @@ Options:
 --description, Human friendly proxy description
 ```
 
+## CLI Examples
+
 ### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
-bin/sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
+sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
 --googleapi \
 -t "$TOKEN" \
 -o "$APIGEE_X_ORG" \
@@ -46,7 +60,7 @@ bin/sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/c
 ```sh
 MFA=<MFA token goes here>
 
-bin/sackmesser deploy -d "$PWD/../../references/cicd-pipeline" \
+sackmesser deploy -d "$PWD/../../references/cicd-pipeline" \
 --apigeeapi \
 --description "deployment from local folder" \
 -n test-cicd-v0 \
@@ -58,18 +72,12 @@ bin/sackmesser deploy -d "$PWD/../../references/cicd-pipeline" \
 -e "$APIGEE_ENV"
 ```
 
-## Example usages as a Docker Container
-
-### Build the Docker image
-
-```sh
-docker build -t sackmesser .
-```
+## Docker Examples
 
 ### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
-docker run sackmesser deploy \
+docker run apigee-sackmesser deploy \
 --googleapi \
 -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
 -t "$TOKEN" \
@@ -82,7 +90,7 @@ docker run sackmesser deploy \
 
 ```sh
 docker run -v $PWD/../../references/cicd-pipeline/apiproxy:/opt/apigee/apiproxy \
-sackmesser deploy \
+apigee-sackmesser deploy \
 --apigeeapi \
 -n test-cicd-v0 \
 -b "/airports/test-v1" \
