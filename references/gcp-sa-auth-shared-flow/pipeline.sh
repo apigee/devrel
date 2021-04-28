@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,62 +13,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 PROJECT_ID="$(gcloud config get-value project)"
-KVM_NAME='gcp-sa-devrel'
 SA_NAME='no-roles-sa'
 SA_EMAIL="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 
-# create a service account without any roles if it doesn't exist
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
+
+# create a service account without any roles and download the key
 EXISTING_EMAIL=$(gcloud iam service-accounts list --filter="email=$SA_EMAIL" --format="get(email)")
 if [ "$EXISTING_EMAIL" != "$SA_EMAIL" ]; then
   gcloud iam service-accounts create "$SA_NAME"
 fi
-
-# create a service account key
-gcloud iam service-accounts keys create "./$SA_NAME-key.json" \
+gcloud iam service-accounts keys create "$SCRIPTPATH/$SA_NAME-key.json" \
   --iam-account "$SA_EMAIL"
-GCP_SA_KEY=$(jq '. | tostring' < "./$SA_NAME-key.json")
-rm "./$SA_NAME-key.json"
 
-#clean up if the KVM and create cache if not already exists
-curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$KVM_NAME" || true
+# Apigee Edge Pipeline
+"$SCRIPTPATH"/deploy.sh "$SCRIPTPATH/$SA_NAME-key.json" --apigeeapi
+sackmesser deploy --apigeeapi -d "$SCRIPTPATH"/test/token-validation \
+  -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" \
+  -n token-validation-v0
 
-curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/caches" \
-  -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- > /dev/null << EOF
-{
-  "name":"gcp-tokens",
-  "description":"GCP service account tokens",
-  "expirySettings": {
-    "timeoutInSec": {
-      "value":"300"
-    }
-  }
-}
-EOF
+curl --fail "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/token-validation/v0/oauth"
+curl --fail "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/token-validation/v0/jwt"
 
-#don't continue on failure
-set -e
+# Apigee X Pipeline
+"$SCRIPTPATH"/deploy.sh "$SCRIPTPATH/$SA_NAME-key.json" --googleapi
+APIGEE_TOKEN=$(gcloud auth print-access-token)
+sackmesser deploy --googleapi -d "$SCRIPTPATH"/test/token-validation \
+  -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
+  -n token-validation-v0
 
-curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
-  -H 'Content-Type: application/json; charset=utf-8' \
-  --data-binary @- > /dev/null << EOF
-{
-  "name": "$KVM_NAME",
-  "encrypted": "true",
-  "entry": [
-    {
-      "name": "cantdonothing@iam.gserviceaccount.com",
-      "value": $GCP_SA_KEY
-    }
-  ]
-}
-EOF
 
-npm run test
-
-# clean up
-curl -XDELETE -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps/$KVM_NAME"
+curl -k --fail "https://$APIGEE_X_HOSTNAME/token-validation/v0/oauth"
+curl -k --fail "https://$APIGEE_X_HOSTNAME/token-validation/v0/jwt"
 
 for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --format="get(name)" --filter="keyType=USER_MANAGED")
 do

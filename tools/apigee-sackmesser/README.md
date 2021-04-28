@@ -14,7 +14,7 @@ PATH="$PATH:$PWD/bin"
 To use it as a Docker container you can build the image:
 
 ```sh
-docker build -t apigee-sackmesser .
+build.sh -t apigee-sackmesser
 ```
 
 ## Deploy Command
