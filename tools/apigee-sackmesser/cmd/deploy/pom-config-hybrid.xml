@@ -18,7 +18,7 @@ limitations under the License.
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee</groupId>
-	<artifactId>apigee-proxy-name</artifactId>
+	<artifactId>apigee-config</artifactId>
 	<version>v1</version>
 	<name>${proxy.name}</name><!--used-by-hybrid/x-->
 	<packaging>pom</packaging>
@@ -43,8 +43,6 @@ limitations under the License.
 	</repositories>
 
 	<properties>
-		<apigee.plugin.version>1.2.2</apigee.plugin.version>
-		<apigee.config-plugin.version>1.4.4</apigee.config-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
@@ -54,28 +52,15 @@ limitations under the License.
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
-		<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-		<apigee.authtype>oauth</apigee.authtype>
-		<apigee.username>${username}</apigee.username>
-		<apigee.password>${password}</apigee.password>
-		<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
-		<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
+		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
+		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 	</properties>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>io.apigee.build-tools.enterprise4g</groupId>
-					<artifactId>apigee-edge-maven-plugin</artifactId>
-					<version>${apigee.plugin.version}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
+		
 		<plugins>
 
-			<!-- copy the full apiproxy folder to target folder -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
@@ -93,8 +78,6 @@ limitations under the License.
 									<directory>${project.root.dir}</directory>
 									<filtering>true</filtering>
 									<includes>
-										<include>apiproxy/**</include>
-										<include>test/integration/**</include>
 										<include>resources/**</include>
 									</includes>
 								</resource>
@@ -105,29 +88,6 @@ limitations under the License.
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>io.apigee.build-tools.enterprise4g</groupId>
-				<artifactId>apigee-edge-maven-plugin</artifactId>
-				<version>${apigee.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>configure-bundle-step</id>
-						<phase>package</phase>
-						<goals>
-							<goal>configure</goal>
-						</goals>
-					</execution>
-					<!--deploy bundle -->
-					<execution>
-						<id>deploy-bundle-step</id>
-						<phase>install</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
                 <groupId>com.apigee.edge.config</groupId>
                 <artifactId>apigee-config-maven-plugin</artifactId>
                 <version>${apigee.config-plugin.version}</version>
@@ -135,42 +95,28 @@ limitations under the License.
 				<executions>
                     <execution>
                         <id>create-config-references</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>references</goal>
                         </goals>
                     </execution>
-					<execution>
-                        <id>create-config-keystores</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>keystores</goal>
-                        </goals>
-                    </execution>
-					<execution>
-                        <id>create-config-aliases</id>
-                        <phase>verify</phase>                        
-                        <goals>
-                            <goal>aliases</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>targetservers</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-kvm</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>keyvaluemaps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-resourcefiles</id>
-                        <phase>verify</phase>                        
+                        <phase>install</phase>                        
                         <goals>
                             <goal>resourcefiles</goal>
                         </goals>

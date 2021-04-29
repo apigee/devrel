@@ -9,12 +9,26 @@ A set of useful shared flows for Apigee.
 
 ## Quick Start
 
+### Deploy to Apigee X or hybrid
+
+#### Set Config Variables
+
+    export APIGEE_X_ORG=xxx
+    export APIGEE_X_ENV=xxx
+    export APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+    ./deploy.sh all --googleapi
+
+### Deploy to Apigee Edge
+
+#### Set Config Variables
+
     export APIGEE_ORG=xxx
     export APIGEE_ENV=xxx
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
 
-    ./deploy-all.sh
+    ./deploy.sh all --apigeeapi
 
 ## Shared Flows
 
