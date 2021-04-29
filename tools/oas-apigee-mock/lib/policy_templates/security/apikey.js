@@ -31,8 +31,16 @@ function apiKeyTemplate(options) {
   const aysnc = options.async || 'false'
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
-  const name = options.name || 'apiKey-' + random.randomText()
-  const keyRef = options.keyRef || 'request.queryparam.apikey'
+  const name = options.name || 'va-verifyapikey'
+  let apiKeyName = options.apiKeyName || 'apikey'
+
+  let keyRef
+  if (options.keyRef === 'header') {
+  let apiKeyName = options.apiKeyName || 'apikey'
+    keyRef = 'request.header.' + apiKeyName
+  } else {
+    keyRef = 'request.queryparam.' + apiKeyName
+  }
 
   const apiKey = builder.create('VerifyAPIKey')
   apiKey.att('async', aysnc)

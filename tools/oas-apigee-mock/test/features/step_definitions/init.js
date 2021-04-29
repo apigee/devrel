@@ -23,8 +23,10 @@ before(function () {
     process.env.APIGEE_ORG +
       "-" +
       process.env.APIGEE_ENV +
-      ".apigee.net/oas-apigee-mock-orders"
+      ".apigee.net/" + process.env.APIGEE_PROXY_BASEPATH
   );
+
+  this.apickli.storeValueInScenarioScope('apikey', process.env.APIKEY);
 });
 
 setDefaultTimeout(60 * 1000);

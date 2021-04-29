@@ -133,7 +133,7 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: apikey
+      name: x-apikey
   schemas:
     order:
       type: object
