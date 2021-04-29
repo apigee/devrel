@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "envConfig": {
+    "@ENV_NAME@": {
+      "caches": [
+        {
+          "name": "gcp-tokens",
+          "description": "GCP service account tokens",
+          "expirySettings": {
+            "timeoutInSec": {
+              "value":"300"
+            }
+          }
+        }
+      ],
+      "kvms": [
+        {
+          "name": "gcp-sa-devrel",
+          "encrypted": "true",
+          "entry": [
+            {
+              "name": "@GCP_SA_KEY_NAME@",
+              "value": "@GCP_SA_KEY@"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

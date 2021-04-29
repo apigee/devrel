@@ -35,6 +35,7 @@ Options:
 -p,--password, Apigee User Password (Edge only)
 -m,--mfa, Apigee MFA code (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
+-h,--hostname, publicly reachable hostname for the environment
 --description, Human friendly proxy or proxy description
 EOF
 }
@@ -61,6 +62,7 @@ while [ "$#" -gt 0 ]; do
     -p) password="$2"; shift 2;;
     -t) token="$2"; shift 2;;
     -u) username="$2"; shift 2;;
+    -h) hostname="$2"; shift 2;;
 
     --directory) directory="${1}"; shift 2;;
     --github) url="${1}"; shift 2;;
@@ -72,6 +74,7 @@ while [ "$#" -gt 0 ]; do
     --password) password="${1}"; shift 2;;
     --environment) environment="${1}"; shift 2;;
     --organization) organization="${1}"; shift 2;;
+    --hostname) hostname="${1}"; shift 2;;
     --description) description="${2}"; shift 2;;
 
     --apigeeapi) apiversion="apigee"; shift 1;;
@@ -130,31 +133,59 @@ if [ -f "$temp_folder"/edge.json ]; then
     echo "[INFO] Deploying config $temp_folder/edge.json"
 
     if [ "$apiversion" = "google" ]; then
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[] | .' < edge.json | while read -r line; do
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[]? | .' < "$temp_folder"/edge.json | while read -r line; do
             echo "[INFO] X/hybrid patch: adding keystore: $(echo "$line" | jq -r '.name')"
             curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores" \
-            -H "Authorization: Bearer $token" \
-            -H "Content-Type: application/json" \
-            --data "$line"
+                -H "Authorization: Bearer $token" \
+                -H "Content-Type: application/json" \
+                --data "$line" || echo "assuming the keystore already exists"
         done
 
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[] | .' < edge.json | while read -r line; do
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[]? | .' < "$temp_folder"/edge.json | while read -r line; do
             echo "[INFO] X/hybrid patch: adding key alias: $(echo "$line" | jq -r '.alias')"
             keystorename="$(echo "$line" | jq -r '.keystorename')"
             alias="$(echo "$line" | jq -r '.alias')"
             format="$(echo "$line" | jq -r '.format')"
             curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores/$keystorename/aliases?alias=$alias&format=$format" \
-            -H "Authorization: Bearer $token" \
-            -F password="$(echo "$line" | jq -r '.password')" \
-            -F file=@"$(echo "$line" | jq -r '.filePath')"
+                -H "Authorization: Bearer $token" \
+                -F password="$(echo "$line" | jq -r '.password')" \
+                -F file=@"$(echo "$line" | jq -r '.filePath')" || echo "assuming the alias already exists"
         done
 
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[] | .' < edge.json | while read -r line; do
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[]? | .' < "$temp_folder"/edge.json | while read -r line; do
             echo "[INFO] X/hybrid patch: adding target server: $(echo "$line" | jq -r '.host')"
             curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/targetservers" \
             -H "Authorization: Bearer $token" \
             -H "Content-Type: application/json" \
-            --data "$line"
+            --data "$line" || echo "assuming the targetserver already exists"
+        done
+
+        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json | while read -r line; do
+            kvm=$(echo "$line" | jq -c 'del(.entry)')
+            kvmname=$(echo "$kvm" | jq -r '.name')
+            echo "[INFO] X/hybrid patch: adding kvm: $kvmname"
+            curl -X POST --fail "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keyvaluemaps" \
+                -H "Authorization: Bearer $token" \
+                -H "Content-Type: application/json" \
+                --data "$kvm" || echo "assuming the kvm already exists"
+
+            KVM_ADMIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/apis/kvm-admin-v1/deployments")
+
+            echo "[INFO] kvm admin status $KVM_ADMIN_STATUS"
+
+            if [ "$KVM_ADMIN_STATUS" != "200" ];then
+                "$SCRIPT_FOLDER/deploy.sh" --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
+                    -o "$organization" -e "$environment"
+            fi
+
+            echo "$line" | jq -c  '.entry[]? | .' | while read -r kvmentry; do
+                kvmentry=$(echo "$kvmentry" | jq '.["key"]=.name | del(.name)')
+                echo "[INFO] adding entry: $(echo "$kvmentry" | jq '.key')"
+                curl -s -X POST -k --fail "https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname/entries" \
+                    -H "Authorization: Bearer $token" \
+                    -H "Content-Type: application/json" \
+                    --data "$kvmentry" > /dev/null
+            done
         done
 
         cp "$SCRIPT_FOLDER/pom-config-hybrid.xml" "$temp_folder"

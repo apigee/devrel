@@ -14,27 +14,24 @@
 
 FROM maven:3.6.3-slim
 
-RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee
-
 RUN apt-get update && \
   apt-get install git=* libxml2-utils=* --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
+COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
 
-RUN mkdir /opt/apigee && chown -R apigee /opt/apigee
+RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee && \
+  chown -R apigee /opt/devrel
 
 USER apigee
 
-WORKDIR /opt/apigee
-
-COPY bin ./bin
-COPY cmd ./cmd
-
 # Pre-warm maven cache for deploy
-RUN mvn clean -f ./cmd/deploy/pom-config-hybrid.xml
-RUN mvn clean -f ./cmd/deploy/pom-config-edge.xml
-RUN mvn clean -f ./cmd/deploy/pom-hybrid.xml
-RUN mvn clean -f ./cmd/deploy/pom-edge.xml
+WORKDIR /opt/devrel/tools/apigee-sackmesser
+RUN mvn clean -f ./cmd/deploy/pom-config-hybrid.xml && \
+  mvn clean -f ./cmd/deploy/pom-config-edge.xml && \
+  mvn clean -f ./cmd/deploy/pom-hybrid.xml && \
+  mvn clean -f ./cmd/deploy/pom-edge.xml
 
 ENTRYPOINT [ "./bin/sackmesser" ]
