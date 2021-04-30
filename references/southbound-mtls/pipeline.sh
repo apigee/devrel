@@ -15,12 +15,54 @@
 # limitations under the License.
 
 set -e
-set -x
 
-mkdir -p ./tmp
-curl https://badssl.com/certs/badssl.com-client.p12 -o ./tmp/badssl.com-client.p12
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-mvn install -ntp -B -Ptest -Dapigee.config.options=update
+TEMP_DIR="$SCRIPTPATH"/tmp
+mkdir -p "$SCRIPTPATH"/tmp
+curl https://badssl.com/certs/badssl.com-client.p12 -o "$TEMP_DIR"/badssl.com-client.p12
 
-npm i
-npm run test
+cp "$SCRIPTPATH"/edge.template.json "$SCRIPTPATH"/edge.json
+
+export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
+
+# Apigee Edge
+
+TEST_BASEPATH='/badssl/v0'
+sed -i.bak "s/@ENV_NAME@/$APIGEE_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
+
+sackmesser deploy \
+--apigeeapi \
+--description "mTLS badssl demo" \
+-d "$SCRIPTPATH" \
+-n mtls-demo \
+-b "$TEST_BASEPATH" \
+-u "$APIGEE_USER" \
+-p "$APIGEE_PASS" \
+-o "$APIGEE_ORG" \
+-e "$APIGEE_ENV"
+
+TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+(cd "$SCRIPTPATH" && TEST_HOST=$TEST_HOST TEST_BASEPATH=$TEST_BASEPATH npm run test)
+
+# Apigee X
+
+APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+cp "$SCRIPTPATH"/edge.template.json "$SCRIPTPATH"/edge.json
+sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
+
+sackmesser deploy \
+--googleapi \
+--description "mTLS badssl demo" \
+-d "$SCRIPTPATH" \
+-n mtls-demo \
+-b "$TEST_BASEPATH" \
+-t "$APIGEE_TOKEN" \
+-o "$APIGEE_X_ORG" \
+-e "$APIGEE_X_ENV"
+
+(cd "$SCRIPTPATH" && TEST_HOST=$APIGEE_X_HOSTNAME TEST_BASEPATH=$TEST_BASEPATH npm run test)
+
+# cleanup
+rm "$SCRIPTPATH"/edge.json

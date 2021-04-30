@@ -16,23 +16,25 @@
 
 set -e
 
-# validate docker build
-docker build -t apigeedeploy .
+SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 
-BASE_PATH="/portable-deployer/v1/airports"
+# validate docker build
+"$SCRIPT_FOLDER"/build.sh -t apigee-sackmesser
+
+BASE_PATH="/sackmesser/v1/airports"
 
 # Using another DevRel API Proxy for testing this tool
-docker run apigeedeploy \
+docker run apigee-sackmesser deploy \
   --apigeeapi \
-  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline/apiproxy \
-  -n portable-airports-v0 \
+  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
+  -n sackmesser-airports-v0 \
   -b "$BASE_PATH" \
   -u "$APIGEE_USER" \
   -p "$APIGEE_PASS" \
   -o "$APIGEE_ORG" \
   -e "$APIGEE_ENV"
 
-(cd ../../references/cicd-pipeline && \
+(cd "$SCRIPT_FOLDER"/../../references/cicd-pipeline && \
   npm i && \
   TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" \
   TEST_BASE_PATH="$BASE_PATH" \
