@@ -25,3 +25,7 @@ Feature:
     Then response code should be 201
     And response body should be valid json
     And response body path $.orderId should be 61knu8gol56
+
+  Scenario: Request does not fail when OPTIONS is requested
+    When I request OPTIONS for /oas-apigee-mock-orders/orders/123
+    Then response code should be 200
