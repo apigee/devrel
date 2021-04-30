@@ -15,6 +15,8 @@
 
 set -e
 
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
 #################################
 ### function: set_idp_env_var ###
 #################################
@@ -80,8 +82,10 @@ set_idp_env_var() {
 ####################################
 generate_edge_json() {
   ENV_NAME=$1
-  rm -f edge.json
-  cat <<EOF >> "edge.json"
+  SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
+  rm -f "$SCRIPTPATH"/edge.json
+  cat <<EOF >> "$SCRIPTPATH/edge.json"
 {
     "version": "1.0",
     "envConfig": {
@@ -246,8 +250,8 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # deploy the OIDC mock identity provider...
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];then
-        sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d ../oidc-mock
-        (cd ../oidc-mock && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test)
+        sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/../oidc-mock
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test)
     fi
 
     # set env variables for google oidc
@@ -261,7 +265,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     set_functional_test_env_var "$timestamp"
 
     # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS"
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
     curl --silent -X POST \
@@ -277,7 +281,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # execute integration tests only against mock IDP
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test
+        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
     fi
@@ -289,8 +293,8 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];
     then
-        sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d ../oidc-mock
-        (cd ../oidc-mock && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm test)
+        sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"/../oidc-mock
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm test)
     fi
 
      # set env variables for google oidc
@@ -304,7 +308,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     set_functional_test_env_var "$timestamp"
 
     # # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME"
+    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
     curl --silent -X POST \
@@ -320,7 +324,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # execute integration tests only against mock IDP
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test
+        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
     fi
