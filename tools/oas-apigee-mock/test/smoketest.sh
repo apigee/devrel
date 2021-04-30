@@ -34,7 +34,8 @@ npx apigeetool createProduct -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG
 npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "oas-apigee-mock@example.com" --userName "oas-apigee-mock@example.com" --firstName "oas-apigee-mock" --lastName "Developer"
 npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "oas-apigee-mock@example.com" --apiProducts "oas-apigee-mock" --name "oas-apigee-mock-app" > app.json
 
-export APIKEY=$(jq '.credentials[0].consumerKey' -r < app.json )
+APIKEY=$(jq '.credentials[0].consumerKey' -r < app.json )
+export APIKEY
 echo "APIKEY is $APIKEY"
 
 npm test
