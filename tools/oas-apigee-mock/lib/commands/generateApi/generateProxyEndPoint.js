@@ -42,6 +42,8 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
 
           step = requestPipe.ele('Step', {})
           step.ele('Name', {}, 'va-verifyapikey')
+          const flowCondition = 'request.verb != "OPTIONS"'
+          step.ele('Condition').raw(flowCondition)
 
           // Create Policy
           const options = {};
