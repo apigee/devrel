@@ -2,7 +2,9 @@
 
 A tool which generates an Apigee API Proxy bundle from an Open API 3
 specification, with mock responses using Assign Message policies from the
-examples provided in the specification.
+examples provided in the specification. A Verify API key policy will
+be added to the Proxy PreFlow if the OAS provided specifies ApiKeyAuth
+should be applied globally to all operations.
 
 ## Dependencies
 

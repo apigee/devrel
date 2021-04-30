@@ -18,6 +18,7 @@ const builder = require('xmlbuilder')
 const fs = require('fs').promises;
 const path = require('path')
 const assignMessage = require('../../policy_templates/assign-message/assign-message.js')
+const verifyApiKey = require('../../policy_templates/security/apikey.js')
 
 module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   let useCors
@@ -33,7 +34,28 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   const preFlow = root.ele('PreFlow', { name: 'PreFlow' })
 
   // Add steps to preflow.
-  preFlow.ele('Request')
+  requestPipe = preFlow.ele('Request')
+
+  if(api.security && api.components.securitySchemes) {
+    for (const apiSecurity of api.security) {
+        if(Object.keys(apiSecurity) == 'ApiKeyAuth' && api.components.securitySchemes.ApiKeyAuth) {
+
+          step = requestPipe.ele('Step', {})
+          step.ele('Name', {}, 'va-verifyapikey')
+          const flowCondition = 'request.verb != "OPTIONS"'
+          step.ele('Condition').raw(flowCondition)
+
+          // Create Policy
+          const options = {};
+          options.apiKeyName = api.components.securitySchemes.ApiKeyAuth.name
+          options.keyRef = api.components.securitySchemes.ApiKeyAuth.in
+
+          const xmlString = verifyApiKey.apiKeyGenTemplate(options)
+          await fs.writeFile(rootDirectory + '/policies/' + 'va-verifyapikey' + '.xml', xmlString)
+        }
+    }
+  }
+
   preFlow.ele('Response')
 
   const flows = root.ele('Flows', {})

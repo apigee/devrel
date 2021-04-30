@@ -16,14 +16,13 @@ openapi: 3.0.0
 info:
   title: "Orders"
   version: "1.0"
+security:
+  - ApiKeyAuth: []
 paths:
   /orders:
     get:
       summary: Get all orders
       operationId: Get all orders
-      description: Get all orders
-      security:
-        - ApiKeyAuth: []
       responses:
         "200":
           description: OK
@@ -55,8 +54,6 @@ paths:
     get:
       summary: Get a specific order
       operationId: Get a specific order
-      security:
-        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -84,9 +81,6 @@ paths:
     post:
       summary: Create a new order
       operationId: Create order
-      description: Create a new order.
-      security:
-        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -119,8 +113,6 @@ paths:
     put:
       summary: Update a specific order
       operationId: Update an order
-      security:
-        - ApiKeyAuth: []
       parameters:
         - name: orderId
           in: path
@@ -140,8 +132,8 @@ components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
-      in: query
-      name: apikey
+      in: header
+      name: x-apikey
   schemas:
     order:
       type: object
