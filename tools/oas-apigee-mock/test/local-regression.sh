@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Script to regression test changes locally without requiring deployment. 
+
 set -x
 
 # clean up previously generated files
@@ -36,16 +38,3 @@ else
   echo "FAIL"
   exit 1
 fi
-
-npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d ../api_bundles/oas-apigee-mock-orders -V
-npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders-apikey-query -d ../api_bundles/oas-apigee-mock-orders-apikey-query -V
-npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders-apikey-header -d ../api_bundles/oas-apigee-mock-orders-apikey-header -V
-
-export APIGEE_PROXY_BASEPATH=oas-apigee-mock-orders
-npm test
-
-export APIGEE_PROXY_BASEPATH=oas-apigee-mock-orders-apikey-query
-npm test
-
-export APIGEE_PROXY_BASEPATH=oas-apigee-mock-orders-apikey-header
-npm test

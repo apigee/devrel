@@ -15,11 +15,26 @@
 
 set -e
 
-# clean up previously generated files
+# Clean up previously generated files
 rm -rf api_bundles
 
+# Generate proxy bundles
 node bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s test/oas/orders.yaml
+node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-query -s test/oas/orders-apikey-query.yaml
+node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-header -s test/oas/orders-apikey-header.yaml
 
+
+# Deploy proxies
 npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders -d api_bundles/oas-apigee-mock-orders -V
+npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders-apikey-header -d api_bundles/oas-apigee-mock-orders-apikey-header -V
+npx apigeetool deployproxy -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" -n oas-apigee-mock-orders-apikey-query -d api_bundles/oas-apigee-mock-orders-apikey-query -V
+
+# Create Apigee Developer, App and Product
+npx apigeetool createProduct -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --productName "oas-apigee-mock" --proxies "oas-apigee-mock-orders,oas-apigee-mock-orders-apikey-header,oas-apigee-mock-orders-apikey-query" --environments "test"
+npx apigeetool createDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "oas-apigee-mock@example.com" --userName "oas-apigee-mock@example.com" --firstName "oas-apigee-mock" --lastName "Developer"
+npx apigeetool createApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "oas-apigee-mock@example.com" --apiProducts "oas-apigee-mock" --name "oas-apigee-mock-app" > app.json
+
+export APIKEY=$(jq '.credentials[0].consumerKey' -r < app.json )
+echo "APIKEY is $APIKEY"
 
 npm test

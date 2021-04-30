@@ -15,7 +15,6 @@
  */
 
 const builder = require('xmlbuilder')
-const random = require('../../util/random.js')
 
 module.exports = {
   apiKeyTemplate: apiKeyTemplate,
@@ -32,11 +31,10 @@ function apiKeyTemplate(options) {
   const continueOnError = options.continueOnError || 'false'
   const enabled = options.enabled || 'true'
   const name = options.name || 'va-verifyapikey'
-  let apiKeyName = options.apiKeyName || 'apikey'
+  const apiKeyName = options.apiKeyName || 'apikey'
 
   let keyRef
   if (options.keyRef === 'header') {
-  let apiKeyName = options.apiKeyName || 'apikey'
     keyRef = 'request.header.' + apiKeyName
   } else {
     keyRef = 'request.queryparam.' + apiKeyName
