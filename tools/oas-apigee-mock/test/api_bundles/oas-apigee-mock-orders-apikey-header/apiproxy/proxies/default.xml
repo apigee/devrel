@@ -17,6 +17,7 @@
     <Request>
       <Step>
         <Name>va-verifyapikey</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
       </Step>
     </Request>
     <Response/>
