@@ -33,10 +33,6 @@ case "$1" in
     REGION="$2"
     shift 2;;
 
-  -z|--zone)
-    ZONE="$2"
-    shift 2;;
-
   -x|--ax-region)
     AX_REGION="$2"
     shift 2;;
@@ -101,7 +97,7 @@ if [ "ACTIVE" = "$(echo "$ORG_JSON" | jq --raw-output .state)" ]; then
   AX_REGION=$(echo "$ORG_JSON" | jq --raw-output .analyticsRegion)
 
 # TODO: [ ] right now single instance is expected
-  ZONE=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances|jq --raw-output '.instances[0].location')
+  ZONE=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances | jq --raw-output '.instances[0].location')
 
   echo "Deriving REGION from ZONE, as Proxy instances should be in the same region as your Apigee runtime instance"
   REGION=$(echo "$ZONE" | awk '{gsub(/-[a-z]+$/,"");print}')
@@ -110,13 +106,12 @@ else
 
   REGION=${REGION:-europe-west1}
   NETWORK=${NETWORK:-default}
-  ZONE=${ZONE:-europe-west1-b}
+  REGION=${REGION:-europe-west1}
   AX_REGION=${AX_REGION:-europe-west1}
 fi
 
 export NETWORK
 export REGION
-export ZONE
 export AX_REGION
 export SUBNET=${SUBNET:-default}
 export PROXY_MACHINE_TYPE=${PROXY_MACHINE_TYPE:-e2-micro}
@@ -158,8 +153,7 @@ if [ "$SHARED_HOST_ONLY" = "Y" ]; then
   echo "provisioning shared VPC host project only"
 else
   echo "  ORG=$ORG"
-  echo "  REGION=$REGION"
-  echo "  ZONE=$ZONE"
+  echo "  REGION=$REGION (random zone for TRIAL instance)"
   echo "  AX_REGION=$AX_REGION"
   echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
   echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
@@ -181,7 +175,7 @@ if [ ! "$QUIET" = "Y" ]; then
 fi
 
 echo "Step 2: Enable APIs"
-gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
+gcloud services enable compute.googleapis.com apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
 echo "Step 4: Configure service networking"
 
@@ -207,7 +201,7 @@ else
   fi
 
   echo "peering CIDR flags: $PEERING_CIDR_FLAGS"
-  gcloud compute addresses create google-managed-services-default --global "$PEERING_CIDR_FLAGS" \
+  gcloud compute addresses create google-managed-services-default --global "${PEERING_CIDR_FLAGS}" \
     --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
     --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
 
@@ -236,10 +230,10 @@ fi
 
 export MIG=apigee-proxy-$REGION
 
-echo "Validation: valid zone value: $ZONE"
-CHECK_ZONE=$(gcloud compute zones list --filter="name=( \"$ZONE\" )" --format="table[no-heading](name)" --project="$PROJECT")
-if [ "$ZONE" != "$CHECK_ZONE" ]; then
-  echo "ERROR: zone value is invalid: $ZONE"
+echo "Validation: valid region value: $REGION"
+CHECK_REGION=$(gcloud compute regions list --filter="name=( \"$REGION\" )" --format="table[no-heading](name)" --project="$PROJECT")
+if [ "$REGION" != "$CHECK_REGION" ]; then
+  echo "ERROR: REGION value is invalid: $REGION"
   exit
 fi
 
@@ -257,8 +251,9 @@ else
 echo "Step 4.4: Create a new eval org [it takes time, 10-20 minutes. please wait...]"
 
 set +e
+# Apigee automatically picks zonal instance for TRIAL orgs
 gcloud alpha apigee organizations provision \
-  --runtime-location="$ZONE" \
+  --runtime-location="$REGION" \
   --analytics-region="$AX_REGION" \
   --authorized-network="$NETWORK" \
   --project="$PROJECT"
@@ -280,8 +275,8 @@ gcloud compute networks subnets update "$SUBNET" \
 --enable-private-ip-google-access --project "$PROJECT"
 
 echo "Step 7b: Set up environment variables"
-# export APIGEE_ENDPOINT=eval-$ZONE
-APIGEE_ENDPOINT=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances/eval-"$ZONE"|jq .host --raw-output)
+
+APIGEE_ENDPOINT=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances | jq --raw-output '.instances[0].host')
 export APIGEE_ENDPOINT
 
 echo "Check that APIGEE_ENDPOINT is not null: $APIGEE_ENDPOINT"
