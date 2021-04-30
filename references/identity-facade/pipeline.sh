@@ -268,7 +268,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
-    curl --silent -X POST \
+    curl --fail --silent -X POST \
         -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
         --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
         https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create
@@ -311,7 +311,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
-    curl --silent -X POST \
+    curl --fail --silent -X POST \
         -H "Authorization: Bearer $APIGEE_TOKEN" -H "Content-Type:application/json" \
         --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create
@@ -329,8 +329,3 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
         echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
     fi
 fi
-
-
-
-
-

@@ -29,9 +29,7 @@ USER apigee
 
 # Pre-warm maven cache for deploy
 WORKDIR /opt/devrel/tools/apigee-sackmesser
-RUN mvn clean -f ./cmd/deploy/pom-config-hybrid.xml && \
-  mvn clean -f ./cmd/deploy/pom-config-edge.xml && \
-  mvn clean -f ./cmd/deploy/pom-hybrid.xml && \
+RUN mvn clean -f ./cmd/deploy/pom-hybrid.xml && \
   mvn clean -f ./cmd/deploy/pom-edge.xml
 
 ENTRYPOINT [ "./bin/sackmesser" ]
