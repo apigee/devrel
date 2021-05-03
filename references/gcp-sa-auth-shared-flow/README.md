@@ -19,7 +19,7 @@ It will:
 ### Prerequisites
 
 1. Set your authentication environment variables:
-   **For X / hybrid**
+   **For Edge**
 
    ```sh
     export APIGEE_ORG=<your org>
@@ -28,7 +28,7 @@ It will:
     export APIGEE_PASS=<password>
     ```
 
-    **For Edge**
+    **For X / hybrid**
 
     ```sh
     export APIGEE_X_ORG=<your org>
