@@ -46,7 +46,7 @@ jobs:
         run: npm install
 
       - name: Run Super-Linter
-        uses: docker://github/super-linter:v3
+        uses: docker://github/super-linter:v3.16.1
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
