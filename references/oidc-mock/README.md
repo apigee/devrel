@@ -22,7 +22,9 @@ Standard endpoints are exposed, like:
     export APIGEE_ENV=xxx
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
-    mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+
+    export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS"
     npm i
     npm test
 
@@ -172,7 +174,7 @@ Example:
 
     Method:
     GET
-    URI:  
+    URI:
     /v1/openid-connect/authorize?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://httpbin.org/get
 
 Output:
@@ -184,13 +186,13 @@ Authentication page of the mock OIDC identity provider:
 As there is no user authentication,
 you can enter login and password of your choice.
 As an example, here is an extract of the HTML body of the authentication page:
-  
+
 ![Authentication HTML Content](./img/04.png "HTML content of the Authentication page")
 
 Consent page of the mock OIDC identity provider:
 
 ![Consent Page](./img/05.png "Consent page of the OIDC Mock IdP")
-  
+
 “**Allow**” and “**Reject**” trigger the same result,
 which is an HTTP redirection (302) to the **redirect_uri**
 

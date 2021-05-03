@@ -135,7 +135,7 @@ Apigee SaaS has the following constraints:
   components. Focus on the data flows and communication security.
 - For a good starting point, please use: <https://tinyurl.com/yak9vox2>
 - We have 5 minutes to complete the task
-  [timer](https://www.google.com/search?q=timer&oq=timer).
+  [timer](https://www.google.com/search?q=timer+5min).
 
 ![Timer](assets/timer.png)
 
@@ -190,7 +190,7 @@ Apigee SaaS has the following constraints:
 - Deploy to your free organization
 
 We have 10 minutes to complete the task -
-[timer](https://www.google.com/search?q=timer&oq=timer).
+[timer](https://www.google.com/search?q=timer+10min).
 
 ![Timer](assets/timer.png)
 
@@ -213,24 +213,27 @@ functionality and remove this dependencies.
 
 It is possible to build mocks with the following methods:
 
-- [Assign Message](https://docs.apigee.com/api-platform/reference/policies/assign-message-policy)
-  policy - allows you to simply setup single mocked API response
+- [Assign
+  Message](https://docs.apigee.com/api-platform/reference/policies/assign-message-policy)
+  policy - allows you to simply setup single mocked API responses or
+  automatically [generate them from an Open API
+  Specification](https://github.com/apigee/devrel/tree/main/tools/oas-apigee-mock)
 - Javascript extension
   [Policy](https://community.apigee.com/articles/80296/simple-mocking-with-javascript-callout.html)
-- NodeJS mocks via
-  [Hosted Targets](https://docs.apigee.com/api-platform/hosted-targets/hosted-targets-overview)
+- Node.js mocks via Cloud Run
   - multiple open source projects can be used for building more advanced API
-  mocks on Apigee: [Nock](https://github.com/nock/nock),
-  [Swagger tools](https://www.npmjs.com/package/swagger-tools),
-  [API Mocker](https://github.com/apigee/devrel/tree/main/references/apimocker-hostedtargets),
-  [amockjs](https://github.com/sauliuz/amokjs) and others. Here is an
-  [example reference code](https://github.com/apigee/devrel/tree/main/references/apimocker-hostedtargets)
+    mocks on Node.js: [Nock](https://github.com/nock/nock), [Swagger
+    tools](https://www.npmjs.com/package/swagger-tools), [API OAS
+    Mocker](https://github.com/apigee/devrel/tree/main/tools/oas-apigee-mock),
+    [amockjs](https://github.com/sauliuz/amokjs) and others.
 - Standalone mocking servers can also be used for more advanced API mocking
   setup hosted outside of Apigee, such as [WireMock](http://wiremock.org/)
 
 ### Task
 
-- Create a Mock using one of the methods for the API Requests/Responses below.
+- Create a Mock using one of the methods for the API Requests/Responses below or
+  based off of this [OAS
+  file](https://github.com/apigee/devrel/tree/main/labs/best-practices-hackathon/assets/currency-conversion-spec.yaml).
 
 #### Currency rates Mock
 
@@ -275,7 +278,7 @@ It is possible to build mocks with the following methods:
     }
 
 We have 10 minutes to complete the task -
-[timer](https://www.google.com/search?q=timer&oq=timer).
+[timer](https://www.google.com/search?q=timer+10min).
 
 ![Timer](assets/timer.png)
 
@@ -316,7 +319,7 @@ Please note the following:
 - We should be able to set a different cache TTL for each environment
 
 - We have 10 minutes to complete the task -
-  [timer](https://www.google.com/search?q=timer&oq=timer).
+  [timer](https://www.google.com/search?q=timer+10min).
 
 ![Timer](assets/timer.png)
 

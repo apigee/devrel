@@ -18,24 +18,23 @@ set_config_params() {
     echo "📝 Setting Config Parameters (Provide your own or defaults will be applied)"
 
     echo "🔧 Configuring GCP Project"
-    PROJECT_ID=${PROJECT_ID:=$(gcloud config get-value "project")}
+    PROJECT_ID=${PROJECT_ID:-$(gcloud config get-value "project")}
     export PROJECT_ID
     gcloud config set project "$PROJECT_ID"
 
-    export AX_REGION=${AX_REGION:='europe-west1'}
+    export AX_REGION=${AX_REGION:-'europe-west1'}
 
-    export REGION=${REGION:='europe-west1'}
-    gcloud config set compute/region $REGION
+    export REGION=${REGION:-'europe-west1'}
+    gcloud config set compute/region "$REGION"
 
-    export ZONE=${ZONE:='europe-west1-c'}
-    gcloud config set compute/zone $ZONE
+    export ZONE=${ZONE:-'europe-west1-c'}
+    gcloud config set compute/zone "$ZONE"
 
-    export INGRESS_TYPE=${INGRESS_TYPE:='external'} # internal|external
+    export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
 
     echo "🔧 Configuring Apigee hybrid"
-    export DNS_NAME=${DNS_NAME:="$PROJECT_ID.example.com"}
-    export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:=apigee-hybrid}
-    export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:=e2-standard-4}
+    export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
+    export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
 
     export APIGEE_CTL_VERSION='1.4.2'
     export KPT_VERSION='v0.34.0'
@@ -71,7 +70,7 @@ set_config_params() {
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
 
-    export QUICKSTART_ROOT="${QUICKSTART_ROOT:=$PWD}"
+    export QUICKSTART_ROOT="${QUICKSTART_ROOT:-$PWD}"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
     export APIGEECTL_HOME=$QUICKSTART_TOOLS/apigeectl/apigeectl_$APIGEE_CTL_VERSION
     export HYBRID_HOME=$QUICKSTART_ROOT/hybrid-files
@@ -128,7 +127,7 @@ check_existing_apigee_resource() {
 
 enable_all_apis() {
 
-  PROJECT_ID=${PROJECT_ID:=$(gcloud config get-value "project")}
+  PROJECT_ID=${PROJECT_ID:-$(gcloud config get-value "project")}
 
   echo "📝 Enabling all required APIs in GCP project \"$PROJECT_ID\""
 
@@ -170,7 +169,7 @@ create_apigee_org() {
       return
     fi
 
-    curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
+    curl -X POST --fail -H "Authorization: Bearer $(token)" -H "content-type:application/json" \
     -d "{
         \"name\":\"$PROJECT_ID\",
         \"displayName\":\"$PROJECT_ID\",
@@ -206,7 +205,7 @@ create_apigee_env() {
       return
     fi
 
-    curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
+    curl -X POST --fail -H "Authorization: Bearer $(token)" -H "content-type:application/json" \
       -d "{\"name\":\"$ENV_NAME\"}" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments"
 
@@ -227,10 +226,10 @@ create_apigee_envgroup() {
       return
     fi
 
-    curl -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
+    curl -X POST --fail -H "Authorization: Bearer $(token)" -H "content-type:application/json" \
       -d "{
         \"name\":\"$ENV_GROUP_NAME\",
-        \"hostnames\":[\"$ENV_GROUP_NAME.$DNS_NAME\"],
+        \"hostnames\":[\"$ENV_GROUP_NAME.${DNS_NAME:-$PROJECT_ID.apigee.com}\"],
       }" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups"
 
@@ -249,13 +248,11 @@ add_env_to_envgroup() {
   local ENV_GROUPS_ATTACHMENT_URI
   ENV_GROUPS_ATTACHMENT_URI="https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME/attachments"
 
-
-
-  if curl --silent -H "Authorization: Bearer $(token)" -H "content-type:application/json" "$ENV_GROUPS_ATTACHMENT_URI" | grep -q "\"environment\": \"$ENV_NAME\""; then
+  if curl --fail --silent -H "Authorization: Bearer $(token)" -H "content-type:application/json" "$ENV_GROUPS_ATTACHMENT_URI" | grep -q "\"environment\": \"$ENV_NAME\""; then
     echo "(skipping, envgroup assignment already exists)"
     return
   else
-    curl -q -H "Authorization: Bearer $(token)" -X POST -H "content-type:application/json" \
+    curl -X POST --fail -q -H "Authorization: Bearer $(token)"  -H "content-type:application/json" \
       -d '{ "environment": "'"$ENV_NAME"'" }' "$ENV_GROUPS_ATTACHMENT_URI"
   fi
 
@@ -276,6 +273,13 @@ configure_network() {
     fi
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
     export INGRESS_IP
+
+    export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
+
+    echo "setting hostname on env group to $ENV_GROUP_NAME.$DNS_NAME"
+    curl -X PATCH --silent -H "Authorization: Bearer $(token)"  \
+      -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$PROJECT_ID"/envgroups/"$ENV_GROUP_NAME" \
+      -d "{\"hostnames\": [\"$ENV_GROUP_NAME.$DNS_NAME\"]}"
 
     if [ -z "$(gcloud dns managed-zones list --filter 'name=apigee-dns-zone' --format='get(name)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" ]]; then
@@ -320,7 +324,7 @@ create_gke_cluster() {
         --enable-stackdriver-kubernetes
     fi
 
-    gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE
+    gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --zone "$ZONE"
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
@@ -336,18 +340,18 @@ install_asm_and_certmanager() {
 
   echo "🏗️ Preparing ASM install requirements"
   mkdir -p "$QUICKSTART_TOOLS"/kpt
-  curl -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
+  curl --fail -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
   export PATH=$PATH:"$QUICKSTART_TOOLS"/kpt
 
   mkdir -p "$QUICKSTART_TOOLS"/jq
-  curl -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
+  curl --fail -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
   chmod +x "$QUICKSTART_TOOLS"/jq/jq
   export PATH=$PATH:"$QUICKSTART_TOOLS"/jq
 
   echo "🏗️ Installing Anthos Service Mesh"
   mkdir -p "$QUICKSTART_TOOLS"/istio-asm
-  curl https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
+  curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
   # patch ASM installer to work on OSX and Linux
@@ -405,7 +409,7 @@ download_apigee_ctl() {
     if [ -d "$APIGEECTL_ROOT" ]; then rm -rf "$APIGEECTL_ROOT"; fi
     mkdir -p "$APIGEECTL_ROOT"
 
-    curl -L \
+    curl --fail -L \
       -o "$APIGEECTL_ROOT/apigeectl.tar.gz" \
       "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
 
@@ -523,13 +527,13 @@ EOF
     popd || return
 
     echo -n "🔛 Enabling runtime synchronizer"
-    curl -X POST -H "Authorization: Bearer $(token)" \
+    curl --fail -X POST -H "Authorization: Bearer $(token)" \
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}:setSyncAuthorization" \
     -d "{\"identities\":[\"serviceAccount:apigee-synchronizer@${PROJECT_ID}.iam.gserviceaccount.com\"]}"
 
     echo -n "🕵️‍♀️ Turn on trace logs"
-    curl -X POST -H "Authorization: Bearer $(token)" \
+    curl --fail -X PATCH -H "Authorization: Bearer $(token)" \
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/traceConfig" \
     -d "{\"exporter\":\"CLOUD_TRACE\",\"endpoint\":\"${PROJECT_ID}\",\"sampling_config\":{\"sampler\":\"PROBABILITY\",\"sampling_rate\":0.5}}"
@@ -561,9 +565,13 @@ deploy_example_proxy() {
   echo "✅ Sample Proxy Deployed"
 
   echo "🤓 Try without DNS (first deployment takes a few seconds. Relax and breathe!):"
-  echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
 
-  echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
+  if echo "$DNS_NAME" | grep -q ".nip.io"; then
+   echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+  else
+    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+    echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
+  fi
 }
 
 delete_apigee_keys() {

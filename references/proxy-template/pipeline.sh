@@ -16,14 +16,13 @@
 set -e
 set -x
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
 # clean up
 rm -rf example-v1
 
-# deploy shared flows 
-(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy-all.sh)
+# deploy all shared flows
+(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
 
 # generate proxy
 PROXY=example VERSION=v1 VHOST=secure TARGETURL=https://httpbin.org/get sh ./generate-proxy.sh
