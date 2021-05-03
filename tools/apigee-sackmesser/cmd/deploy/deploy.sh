@@ -135,32 +135,6 @@ if [ -f "$temp_folder"/edge.json ]; then
     config_action='update'
 
     if [ "$apiversion" = "google" ]; then
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].keystores[]? | .' < "$temp_folder"/edge.json | while read -r line; do
-            echo "[INFO] X/hybrid patch: adding keystore: $(echo "$line" | jq -r '.name')"
-            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores" \
-                -H "Authorization: Bearer $token" \
-                -H "Content-Type: application/json" \
-                --data "$line" || echo "assuming the keystore already exists"
-        done
-
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].aliases[]? | .' < "$temp_folder"/edge.json | while read -r line; do
-            echo "[INFO] X/hybrid patch: adding key alias: $(echo "$line" | jq -r '.alias')"
-            keystorename="$(echo "$line" | jq -r '.keystorename')"
-            alias="$(echo "$line" | jq -r '.alias')"
-            format="$(echo "$line" | jq -r '.format')"
-            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keystores/$keystorename/aliases?alias=$alias&format=$format" \
-                -H "Authorization: Bearer $token" \
-                -F password="$(echo "$line" | jq -r '.password')" \
-                -F file=@"$(echo "$line" | jq -r '.filePath')" || echo "assuming the alias already exists"
-        done
-
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].targetServers[]? | .' < "$temp_folder"/edge.json | while read -r line; do
-            echo "[INFO] X/hybrid patch: adding target server: $(echo "$line" | jq -r '.host')"
-            curl -X POST "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/targetservers" \
-            -H "Authorization: Bearer $token" \
-            -H "Content-Type: application/json" \
-            --data "$line" || echo "assuming the targetserver already exists"
-        done
 
         jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json | while read -r line; do
             kvm=$(echo "$line" | jq -c 'del(.entry)')
@@ -194,6 +168,8 @@ fi
 
 
 if [ -d "$temp_folder/apiproxy" ]; then
+    echo "[INFO] Configuring API Proxy"
+
     # Determine Proxy name
     name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$temp_folder"/apiproxy/*.xml)"
     bundle_name=${bundle_name:=$name_in_bundle}
@@ -213,6 +189,8 @@ if [ -d "$temp_folder/apiproxy" ]; then
         rm "$temp_folder"/apiproxy/*.xml.bak
     fi
 elif [ -d "$temp_folder/sharedflowbundle" ]; then
+    echo "[INFO] Configuring Shared Flow Bundle"
+
     api_type="sharedflow"
 
     shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$temp_folder"/sharedflowbundle/*.xml)"

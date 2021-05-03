@@ -53,9 +53,10 @@ limitations under the License.
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
 		<apigee.plugin.version>2.1.0</apigee.plugin.version>
-		<apigee.config-plugin.version>2.1.0</apigee.config-plugin.version>
+		<apigee.config-plugin.version>2.1.1</apigee.config-plugin.version>
 		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
+		<apigee.apitype>${apitype}</apigee.apitype>
 	</properties>
 
 	<build>
@@ -118,6 +119,20 @@ limitations under the License.
                         <phase>install</phase>                        
                         <goals>
                             <goal>targetservers</goal>
+                        </goals>
+                    </execution>
+					<execution>
+                        <id>create-config-keystores</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>keystores</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-aliases</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>aliases</goal>
                         </goals>
                     </execution>
                     <execution>
