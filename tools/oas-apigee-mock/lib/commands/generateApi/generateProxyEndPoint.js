@@ -62,7 +62,7 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   }
 
   // If the OAS Validation option is true generate and attach the relevant policies
-  if(options.oasvalidation) {
+  if(options.oasValidation) {
 
     // Create OAS Validation policy
     let options = {};

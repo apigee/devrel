@@ -29,7 +29,7 @@ module.exports = function generateSkeleton(apiProxy, options) {
   mkdirp.sync(rootDirectory + '/proxies')
   mkdirp.sync(rootDirectory + '/policies')
 
-  if(options.oasvalidation){
+  if(options.oasValidation){
     mkdirp.sync(rootDirectory + '/resources/oas')
   }
 }
