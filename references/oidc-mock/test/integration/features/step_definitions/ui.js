@@ -21,8 +21,7 @@ const {
   After
 } = require('cucumber')
 const puppeteer = require('puppeteer')
-const org = process.env.APIGEE_ORG
-const env = process.env.APIGEE_ENV
+const hostname = process.env.TEST_HOST
 const state ='abc-7890'
 const scope = 'openid email address'
 
@@ -33,8 +32,7 @@ Given('I navigate to the authorize page', async function() {
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
-  return await this.page.goto('https://' + org + '-' + env +
-    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+  return await this.page.goto('https://' + hostname + '/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope)
 })
 
@@ -45,8 +43,7 @@ Given('I navigate to the authorize page with an invalid response type', async fu
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
-  return await this.page.goto('https://' + org + '-' + env +
-    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+  return await this.page.goto('https://' + hostname + '/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://httpbin.org/get&response_type=xxx&state=' + state +'&scope=' + scope)
 })
 
@@ -57,8 +54,7 @@ Given('I navigate to the authorize page without a scope parameter', async functi
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
-  return await this.page.goto('https://' + org + '-' + env +
-    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+  return await this.page.goto('https://' + hostname + '/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state)
 })
 
@@ -69,8 +65,7 @@ Given('I navigate to the authorize page without a state parameter', async functi
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
-  return await this.page.goto('https://' + org + '-' + env +
-    '.apigee.net/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+  return await this.page.goto('https://' + hostname + '/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://httpbin.org/get&response_type=code&&scope=' + scope)
 })
 

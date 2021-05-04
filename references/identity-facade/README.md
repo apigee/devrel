@@ -31,11 +31,22 @@ connect to the IdP
 
 ## Quick start
 
+### Apigee X / hybrid
+
+    export APIGEE_X_ORG=xxx
+    export APIGEE_X_ENV=xxx
+    export APIGEE_X_HOSTNAME=api.example.com
+
+    ./pipeline.sh --googleapi
+
+### Apigee Edge
+
     export APIGEE_ORG=xxx
     export APIGEE_ENV=xxx
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
-    ./pipeline.sh
+
+    ./pipeline.sh --apigeeapi
 
 ## Script outputs
 
