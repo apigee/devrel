@@ -160,7 +160,7 @@ if [ -f "$temp_folder"/edge.json ]; then
                 curl -s -X POST -k --fail "https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname/entries" \
                     -H "Authorization: Bearer $token" \
                     -H "Content-Type: application/json" \
-                    --data "$kvmentry" > /dev/null
+                    --data "$kvmentry" > /dev/null || ( echo "[FATAL] failed to add entry to KVM: https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" && exit 1 )
             done
         done
     fi
