@@ -15,15 +15,17 @@
 FROM maven:3.6.3-slim
 
 RUN apt-get update && \
-  apt-get install git=* libxml2-utils=* --no-install-recommends -y \
+  apt-get install git=* libxml2-utils=* jq=* --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
 COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
 
+RUN mkdir /opt/apigee
+
 RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee && \
-  chown -R apigee /opt/devrel
+  chown -R apigee /opt/devrel && chown -R apigee /opt/apigee
 
 USER apigee
 
@@ -32,4 +34,8 @@ WORKDIR /opt/devrel/tools/apigee-sackmesser
 RUN mvn clean -f ./cmd/deploy/pom-hybrid.xml && \
   mvn clean -f ./cmd/deploy/pom-edge.xml
 
-ENTRYPOINT [ "./bin/sackmesser" ]
+ENV PATH="/opt/devrel/tools/apigee-sackmesser/bin:${PATH}"
+
+WORKDIR /opt/apigee
+
+ENTRYPOINT [ "sackmesser" ]
