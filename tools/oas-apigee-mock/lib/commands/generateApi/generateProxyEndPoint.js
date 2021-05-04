@@ -19,6 +19,7 @@ const fs = require('fs').promises;
 const path = require('path')
 const assignMessage = require('../../policy_templates/assign-message/assign-message.js')
 const verifyApiKey = require('../../policy_templates/security/apikey.js')
+const oasValidation = require('../../policy_templates/validation/oas-validation.js')
 
 module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   let useCors
@@ -26,6 +27,9 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
   }
+
+  let oasSourceFileName = path.basename(options.source)
+  let oasPath = options.source
 
   const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
   const root = builder.create('ProxyEndpoint')
@@ -36,6 +40,7 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   // Add steps to preflow.
   requestPipe = preFlow.ele('Request')
 
+  // If an API Security Scheme using API Key is defined in the OAS spec, generate and attach the relevant policies
   if(api.security && api.components.securitySchemes) {
     for (const apiSecurity of api.security) {
         if(Object.keys(apiSecurity) == 'ApiKeyAuth' && api.components.securitySchemes.ApiKeyAuth) {
@@ -56,8 +61,43 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
     }
   }
 
-  preFlow.ele('Response')
+  // If the OAS Validation option is true generate and attach the relevant policies
+  if(options.oasvalidation) {
 
+    // Create OAS Validation policy
+    let options = {};
+    options.name = "oas-request-validation"
+    options.resourceName = oasSourceFileName
+    let xmlString = oasValidation.oasValidationTemplate(options)
+    await fs.writeFile(rootDirectory + '/policies/' + options.name + '.xml', xmlString)
+    await fs.copyFile(oasPath, rootDirectory + '/resources/oas/' + oasSourceFileName)
+
+    // Add policy to PreFlow
+    step = requestPipe.ele('Step', {})
+    step.ele('Name', {}, options.name)
+    const flowCondition = 'request.verb != "OPTIONS"'
+    step.ele('Condition').raw(flowCondition)
+
+    // Create Assign Message policy
+    options = {};
+    options.name = "am-bad-request-400"
+    options.statusCode = "400"
+    options.reasonPhrase = "Bad Request"
+
+    xmlString = assignMessage.assignMessageTemplate(options)
+    await fs.writeFile(rootDirectory + '/policies/' + options.name + '.xml', xmlString)
+
+    // Add fault rule
+    const faultRules = root.ele('FaultRules', {})
+    const faultRule = faultRules.ele('FaultRule', { name: "OAS Request Validation Fault" })
+    step = faultRule.ele('Step', {})
+    step.ele('Name', {}, options.name)
+    const faultCondition = 'OASValidation.oas-request-validation.failed = "true"'
+    step.ele('Condition').raw(faultCondition)
+
+  }
+
+  preFlow.ele('Response')
   const flows = root.ele('Flows', {})
 
   for (const apiPath in api.paths) {

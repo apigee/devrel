@@ -30,9 +30,10 @@ program
 program
   .usage('<command> <options>')
   .command('generateApi <apiProxy>')
-  .option('-s, --source <source>', 'openapi File Source.')
+  .option('-s, --source <source>', 'Open API source file.')
   .option('-d, --destination <destination>', 'API Bundle destination location.')
   .option('-b, --basepath <basepath>', 'API Proxy Base Path.')
+  .option('-o, --oasvalidation', 'Enable validation of incoming requests based on the Open API source file.')
 
   .description('Generates Apigee API Bundle')
   .action(function(apiProxy, options) {

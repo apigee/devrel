@@ -19,9 +19,21 @@
         <Name>va-verifyapikey</Name>
         <Condition>request.verb != "OPTIONS"</Condition>
       </Step>
+      <Step>
+        <Name>oas-request-validation</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
     </Request>
     <Response/>
   </PreFlow>
+  <FaultRules>
+    <FaultRule name="OAS Request Validation Fault">
+      <Step>
+        <Name>am-bad-request-400</Name>
+        <Condition>OASValidation.oas-request-validation.failed = "true"</Condition>
+      </Step>
+    </FaultRule>
+  </FaultRules>
   <Flows>
     <Flow name="Get all orders">
       <Condition>(proxy.pathsuffix MatchesPath &quot;/orders&quot;) and (request.verb = &quot;GET&quot;)</Condition>

@@ -34,7 +34,6 @@ Feature:
     When I request OPTIONS for /oas-apigee-mock-orders-apikey-query/orders/123
     Then response code should be 200
 
-  Scenario: A bad request should fail and return a 400 status code
-    When I GET /oas-apigee-mock-orders-apikey-header/orders/123/123?apikey=`apikey`
+  Scenario: A bad request should fail OAS validation and return a 400 status code
+    When I GET /oas-apigee-mock-orders-apikey-query/orders/123/123?apikey=`apikey`
     Then response code should be 400
-    And response body should be valid json

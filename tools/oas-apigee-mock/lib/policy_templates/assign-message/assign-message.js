@@ -30,9 +30,11 @@ module.exports = {
 function assignMessageTemplate(options) {
 
   const ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
-  const name = options.name || 'AM-' + random.randomText()
+  const name = options.name || 'am-' + random.randomText()
   const displayName = options.displayName || name
   const content = options.payload || ''
+  const statusCode = options.statusCode || ''
+  const reasonPhrase = options.reasonPhrase || ''
 
   const assignMessage = builder.create('AssignMessage')
   assignMessage.att('name', name)
@@ -42,7 +44,9 @@ function assignMessageTemplate(options) {
     .ele('Payload').att('contentType', 'application/json')
     .txt(content)
     .up()
-    .ele('StatusCode').txt(options.statusCode)
+    .ele('StatusCode').txt(statusCode)
+    .up()
+    .ele('ReasonPhrase').txt(reasonPhrase)
 
   const xmlString = assignMessage.end({ pretty: true, indent: '  ', newline: '\n' })
   return xmlString
