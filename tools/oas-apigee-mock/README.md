@@ -22,11 +22,24 @@ install the required dependencies.
 node bin/oas-apigee-mock generateApi <proxy-name> \
   -s <api-spec> \
   -d <destination-dir> \
-  -b <base-path>
+  -b <base-path> \
+  -o
 ```
+### Parameters
+`--source    -s`
+(required) The Open API specification from which to generate the proxy bundle.
+
+`--destination    -d`
+(optional) The destination directory for the generated proxy bundle.
+
+`--basepath    -b`
+(optional) The basepath to be used in the generated proxy bundle.
+
+`--oas-validation    -o`
+(optional) Include policies to enforce request validation in the proxy bundle, using the Open API specification provided.
 
 ### Example
 
 ```bash
-node bin/oas-apigee-mock generateApi retail -s test/orders.yaml
+node bin/oas-apigee-mock generateApi retail -s test/orders.yaml -o
 ```
