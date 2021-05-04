@@ -25,7 +25,9 @@ node bin/oas-apigee-mock generateApi <proxy-name> \
   -b <base-path> \
   -o
 ```
+
 ### Parameters
+
 `--source    -s`
 (required) The Open API specification from which to generate the proxy bundle.
 
@@ -36,7 +38,8 @@ node bin/oas-apigee-mock generateApi <proxy-name> \
 (optional) The basepath to be used in the generated proxy bundle.
 
 `--oas-validation    -o`
-(optional) Include policies to enforce request validation in the proxy bundle, using the Open API specification provided.
+(optional) Include policies to enforce request validation in the proxy bundle,
+using the Open API specification provided.
 
 ### Example
 
