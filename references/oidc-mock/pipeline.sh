@@ -15,9 +15,11 @@
 
 set -e
 
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
+
 # deploy Apigee API Proxy
-mvn install -ntp -P"$APIGEE_ENV" -Dapigee.config.options=update
+sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
 
 # execute integration tests
-npm install
-npm run test
+(cd "$SCRIPTPATH" npm install && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)

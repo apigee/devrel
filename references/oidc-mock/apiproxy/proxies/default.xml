@@ -12,6 +12,13 @@
  limitations under the License.
 -->
 <ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>AM-CaptureHost</Name>
+            </Step>
+        </Request>
+    </PreFlow>
     <Flows>
         <Flow name="GET /authorize">
             <Condition>(proxy.pathsuffix MatchesPath "/authorize") and 

@@ -33,10 +33,6 @@ case "$1" in
     REGION="$2"
     shift 2;;
 
-  -z|--zone)
-    ZONE="$2"
-    shift 2;;
-
   -x|--ax-region)
     AX_REGION="$2"
     shift 2;;
@@ -110,13 +106,11 @@ else
 
   REGION=${REGION:-europe-west1}
   NETWORK=${NETWORK:-default}
-  ZONE=${ZONE:-europe-west1-b}
   AX_REGION=${AX_REGION:-europe-west1}
 fi
 
 export NETWORK
 export REGION
-export ZONE
 export AX_REGION
 export SUBNET=${SUBNET:-default}
 export PROXY_MACHINE_TYPE=${PROXY_MACHINE_TYPE:-e2-micro}
@@ -159,7 +153,6 @@ if [ "$SHARED_HOST_ONLY" = "Y" ]; then
 else
   echo "  ORG=$ORG"
   echo "  REGION=$REGION"
-  echo "  ZONE=$ZONE"
   echo "  AX_REGION=$AX_REGION"
   echo "  PROXY_MACHINE_TYPE=$PROXY_MACHINE_TYPE"
   echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
@@ -181,7 +174,7 @@ if [ ! "$QUIET" = "Y" ]; then
 fi
 
 echo "Step 2: Enable APIs"
-gcloud services enable apigee.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
+gcloud services enable apigee.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com servicenetworking.googleapis.com cloudkms.googleapis.com --project="$PROJECT"
 
 echo "Step 4: Configure service networking"
 
@@ -199,28 +192,27 @@ if [[ "$NETWORK" =~ ^projects/.*/networks.*$ ]]; then
 else
   echo "Step 4.1: Define a range of reserved IP addresses for your network. "
   if [ -z "$PEERING_CIDR" ]; then
-    PEERING_CIDR_FLAGS="--prefix-length=23"
+    gcloud compute addresses create google-managed-services-default --global --prefix-length=23 \
+      --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
+      --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ignoring assuming it already exists"
   else
-    CIDR_ADDRESS=$(echo "$PEERING_CIDR" | cut -d/ -f1)
-    CIDR_MASK=$(echo "$PEERING_CIDR" | cut -d/ -f2)
-    PEERING_CIDR_FLAGS="--prefix-length=$CIDR_MASK --addresses=$CIDR_ADDRESS"
+    RANGE_START="$(echo "$PEERING_CIDR" | cut -d/ -f1)"
+    RANGE_PREFIX_LENGTH="$(echo "$PEERING_CIDR" | cut -d/ -f2)"
+    gcloud compute addresses create google-managed-services-default --global  --addresses="$RANGE_START" --prefix-length="$RANGE_PREFIX_LENGTH" \
+      --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
+      --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ignoring assuming it already exists"
   fi
-
-  echo "peering CIDR flags: $PEERING_CIDR_FLAGS"
-  gcloud compute addresses create google-managed-services-default --global "$PEERING_CIDR_FLAGS" \
-    --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
-    --purpose=VPC_PEERING --project="$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
 
   echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
   gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com \
     --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT" ||
-    echo "Failed to create - ingoring assuming it already exists"
+    echo "Failed to create - ignoring assuming it already exists"
 
   echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
   gcloud compute firewall-rules create k8s-allow-lb-to-apigee-proxy \
     --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" --network "$NETWORK" \
     --allow=tcp:443 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=gke-apigee-proxy \
-    --project "$PROJECT" || echo "Failed to create - ingoring assuming it already exists"
+    --project "$PROJECT" || echo "Failed to create - ignoring assuming it already exists"
 fi
 
 if [ "$SHARED_HOST_ONLY" = "Y" ]; then
@@ -236,10 +228,10 @@ fi
 
 export MIG=apigee-proxy-$REGION
 
-echo "Validation: valid zone value: $ZONE"
-CHECK_ZONE=$(gcloud compute zones list --filter="name=( \"$ZONE\" )" --format="table[no-heading](name)" --project="$PROJECT")
-if [ "$ZONE" != "$CHECK_ZONE" ]; then
-  echo "ERROR: zone value is invalid: $ZONE"
+echo "Validation: valid region value: $REGION"
+CHECK_REGION=$(gcloud compute regions list --filter="name=( \"$REGION\" )" --format="table[no-heading](name)" --project="$PROJECT")
+if [ "$REGION" != "$CHECK_REGION" ]; then
+  echo "ERROR: region value is invalid: $REGION"
   exit
 fi
 
@@ -258,7 +250,7 @@ echo "Step 4.4: Create a new eval org [it takes time, 10-20 minutes. please wait
 
 set +e
 gcloud alpha apigee organizations provision \
-  --runtime-location="$ZONE" \
+  --runtime-location="$REGION" \
   --analytics-region="$AX_REGION" \
   --authorized-network="$NETWORK" \
   --project="$PROJECT"
@@ -280,8 +272,7 @@ gcloud compute networks subnets update "$SUBNET" \
 --enable-private-ip-google-access --project "$PROJECT"
 
 echo "Step 7b: Set up environment variables"
-# export APIGEE_ENDPOINT=eval-$ZONE
-APIGEE_ENDPOINT=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances/eval-"$ZONE"|jq .host --raw-output)
+APIGEE_ENDPOINT=$(curl --silent -H "Authorization: Bearer $(token)"  -X GET -H "Content-Type:application/json" https://apigee.googleapis.com/v1/organizations/"$ORG"/instances | jq --raw-output '.instances[0].host')
 export APIGEE_ENDPOINT
 
 echo "Check that APIGEE_ENDPOINT is not null: $APIGEE_ENDPOINT"

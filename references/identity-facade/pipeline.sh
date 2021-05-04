@@ -15,15 +15,17 @@
 
 set -e
 
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
 #################################
 ### function: set_idp_env_var ###
 #################################
 set_idp_env_var() {
 
     # discovery document of an OIDC compliant IdP
-    idp_discovery_document="${TEST_IDP_DISCOVERY_DOCUMENT:-https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/openid-connect/.well-known/openid-configuration}"
+    idp_discovery_document_uri="$1"
     # retrieve configuration data from a discovery document
-    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" "$idp_discovery_document")
+    response=$(curl --silent -k1 -fsSL -X GET -H "Accept:application/json" "$idp_discovery_document_uri")
     if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
         echo "$response"
 
@@ -41,7 +43,7 @@ set_idp_env_var() {
     TEST_IDP_ISSUER=$(printf '%s' "$issuer" | awk -F\" '{print $2}' | awk -F\" '{print $1}')
     export TEST_IDP_ISSUER
 
-    TEST_IDP_APIGEE_REDIRECT_URI="https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/oauth20/callback"
+    TEST_IDP_APIGEE_REDIRECT_URI="$2"
     export TEST_IDP_APIGEE_REDIRECT_URI
 
     TEST_IDP_AZ_HOSTNAME=$(printf '%s' "$authorization_endpoint" | awk -F\"https:// '{print $2}' | awk -F\" '{print $1}' | awk -F/ '{print $1}')
@@ -78,31 +80,34 @@ set_idp_env_var() {
 ####################################
 ### function: generate_edge_json ###
 ####################################
-generate_edge_json()
-{
-  rm -f edge.json
-  cat <<EOF >> "edge.json"
+generate_edge_json() {
+  ENV_NAME=$1
+  SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
+  rm -f "$SCRIPTPATH"/edge.json
+  cat <<EOF >> "$SCRIPTPATH/edge.json"
 {
     "version": "1.0",
     "envConfig": {
-        "test": {
+        "$ENV_NAME": {
             "targetServers": [],
             "virtualHosts": [],
             "caches": [
                 {
-                    "name":"IDP_JWKS_CACHE",
-                    "description":"IdP JWKS Response Cache",
-                    "expirySettings":{
-                       "timeoutInSec":{
-                          "value":"1800"
-                       },
-                       "valuesNull":false
+                    "name": "IDP_JWKS_CACHE",
+                    "description": "IdP JWKS Response Cache",
+                    "expirySettings": {
+                        "timeoutInSec": {
+                            "value": "1800"
+                        },
+                        "valuesNull": false
                     }
-                 }
+                }
             ],
             "kvms": [
                 {
                     "name": "idpConfigIdentityProxy",
+                    "encrypted": "true",
                     "entry": [
                         {
                             "name": "idp.az.hostname",
@@ -141,93 +146,20 @@ generate_edge_json()
                             "value": "$TEST_IDP_JWKS_URI"
                         },
                         {
-                            "name":"idp.userinfo.hostname",
-                            "value":"$TEST_IDP_USERINFO_HOSTNAME"
+                            "name": "idp.userinfo.hostname",
+                            "value": "$TEST_IDP_USERINFO_HOSTNAME"
                         },
                         {
-                            "name":"idp.userinfo.uri",
-                            "value":"$TEST_IDP_USERINFO_URI"
+                            "name": "idp.userinfo.uri",
+                            "value": "$TEST_IDP_USERINFO_URI"
                         },
                         {
-                            "name":"idp.issuer",
-                            "value":"$TEST_IDP_ISSUER"
+                            "name": "idp.issuer",
+                            "value": "$TEST_IDP_ISSUER"
                         }
                     ]
                 }
-            ],
-            "extensions":[]
-        },
-        "prod": {
-            "targetServers": [],
-            "virtualHosts": [ ],
-            "caches": [
-                {
-                    "name":"IDP_JWKS_CACHE",
-                    "description":"IdP JWKS Response Cache",
-                    "expirySettings":{
-                       "timeoutInSec":{
-                          "value":"1800"
-                       },
-                       "valuesNull":false
-                    }
-                 }
-            ],
-             "kvms": [
-                {
-                    "name": "idpConfigIdentityProxy",
-                    "entry": [
-                        {
-                            "name": "idp.az.hostname",
-                            "value": "$TEST_IDP_AZ_HOSTNAME"
-                        },
-                        {
-                            "name": "idp.az.uri",
-                            "value": "$TEST_IDP_AZ_URI"
-                        },
-                        {
-                            "name": "idp.apigee.client_id",
-                            "value": "$TEST_IDP_APIGEE_CLIENT_ID"
-                        },
-                        {
-                            "name": "idp.apigee.client_secret",
-                            "value": "$TEST_IDP_APIGEE_CLIENT_SECRET"
-                        },
-                        {
-                            "name": "idp.apigee.redirect_uri",
-                            "value": "$TEST_IDP_APIGEE_REDIRECT_URI"
-                        },
-                        {
-                            "name": "idp.token.hostname",
-                            "value": "$TEST_IDP_TOKEN_HOSTNAME"
-                        },
-                        {
-                            "name": "idp.token.uri",
-                            "value": "$TEST_IDP_TOKEN_URI"
-                        },
-                        {
-                            "name": "idp.jwks.hostname",
-                            "value": "$TEST_IDP_JWKS_HOSTNAME"
-                        },
-                        {
-                            "name": "idp.jwks.uri",
-                            "value": "$TEST_IDP_JWKS_URI"
-                        },
-                        {
-                            "name":"idp.userinfo.hostname",
-                            "value":"$TEST_IDP_USERINFO_HOSTNAME"
-                        },
-                        {
-                            "name":"idp.userinfo.uri",
-                            "value":"$TEST_IDP_USERINFO_URI"
-                        },
-                        {
-                            "name":"idp.issuer",
-                            "value":"$TEST_IDP_ISSUER"
-                        }
-                    ]
-                }
-            ],
-	    "extensions":[ ]
+            ]
         }
     },
     "orgConfig": {
@@ -245,7 +177,7 @@ generate_edge_json()
                 "description": "",
                 "displayName": "Identity Facade",
                 "environments": [
-                    "test"
+                    "$ENV_NAME"
                 ],
                 "proxies": [
                     "identity-facade-v1"
@@ -265,20 +197,21 @@ generate_edge_json()
             "janedoe@example.com": [
                 {
                     "name": "identityApp",
-		    "attributes":[
-			{
-			  "name":"displayName",
-			  "value":"identity App"
-			}
-		    ],
-                    "apiProducts": [ "IdentityFacade" ],
+                    "attributes": [
+                        {
+                            "name": "displayName",
+                            "value": "identity App"
+                        }
+                    ],
+                    "apiProducts": [
+                        "IdentityFacade"
+                    ],
                     "callbackUrl": "https://httpbin.org/get",
                     "scopes": []
                 }
             ]
         }
-    },
-    "apiConfig": {}
+    }
 }
 EOF
 }
@@ -295,41 +228,6 @@ cat <<EOF
 EOF
 }
 
-########################################
-### function: set_devapp_credentials ###
-########################################
-set_devapp_credentials() {
-
-    # set credentials for 'identityApp'
-    response=$(curl --silent -X POST \
-    -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
-    --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
-    https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create)
-
-    if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
-        echo "$response"
-        exit 1
-    fi
-}
-
-####################################
-### function: set_devapp_product ###
-####################################
-set_devapp_product() {
-
-    # Set identity product for 'identityApp'
-    response=$(curl --silent -X POST \
-        -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
-        --data "{ \"apiProducts\": [\"IdentityFacade\"] }" \
-        https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY")
-
-    if [ "$( printf '%s' "$response" | grep -c error )" -ne 0  ]; then
-        echo "$response"
-
-        exit 1
-    fi
-}
-
 ################################
 ### function: set_idp_env_var ###
 #################################
@@ -342,43 +240,92 @@ set_functional_test_env_var() {
     export TEST_APP_CONSUMER_SECRET
 }
 
-# deploy the OIDC mock identity provider...
-if [ -z ${TEST_IDP_DISCOVERY_DOCUMENT+x} ];
-then
-    cd ../oidc-mock
-    mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
-    npm i
-    npm test
-fi
-
-#...then deploy the identity-facade proxy
-cd ../identity-facade
 
 # generate a timestamp to make some values unique
 timestamp=$(date '+%s')
+export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
-# set env variables for google oidc
-set_idp_env_var
+if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
+    echo "[INFO] Deploying Identitiy facade to Apigee API (For Edge)"
 
-# generate edge.json file
-generate_edge_json
+    # deploy the OIDC mock identity provider...
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];then
+        sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/../oidc-mock
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test)
+    fi
 
-set_functional_test_env_var "$timestamp"
+    # set env variables for google oidc
+    DISCOVERY_DOCUMENT_URI="${IDP_DISCOVERY_DOCUMENT:-https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/openid-connect/.well-known/openid-configuration}"
+    CALLBACK_URL="https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/v1/oauth20/callback"
+    set_idp_env_var "$DISCOVERY_DOCUMENT_URI" "$CALLBACK_URL"
 
-# deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-mvn install -P"$APIGEE_ENV" -Dapigee.config.options=update
+    # generate edge.json file
+    generate_edge_json "$APIGEE_ENV"
 
-# set developer app (apigee_client) credentials with the exact same values than the one in the keycloak IdP
-set_devapp_credentials
+    set_functional_test_env_var "$timestamp"
 
-# set developer app (apigeee_client) product
-set_devapp_product
+    # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
 
-if [ -z ${TEST_IDP_DISCOVERY_DOCUMENT+x} ];
-then
-   # execute integration tests
-    npm i
-    npm run test
-else
-    echo "no tests run for custom OIDC Idp: $TEST_IDP_DISCOVERY_DOCUMENT"
+    # set developer app (apigee_client) credentials
+    curl --fail --silent -X POST \
+        -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
+        --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
+        https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create
+
+    # Set identity product for 'identityApp'
+    curl --fail --silent -X POST \
+        -u "$APIGEE_USER":"$APIGEE_PASS" -H "Content-Type:application/json" \
+        --data "{ \"apiProducts\": [\"IdentityFacade\"] }" \
+        https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
+
+    # execute integration tests only against mock IDP
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
+    else
+        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+    fi
+fi
+
+if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
+    echo "[INFO] Deploying Identitiy facade to Google API (For X/hybrid)"
+    APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];
+    then
+        sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"/../oidc-mock
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm test)
+    fi
+
+     # set env variables for google oidc
+    DISCOVERY_DOCUMENT_URI="${IDP_DISCOVERY_DOCUMENT:-https://$APIGEE_X_HOSTNAME/v1/openid-connect/.well-known/openid-configuration}"
+    CALLBACK_URL="https://$APIGEE_X_HOSTNAME/v1/oauth20/callback"
+    set_idp_env_var "$DISCOVERY_DOCUMENT_URI" "$CALLBACK_URL"
+
+    # generate edge.json file
+    generate_edge_json "$APIGEE_X_ENV"
+
+    set_functional_test_env_var "$timestamp"
+
+    # # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
+    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
+
+    # set developer app (apigee_client) credentials
+    curl --fail --silent -X POST \
+        -H "Authorization: Bearer $APIGEE_TOKEN" -H "Content-Type:application/json" \
+        --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
+        https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/identityApp/keys/create
+
+    # Set identity product for 'identityApp'
+    curl --fail --silent -X POST \
+        -H "Authorization: Bearer $APIGEE_TOKEN" -H "Content-Type:application/json" \
+        --data "{ \"apiProducts\": [\"IdentityFacade\"] }" \
+        https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
+
+    # execute integration tests only against mock IDP
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
+    else
+        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+    fi
 fi
