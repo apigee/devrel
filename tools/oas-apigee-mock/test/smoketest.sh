@@ -20,8 +20,8 @@ rm -rf api_bundles
 
 # Generate proxy bundles
 node bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s test/oas/orders.yaml
-node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-query -s test/oas/orders-apikey-query.yaml
-node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-header -s test/oas/orders-apikey-header.yaml
+node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-query -s test/oas/orders-apikey-query.yaml -o
+node bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-header -s test/oas/orders-apikey-header.yaml -o
 
 
 # Deploy proxies

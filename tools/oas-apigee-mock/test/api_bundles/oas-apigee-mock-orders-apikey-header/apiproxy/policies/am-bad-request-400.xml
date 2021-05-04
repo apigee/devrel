@@ -11,12 +11,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="am-create-order-201">
-  <DisplayName>am-create-order-201</DisplayName>
+<AssignMessage name="am-bad-request-400">
+  <DisplayName>am-bad-request-400</DisplayName>
   <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
   <Set>
-    <Payload contentType="application/json">{"orderId":"61knu8gol56","billingAddress":"999 Nobel Road","cartToken":"cHlwV0YX","datePurchased":"2020-07-22T12:45:03Z","currency":"AUD","paymentDetails":"jcb","shippingAddress":"874 Graceland Court","totalPrice":"$110.57","userId":"gfrayne9"}</Payload>
-    <StatusCode>201</StatusCode>
-    <ReasonPhrase/>
+    <Payload contentType="application/json"/>
+    <StatusCode>400</StatusCode>
+    <ReasonPhrase>Bad Request</ReasonPhrase>
   </Set>
 </AssignMessage>

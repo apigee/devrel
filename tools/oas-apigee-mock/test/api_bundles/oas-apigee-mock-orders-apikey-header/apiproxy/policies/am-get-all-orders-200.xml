@@ -17,5 +17,6 @@
   <Set>
     <Payload contentType="application/json">{"orders":[{"orderId":"61knu8gol56","billingAddress":"999 Nobel Road","cartToken":"cHlwV0YX","datePurchased":"2020-07-22T12:45:03Z","currency":"AUD","paymentDetails":"jcb","shippingAddress":"874 Graceland Court","totalPrice":"$110.57","userId":"gfrayne9"},{"orderId":"9zyjdp268w","billingAddress":"39 Coleman Drive","cartToken":"hoY6EK1c","datePurchased":"2020-07-22T12:45:03Z","currency":"CNY","paymentDetails":"jcb","shippingAddress":"3560 Larry Park","totalPrice":"$8.71","userId":"mrawlence1"}]}</Payload>
     <StatusCode>200</StatusCode>
+    <ReasonPhrase/>
   </Set>
 </AssignMessage>
