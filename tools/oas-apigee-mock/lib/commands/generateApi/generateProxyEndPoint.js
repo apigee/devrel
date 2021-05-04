@@ -28,8 +28,8 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
     destination = destination.substr(0, destination.length - 1)
   }
 
-  let oasSourceFileName = path.basename(options.source)
-  let oasPath = options.source
+  const oasSourceFileName = path.basename(options.source)
+  const oasPath = options.source
 
   const rootDirectory = destination + '/' + apiProxy + '/apiproxy'
   const root = builder.create('ProxyEndpoint')

@@ -28,7 +28,6 @@ module.exports = {
  */
 function oasValidationTemplate(options) {
 
-  const ignoreUnresolvedVariables = options.ignoreUnresolvedVariables || 'false'
   const name = options.name || 'oas-' + random.randomText()
   const displayName = options.displayName || name
 
