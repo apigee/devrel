@@ -32,6 +32,9 @@ openssl version
 #installed gcloud
 gcloud version
 
+#installed zip
+zip -v
+
 #login if needed
 gcloud auth list
 ```
