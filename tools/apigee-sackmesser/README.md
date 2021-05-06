@@ -86,7 +86,7 @@ docker run apigee-sackmesser deploy \
 -b "/airports/v1"
 ```
 
-### Scenario: Deploy a proxy from the local machine to Apigee Edge
+### Scenario: Deploy a proxy from the local machine to Apigee X / hybrid
 
 ```sh
 docker run -v $PWD/../../references/cicd-pipeline/apiproxy:/opt/apigee/apiproxy \
