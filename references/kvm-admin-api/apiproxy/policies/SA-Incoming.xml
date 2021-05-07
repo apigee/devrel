@@ -14,6 +14,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<SpikeArrest name="SpikeArrest">
+<SpikeArrest name="SA-Incoming">
     <Rate>10ps</Rate>
 </SpikeArrest>

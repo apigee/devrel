@@ -18,7 +18,7 @@
     <PreFlow name="PreFlow">
         <Request>
             <Step>
-                <Name>SpikeArrest</Name>
+                <Name>SA-Incoming</Name>
             </Step>
             <Step>
                 <Name>RF-401</Name>
