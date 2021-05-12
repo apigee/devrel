@@ -9,8 +9,9 @@ This module lets you replace the default MGMT endpoints with a proxy endpoint.
 Customers can write their login in Apigee proxies and handle the /apps endpoint.
 
 To install this module:
- 1. Copy the contents of this folder and place it in the `modules/custom/apigee_edge_custom_mgmt_api_proxy`
-folder of your drupal installation.
+ 1. Copy the contents of this folder and place it in the 
+ `modules/custom/apigee_edge_custom_mgmt_api_proxy` folder of your drupal 
+ installation.
 2. Enable the `Apigee Mgmt API proxy override` module from the extend menu
 
 

@@ -15,4 +15,4 @@
 services:
   apigee_edge.sdk_connector:
     class: Drupal\apigee_edge_custom_mgmt_api_proxy\SDKConnector
-    arguments: ['@http_client_factory', '@key.repository', '@entity_type.manager',  '@config.factory', '@module_handler', '@info_parser']
+    arguments: [ '@http_client_factory', '@key.repository', '@entity_type.manager',  '@config.factory', '@module_handler', '@info_parser' ]

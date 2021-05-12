@@ -1,4 +1,5 @@
 <?php
+
 // Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +13,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-
-
 namespace Drupal\apigee_edge_custom_mgmt_api_proxy\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -24,15 +22,6 @@ use Drupal\Core\Form\FormStateInterface;
  * Provides a form for changing connection related settings.
  */
 class ConnectionConfigForm extends ConfigFormBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getEditableConfigNames() {
-    return [
-      'apigee_edge_custom_mgmt_api_proxy.client',
-    ];
-  }
 
   /**
    * {@inheritdoc}
@@ -65,6 +54,15 @@ class ConnectionConfigForm extends ConfigFormBase {
       ->set('mgmt_api_endpoint_override', $form_state->getValue('mgmt_api_endpoint_override'))
       ->save();
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return [
+      'apigee_edge_custom_mgmt_api_proxy.client',
+    ];
   }
 
 }
