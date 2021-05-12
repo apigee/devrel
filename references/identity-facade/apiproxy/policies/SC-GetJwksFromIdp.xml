@@ -18,6 +18,6 @@
     <Response>jwks</Response>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://{flow.idp.jwks.hostname}/{flow.idp.jwks.uri}</URL>
+        <URL>https://{private.flow.idp.jwks.hostname}/{private.flow.idp.jwks.uri}</URL>
     </HTTPTargetConnection>
 </ServiceCallout>

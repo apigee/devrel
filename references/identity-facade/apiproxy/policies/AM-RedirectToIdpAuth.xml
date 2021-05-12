@@ -16,7 +16,7 @@
     <Properties/>
     <Set>
         <Headers>
-            <Header name="Location">https://{flow.idp.az.hostname}/{flow.idp.az.uri}?client_id={flow.idp.apigee.client_id}&amp;response_type=code&amp;scope={oidc.flow.authorize.scope}&amp;state={oidc.flow.authorization.state2}&amp;redirect_uri={flow.idp.apigee.redirect_uri}&amp;prompt=consent</Header>
+            <Header name="Location">https://{private.flow.idp.az.hostname}/{private.flow.idp.az.uri}?client_id={private.flow.idp.apigee.client_id}&amp;response_type=code&amp;scope={oidc.flow.authorize.scope}&amp;state={oidc.flow.authorization.state2}&amp;redirect_uri={private.flow.idp.apigee.redirect_uri}&amp;prompt=consent</Header>
         </Headers>
         <StatusCode>302</StatusCode>
         <ReasonPhrase>Found</ReasonPhrase>
