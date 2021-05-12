@@ -20,5 +20,5 @@ var accessTokenIdpExpiryInSeconds = (context.getVariable('oidc.flow.expires_in')
 // set access_token expiry in milliseconds
 var accessTokenExpiryInMilliSeconds = (idTokenIdpExpiryInSeconds !== null)?parseInt(idTokenIdpExpiryInSeconds, 10)*1000:accessTokenIdpExpiryInSeconds;
 
-// set access_token expiry as a string in 'flow.idp.expires_in' variable
-context.setVariable('flow.idp.expires_in',accessTokenExpiryInMilliSeconds.toString(10));
+// set access_token expiry as a string in 'private.flow.idp.expires_in' variable
+context.setVariable('private.flow.idp.expires_in',accessTokenExpiryInMilliSeconds.toString(10));
