@@ -133,6 +133,13 @@ limitations under the License.
                 <version>${apigee.config-plugin.version}</version>
 
 				<executions>
+					<execution>
+                        <id>create-config-cache</id>
+                        <phase>verify</phase>                        
+                        <goals>
+                            <goal>caches</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>create-config-references</id>
                         <phase>verify</phase>                        

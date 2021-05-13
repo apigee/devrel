@@ -15,6 +15,6 @@
     <Request clearPayload="true" variable="idpPostTokenRequest"/>
     <Response>tokenResponse</Response>
     <HTTPTargetConnection>
-        <URL>https://{flow.idp.token.hostname}/{flow.idp.token.uri}</URL>
+        <URL>https://{private.flow.idp.token.hostname}/{private.flow.idp.token.uri}</URL>
     </HTTPTargetConnection>
 </ServiceCallout>
