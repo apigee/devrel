@@ -15,7 +15,7 @@
 FROM maven:3.6.3-slim
 
 RUN apt-get update && \
-  apt-get install git=* libxml2-utils=* jq=* --no-install-recommends -y \
+  apt-get install git=* libxml2-utils=* jq=* unzip=* --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

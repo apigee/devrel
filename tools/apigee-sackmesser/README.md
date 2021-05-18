@@ -32,19 +32,20 @@ list
 export
 
 Options:
---googleapi (default), use apigee.googleapi.com (for X, hybrid)
+--googleapi (default), use apigee.googleapis.com (for X, hybrid)
 --apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy or shared flow bundle to be deployed
 -e,--environment, Apigee environment name
 -g,--github, Link to proxy or shared flow bundle on github
+-h,--hostname, publicly reachable hostname for the environment
+-L,--baseuri, override default baseuri for the Management API / Apigee API
+-m,--mfa, Apigee MFA code (Edge only)
 -n,--name, Overrides the default API proxy or shared flow name
 -o,--organization, Apigee organization name
--u,--username, Apigee User Name (Edge only)
 -p,--password, Apigee User Password (Edge only)
--m,--mfa, Apigee MFA code (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
--h,--hostname, publicly reachable hostname for the environment
+-u,--username, Apigee User Name (Edge only)
 --description, Human friendly proxy or shared flow description
 --debug, show verbose debug output
 ```

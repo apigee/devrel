@@ -36,7 +36,7 @@ if [ "$apiversion" = "google" ]; then
         *apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
     esac
 
-    curl -s -X GET -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/$path" | jq "$jq_pattern"
+    curl -s -X GET -H "Authorization: Bearer $token" "https://$baseuri/v1/$path" | jq "$jq_pattern"
 else
-    curl -u "$username:$password" -s -X GET "https://api.enterprise.apigee.com/v1/$path" | jq
+    curl -u "$username:$password" -s -X GET "https://$baseuri/v1/$path" | jq '.'
 fi

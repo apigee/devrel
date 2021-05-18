@@ -34,19 +34,20 @@ list
 export
 
 Options:
---googleapi (default), use apigee.googleapi.com (for X, hybrid)
+--googleapi (default), use apigee.googleapis.com (for X, hybrid)
 --apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy or shared flow bundle to be deployed
 -e,--environment, Apigee environment name
 -g,--github, Link to proxy or shared flow bundle on github
+-h,--hostname, publicly reachable hostname for the environment
+-L,--baseuri, override default baseuri for the Management API / Apigee API
+-m,--mfa, Apigee MFA code (Edge only)
 -n,--name, Overrides the default API proxy or shared flow name
 -o,--organization, Apigee organization name
--u,--username, Apigee User Name (Edge only)
 -p,--password, Apigee User Password (Edge only)
--m,--mfa, Apigee MFA code (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
--h,--hostname, publicly reachable hostname for the environment
+-u,--username, Apigee User Name (Edge only)
 --description, Human friendly proxy or shared flow description
 --debug, show verbose debug output
 EOF
@@ -75,6 +76,7 @@ while [ "$#" -gt 0 ]; do
     -t) export token="$2"; shift 2;;
     -u) export username="$2"; shift 2;;
     -h) export hostname="$2"; shift 2;;
+    -L) export baseuri="$2"; shift 2;;
 
     --directory) export directory="${1}"; shift 2;;
     --github) export url="${1}"; shift 2;;
@@ -88,6 +90,7 @@ while [ "$#" -gt 0 ]; do
     --organization) export organization="${1}"; shift 2;;
     --hostname) export hostname="${1}"; shift 2;;
     --description) export description="${1}"; shift 2;;
+    --baseuri) export baseuri="${1}"; shift 2;;
     --debug) export debug="T"; shift 1;;
 
     --apigeeapi) export apiversion="apigee"; shift 1;;
@@ -99,7 +102,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [[ -z "$apiversion" ]]; then
-    logdebug "using default API version: Google API (apigee.googleapi.com)"
+    logdebug "using default API version: Google API (apigee.googleapis.com)"
     logdebug "for Apigee Edge (api.enterprise.apigee.com) please specify --apigeeapi"
     export apiversion="google"
 fi
@@ -111,11 +114,13 @@ if [ "$apiversion" = "google" ];then
     export organization=${organization:-$APIGEE_X_ORG}
     export environment=${environment:-$APIGEE_X_ENV}
     export hostname=${hostname:-$APIGEE_X_HOSTNAME}
+    export baseuri=${baseuri:-apigee.googleapis.com}
 else
     export password=${password:-$APIGEE_PASS}
     export username=${username:-$APIGEE_USER}
     export organization=${organization:-$APIGEE_ORG}
     export environment=${environment:-$APIGEE_ENV}
+    export baseuri=${baseuri:-api.enterprise.apigee.com}
 fi
 
 if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then

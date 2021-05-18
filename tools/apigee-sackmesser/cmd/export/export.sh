@@ -23,9 +23,9 @@ source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
 mgmtAPIDownload() {
     if [ "$apiversion" = "google" ]; then
-        curl -s --fail -X GET -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/$1" -o "$2"
+        curl -s --fail -X GET -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
     else
-        curl -u "$username:$password" -s --fail -X GET "https://api.enterprise.apigee.com/v1/$1" -o "$2"
+        curl -u "$username:$password" -s --fail -X GET "https://$baseuri/v1/$1" -o "$2"
     fi
 }
 
@@ -73,20 +73,20 @@ sackmesser list "organizations/$organization/keyvaluemaps" > "$export_folder"/kv
 sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | while read -r env; do
     mkdir -p "$export_folder"/environments/"$env"/flowhooks
     sackmesser list "organizations/$organization/environments/$env/flowhooks" | jq -r -c '.[]|.' | while read -r fh; do
-        sackmesser list "organizations/$organization/environments/$env/flowhooks/$fh" | jq > "$export_folder"/environments/"$env"/flowhooks/"$fh".json
+        sackmesser list "organizations/$organization/environments/$env/flowhooks/$fh" | jq '.' > "$export_folder"/environments/"$env"/flowhooks/"$fh".json
     done
 
     sackmesser list "organizations/$organization/environments/$env/keyvaluemaps" > "$export_folder"/environments/"$env"/kvms.json
 
     mkdir -p "$export_folder"/environments/"$env"/targetservers
     sackmesser list "organizations/$organization/environments/$env/targetservers" | jq -r -c '.[]|.' | while read -r targetserver; do
-        sackmesser list "organizations/$organization/environments/$env/targetservers/$targetserver" | jq > "$export_folder"/environments/"$env"/targetservers/"$targetserver".json
+        sackmesser list "organizations/$organization/environments/$env/targetservers/$targetserver" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"$targetserver".json
     done
 
     mkdir -p "$export_folder"/environments/"$env"/keystores
     sackmesser list "organizations/$organization/environments/$env/keystores" | jq -r -c '.[]|.' | while read -r keystore; do
         mkdir -p "$export_folder"/environments/"$env"/keystores/"$keystore"
-        sackmesser list "organizations/$organization/environments/$env/keystores/$keystore" | jq > "$export_folder"/environments/"$env"/keystores/"$keystore"/keystore.json
+        sackmesser list "organizations/$organization/environments/$env/keystores/$keystore" | jq '.' > "$export_folder"/environments/"$env"/keystores/"$keystore"/keystore.json
         sackmesser list "organizations/$organization/environments/$env/keystores/$keystore"/aliases | jq -r -c '.[]|.' | while read -r alias; do
             sackmesser list "organizations/$organization/environments/$env/keystores/$keystore/aliases/$alias" > "$export_folder"/environments/"$env"/keystores/"$keystore"/"$alias".json
         done
