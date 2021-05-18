@@ -13,62 +13,62 @@
 -->
 <KeyValueMapOperations name="KVM-IdpParameters" mapIdentifier="idpConfigIdentityProxy">
     <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
-    <Get assignTo="flow.idp.az.hostname">
+    <Get assignTo="private.flow.idp.az.hostname">
         <Key>
             <Parameter>idp.az.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.az.uri">
+    <Get assignTo="private.flow.idp.az.uri">
         <Key>
             <Parameter>idp.az.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.client_id">
+    <Get assignTo="private.flow.idp.apigee.client_id">
         <Key>
             <Parameter>idp.apigee.client_id</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.client_secret">
+    <Get assignTo="private.flow.idp.apigee.client_secret">
         <Key>
             <Parameter>idp.apigee.client_secret</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.apigee.redirect_uri">
+    <Get assignTo="private.flow.idp.apigee.redirect_uri">
         <Key>
             <Parameter>idp.apigee.redirect_uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.token.hostname">
+    <Get assignTo="private.flow.idp.token.hostname">
         <Key>
             <Parameter>idp.token.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.token.uri">
+    <Get assignTo="private.flow.idp.token.uri">
         <Key>
             <Parameter>idp.token.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.jwks.hostname">
+    <Get assignTo="private.flow.idp.jwks.hostname">
         <Key>
             <Parameter>idp.jwks.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.userinfo.uri">
+    <Get assignTo="private.flow.idp.userinfo.uri">
         <Key>
             <Parameter>idp.userinfo.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.userinfo.hostname">
+    <Get assignTo="private.flow.idp.userinfo.hostname">
         <Key>
             <Parameter>idp.userinfo.hostname</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.jwks.uri">
+    <Get assignTo="private.flow.idp.jwks.uri">
         <Key>
             <Parameter>idp.jwks.uri</Parameter>
         </Key>
     </Get>
-    <Get assignTo="flow.idp.issuer">
+    <Get assignTo="private.flow.idp.issuer">
         <Key>
             <Parameter>idp.issuer</Parameter>
         </Key>

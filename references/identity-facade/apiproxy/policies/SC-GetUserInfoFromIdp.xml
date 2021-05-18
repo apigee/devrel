@@ -23,6 +23,6 @@
     <Response>userInfoResponse</Response>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://{flow.idp.userinfo.hostname}/{flow.idp.userinfo.uri}</URL>
+        <URL>https://{private.flow.idp.userinfo.hostname}/{private.flow.idp.userinfo.uri}</URL>
     </HTTPTargetConnection>
 </ServiceCallout>

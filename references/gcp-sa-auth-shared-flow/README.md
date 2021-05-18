@@ -1,17 +1,61 @@
 # GCP Service Account Authentication - Shared Flow
 
 This shared flow can be used obtain access tokens for Google Cloud service
-accounts. Access tokens are cached in a dedicated environment cache resource
-for 10min.
+accounts. Access tokens are cached in a dedicated environment cache resource for
+10min.
 
-## Usage instructions
+## How to deploy this shared flow
 
-1. Create an environment cache resource called `gcp-tokens`
-1. Create a service account in Google Cloud and assign it the necessary roles.
-   See GCP
+The simplest way to deploy this shared flow is to use the `deploy.sh` utility in
+this repo.
+
+It will:
+
+* Create the GCP Service Account Token Shared Flow
+* Initialize an environement Cache Resource
+* Initialize a KVM (optional)
+* Add a service account key to that kvm (optional)
+
+### Prerequisites
+
+1. Set your authentication environment variables:
+   **For Edge**
+
+   ```sh
+    export APIGEE_ORG=<your org>
+    export APIGEE_ENV=<your environment>
+    export APIGEE_USER=<username>
+    export APIGEE_PASS=<password>
+    ```
+
+    **For X / hybrid**
+
+    ```sh
+    export APIGEE_X_ORG=<your org>
+    export APIGEE_X_ENV=<your environment>
+    export APIGEE_X_HOSTNAME=<hostname of your environment> # for optional KVM
+    ```
+
+1. (Optional) Create a service account in Google Cloud and assign it the
+   necessary roles. See GCP
    [docs](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
-1. Create and download a json key for the service account. See GCP
+1. (Optional) Create and download a json key for the service account. See GCP
    [docs](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
+
+### Deploy the Shared Flow
+
+Provide path to service account to initialize the kvm value (recommended)
+
+```sh
+# for Apigee X/hybrid
+deploy.sh --googleapi (path-to-sa-key.json)
+
+# for Edge
+deploy.sh --apigeeapi (path-to-sa-key.json )
+```
+
+## Shared Flow usage from within an API proxy
+
 1. In your Apigee flow, make sure you have the `private.gcp.service_account.key`
    variable set. It should hold the full json key for the service account. The
    recommended approach is to store this value in an encrypted KVM and populate

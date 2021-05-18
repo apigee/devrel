@@ -16,7 +16,7 @@
     <Source>oidc.flow.jwt</Source>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <PublicKey>
-        <JWKS ref="flow.idp.jwks_payload"/>
+        <JWKS ref="private.flow.idp.jwks_payload"/>
     </PublicKey>
     <!-- Issuer ref=""/>
     <Audience ref=""/ -->

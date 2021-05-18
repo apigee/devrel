@@ -19,7 +19,7 @@
       "username": "jdoe",
       "scope": "openid email",
       "iat": {system.timestamp},
-      "iss": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect"
+      "iss": "https://{mockhost}/v1/openid-connect"
      }</Payload>
     </Set>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>

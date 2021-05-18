@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2021 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<AssignMessage name="am-get-all-orders-200">
+  <DisplayName>am-get-all-orders-200</DisplayName>
+  <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+  <Set>
+    <Payload contentType="application/json">{"orders":[{"orderId":"61knu8gol56","billingAddress":"999 Nobel Road","cartToken":"cHlwV0YX","datePurchased":"2020-07-22T12:45:03Z","currency":"AUD","paymentDetails":"jcb","shippingAddress":"874 Graceland Court","totalPrice":"$110.57","userId":"gfrayne9"},{"orderId":"9zyjdp268w","billingAddress":"39 Coleman Drive","cartToken":"hoY6EK1c","datePurchased":"2020-07-22T12:45:03Z","currency":"CNY","paymentDetails":"jcb","shippingAddress":"3560 Larry Park","totalPrice":"$8.71","userId":"mrawlence1"}]}</Payload>
+    <StatusCode>200</StatusCode>
+    <ReasonPhrase/>
+  </Set>
+</AssignMessage>

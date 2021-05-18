@@ -20,7 +20,7 @@ const { Before: before } = require("cucumber");
 before(function () {
   this.apickli = new apickli.Apickli(
     "https",
-    process.env.APIGEE_ORG + "-test.apigee.net/badssl/v0"
+    process.env.TEST_HOST + process.env.TEST_BASEPATH
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");

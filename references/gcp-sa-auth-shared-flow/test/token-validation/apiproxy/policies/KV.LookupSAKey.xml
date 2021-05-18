@@ -17,7 +17,7 @@
     <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
     <Get assignTo="private.gcp.service_account.key">
         <Key>
-            <Parameter>cantdonothing@iam.gserviceaccount.com</Parameter>
+            <Parameter>apigee@iam.gserviceaccount.com</Parameter>
         </Key>
     </Get>
 </KeyValueMapOperations>

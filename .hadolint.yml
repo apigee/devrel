@@ -13,4 +13,5 @@
 # limitations under the License.
 
 ignored:
-  - DL3018
+  - DL3018 # Pin versions in apk add
+  - DL3059 # Multiple consecutive RUN instructions

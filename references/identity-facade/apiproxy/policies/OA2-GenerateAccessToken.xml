@@ -13,8 +13,8 @@
 -->
 <OAuthV2 name="OA2-GenerateAccessToken">
     <Operation>GenerateAccessToken</Operation>
-    <ExpiresIn ref="flow.idp.expires_in">1800000</ExpiresIn>
-    <RefreshTokenExpiresIn ref="flow.idp.expires_in">1800000</RefreshTokenExpiresIn>
+    <ExpiresIn ref="private.flow.idp.expires_in">1800000</ExpiresIn>
+    <RefreshTokenExpiresIn ref="private.flow.idp.expires_in">1800000</RefreshTokenExpiresIn>
     <SupportedGrantTypes>
         <GrantType>authorization_code</GrantType>
     </SupportedGrantTypes>

@@ -20,8 +20,6 @@ const {
   setDefaultTimeout
 } = require('cucumber')
 
-const org = process.env.APIGEE_ORG
-const env = process.env.APIGEE_ENV
 const clientId = process.env.TEST_APP_CONSUMER_KEY
 const clientSecret = process.env.TEST_APP_CONSUMER_SECRET
 const username = 'johndoe'
@@ -30,7 +28,7 @@ const basePath = '/v1/oauth20'
 
 Before(function() {
   this.apickli = new apickli.Apickli('https',
-    org + '-' + env + '.apigee.net' + basePath)
+    process.env.TEST_HOST + basePath)
   this.apickli.scenarioVariables.clientId = clientId
   this.apickli.scenarioVariables.clientSecret = clientSecret
   this.apickli.scenarioVariables.username = username

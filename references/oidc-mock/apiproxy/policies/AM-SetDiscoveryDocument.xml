@@ -14,12 +14,12 @@
 <AssignMessage name="AM-SetDiscoveryDocument">
     <Set>
         <Payload contentType="application/json">{
-  "issuer": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect",
-  "authorization_endpoint": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect/authorize",
-  "token_endpoint": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect/token",
-  "introspection_endpoint": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect/token/introspect",
-  "userinfo_endpoint": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect/userinfo",
-  "jwks_uri": "https://{organization.name}-{environment.name}.apigee.net/v1/openid-connect/certs",
+  "issuer": "https://{mockhost}/v1/openid-connect",
+  "authorization_endpoint": "https://{mockhost}/v1/openid-connect/authorize",
+  "token_endpoint": "https://{mockhost}/v1/openid-connect/token",
+  "introspection_endpoint": "https://{mockhost}/v1/openid-connect/token/introspect",
+  "userinfo_endpoint": "https://{mockhost}/v1/openid-connect/userinfo",
+  "jwks_uri": "https://{mockhost}/v1/openid-connect/certs",
   "grant_types_supported": [
     "authorization_code"
   ],
