@@ -90,22 +90,17 @@
     <VirtualHost>secure</VirtualHost>
   </HTTPProxyConnection>
 
-  <RouteRule name="default">
-    <TargetEndpoint>default</TargetEndpoint>
-    <Condition> 
-      request.verb != "OPTIONS" and 
-      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and
-      custom.alternateBackend = false
-    </Condition>
+  <RouteRule name="no-route">
+    <Condition>request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping"</Condition>
   </RouteRule>
-
   <RouteRule name="alternate">
     <TargetEndpoint>alternate</TargetEndpoint>
     <Condition>
-      request.verb != "OPTIONS" and
-      !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and
       custom.alternateBackend = true
     </Condition>
+  </RouteRule>
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
   </RouteRule>
 
 
