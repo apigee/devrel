@@ -21,13 +21,37 @@ SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 # validate docker build
 "$SCRIPT_FOLDER"/build.sh -t apigee-sackmesser
 
-BASE_PATH="/sackmesser/v1/airports"
+PATH="$PATH:$SCRIPT_FOLDER/bin"
+APIGEE_TOKEN=$(gcloud auth print-access-token)
 
-# Using another DevRel API Proxy for testing this tool
+# Test Sackmesser Deploy
+# (Using another DevRel API Proxy for testing this tool)
+
+# Sackmesser CLI
+BASE_PATH="/sackmesser/v1/cli"
+
+sackmesser deploy \
+  --googleapi \
+  -d "$SCRIPT_FOLDER"/../../references/cicd-pipeline \
+  -n sackmesser-cli-v0 \
+  -b "$BASE_PATH" \
+  -t "$APIGEE_TOKEN" \
+  -o "$APIGEE_X_ORG" \
+  -e "$APIGEE_X_ENV"
+
+(cd "$SCRIPT_FOLDER"/../../references/cicd-pipeline && \
+  npm i && \
+  TEST_HOST="$APIGEE_X_HOSTNAME" \
+  TEST_BASE_PATH="$BASE_PATH" \
+  npm run integration-test)
+
+# Sackmesser Docker Container
+BASE_PATH="/sackmesser/v1/docker"
+
 docker run apigee-sackmesser deploy \
   --apigeeapi \
   -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
-  -n sackmesser-airports-v0 \
+  -n sackmesser-docker-v0 \
   -b "$BASE_PATH" \
   -u "$APIGEE_USER" \
   -p "$APIGEE_PASS" \
@@ -39,3 +63,19 @@ docker run apigee-sackmesser deploy \
   TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" \
   TEST_BASE_PATH="$BASE_PATH" \
   npm run integration-test)
+
+# Test Sackmesser List
+# (List all proxies to find the previously deployed API proxy)
+sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-cli-v0"
+
+docker run apigee-sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis" | grep "sackmesser-docker-v0"
+
+# Test Sackmesser Export
+sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_TOKEN"
+if [ ! -d  "$APIGEE_X_ORG/proxies/sackmesser-cli-v0" ]; then
+  echo "export failed"
+  exit 1
+fi
+rm -rf "$APIGEE_X_ORG"
+
+docker run --entrypoint /bin/bash apigee-sackmesser -c "sackmesser export --apigeeapi -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG && ls $APIGEE_ORG/proxies/sackmesser-docker-v0"
