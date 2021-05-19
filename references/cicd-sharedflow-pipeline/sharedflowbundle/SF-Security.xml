@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SharedFlowBundle revision="1" name="SF-Security">
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <Description>@description</Description>
+</SharedFlowBundle>

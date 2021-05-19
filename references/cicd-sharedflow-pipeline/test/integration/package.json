@@ -1,0 +1,36 @@
+{
+	"name": "Test-SF-Security-v1",
+	"version": "1.0.0",
+	"description": "Sample Sharedflow for CI/CD Reference",
+	"author": "ssvaidyanathan",
+	"license": "Apache-2.0",
+	"licenses": [
+		{
+			"type": "Apache-2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0"
+		}
+	],
+	"scripts": {
+		"eslint": "eslint -c ./.eslintrc-jsc.yml --format json",
+		"apigeelint": "apigeelint -s ./sharedflowbundle -f table.js",
+		"lint": "npm run eslint && npm run apigeelint",
+		"integration-test": "cucumber-js ./target/test/integration"
+	},
+	"devDependencies": {
+		"prettyjson": ">=1.1.3",
+		"apickli": "^2.3.3",
+		"eslint": "^7.0.0",
+		"eslint-config-google": "^0.14.0",
+		"eslint-config-prettier": "^6.11.0",
+		"cucumber": "^7.0.0-rc.0",
+		"jsonfile": ">=2.3.1",
+		"lodash": ">=4.15.0",
+		"bluebird": "^3.3.5",
+		"chai": "^3",
+		"chai-fuzzy": "^1",
+		"mocha": "^2",
+		"sinon": "^1",
+		"istanbul": ">=1.0.0-alpha.2",
+		"apigeelint": "2.6.0"
+	}
+}
