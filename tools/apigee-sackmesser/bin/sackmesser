@@ -19,9 +19,6 @@ set -e
 SACKMESSER_ROOT=$( (cd "$(dirname "$0")" && cd .. && pwd ))
 source "$SACKMESSER_ROOT/lib/logutils.sh"
 
-CMD_TYPE="$1"
-shift 1
-
 print_usage() {
     cat << EOF
 usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
@@ -32,6 +29,8 @@ Commands:
 deploy
 list
 export
+help
+clean
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
@@ -53,7 +52,9 @@ Options:
 EOF
 }
 
-if [ "$CMD_TYPE" = "--help" ]; then
+CMD_TYPE="$1"
+
+if [ -z "$CMD_TYPE" ] || [ "$CMD_TYPE" = "help" ]; then
     print_usage
     exit 0
 elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh ];then
@@ -61,6 +62,7 @@ elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE"
     exit 1
 fi
 
+shift 1
 posArgs=()
 
 while [ "$#" -gt 0 ]; do

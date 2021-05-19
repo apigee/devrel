@@ -31,6 +31,12 @@ deleteAll() {
     export deleteApp='all'
     export deleteProduct='all'
     export deleteDeveloper='all'
+    export deleteKvm='all'
+    export deleteCache='all'
+    export deleteTargetServer='all'
+    export deleteKeystore='all'
+    export deleteReference='all'
+
 }
 
 while [ "$#" -gt 0 ]; do
@@ -41,16 +47,27 @@ while [ "$#" -gt 0 ]; do
     app) export deleteApp="${2}"; shift 2;;
     product) export deleteProduct="${2}"; shift 2;;
     developer) export deleteDeveloper="${2}"; shift 2;;
+    kvm) export deleteKvm="${2}"; shift 2;;
+    cache) export deleteCache="${2}"; shift 2;;
+    targetserver) export deleteTargetServer="${2}"; shift 2;;
+    keystore) export deleteKeystore="${2}"; shift 2;;
+    reference) export deleteReference="${2}"; shift 2;;
     *) logfatal "unknown option: $1" >&2; exit 1;;
   esac
 done
 
-loginfo "Planning to delete the following resources in Apigee Org \"$organization\":"
+loginfo "You are about to delete the following resources in the Apigee Org \"$organization\":"
 if [ -n "$deleteProxy" ]; then loginfo "API Proxy: $deleteProxy"; fi
 if [ -n "$deleteSharedflow" ]; then loginfo "Shared Flow: $deleteSharedflow"; fi
 if [ -n "$deleteApp" ]; then loginfo "App: $deleteApp"; fi
 if [ -n "$deleteProduct" ]; then loginfo "API Product: $deleteProduct"; fi
 if [ -n "$deleteDeveloper" ]; then loginfo "API Product: $deleteDeveloper"; fi
+if [ -n "$deleteKvm" ]; then loginfo "KVM: $deleteKvm"; fi
+if [ -n "$deleteCache" ]; then loginfo "Cache: $deleteCache"; fi
+if [ -n "$deleteTargetServer" ]; then loginfo "TargetServer: $deleteTargetServer"; fi
+if [ -n "$deleteKeystore" ]; then loginfo "KeyStore: $deleteKeystore"; fi
+if [ -n "$deleteReference" ]; then loginfo "Reference: $deleteReference"; fi
+
 
 if [ ! "$quiet" = "T" ]; then
   read -p "Do you want to continue with deleting the resources above? [Y/n]: " -n 1 -r REPLY; printf "\n"
@@ -72,6 +89,35 @@ mgmtAPIDelete() {
     fi
 }
 
+deleteEnvResource() {
+    envResourcePath="$1" # 'all' or 'environments/$ENV_NAME/$RESOURCE_TYPE/$RESOURCE_NAME'
+    resourceType="$2"
+
+    if [ "$envResourcePath" = "all" ];then
+        for env in $allEnvironments; do
+            envResources=$(sackmesser list "organizations/$organization/environments/$env/$resourceType" | jq -r -c '@tsv')
+            for resource in $envResources; do
+                mgmtAPIDelete "organizations/$organization/environments/$env/$resourceType/$resource"
+            done
+        done
+    else
+        mgmtAPIDelete "organizations/$organization/$envResourcePath"
+    fi
+}
+
+deleteOrgResource() {
+    orgResourcePath="$1" # 'all' or '$RESOURCE_TYPE/$RESOURCE_NAME'
+    resourceType="$2"
+
+    if [ "$orgResourcePath" = "all" ];then
+        orgResourcePath=$(sackmesser list "organizations/$organization/$resourceType" | jq -r '.[]|.')
+    fi
+
+    for resource in $orgResourcePath; do
+        mgmtAPIDelete "organizations/$organization/$resourceType/$resource"
+    done
+}
+
 allEnvironments=$(sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.')
 
 if [ -n "$deleteApp" ]; then
@@ -88,23 +134,36 @@ if [ -n "$deleteApp" ]; then
 fi
 
 if [ -n "$deleteProduct" ]; then
-    if [ "$deleteProduct" = "all" ];then
-        deleteProduct=$(sackmesser list "organizations/$organization/apiproducts" | jq -r '.[]|.')
-    fi
-
-    for product in $deleteProduct; do
-        mgmtAPIDelete "organizations/$organization/apiproducts/$product"
-    done
+    deleteOrgResource "$deleteProduct" 'apiproducts'
 fi
 
 if [ -n "$deleteDeveloper" ]; then
-    if [ "$deleteDeveloper" = "all" ];then
-        deleteDeveloper=$(sackmesser list "organizations/$organization/developers" | jq -r '.[]|.')
-    fi
+    deleteOrgResource "$deleteDeveloper" 'developers'
+fi
 
-    for developer in $deleteDeveloper; do
-        mgmtAPIDelete "organizations/$organization/developers/$developer"
-    done
+if [ -n "$deleteKvm" ]; then
+    if [ "$deleteKvm" = "all" ];then
+        deleteOrgResource 'all' 'keyvaluemaps'
+        deleteEnvResource 'all' 'keyvaluemaps'
+    else
+        mgmtAPIDelete "organizations/$organization/$deleteKvm"
+    fi
+fi
+
+if [ -n "$deleteCache" ]; then
+    deleteEnvResource "$deleteCache" 'caches'
+fi
+
+if [ -n "$deleteTargetServer" ]; then
+    deleteEnvResource "$deleteTargetServer" 'targetservers'
+fi
+
+if [ -n "$deleteKeystore" ]; then
+    deleteEnvResource "$deleteKeystore" 'keystores'
+fi
+
+if [ -n "$deleteReference" ]; then
+    deleteEnvResource "$deleteReference" 'references'
 fi
 
 if [ -n "$deleteProxy" ]; then

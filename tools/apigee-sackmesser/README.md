@@ -20,7 +20,7 @@ To use it as a Docker container you can build the image:
 ## General Usage
 
 ```sh
-$ sackmesser --help
+$ sackmesser help
 
 usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
@@ -30,6 +30,8 @@ Commands:
 deploy
 list
 export
+help
+clean
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
@@ -112,6 +114,16 @@ sackmesser list --googleapi -t $APIGEE_TOKEN organizations/$APIGEE_X_ORG/environ
 
 # Apigee Edge
 sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments
+```
+
+### Scenario: Clean up all proxies in a specific org
+
+```sh
+# Apigee X/hybrid
+sackmesser clean --googleapi -t $APIGEE_TOKEN proxy all
+
+# Apigee Edge
+sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all
 ```
 
 ## How does this compare to the Apigee Maven Plugin and other Apigee tooling
