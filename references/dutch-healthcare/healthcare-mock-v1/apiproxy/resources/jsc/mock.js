@@ -15,11 +15,11 @@
  */
 
 const verb = context.getVariable("request.verb");
-const path = context.getVariable("proxy.pathsuffix");
+const path = context.getVariable("mock.path");
 var response = {"error": "not found"};
 var status = 404;
 
-//metadata
+// metadata
 if(verb === "GET" && path === "/metadata") {
   status = 200;
   response = {
@@ -144,7 +144,7 @@ if(verb === "GET" && path === "/metadata") {
     ]
   };
 }
-//Patient
+// Patient
 if(verb === "GET" && path === "/Patient/nl-core-patient-03") {
   status = 200;
   response = {
@@ -397,7 +397,7 @@ if(verb === "GET" && path === "/Patient/nl-core-patient-03") {
     ]
   };
 }
-//AllergyIntolerance
+// AllergyIntolerance
 if(verb === "GET" && path === "/AllergyIntolerance/zib-allergyintolerance-01") {
   status = 200;
   response = {

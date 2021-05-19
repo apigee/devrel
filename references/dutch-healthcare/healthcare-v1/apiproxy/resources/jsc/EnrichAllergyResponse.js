@@ -1,3 +1,4 @@
+/* eslint require-jsdoc: 0 */
 /**
  * Copyright 2021 Google LLC
  *
@@ -17,16 +18,17 @@
 function onComplete(response,error) {
     if (!error) {
 
-      //update response payload with new patient name
-
+      // update response payload with new patient name
       var payload = JSON.parse(context.getVariable("response.content"));
       payload.patient.display = response.content.asJSON.args.name;
       context.setVariable("response.content")
 
      } else {
-       throw "Mediated Call Unsuccessful"
+       throw { 
+         error: "Mediated Call Unsuccessful"
+       }
      }
 }
 
-//Make an additional request
+// Make an additional request
 httpClient.get("https://httpbin.org/get?name=Mediated Display Name", onComplete);

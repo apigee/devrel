@@ -17,6 +17,11 @@
 
 <ProxyEndpoint name="default">
   <PreFlow>
+    <Request>
+      <Step>
+        <Name>Assign.Suffix</Name>
+      </Step>
+    </Request>
     <Response>
       <Step>
         <Name>JavaScript.Mock</Name>

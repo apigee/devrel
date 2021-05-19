@@ -1,0 +1,6 @@
+<AssignMessage name="Assign.Suffix">
+  <AssignVariable>
+    <Name>mock.path</Name>
+    <Ref>proxy.pathsuffix</Ref>
+  </AssignVariable>
+</AssignMessage>
