@@ -39,6 +39,8 @@ further to fit a particular use case.
   compliant identity provider
 - [KVM Admin API](references/kvm-admin-api) -
   Generic API proxy to provide Create, Read and Delete operations for KVMs
+- [Dutch Healthcare Reference](references/dutch-healthcare) -
+  An API reference to accelerate implementation of Dutch Healthcare standards.
 
 ## Tools
 
