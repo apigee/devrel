@@ -79,3 +79,11 @@ fi
 rm -rf "$APIGEE_X_ORG"
 
 docker run --entrypoint /bin/bash apigee-sackmesser -c "sackmesser export --apigeeapi -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG && ls $APIGEE_ORG/proxies/sackmesser-docker-v0"
+
+# Test Sackmesser Clean
+sackmesser clean proxy sackmesser-docker-v0 --apigeeapi -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG
+! sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis" | grep "sackmesser-docker-v0"
+
+docker run apigee-sackmesser clean proxy sackmesser-cli-v0 --googleapi -t "$APIGEE_TOKEN" -o $APIGEE_X_ORG
+! docker run apigee-sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-cli-v0" ||
+
