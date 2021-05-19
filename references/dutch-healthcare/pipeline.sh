@@ -27,6 +27,9 @@ ARGS=$*
 SACK_ARGS="${ARGS:---apigeeapi}"
 
 bash $SCRIPTPATH/../../tools/apigee-sackmesser/bin/sackmesser deploy \
+  -d healthcare-mock-v1 "$SACK_ARGS"
+
+bash $SCRIPTPATH/../../tools/apigee-sackmesser/bin/sackmesser deploy \
   -d healthcare-v1 "$SACK_ARGS"
 
 npm i --no-fund --prefix healthcare-v1

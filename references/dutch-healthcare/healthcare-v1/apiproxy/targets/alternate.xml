@@ -44,8 +44,9 @@
     </Flow>
   </Flows>
 
-  <HTTPTargetConnection>
-    <URL>https://fhir.simplifier.net/NictizSTU3-Zib2017</URL>
-  </HTTPTargetConnection>
+  <LocalTargetConnection>
+      <APIProxy>healthcare-mock-v1</APIProxy>
+      <ProxyEndpoint>default</ProxyEndpoint>
+  </LocalTargetConnection>
 
 </TargetEndpoint>
