@@ -67,14 +67,6 @@
 
     <!-- insert your flows here for mediation-->
 
-    <Flow name="not found">
-      <Response>
-        <Step>
-          <Name>Shared.NotFound</Name>
-        </Step>
-      </Response>
-    </Flow>
-
   </Flows>
 
   <PostFlow>

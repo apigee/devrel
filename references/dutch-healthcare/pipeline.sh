@@ -17,6 +17,11 @@
 set -e
 set -x
 
+ARGS=$*
+SACK_ARGS="${ARGS:---apigeeapi}"
+
+sackmesser deploy -d healthcare-v1 "$SACK_ARGS"
+
 npm i --no-fund --prefix healthcare-v1
 npm run deploy --prefix healthcare-v1
 npm test --prefix healthcare-v1
