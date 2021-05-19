@@ -25,10 +25,5 @@ before(function (callback) {
   );
 });
 
-given('I wait', function (callback) {
-  setTimeout(callback, 5000);
-  //callback();
-});
-
 setDefaultTimeout(60 * 1000);
 

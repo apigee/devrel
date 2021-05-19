@@ -24,9 +24,7 @@ function onComplete(response,error) {
       context.setVariable("response.content", JSON.stringify(payload))
 
      } else {
-       throw { 
-         error: "Mediated Call Unsuccessful"
-       }
+       throw error;
      }
 }
 

@@ -68,7 +68,7 @@
     <!-- insert your flows here for mediation-->
     <Flow name="GET /AllergyIntolerance/*">
       <Condition>
-        request.verb = "GET" and proxy.pathsuffix MatchesPath "/Patient/*"
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/AllergyIntolerance/*"
       </Condition>
       <Response>
         <Step>
