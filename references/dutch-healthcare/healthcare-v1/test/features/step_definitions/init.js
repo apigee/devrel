@@ -15,7 +15,7 @@
  */
 
 const apickli = require("apickli");
-const { Before: before, setDefaultTimeout, Given: given } = require("cucumber");
+const { Before: before, setDefaultTimeout } = require("cucumber");
 
 before(function (callback) {
   const org = (process.env.APIGEE_ORG ? process.env.APIGEE_ORG : process.env.APIGEE_X_ORG);
