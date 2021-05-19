@@ -25,9 +25,17 @@ if [ "$#" -eq 0 ]; then
     loginfo "Select at least one type to clean up. E.g.: \"clean api my-proxy\""
 fi
 
+deleteAll() {
+    export deleteProxy='all'
+    export deleteSharedflow='all'
+    export deleteApp='all'
+    export deleteProduct='all'
+    export deleteDeveloper='all'
+}
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    all) deleteAll; shift 1;;
     proxy) export deleteProxy="${2}"; shift 2;;
     sharedflow) export deleteSharedflow="${2}"; shift 2;;
     app) export deleteApp="${2}"; shift 2;;
@@ -36,6 +44,24 @@ while [ "$#" -gt 0 ]; do
     *) logfatal "unknown option: $1" >&2; exit 1;;
   esac
 done
+
+loginfo "Planning to delete the following resources in Apigee Org \"$organization\":"
+if [ -n "$deleteProxy" ]; then loginfo "API Proxy: $deleteProxy"; fi
+if [ -n "$deleteSharedflow" ]; then loginfo "Shared Flow: $deleteSharedflow"; fi
+if [ -n "$deleteApp" ]; then loginfo "App: $deleteApp"; fi
+if [ -n "$deleteProduct" ]; then loginfo "API Product: $deleteProduct"; fi
+if [ -n "$deleteDeveloper" ]; then loginfo "API Product: $deleteDeveloper"; fi
+
+if [ ! "$quiet" = "T" ]; then
+  read -p "Do you want to continue with deleting the resources above? [Y/n]: " -n 1 -r REPLY; printf "\n"
+  REPLY=${REPLY:-Y}
+
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    loginfo "Starting clean up"
+  else
+    exit 1
+  fi
+fi
 
 mgmtAPIDelete() {
     loginfo "Sackmesser clean $1"
@@ -89,9 +115,9 @@ if [ -n "$deleteProxy" ]; then
         deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments")
         for proxy in $deleteProxy; do
             if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[] | select(.apiProxy==(\"$proxy\")) | .revision"
+                revisionJqPattern=".deployments[] | select(.apiProxy==\"$proxy\") | .revision"
             else
-                revisionJqPattern=".aPIProxy[] | select(.apiProxy==(\"$proxy\")) | .revision[] | .name"
+                revisionJqPattern=".aPIProxy[] | select(.name==\"$proxy\") | .revision[] | .name"
             fi
             echo "$deployments" | jq -r -c "$revisionJqPattern" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/apis/$proxy/revisions/$revision/deployments"
@@ -109,9 +135,9 @@ if [ -n "$deleteSharedflow" ]; then
         deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true")
         for sharedflow in $deleteSharedflow; do
             if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[] | select(.apiProxy==(\"$sharedflow\")) | .revision"
+                revisionJqPattern=".deployments[] | select(.apiProxy==\"$sharedflow\") | .revision"
             else
-                revisionJqPattern=".aPIProxy[] | select(.name==(\"$sharedflow\")) | .revision[] | .name"
+                revisionJqPattern=".aPIProxy[] | select(.name==\"$sharedflow\") | .revision[] | .name"
             fi
             echo "$deployments" | jq -r -c --arg API_PROXY "$sharedflow" "$revisionJqPattern" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/sharedflows/$sharedflow/revisions/$revision/deployments"

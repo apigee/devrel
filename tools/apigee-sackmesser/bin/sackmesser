@@ -92,6 +92,7 @@ while [ "$#" -gt 0 ]; do
     --description) export description="${1}"; shift 2;;
     --baseuri) export baseuri="${1}"; shift 2;;
     --debug) export debug="T"; shift 1;;
+    --quiet) export quiet="T"; shift 1;;
 
     --apigeeapi) export apiversion="apigee"; shift 1;;
     --googleapi) export apiversion="google"; shift 1;;
