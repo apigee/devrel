@@ -14,6 +14,6 @@
  limitations under the License.
 -->
 
-<Javascript timeLimit="2000" name="JS.EnrichAllergyResponse">
+<Javascript timeLimit="10000" name="JS.EnrichAllergyResponse">
   <ResourceURL>jsc://EnrichAllergyResponse.js</ResourceURL>
 </Javascript>
