@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-context.setVariable('target.url', 'http://localhost:8899/healthcare-mock/v1/' 
-  + context.getVariable('proxy.pathsuffix'));
+context.setVariable('target.url', context.getVariable("proxy.url").replace("/healthcare/v1", "/healthcare-mock/v1"));
+

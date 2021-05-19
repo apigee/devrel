@@ -15,5 +15,5 @@
 -->
 
 <Javascript timeLimit="200" name="JS.EnrichAllergyResponse">
-  <ResourceURL>jsc://EnrichAlleryResponse.js</ResourceURL>
+  <ResourceURL>jsc://EnrichAllergyResponse.js</ResourceURL>
 </Javascript>

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--
  Copyright 2020 Google LLC
 
@@ -14,24 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
-<ProxyEndpoint name="default">
-  <PreFlow>
-    <Request>
-      <Step>
-        <Name>Assign.Path</Name>
-      </Step>
-    </Request>
-    <Response>
-      <Step>
-        <Name>JavaScript.Mock</Name>
-      </Step>
-    </Response>
-  </PreFlow>
-  <RouteRule name="default">
-  </RouteRule>
-  <HTTPProxyConnection>
-    <BasePath>/healthcare-mock/v1</BasePath>
-    <VirtualHost>secure</VirtualHost>
-  </HTTPProxyConnection>
-</ProxyEndpoint>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="Assign.Path">
+    <AssignVariable>
+        <Name>mock.path</Name>
+        <Ref>proxy.pathsuffix</Ref>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

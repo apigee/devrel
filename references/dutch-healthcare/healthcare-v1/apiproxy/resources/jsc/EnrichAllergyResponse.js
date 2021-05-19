@@ -21,7 +21,7 @@ function onComplete(response,error) {
       // update response payload with new patient name
       var payload = JSON.parse(context.getVariable("response.content"));
       payload.patient.display = response.content.asJSON.args.name;
-      context.setVariable("response.content")
+      context.setVariable("response.content", JSON.stringify(payload))
 
      } else {
        throw { 
