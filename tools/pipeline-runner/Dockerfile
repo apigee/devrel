@@ -46,7 +46,7 @@ RUN npm install --global puppeteer@5.2.1
 COPY *.sh /usr/bin/
 
 # symlink apigee-sackmesser
-RUN ln -s /home/devrel/tools/apigee-sackmesser/bin/sackmesser \
+RUN ln -s /home/tools/apigee-sackmesser/bin/sackmesser \
   /usr/bin/sackmesser
 
 # Run script
