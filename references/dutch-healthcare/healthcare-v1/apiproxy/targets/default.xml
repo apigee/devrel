@@ -44,9 +44,16 @@
     </Flow>
   </Flows>
 
+  <PostFlow>
+    <Request>
+      <Step>
+        <Name>JS.SetMockPath</Name>
+      </Step>
+    </Request>
+  </PostFlow>
+
   <LocalTargetConnection>
-      <APIProxy>healthcare-mock-v1</APIProxy>
-      <ProxyEndpoint>default</ProxyEndpoint>
+      <Path>/</Path>
   </LocalTargetConnection>
 
 </TargetEndpoint>

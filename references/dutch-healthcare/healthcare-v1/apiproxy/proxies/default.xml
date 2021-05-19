@@ -66,6 +66,17 @@
     </Flow>
 
     <!-- insert your flows here for mediation-->
+    <Flow name="GET /Patient/*">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/Patient/*"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>JS.EnrichAlleryResponse</Name>
+        </Step>
+      </Response>
+    </Flow>
+
 
   </Flows>
 
