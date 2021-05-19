@@ -20,7 +20,7 @@ set -x
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-sh "$SCRIPTPATH"/../../../references/gcp-sa-auth-shared-flow/deploy.sh --apigeeapi
+sh "$SCRIPTPATH"/../gcp-sa-auth-shared-flow/deploy.sh --apigeeapi
 
 ARGS=$*
 SACK_ARGS="${ARGS:---apigeeapi}"
