@@ -54,7 +54,7 @@ limitations under the License.
 		<apigee.env>${env}</apigee.env>
 		<apigee.plugin.version>2.1.0</apigee.plugin.version>
 		<apigee.config-plugin.version>2.1.1</apigee.config-plugin.version>
-		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 		<apigee.apitype>${apitype}</apigee.apitype>
 	</properties>
