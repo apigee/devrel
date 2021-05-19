@@ -54,7 +54,7 @@
   </PostFlow>
 
   <HTTPTargetConnection>
-    <URL>https://fhir.simplifier.net/NictizSTU3-Zib2017/</URL>
+    <URL>https://fhir.simplifier.net/NictizSTU3-Zib2017</URL>
   </HTTPTargetConnection>
 
 </TargetEndpoint>

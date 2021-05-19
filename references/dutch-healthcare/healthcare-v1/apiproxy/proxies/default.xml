@@ -77,13 +77,14 @@
     </Response>
   </PostFlow>
 
-  <PostClientFlow>
+  <!-- Uncomment for Third Party Logging -->
+  <!--PostClientFlow>
     <Response>
       <Step>
         <Name>Shared.Logging</Name>
       </Step>
     </Response>
-  </PostClientFlow>
+  </PostClientFlow-->
 
   <HTTPProxyConnection>
     <BasePath>/healthcare/v1</BasePath>
@@ -91,7 +92,7 @@
   </HTTPProxyConnection>
 
   <RouteRule name="no-route">
-    <Condition>request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping"</Condition>
+    <Condition>(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") or request.verb = "OPTIONS"</Condition>
   </RouteRule>
   <RouteRule name="alternate">
     <TargetEndpoint>alternate</TargetEndpoint>
