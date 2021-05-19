@@ -17,10 +17,14 @@
 set -e
 set -x
 
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
 ARGS=$*
 SACK_ARGS="${ARGS:---apigeeapi}"
 
-sackmesser deploy -d healthcare-v1 "$SACK_ARGS"
+bash $SCRIPTPATH/../../tools/apigee-sackmesser/bin/sackmesser deploy \
+  -d healthcare-v1 "$SACK_ARGS"
 
 npm i --no-fund --prefix healthcare-v1
 npm run deploy --prefix healthcare-v1

@@ -45,10 +45,6 @@ RUN npm install --global puppeteer@5.2.1
 # add our tooling scripts
 COPY *.sh /usr/bin/
 
-# symlink apigee-sackmesser
-RUN ln -s /home/tools/apigee-sackmesser/bin/sackmesser \
-  /usr/bin/sackmesser
-
 # Run script
 WORKDIR /home
 CMD ["run-pipelines.sh"]
