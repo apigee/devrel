@@ -7,6 +7,9 @@
 - Projects should be small and simple. A 10 line bash script is often easier to
  understand and maintain than a full NodeJS app!
 - We follow the [Google Open Source Community Guidelines](https://opensource.google/conduct/)
+- We pride ourselves on the high quality of this repository. Therefore we ask
+  each contribution to have accompanying tests with thorough coverage to help
+  meet this goal.
 
 ## Quickstart
 
@@ -33,4 +36,4 @@
 - All projects are listed in [CODEOWNERS](./CODEOWNERS) and [README](./README.md)
 - Contributor License [Agreement](https://opensource.google/docs/cla/)
 - In [Solidarity](https://developers.google.com/style/inclusive-documentation)
-- [Pipelines](./PIPELINES)
+- [Pipelines](./PIPELINES.md)
