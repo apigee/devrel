@@ -44,15 +44,6 @@
     </Flow>
   </Flows>
 
-  <PostFlow>
-    <Request>
-      <Step>
-        <Name>Shared.CorrelationId</Name>
-      </Step>
-    </Request>
-    <Response/>
-  </PostFlow>
-
   <HTTPTargetConnection>
     <URL>https://fhir.simplifier.net/NictizSTU3-Zib2017</URL>
   </HTTPTargetConnection>
