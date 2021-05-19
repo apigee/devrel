@@ -18,12 +18,10 @@ const apickli = require("apickli");
 const { Before: before, setDefaultTimeout } = require("cucumber");
 
 before(function () {
+  const org = (process.env.APIGEE_ORG ? process.env.APIGEE_ORG : process.env.APIGEE_X_ORG);
+  const env = (process.env.APIGEE_ENV ? process.env.APIGEE_ENV : process.env.APIGEE_X_ENV);
   this.apickli = new apickli.Apickli(
-    "https",
-    process.env.APIGEE_ORG +
-      "-" +
-      process.env.APIGEE_ENV +
-      ".apigee.net/healthcare/v1"
+    "https", org + "-" + env + ".apigee.net/healthcare/v1"
   );
 });
 
