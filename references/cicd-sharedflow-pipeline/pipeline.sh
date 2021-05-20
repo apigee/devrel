@@ -31,3 +31,4 @@ mvn clean install -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \
 mvn apigee-config:apps apigee-config:apiproducts -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \
 -Dtoken="$TOKEN" -Dapi.northbound.domain="$APIGEE_X_HOSTNAME" -Dapigee.config.options=delete \
 -f test/integration/pom.xml
+
