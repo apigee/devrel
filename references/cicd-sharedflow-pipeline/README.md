@@ -18,14 +18,14 @@ some tests to verify if the sharedflow works as expected.
 
 ### Apigee Edge
 
-#### To deploy the sharedflow 
+#### To deploy the sharedflow
 
 ```sh
 mvn clean install -Papigeeapi -Dorg=${org} -Denv=${env} \
 -Dusername=${username} -Dpassword=${password}
 ```
 
-#### To test the sharedflow 
+#### To test the sharedflow
 
 ```sh
 mvn install -Papigeeapi -Dorg=${org} -Denv=${env} \
