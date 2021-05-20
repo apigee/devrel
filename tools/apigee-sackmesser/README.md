@@ -1,5 +1,8 @@
 # Apigee Sackmesser
 
+<!-- markdownlint-disable-next-line MD013 MD033 -->
+<img src="./img/sackmesser-logo.png" alt="sackmesser-logo" width="200" align="right" >
+
 The Apigee Sackmesser lets you deploy API proxies, shared flows and
 configuration to Apigee Edge as well as hybrid/X without writing any additional
 manifest files.
@@ -19,7 +22,7 @@ To use it as a Docker container you can build the image:
 
 ## General Usage
 
-```sh
+```text
 $ sackmesser help
 
 usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
