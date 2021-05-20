@@ -21,7 +21,7 @@
 const apickli = require('apickli');
 const { Before } = require("cucumber");
 
-var config = require('../test-config.json');
+const config = require('../test-config.json');
 
 console.log('api: [' + config.api.domain + ', ' + config.api.basepath + ']');
 
