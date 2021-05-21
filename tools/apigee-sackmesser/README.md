@@ -1,5 +1,8 @@
 # Apigee Sackmesser
 
+<!-- markdownlint-disable-next-line MD013 MD033 -->
+<img src="./img/sackmesser-logo.png" alt="sackmesser-logo" width="200" align="right" >
+
 The Apigee Sackmesser lets you deploy API proxies, shared flows and
 configuration to Apigee Edge as well as hybrid/X without writing any additional
 manifest files.
@@ -19,8 +22,8 @@ To use it as a Docker container you can build the image:
 
 ## General Usage
 
-```sh
-$ sackmesser --help
+```text
+$ sackmesser help
 
 usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
@@ -30,6 +33,8 @@ Commands:
 deploy
 list
 export
+help
+clean
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
@@ -63,7 +68,7 @@ with the following prefix (note that the deploy command needs a volume
 mount to refer to local directories):
 
 ```sh
-docker run -v $PWD:/opt/apigee apigee-sackmesser COMMAND [...]
+docker run -v "$PWD":/opt/apigee apigee-sackmesser COMMAND [...]
 ```
 
 ### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
@@ -108,10 +113,20 @@ sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PAS
 
 ```sh
 # Apigee X/hybrid
-sackmesser list --googleapi -t $APIGEE_TOKEN organizations/$APIGEE_X_ORG/environments/$APIGEE_X_ENV/deployments
+sackmesser list --googleapi -t "$APIGEE_TOKEN" organizations/$APIGEE_X_ORG/environments/$APIGEE_X_ENV/deployments
 
 # Apigee Edge
 sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments
+```
+
+### Scenario: Clean up all proxies in a specific org
+
+```sh
+# Apigee X/hybrid
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy all
+
+# Apigee Edge
+sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all
 ```
 
 ## How does this compare to the Apigee Maven Plugin and other Apigee tooling
