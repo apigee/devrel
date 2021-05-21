@@ -79,3 +79,19 @@ fi
 rm -rf "$APIGEE_X_ORG"
 
 docker run --entrypoint /bin/bash apigee-sackmesser -c "sackmesser export --apigeeapi -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG && ls $APIGEE_ORG/proxies/sackmesser-docker-v0"
+
+# Test Sackmesser Clean
+sackmesser clean proxy sackmesser-docker-v0 --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
+proxiesremaining=$(sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis")
+if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-docker-v0"))')" != "[]" ];then
+  logerror "failed to delete"
+  exit 1
+fi
+
+docker run apigee-sackmesser clean proxy sackmesser-cli-v0 --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet
+
+proxiesremaining=$(sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/apis")
+if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-cli-v0"))')" != "[]" ];then
+  logerror "failed to delete proxy"
+  exit 1
+fi
