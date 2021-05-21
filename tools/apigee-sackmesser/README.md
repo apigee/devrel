@@ -68,7 +68,7 @@ with the following prefix (note that the deploy command needs a volume
 mount to refer to local directories):
 
 ```sh
-docker run -v $PWD:/opt/apigee apigee-sackmesser COMMAND [...]
+docker run -v "$PWD":/opt/apigee apigee-sackmesser COMMAND [...]
 ```
 
 ### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
@@ -113,7 +113,7 @@ sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PAS
 
 ```sh
 # Apigee X/hybrid
-sackmesser list --googleapi -t $APIGEE_TOKEN organizations/$APIGEE_X_ORG/environments/$APIGEE_X_ENV/deployments
+sackmesser list --googleapi -t "$APIGEE_TOKEN" organizations/$APIGEE_X_ORG/environments/$APIGEE_X_ENV/deployments
 
 # Apigee Edge
 sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments
@@ -123,7 +123,7 @@ sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$A
 
 ```sh
 # Apigee X/hybrid
-sackmesser clean --googleapi -t $APIGEE_TOKEN proxy all
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy all
 
 # Apigee Edge
 sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all

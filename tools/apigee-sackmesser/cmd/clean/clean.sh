@@ -95,7 +95,7 @@ deleteEnvResource() {
 
     if [ "$envResourcePath" = "all" ];then
         for env in $allEnvironments; do
-            envResources=$(sackmesser list "organizations/$organization/environments/$env/$resourceType" | jq -r -c '@tsv')
+            envResources=$(sackmesser list "organizations/$organization/environments/$env/$resourceType" | jq -r -c '.[]|.')
             for resource in $envResources; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/$resourceType/$resource"
             done
