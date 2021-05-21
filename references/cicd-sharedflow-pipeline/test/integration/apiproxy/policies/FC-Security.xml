@@ -14,9 +14,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FlowCallout async="false" continueOnError="false" enabled="true" name="FC-Security">
-    <DisplayName>FC-Security</DisplayName>
-    <FaultRules/>
-    <Properties/>
+<FlowCallout name="FC-Security">
     <SharedFlowBundle>SF-Security-v1</SharedFlowBundle>
 </FlowCallout>

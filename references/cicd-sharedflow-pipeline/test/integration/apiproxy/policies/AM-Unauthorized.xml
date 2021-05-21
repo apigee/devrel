@@ -14,9 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-Unauthorized">
-    <DisplayName>AM-Unauthorized</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-Unauthorized">
     <Set>
         <Payload contentType="application/json">{"message":"Unauthorized"}</Payload>
         <StatusCode>401</StatusCode>

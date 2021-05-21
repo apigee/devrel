@@ -26,7 +26,7 @@ further to fit a particular use case.
   Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
 - [CI/CD Pipeline for SharedFlows](references/cicd-sharedflow-pipeline) -
   Reference implementation for a CI/CD Pipeline for Sharedflows using the Apigee
-  Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
+  Deploy Maven Plugin
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling

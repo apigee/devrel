@@ -1,4 +1,4 @@
-# ci-cd-sharedflow-pipeline
+# CICD Pipeline for SharedFlows
 
 This project contains a reference implementation for a CI/CD pipeline for
 Apigee sharedflow using the [Apigee Deploy Maven
@@ -49,8 +49,7 @@ mvn apigee-config:apps apigee-config:apiproducts -Papigeeapi -Dorg=${org} -Denv=
 #### To deploy the sharedflow
 
 ```sh
-mvn clean install -Pgoogleapi -Dorg=${org} -Denv=${env} \
--Dfile=${file} -Dapi.northbound.domain=${api.northbound.domain}
+mvn clean install -Pgoogleapi -Dorg=${org} -Denv=${env} -Dfile=${file}
 ```
 
 #### To test the sharedflow

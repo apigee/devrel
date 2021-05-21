@@ -28,12 +28,6 @@ limitations under the License.
 			<name>Maven Plugin Repository</name>
 			<url>https://repo1.maven.org/maven2</url>
 			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 
@@ -51,14 +45,12 @@ limitations under the License.
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
 		<apigee.options>override</apigee.options>
-		<apigee.config.dir>${target.root.dir}/resources/edge</apigee.config.dir> <!-- For config plugin -->
-		<apigee.config.options>update</apigee.config.options> <!-- For config plugin -->
+		<apigee.config.dir>${target.root.dir}/resources/edge</apigee.config.dir>
+		<apigee.config.options>update</apigee.config.options>
 		<apigee.config.exportDir>${basedir}/target/test/integration</apigee.config.exportDir>
 		<apigee.app.ignoreAPIProducts>true</apigee.app.ignoreAPIProducts>
 	</properties>
 
-	<!-- This is where you add the environment specific properties under various profile names -->
-	<!-- For apigee.options, refer to "Advanced Configuration Options" under https://github.com/apigee/apigee-deploy-maven-plugin#pom-xml-sample -->
 	<profiles>
 		<profile>
 			<!-- Apigee Edge -->
@@ -67,10 +59,10 @@ limitations under the License.
 				<apigee.deploy.plugin.version>1.2.3</apigee.deploy.plugin.version>
 				<apigee.config.plugin.version>1.4.7</apigee.config.plugin.version>
 				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.authtype>oauth</apigee.authtype> <!-- optional: oauth|basic(default) -->
-				<apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl> <!-- update to https://zoneName.login.apigee.com/oauth/token -->
-				<apigee.username>${username}</apigee.username> <!-- machine user -->
-				<apigee.password>${password}</apigee.password> <!-- machine password -->
+				<apigee.authtype>oauth</apigee.authtype>
+				<apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl>
+				<apigee.username>${username}</apigee.username>
+				<apigee.password>${password}</apigee.password>
 				<apigee.bearer>${token}</apigee.bearer>
 				<apigee.refresh>${refresh}</apigee.refresh>
 				<api.northbound.domain>${org}-${env}.apigee.net</api.northbound.domain>
@@ -83,7 +75,7 @@ limitations under the License.
 				<apigee.deploy.plugin.version>2.1.1</apigee.deploy.plugin.version>
 				<apigee.config.plugin.version>2.1.1</apigee.config.plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
+				<apigee.bearer>${token}</apigee.bearer>
 				<apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
 				<api.northbound.domain>${api.northbound.domain}</api.northbound.domain>
 			</properties>

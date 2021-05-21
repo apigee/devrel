@@ -14,8 +14,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<VerifyAPIKey async="false" continueOnError="false" enabled="true" name="VA-VerifyAPIKey">
-    <DisplayName>VA-VerifyAPIKey</DisplayName>
-    <Properties/>
+<VerifyAPIKey name="VA-VerifyAPIKey">
     <APIKey ref="request.header.apikey"/>
 </VerifyAPIKey>

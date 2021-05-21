@@ -12,6 +12,5 @@
  limitations under the License.
 -->
 <SharedFlowBundle revision="1" name="SF-Security">
-    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
     <Description>@description</Description>
 </SharedFlowBundle>
