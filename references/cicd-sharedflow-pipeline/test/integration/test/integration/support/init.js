@@ -29,7 +29,6 @@ console.log('api: [' + config.api.domain + ', ' + config.api.basepath + ']');
 Before(function () {
   const host = process.env.TEST_HOST || config.api.domain;
   const basePath = process.env.TEST_BASE_PATH || config.api.basepath;
-  const APIKEY = appKey[0].credentials[0].consumerKey;
   this.apickli = new apickli.Apickli("https", `${host}${basePath}`);
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
   this.apickli.storeValueInScenarioScope("APIKEY", appKey[0].credentials[0].consumerKey);
