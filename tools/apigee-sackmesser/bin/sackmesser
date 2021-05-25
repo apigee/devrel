@@ -80,19 +80,19 @@ while [ "$#" -gt 0 ]; do
     -h) export hostname="$2"; shift 2;;
     -L) export baseuri="$2"; shift 2;;
 
-    --directory) export directory="${1}"; shift 2;;
-    --github) export url="${1}"; shift 2;;
-    --token) export token="${1}"; shift 2;;
-    --mfa) export mfa="${1}"; shift 2;;
-    --name) export bundle_name="${1}"; shift 2;;
-    --base-path) export base-path="${1}"; shift 2;;
-    --username) export username="${1}"; shift 2;;
-    --password) export password="${1}"; shift 2;;
-    --environment) export environment="${1}"; shift 2;;
-    --organization) export organization="${1}"; shift 2;;
-    --hostname) export hostname="${1}"; shift 2;;
-    --description) export description="${1}"; shift 2;;
-    --baseuri) export baseuri="${1}"; shift 2;;
+    --directory) export directory="${2}"; shift 2;;
+    --github) export url="${2}"; shift 2;;
+    --token) export token="${2}"; shift 2;;
+    --mfa) export mfa="${2}"; shift 2;;
+    --name) export bundle_name="${2}"; shift 2;;
+    --base-path) export base_path="${2}"; shift 2;;
+    --username) export username="${2}"; shift 2;;
+    --password) export password="${2}"; shift 2;;
+    --environment) export environment="${2}"; shift 2;;
+    --organization) export organization="${2}"; shift 2;;
+    --hostname) export hostname="${2}"; shift 2;;
+    --description) export description="${2}"; shift 2;;
+    --baseuri) export baseuri="${2}"; shift 2;;
     --debug) export debug="T"; shift 1;;
     --quiet) export quiet="T"; shift 1;;
 
