@@ -22,11 +22,8 @@ SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
 mgmtAPIDownload() {
-    if [ "$apiversion" = "google" ]; then
-        curl -s --fail -X GET -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
-    else
-        curl -u "$username:$password" -s --fail -X GET "https://$baseuri/v1/$1" -o "$2"
-    fi
+    loginfo "Sackmesser export (zip) $1"
+    curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
 }
 
 export export_folder="$PWD/$organization"

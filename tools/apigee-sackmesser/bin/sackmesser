@@ -110,8 +110,6 @@ if [[ -z "$apiversion" ]]; then
     export apiversion="google"
 fi
 
-
-
 if [ "$apiversion" = "google" ];then
     export token=${token:-$APIGEE_TOKEN}
     export organization=${organization:-$APIGEE_X_ORG}
@@ -130,6 +128,24 @@ if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
     echo "[FATAL] required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
     exit 1
 fi
+
+if [[ -z "$token" && "$apiversion" = "apigee" ]]; then
+    if [ -z "$mfa" ]; then MFA=""; else MFA="?mfa_token=$mfa"; fi
+    logdebug "Getting Apigee OAuth2 token for user $username"
+    response=$(curl -fsS -H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" \
+      -H "Accept: application/json;charset=utf-8" \
+      -H "Authorization: Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0" \
+      -X POST "https://login.apigee.com/oauth/token$MFA" \
+      --data-urlencode "username=$username" \
+      --data-urlencode "password=$password" \
+      -d "grant_type=password")
+    token=$(echo "$response" | jq -r '.access_token')
+    export token
+elif [ "$apiversion" = "apigee" ]; then
+    export token=${token:-$APIGEE_TOKEN}
+fi
+
+logdebug "Apigee OAuth2 access token: ${token:0:8}..."
 
 logdebug "Sackmesser command: $CMD_TYPE"
 "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh "${posArgs[@]}"
