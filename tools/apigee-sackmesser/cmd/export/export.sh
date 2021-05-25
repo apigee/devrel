@@ -27,6 +27,12 @@ mgmtAPIDownload() {
 }
 
 export export_folder="$PWD/$organization"
+
+if [ -d "$export_folder" ]; then
+    logerror "Folder $export_folder already exists. Please remove/rename and try again."
+    exit 1
+fi
+
 loginfo "exporting to $export_folder"
 mkdir -p "$export_folder"
 
@@ -77,15 +83,17 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
 
     mkdir -p "$export_folder"/environments/"$env"/targetservers
     sackmesser list "organizations/$organization/environments/$env/targetservers" | jq -r -c '.[]|.' | while read -r targetserver; do
-        sackmesser list "organizations/$organization/environments/$env/targetservers/$targetserver" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"$targetserver".json
+        sackmesser list "organizations/$organization/environments/$env/targetservers/${targetserver/ /%20}" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"${targetserver/ /-}".json
     done
 
     mkdir -p "$export_folder"/environments/"$env"/keystores
     sackmesser list "organizations/$organization/environments/$env/keystores" | jq -r -c '.[]|.' | while read -r keystore; do
-        mkdir -p "$export_folder"/environments/"$env"/keystores/"$keystore"
-        sackmesser list "organizations/$organization/environments/$env/keystores/$keystore" | jq '.' > "$export_folder"/environments/"$env"/keystores/"$keystore"/keystore.json
-        sackmesser list "organizations/$organization/environments/$env/keystores/$keystore"/aliases | jq -r -c '.[]|.' | while read -r alias; do
-            sackmesser list "organizations/$organization/environments/$env/keystores/$keystore/aliases/$alias" > "$export_folder"/environments/"$env"/keystores/"$keystore"/"$alias".json
+        keystore_folder="$export_folder"/environments/"$env"/keystores/"${keystore/ /-}"
+        mkdir -p "$keystore_folder"
+        keystore_uri="organizations/$organization/environments/$env/keystores/${keystore/ /%20}"
+        sackmesser list "$keystore_uri" | jq '.' > "$keystore_folder"/keystore.json
+        sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
+            sackmesser list "$keystore_uri/aliases/$alias" > "$keystore_folder"/"$alias".json
         done
     done
 done
