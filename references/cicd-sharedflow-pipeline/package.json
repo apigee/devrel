@@ -11,14 +11,18 @@
 		}
 	],
 	"scripts": {
-		"eslint": "eslint -c ./.eslintrc-jsc.yml --format json",
-		"apigeelint": "apigeelint -s ./sharedflowbundle -f table.js",
-		"lint": "npm run eslint && npm run apigeelint"
+		"eslint": "eslint --format json",
+		"apigeelint-sharedflow": "apigeelint -s ./sharedflowbundle -f table.js",
+		"apigeelint-proxy": "apigeelint -s ./test/integration/apiproxy -f table.js -e TD002,PO012",
+		"lint": "npm run eslint && npm run apigeelint-sharedflow && npm run apigeelint-proxy",
+		"integration-test": "cucumber-js ./test/integration/target/test/integration"
 	},
 	"devDependencies": {
 		"eslint": "^7.0.0",
 		"eslint-config-google": "^0.14.0",
 		"eslint-config-prettier": "^6.11.0",
-		"apigeelint": "^2.6.0"
+		"apigeelint": "^2.6.0",
+		"apickli": "^2.3.3",
+		"cucumber": "^7.0.0-rc.0"
 	}
 }
