@@ -26,6 +26,10 @@ mgmtAPIDownload() {
     curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
 }
 
+urlencode() {
+    echo "\"${*:1}\"" | jq -r '@uri'
+}
+
 export export_folder="$PWD/$organization"
 
 if [ -d "$export_folder" ]; then
@@ -61,14 +65,14 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
     sackmesser list "organizations/$organization/developers/$email/apps" | jq -r -c '.[]|.' | while read -r appId; do
         loginfo "download developer app: $appId for developer: $email"
         mkdir -p "$export_folder/developerApps/$email"
-        sackmesser list "organizations/$organization/developers/$email/apps/$appId" > "$export_folder"/developerApps/"$email"/"$appId".json
+        sackmesser list "organizations/$organization/developers/$email/apps/$(urlencode "$appId")" > "$export_folder"/developerApps/"$email"/"$appId".json
     done
 done
 
 sackmesser list "organizations/$organization/apiproducts" | jq -r -c '.[]|.' | while read -r product; do
     loginfo "download API product: $product"
     mkdir -p "$export_folder/apiproducts"
-    sackmesser list "organizations/$organization/apiproducts/$product" > "$export_folder"/apiproducts/"$product".json
+    sackmesser list "organizations/$organization/apiproducts/$(urlencode "$product")" > "$export_folder"/apiproducts/"$product".json
 done
 
 sackmesser list "organizations/$organization/keyvaluemaps" > "$export_folder"/kvms.json
@@ -83,14 +87,14 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
 
     mkdir -p "$export_folder"/environments/"$env"/targetservers
     sackmesser list "organizations/$organization/environments/$env/targetservers" | jq -r -c '.[]|.' | while read -r targetserver; do
-        sackmesser list "organizations/$organization/environments/$env/targetservers/${targetserver/ /%20}" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"${targetserver/ /-}".json
+        sackmesser list "organizations/$organization/environments/$env/targetservers/$(urlencode "$targetserver")" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"${targetserver/ /-}".json
     done
 
     mkdir -p "$export_folder"/environments/"$env"/keystores
     sackmesser list "organizations/$organization/environments/$env/keystores" | jq -r -c '.[]|.' | while read -r keystore; do
         keystore_folder="$export_folder"/environments/"$env"/keystores/"${keystore/ /-}"
         mkdir -p "$keystore_folder"
-        keystore_uri="organizations/$organization/environments/$env/keystores/${keystore/ /%20}"
+        keystore_uri="organizations/$organization/environments/$env/keystores/$(urlencode "$keystore")"
         sackmesser list "$keystore_uri" | jq '.' > "$keystore_folder"/keystore.json
         sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
             sackmesser list "$keystore_uri/aliases/$alias" > "$keystore_folder"/"$alias".json

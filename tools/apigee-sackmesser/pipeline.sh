@@ -51,13 +51,13 @@ BASE_PATH="/sackmesser/v1/docker"
 
 docker run apigee-sackmesser deploy \
   --apigeeapi \
-  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
-  -n sackmesser-docker-v0 \
-  -b "$BASE_PATH" \
-  -u "$APIGEE_USER" \
-  -p "$APIGEE_PASS" \
-  -o "$APIGEE_ORG" \
-  -e "$APIGEE_ENV"
+  --github https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
+  --name sackmesser-docker-v0 \
+  --base-path "$BASE_PATH" \
+  --username "$APIGEE_USER" \
+  --password "$APIGEE_PASS" \
+  --organization "$APIGEE_ORG" \
+  --environment "$APIGEE_ENV"
 
 (cd "$SCRIPT_FOLDER"/../../references/cicd-pipeline && \
   npm i && \

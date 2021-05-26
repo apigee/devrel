@@ -138,7 +138,7 @@ if [[ -z "$token" && "$apiversion" = "apigee" ]]; then
       -X POST "https://login.apigee.com/oauth/token$MFA" \
       --data-urlencode "username=$username" \
       --data-urlencode "password=$password" \
-      -d "grant_type=password")
+      --data "grant_type=password")
     token=$(echo "$response" | jq -r '.access_token')
     export token
 elif [ "$apiversion" = "apigee" ]; then

@@ -78,7 +78,8 @@ if [ -f "$temp_folder"/edge.json ]; then
             loginfo "kvm admin status $KVM_ADMIN_STATUS"
 
             if [ "$KVM_ADMIN_STATUS" != "200" ];then
-                "$SCRIPT_FOLDER/deploy.sh" --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
+                loginfo "creating kvm admin proxy"
+                "$SCRIPT_FOLDER/../../bin/sackmesser" deploy --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
                     -o "$organization" -e "$environment"
             fi
 
