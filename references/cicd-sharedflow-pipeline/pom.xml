@@ -45,8 +45,6 @@ limitations under the License.
 		<apigee.env>${env}</apigee.env>
 		<apigee.apitype>sharedflow</apigee.apitype>
 		<apigee.options>override</apigee.options>
-		<apigee.config.dir>${target.root.dir}/resources/edge</apigee.config.dir>
-		<apigee.config.options>update</apigee.config.options>
 	</properties>
 
 	<profiles>
@@ -55,7 +53,6 @@ limitations under the License.
 			<id>apigeeapi</id>
 			<properties>
 				<apigee.deploy.plugin.version>1.2.3</apigee.deploy.plugin.version>
-				<apigee.config.plugin.version>1.4.7</apigee.config.plugin.version>
 				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
 				<apigee.authtype>oauth</apigee.authtype>
 				<apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl> 
@@ -70,7 +67,6 @@ limitations under the License.
 			<id>googleapi</id>
 			<properties>
 				<apigee.deploy.plugin.version>2.1.1</apigee.deploy.plugin.version>
-				<apigee.config.plugin.version>2.1.1</apigee.config.plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 				<apigee.bearer>${token}</apigee.bearer>
 				<apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
@@ -86,11 +82,6 @@ limitations under the License.
 					<artifactId>apigee-edge-maven-plugin</artifactId>
 					<version>${apigee.deploy.plugin.version}</version>
 				</plugin>
-				<plugin>
-					<groupId>com.apigee.edge.config</groupId>
-				    <artifactId>apigee-config-maven-plugin</artifactId>
-				    <version>${apigee.config.plugin.version}</version>
-			    </plugin>
 			</plugins>
 		</pluginManagement>
 
