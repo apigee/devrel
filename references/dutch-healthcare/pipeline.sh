@@ -17,8 +17,7 @@
 set -e
 set -x
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH=$( (cd "$(dirname "$0")" && pwd ))
 
 # deploy shared flows
 (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
