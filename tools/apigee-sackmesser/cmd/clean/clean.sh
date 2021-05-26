@@ -82,11 +82,7 @@ fi
 
 mgmtAPIDelete() {
     loginfo "Sackmesser clean $1"
-    if [ "$apiversion" = "google" ]; then
-        curl -s --fail -X DELETE -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" > /dev/null
-    else
-        curl -u "$username:$password" -s --fail -X DELETE "https://$baseuri/v1/$1" > /dev/null
-    fi
+    curl -fsS -X DELETE -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" > /dev/null
 }
 
 deleteEnvResource() {
@@ -174,9 +170,9 @@ if [ -n "$deleteProxy" ]; then
         deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments")
         for proxy in $deleteProxy; do
             if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[] | select(.apiProxy==\"$proxy\") | .revision"
+                revisionJqPattern=".deployments[]? | select(.apiProxy==\"$proxy\") | .revision"
             else
-                revisionJqPattern=".aPIProxy[] | select(.name==\"$proxy\") | .revision[] | .name"
+                revisionJqPattern=".aPIProxy[]? | select(.name==\"$proxy\") | .revision[] | .name"
             fi
             echo "$deployments" | jq -r -c "$revisionJqPattern" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/apis/$proxy/revisions/$revision/deployments"
@@ -194,9 +190,9 @@ if [ -n "$deleteSharedflow" ]; then
         deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true")
         for sharedflow in $deleteSharedflow; do
             if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[] | select(.apiProxy==\"$sharedflow\") | .revision"
+                revisionJqPattern=".deployments[]? | select(.apiProxy==\"$sharedflow\") | .revision"
             else
-                revisionJqPattern=".aPIProxy[] | select(.name==\"$sharedflow\") | .revision[] | .name"
+                revisionJqPattern=".aPIProxy[]? | select(.name==\"$sharedflow\") | .revision[] | .name"
             fi
             echo "$deployments" | jq -r -c --arg API_PROXY "$sharedflow" "$revisionJqPattern" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/sharedflows/$sharedflow/revisions/$revision/deployments"

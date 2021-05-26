@@ -7,6 +7,8 @@ The Apigee Sackmesser lets you deploy API proxies, shared flows and
 configuration to Apigee Edge as well as hybrid/X without writing any additional
 manifest files.
 
+Please note that Apigee Private Cloud (OPDK) is not yet supported at this time.
+
 Sackmesser can be used either as a commandline tool or a Docker
 container. To use it as a CLI you can add it to your path:
 
