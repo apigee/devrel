@@ -137,31 +137,6 @@ if [ -n "$deleteDeveloper" ]; then
     deleteOrgResource "$deleteDeveloper" 'developers'
 fi
 
-if [ -n "$deleteKvm" ]; then
-    if [ "$deleteKvm" = "all" ];then
-        deleteOrgResource 'all' 'keyvaluemaps'
-        deleteEnvResource 'all' 'keyvaluemaps'
-    else
-        mgmtAPIDelete "organizations/$organization/$deleteKvm"
-    fi
-fi
-
-if [ -n "$deleteCache" ]; then
-    deleteEnvResource "$deleteCache" 'caches'
-fi
-
-if [ -n "$deleteTargetServer" ]; then
-    deleteEnvResource "$deleteTargetServer" 'targetservers'
-fi
-
-if [ -n "$deleteKeystore" ]; then
-    deleteEnvResource "$deleteKeystore" 'keystores'
-fi
-
-if [ -n "$deleteReference" ]; then
-    deleteEnvResource "$deleteReference" 'references'
-fi
-
 if [ -n "$deleteProxy" ]; then
     if [ "$deleteProxy" = "all" ];then
         deleteProxy=$(sackmesser list "organizations/$organization/apis" | jq -r '.[]|.')
@@ -202,3 +177,27 @@ if [ -n "$deleteSharedflow" ]; then
     done
 fi
 
+if [ -n "$deleteKvm" ]; then
+    if [ "$deleteKvm" = "all" ];then
+        deleteOrgResource 'all' 'keyvaluemaps'
+        deleteEnvResource 'all' 'keyvaluemaps'
+    else
+        mgmtAPIDelete "organizations/$organization/$deleteKvm"
+    fi
+fi
+
+if [ -n "$deleteCache" ]; then
+    deleteEnvResource "$deleteCache" 'caches'
+fi
+
+if [ -n "$deleteTargetServer" ]; then
+    deleteEnvResource "$deleteTargetServer" 'targetservers'
+fi
+
+if [ -n "$deleteKeystore" ]; then
+    deleteEnvResource "$deleteKeystore" 'keystores'
+fi
+
+if [ -n "$deleteReference" ]; then
+    deleteEnvResource "$deleteReference" 'references'
+fi
