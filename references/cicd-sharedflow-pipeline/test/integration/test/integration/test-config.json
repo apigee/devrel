@@ -1,0 +1,6 @@
+{
+	"api": {
+		"domain": "demo-test.apigee.net",
+		"basepath": "/test-sf-security-v1"
+	}
+}
