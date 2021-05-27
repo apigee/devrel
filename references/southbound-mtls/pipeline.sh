@@ -30,6 +30,7 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 TEST_BASEPATH='/badssl/v0'
 sed -i.bak "s/@ENV_NAME@/$APIGEE_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
+sed -i.bak "s|@CERT_PATH@|$TEMP_DIR/badssl.com-client.p12|g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
 
 sackmesser deploy \
 --apigeeapi \
@@ -51,6 +52,7 @@ APIGEE_TOKEN=$(gcloud auth print-access-token);
 
 cp "$SCRIPTPATH"/edge.template.json "$SCRIPTPATH"/edge.json
 sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
+sed -i.bak "s|@CERT_PATH@|$TEMP_DIR/badssl.com-client.p12|g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
 
 sackmesser deploy \
 --googleapi \

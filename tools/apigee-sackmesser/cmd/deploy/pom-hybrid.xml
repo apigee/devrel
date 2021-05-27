@@ -109,75 +109,75 @@ limitations under the License.
 				<executions>
                     <execution>
                         <id>create-config-references</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>references</goal>
                         </goals>
                     </execution>
+					<execution>
+						<id>create-config-keystores</id>
+						<phase>install</phase>
+						<goals>
+							<goal>keystores</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>create-config-aliases</id>
+						<phase>install</phase>
+						<goals>
+							<goal>aliases</goal>
+						</goals>
+					</execution>
                     <execution>
                         <id>create-config-targetserver</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>targetservers</goal>
                         </goals>
                     </execution>
-					<execution>
-                        <id>create-config-keystores</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>keystores</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-aliases</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>aliases</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>create-config-kvm</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>keyvaluemaps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-resourcefiles</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>resourcefiles</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-apiproduct</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>apiproducts</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-developer</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>developers</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-app</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>apps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-reports</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>reports</goal>
                         </goals>
                     </execution>
-                    <execution> 
+                    <execution>
                         <id>create-config-flowhooks</id>
                         <phase>install</phase>
                         <goals>
