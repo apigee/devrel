@@ -22,7 +22,8 @@ SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 "$SCRIPT_FOLDER"/build.sh -t apigee-sackmesser
 
 PATH="$PATH:$SCRIPT_FOLDER/bin"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_X_TOKEN=$(gcloud auth print-access-token)
+unset APIGEE_TOKEN
 
 # Test Sackmesser Deploy
 # (Using another DevRel API Proxy for testing this tool)
@@ -35,7 +36,7 @@ sackmesser deploy \
   -d "$SCRIPT_FOLDER"/../../references/cicd-pipeline \
   -n sackmesser-cli-v0 \
   -b "$BASE_PATH" \
-  -t "$APIGEE_TOKEN" \
+  -t "$APIGEE_X_TOKEN" \
   -o "$APIGEE_X_ORG" \
   -e "$APIGEE_X_ENV"
 
@@ -50,13 +51,13 @@ BASE_PATH="/sackmesser/v1/docker"
 
 docker run apigee-sackmesser deploy \
   --apigeeapi \
-  -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
-  -n sackmesser-docker-v0 \
-  -b "$BASE_PATH" \
-  -u "$APIGEE_USER" \
-  -p "$APIGEE_PASS" \
-  -o "$APIGEE_ORG" \
-  -e "$APIGEE_ENV"
+  --github https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
+  --name sackmesser-docker-v0 \
+  --base-path "$BASE_PATH" \
+  --username "$APIGEE_USER" \
+  --password "$APIGEE_PASS" \
+  --organization "$APIGEE_ORG" \
+  --environment "$APIGEE_ENV"
 
 (cd "$SCRIPT_FOLDER"/../../references/cicd-pipeline && \
   npm i && \
@@ -66,12 +67,12 @@ docker run apigee-sackmesser deploy \
 
 # Test Sackmesser List
 # (List all proxies to find the previously deployed API proxy)
-sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-cli-v0"
+sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-cli-v0"
 
 docker run apigee-sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis" | grep "sackmesser-docker-v0"
 
 # Test Sackmesser Export
-sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_TOKEN"
+sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_X_TOKEN"
 if [ ! -d  "$APIGEE_X_ORG/proxies/sackmesser-cli-v0" ]; then
   echo "export failed"
   exit 1
@@ -84,14 +85,14 @@ docker run --entrypoint /bin/bash apigee-sackmesser -c "sackmesser export --apig
 sackmesser clean proxy sackmesser-docker-v0 --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
 proxiesremaining=$(sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis")
 if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-docker-v0"))')" != "[]" ];then
-  logerror "failed to delete"
+  echo "failed to delete"
   exit 1
 fi
 
-docker run apigee-sackmesser clean proxy sackmesser-cli-v0 --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet
+docker run apigee-sackmesser clean proxy sackmesser-cli-v0 --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 
-proxiesremaining=$(sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/apis")
+proxiesremaining=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apis")
 if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-cli-v0"))')" != "[]" ];then
-  logerror "failed to delete proxy"
+  echo "failed to delete proxy"
   exit 1
 fi

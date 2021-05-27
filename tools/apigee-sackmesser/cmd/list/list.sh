@@ -25,9 +25,9 @@ path="$1"
 
 loginfo "Sackmesser list $path"
 
-if [ "$apiversion" = "google" ]; then
-    jq_pattern='.'
+jq_pattern='.'
 
+if [ "$apiversion" = "google" ]; then
     case "$path" in
         *developers) jq_pattern='[.developer[]?|.email]';;
         *apis) jq_pattern='[.proxies[]?|.name]';;
@@ -35,8 +35,6 @@ if [ "$apiversion" = "google" ]; then
         *apps) jq_pattern='[.app[]?|.appId]';;
         *apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
     esac
-
-    curl -s -X GET -H "Authorization: Bearer $token" "https://$baseuri/v1/$path" | jq "$jq_pattern"
-else
-    curl -u "$username:$password" -s -X GET "https://$baseuri/v1/$path" | jq '.'
 fi
+
+curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$path" | jq "$jq_pattern"
