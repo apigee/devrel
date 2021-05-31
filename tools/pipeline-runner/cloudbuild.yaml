@@ -56,7 +56,7 @@ steps:
   args:
     - "-c"
     - |-
-      max_duration=120 #4380 # cloud build timeout minus 2m
+      max_duration=4380 # cloud build timeout minus 2m
       source env.txt && \
       if [ -n "$_PR_NUMBER" ]; then
         PROJECTS=$(list-repo-changes.sh)
@@ -81,7 +81,7 @@ steps:
   args:
     - "-c"
     - |-
-      if [ ! -f ./pipeline-result.txt ];then echo "PIPELINE Timeout;fail;[max duration]" > ./pipeline-result.txt;fi
+      if [ ! -f ./pipeline-result.txt ];then echo "Pipeline Timeout;fail;[max duration]" > ./pipeline-result.txt;fi
       source env.txt && cat ./pipeline-result.txt | github-api.sh
   env:
   - 'BUILD_ID=$BUILD_ID'
@@ -98,7 +98,7 @@ steps:
     - "-c"
     - |-
       ! grep -q "fail" ./pipeline-result.txt
-timeout: 300s #4500s # 75min
+timeout: 4500s # 75min
 substitutions:
   _APIGEE_ORG: my-org
   _APIGEE_ENV: my-env
