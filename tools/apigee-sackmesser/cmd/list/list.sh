@@ -23,7 +23,7 @@ source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
 path="$1"
 
-loginfo "Sackmesser list $path"
+logdebug "Sackmesser list $path"
 
 jq_pattern='.'
 
