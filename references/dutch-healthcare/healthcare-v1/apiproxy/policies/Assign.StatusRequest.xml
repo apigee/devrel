@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 <AssignMessage name="Assign.StatusRequest">
-  <AssignTo createNew="true" type="request"/>
+  <AssignTo createNew="false" type="request"/>
   <Set>
     <Path>/metadata</Path>
     <Verb>GET</Verb>

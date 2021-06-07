@@ -53,6 +53,7 @@ Options:
 -p,--password, Apigee User Password (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
 -u,--username, Apigee User Name (Edge only)
+--async, Asynchronous deployment option (X,hybrid only)
 --description, Human friendly proxy or shared flow description
 --debug, show verbose debug output
 ```

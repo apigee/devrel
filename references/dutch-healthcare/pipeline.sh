@@ -15,15 +15,17 @@
 # limitations under the License.
 
 set -e
-set -x
 
 SCRIPTPATH=$( (cd "$(dirname "$0")" && pwd ))
 
+APIGEE_TOKEN=$(gcloud auth print-access-token);
+export APIGEE_TOKEN
+
 # deploy shared flows
-(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi --async)
 
 ARGS=$*
-SACK_ARGS="${ARGS:---apigeeapi}"
+SACK_ARGS="${ARGS:---googleapi}"
 
 bash "$SCRIPTPATH"/../../tools/apigee-sackmesser/bin/sackmesser deploy \
   -d healthcare-mock-v1 "$SACK_ARGS"
@@ -32,4 +34,4 @@ bash "$SCRIPTPATH"/../../tools/apigee-sackmesser/bin/sackmesser deploy \
   -d healthcare-v1 "$SACK_ARGS"
 
 npm i --no-fund --prefix healthcare-v1
-npm test --prefix healthcare-v1
+TEST_BASEPATH='/healthcare/v1' TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix healthcare-v1
