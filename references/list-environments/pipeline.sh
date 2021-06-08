@@ -1,12 +1,11 @@
 #!/bin/sh
-
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# <http://www.apache.org/licenses/LICENSE-2.0>
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +15,7 @@
 
 set -e
 
-curl -sf "https://apigee.googleapis.com/v1/organizations/$1" \
-  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  | jq ".environments[]" -r
+SCRIPT_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
+# some test commands to check it works
+sh "$SCRIPT_ROOT/script.sh"
