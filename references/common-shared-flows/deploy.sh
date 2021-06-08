@@ -16,11 +16,13 @@
 set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+APIGEE_TOKEN=$(gcloud auth print-access-token);
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --apigeeapi) apiversion="$1"; shift 1;;
     --googleapi) apiversion="$1"; shift 1;;
+    --async) async_flag="--async"; shift 1;;
     *) sf_to_deploy="$1"; shift 1;;
   esac
 done
@@ -33,7 +35,7 @@ else
 fi
 
 if [ "$sf_to_deploy" = "all" ]; then
-  sf_to_deploy="$(cd "$SCRIPTPATH" && echo ./*/)"
+  sf_to_deploy="$(cd "$SCRIPTPATH" && ls -d "$PWD"/*/)"
 fi
 
 echo "[INFO] deploying $sf_to_deploy"
@@ -43,7 +45,7 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 for SF in $sf_to_deploy; do
   if [ "$apiversion" = "--googleapi" ]; then
-    sackmesser deploy -d "$SF" "$apiversion" \
+    sackmesser deploy -d "$SF" "$apiversion" "$async_flag" \
       -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
       --description "See Apigee DevRel references/common-shared-flows"
   elif [ "$apiversion" = "--apigeeapi" ]; then
@@ -55,3 +57,10 @@ for SF in $sf_to_deploy; do
     exit 1
   fi
 done
+
+if [ -n "$async_flag" ] && [ "$apiversion" = "--googleapi" ]; then
+  for SF in $sf_to_deploy; do
+    sackmesser await sharedflow "$(basename "$SF")" "$apiversion" \
+      -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
+  done
+fi

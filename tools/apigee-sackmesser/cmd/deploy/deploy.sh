@@ -147,7 +147,8 @@ if [ "$apiversion" = "google" ]; then
         -Dhosturi="$baseuri" \
         -Dproxy.name="$bundle_name" \
         -Dtoken="$token" \
-        -Dapigee.config.options=${config_action:-none})
+        -Dapigee.options="${deploy_options:-override}" \
+        -Dapigee.config.options="${config_action:-none}")
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
@@ -160,5 +161,6 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dproxy.name="$bundle_name" \
         -Dtoken="$token" \
         -Dmfa="$mfa" \
-        -Dapigee.config.options=${config_action:-none})
+        -Dapigee.options="${deploy_options:-override}" \
+        -Dapigee.config.options="${config_action:-none}")
 fi

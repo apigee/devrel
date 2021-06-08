@@ -29,6 +29,7 @@ Commands:
 deploy
 list
 export
+await
 help
 clean
 
@@ -47,6 +48,7 @@ Options:
 -p,--password, Apigee User Password (Edge only)
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
 -u,--username, Apigee User Name (Edge only)
+--async, Asynchronous deployment option (X,hybrid only)
 --description, Human friendly proxy or shared flow description
 --debug, show verbose debug output
 EOF
@@ -80,6 +82,7 @@ while [ "$#" -gt 0 ]; do
     -h) export hostname="$2"; shift 2;;
     -L) export baseuri="$2"; shift 2;;
 
+    --async) export deploy_options="async"; shift 1;;
     --directory) export directory="${2}"; shift 2;;
     --github) export url="${2}"; shift 2;;
     --token) export token="${2}"; shift 2;;

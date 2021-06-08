@@ -65,6 +65,14 @@ docker run apigee-sackmesser deploy \
   TEST_BASE_PATH="$BASE_PATH" \
   npm run integration-test)
 
+# Test Sackmesser Await
+# (Test readiness of the deployed API proxy)
+sackmesser await --googleapi -t "$APIGEE_X_TOKEN" proxy "sackmesser-cli-v0"
+
+docker run apigee-sackmesser await --apigeeapi --username "$APIGEE_USER" \
+  --password "$APIGEE_PASS" --organization "$APIGEE_ORG" \
+  --environment "$APIGEE_ENV" proxy "sackmesser-docker-v0"
+
 # Test Sackmesser List
 # (List all proxies to find the previously deployed API proxy)
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-cli-v0"
