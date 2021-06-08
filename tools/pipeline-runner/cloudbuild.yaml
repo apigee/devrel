@@ -75,13 +75,14 @@ steps:
   - 'APIGEE_X_HOSTNAME=$_APIGEE_X_HOSTNAME'
   - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
   - 'X_TRIAL_GCP_PROJECT=$_X_TRIAL_GCP_PROJECT'
+  - 'ASYNC_PIPELINE=$_ASYNC_PIPELINE'
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   id: 'Create GH Comment or Issue'
   entrypoint: "bash"
   args:
     - "-c"
     - |-
-      if [ ! -f ./pipeline-result.txt ];then echo "Pipeline Timeout;fail;[max duration]" > ./pipeline-result.txt;fi
+      if [ ! -f ./pipeline-result.txt ] || [ ! grep -q "TOTAL PIPELINE" ./pipeline-result.txt ];then echo "Pipeline Timeout;fail;[max duration]" > ./pipeline-result.txt;fi
       source env.txt && cat ./pipeline-result.txt | github-api.sh
   env:
   - 'BUILD_ID=$BUILD_ID'
@@ -111,4 +112,5 @@ substitutions:
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
   _GH_BOT_NAME: "apigee-devrel-bot"
+  _ASYNC_PIPELINE: "false" # true|false
   # _PR_NUMBER: # automatically set for PRs
