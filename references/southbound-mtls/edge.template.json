@@ -37,7 +37,7 @@
           "alias": "badSSLClientCert",
           "keystorename": "badSSLKeyStore",
           "format": "pkcs12",
-          "filePath": "./tmp/badssl.com-client.p12",
+          "filePath": "@CERT_PATH@",
           "password": "badssl.com"
         }
       ]

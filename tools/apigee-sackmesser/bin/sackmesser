@@ -17,12 +17,138 @@
 set -e
 
 SACKMESSER_ROOT=$( (cd "$(dirname "$0")" && cd .. && pwd ))
+source "$SACKMESSER_ROOT/lib/logutils.sh"
 
-CMD_TYPE=$1
+print_usage() {
+    cat << EOF
+usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | -u USER -p PASSWORD] [options]
 
-if [ -z "$CMD_TYPE" ];then
-    echo "provide a command"
-else
-    echo "$CMD_TYPE"
-    bash "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh "${@:2}"
+Apigee Sackmesser utility.
+
+Commands:
+deploy
+list
+export
+await
+help
+clean
+
+Options:
+--googleapi (default), use apigee.googleapis.com (for X, hybrid)
+--apigeeapi, use api.enterprise.apigee.com (for Edge)
+-b,--base-path, overrides the default base path for the API proxy
+-d,--directory, path to the apiproxy or shared flow bundle to be deployed
+-e,--environment, Apigee environment name
+-g,--github, Link to proxy or shared flow bundle on github
+-h,--hostname, publicly reachable hostname for the environment
+-L,--baseuri, override default baseuri for the Management API / Apigee API
+-m,--mfa, Apigee MFA code (Edge only)
+-n,--name, Overrides the default API proxy or shared flow name
+-o,--organization, Apigee organization name
+-p,--password, Apigee User Password (Edge only)
+-t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
+-u,--username, Apigee User Name (Edge only)
+--async, Asynchronous deployment option (X,hybrid only)
+--description, Human friendly proxy or shared flow description
+--debug, show verbose debug output
+EOF
+}
+
+CMD_TYPE="$1"
+
+if [ -z "$CMD_TYPE" ] || [ "$CMD_TYPE" = "help" ]; then
+    print_usage
+    exit 0
+elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh ];then
+    logerror "Please provide a valid command"
+    exit 1
 fi
+
+shift 1
+posArgs=()
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -b) export base_path="$2"; shift 2;;
+    -d) export directory="$2"; shift 2;;
+    -e) export environment="$2"; shift 2;;
+    -g) export url="$2"; shift 2;;
+    -m) export mfa="$2"; shift 2;;
+    -n) export bundle_name="$2"; shift 2;;
+    -o) export organization="$2"; shift 2;;
+    -p) export password="$2"; shift 2;;
+    -t) export token="$2"; shift 2;;
+    -u) export username="$2"; shift 2;;
+    -h) export hostname="$2"; shift 2;;
+    -L) export baseuri="$2"; shift 2;;
+
+    --async) export deploy_options="async"; shift 1;;
+    --directory) export directory="${2}"; shift 2;;
+    --github) export url="${2}"; shift 2;;
+    --token) export token="${2}"; shift 2;;
+    --mfa) export mfa="${2}"; shift 2;;
+    --name) export bundle_name="${2}"; shift 2;;
+    --base-path) export base_path="${2}"; shift 2;;
+    --username) export username="${2}"; shift 2;;
+    --password) export password="${2}"; shift 2;;
+    --environment) export environment="${2}"; shift 2;;
+    --organization) export organization="${2}"; shift 2;;
+    --hostname) export hostname="${2}"; shift 2;;
+    --description) export description="${2}"; shift 2;;
+    --baseuri) export baseuri="${2}"; shift 2;;
+    --debug) export debug="T"; shift 1;;
+    --quiet) export quiet="T"; shift 1;;
+
+    --apigeeapi) export apiversion="apigee"; shift 1;;
+    --googleapi) export apiversion="google"; shift 1;;
+
+    -*) echo "[FATAL] unknown option: $1" >&2; exit 1;;
+    *) posArgs+=("$1"); shift 1;;
+  esac
+done
+
+if [[ -z "$apiversion" ]]; then
+    logdebug "using default API version: Google API (apigee.googleapis.com)"
+    logdebug "for Apigee Edge (api.enterprise.apigee.com) please specify --apigeeapi"
+    export apiversion="google"
+fi
+
+if [ "$apiversion" = "google" ];then
+    export token=${token:-$APIGEE_TOKEN}
+    export organization=${organization:-$APIGEE_X_ORG}
+    export environment=${environment:-$APIGEE_X_ENV}
+    export hostname=${hostname:-$APIGEE_X_HOSTNAME}
+    export baseuri=${baseuri:-apigee.googleapis.com}
+else
+    export password=${password:-$APIGEE_PASS}
+    export username=${username:-$APIGEE_USER}
+    export organization=${organization:-$APIGEE_ORG}
+    export environment=${environment:-$APIGEE_ENV}
+    export baseuri=${baseuri:-api.enterprise.apigee.com}
+fi
+
+if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
+    echo "[FATAL] required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
+    exit 1
+fi
+
+if [[ -z "$token" && "$apiversion" = "apigee" ]]; then
+    if [ -z "$mfa" ]; then MFA=""; else MFA="?mfa_token=$mfa"; fi
+    logdebug "Getting Apigee OAuth2 token for user $username"
+    response=$(curl -fsS -H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" \
+      -H "Accept: application/json;charset=utf-8" \
+      -H "Authorization: Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0" \
+      -X POST "https://login.apigee.com/oauth/token$MFA" \
+      --data-urlencode "username=$username" \
+      --data-urlencode "password=$password" \
+      --data "grant_type=password")
+    token=$(echo "$response" | jq -r '.access_token')
+    export token
+elif [ "$apiversion" = "apigee" ]; then
+    export token=${token:-$APIGEE_TOKEN}
+fi
+
+logdebug "Apigee OAuth2 access token: ${token:0:8}..."
+
+logdebug "Sackmesser command: $CMD_TYPE"
+"$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh "${posArgs[@]}"

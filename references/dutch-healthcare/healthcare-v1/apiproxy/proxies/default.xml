@@ -1,0 +1,121 @@
+<!--
+ Copyright 2020 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<ProxyEndpoint name="default">
+
+  <DefaultFaultRule>
+    <AlwaysEnforce>true</AlwaysEnforce>	
+    <Step>
+      <Name>Shared.AddCORSHeaders</Name>
+    </Step>
+    <Step>
+      <Name>Shared.ErrorHandling</Name>
+    </Step>
+  </DefaultFaultRule>
+  <FaultRules>
+    <FaultRule name="Proxy Faults">
+      <Step>
+        <Name>JS.PopulateProxyErrorVariables</Name>
+      </Step>
+    </FaultRule>
+  </FaultRules>
+
+  <PreFlow>
+    <Request>
+      <Step>
+        <Name>Shared.TrafficManagement</Name>
+      </Step>
+    </Request>
+  </PreFlow>
+
+  <Flows>
+
+    <Flow name="GET /ping">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>Shared.Ping</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+    <Flow name="GET /status">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/status"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>Shared.Status</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+    <!-- insert your flows here for mediation-->
+    <Flow name="GET /AllergyIntolerance/*">
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/AllergyIntolerance/*"
+      </Condition>
+      <Response>
+        <Step>
+          <Name>JS.EnrichAllergyResponse</Name>
+        </Step>
+      </Response>
+    </Flow>
+
+
+  </Flows>
+
+  <PostFlow>
+    <Response>
+      <Step>
+        <Name>Shared.AddCORSHeaders</Name>
+      </Step>
+    </Response>
+  </PostFlow>
+
+  <!-- Uncomment for Third Party Logging -->
+  <!--PostClientFlow>
+    <Response>
+      <Step>
+        <Name>Shared.Logging</Name>
+      </Step>
+    </Response>
+  </PostClientFlow-->
+
+  <HTTPProxyConnection>
+    <BasePath>/healthcare/v1</BasePath>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+
+  <RouteRule name="no-route">
+    <Condition>(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") or request.verb = "OPTIONS"</Condition>
+  </RouteRule>
+  <RouteRule name="alternate">
+    <TargetEndpoint>alternate</TargetEndpoint>
+    <Condition>
+      custom.alternateBackend = true
+    </Condition>
+  </RouteRule>
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
+  </RouteRule>
+
+
+  <RouteRule name="no target"/>
+
+</ProxyEndpoint>

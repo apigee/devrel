@@ -1,0 +1,28 @@
+{
+	"name": "apigee-sharedflow-ci-cd",
+	"version": "1.0.0",
+	"description": "Sample Sharedflow for CI/CD Reference",
+	"author": "ssvaidyanathan",
+	"license": "Apache-2.0",
+	"licenses": [
+		{
+			"type": "Apache-2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0"
+		}
+	],
+	"scripts": {
+		"eslint": "eslint --format json",
+		"apigeelint-sharedflow": "apigeelint -s ./sharedflowbundle -f table.js",
+		"apigeelint-proxy": "apigeelint -s ./test/integration/apiproxy -f table.js -e TD002,PO012",
+		"lint": "npm run eslint && npm run apigeelint-sharedflow && npm run apigeelint-proxy",
+		"integration-test": "cucumber-js ./test/integration/target/test/integration"
+	},
+	"devDependencies": {
+		"eslint": "^7.0.0",
+		"eslint-config-google": "^0.14.0",
+		"eslint-config-prettier": "^6.11.0",
+		"apigeelint": "^2.6.0",
+		"apickli": "^2.3.3",
+		"cucumber": "^7.0.0-rc.0"
+	}
+}

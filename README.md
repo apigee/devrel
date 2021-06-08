@@ -24,6 +24,9 @@ further to fit a particular use case.
 - [CI/CD Pipeline](references/cicd-pipeline) -
   Reference implementation for a CI/CD Pipeline using the Apigee
   Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
+- [CI/CD Pipeline for SharedFlows](references/cicd-sharedflow-pipeline) -
+  Reference implementation for a CI/CD Pipeline for Sharedflows using the Apigee
+  Deploy Maven Plugin
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
@@ -39,6 +42,8 @@ further to fit a particular use case.
   compliant identity provider
 - [KVM Admin API](references/kvm-admin-api) -
   Generic API proxy to provide Create, Read and Delete operations for KVMs
+- [Dutch Healthcare Reference](references/dutch-healthcare) -
+  An API reference to accelerate implementation of Dutch Healthcare standards.
 
 ## Tools
 
