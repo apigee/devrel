@@ -60,8 +60,12 @@ steps:
       source env.txt && \
       if [ -n "$_PR_NUMBER" ]; then
         PROJECTS=$(list-repo-changes.sh)
-        echo "PR includes changes in $$PROJECTS"
-        timeout "$$max_duration" run-pipelines.sh "$$PROJECTS" || true
+        if [ -z "$$PROJECTS" ]; then
+          echo "TOTAL PIPELINE (no change);pass;0" > ./pipeline-result.txt
+        else
+          echo "PR includes changes in $$PROJECTS"
+          timeout "$$max_duration" run-pipelines.sh "$$PROJECTS" || true
+        fi
       elif [ "$_CI_PROJECT" = "all" ]; then
         timeout "$$max_duration" run-pipelines.sh || true
       else

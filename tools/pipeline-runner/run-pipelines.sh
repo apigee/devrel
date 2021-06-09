@@ -28,7 +28,7 @@ append_pipeline_result() {
 run_single_pipeline() {
   DIR=$1
   STARTTIME=$(date +%s)
-  (cd "$DIR" && ./pipeline.sh 2>&1 | sed "s#^#[$DIR] #")
+  (cd "$DIR" && ./pipeline.sh)
   PIPELINE_EXIT=$?
   ENDTIME=$(date +%s)
   append_pipeline_result "$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
