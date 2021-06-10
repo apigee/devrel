@@ -19,5 +19,5 @@
     </CacheKey>
     <CacheResource>IDP_JWKS_CACHE</CacheResource>
     <Scope>Exclusive</Scope>
-    <AssignTo>private.flow.idp.jwks_payload</AssignTo>
+    <AssignTo>jwks</AssignTo>
 </LookupCache>
