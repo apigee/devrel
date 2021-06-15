@@ -77,7 +77,7 @@ gcloud services enable containerregistry.googleapis.com run.googleapis.com
 gcloud auth configure-docker -q
 
 cat > Dockerfile <<EOF
-FROM openlegacy/as400-rpc:latest
+FROM openlegacy/as400-rpc:1.1.9
 RUN mkdir -p /tmp/data
 RUN echo '{ \
   "source-provider": { \
