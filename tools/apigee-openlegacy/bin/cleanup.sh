@@ -10,7 +10,7 @@ ol login --api-key "$OPENLEGACY_APIKEY"
 ol delete project aok-project
 ol delete module aok-module
 
-# Cleanup Apigee Assets
+# Cleanup Apigee Assets - TODO switch to sackmesser for 5g cleanup
 npx apigeetool deleteApp -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --name "AOKApp"
 npx apigeetool deleteDeveloper -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --email "aok@example.com"
 npx apigeetool deleteProduct -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --productName "ApigeeOpenLegacy"
