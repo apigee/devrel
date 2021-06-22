@@ -1,0 +1,14 @@
+{
+    "name": "apigee-devrel/apigee_edge_custom_mgmt_api_proxy",
+    "license": "GPL-2.0-or-later",
+    "type": "drupal-module",
+    "description": "Drupal module to override MGMT API endpoint with a custom proxy endpoint",
+    "require": {
+        "drupal/apigee_edge": "^1.18"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
