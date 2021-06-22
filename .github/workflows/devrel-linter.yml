@@ -54,6 +54,10 @@ jobs:
           VALIDATE_GHERKIN: false
           VALIDATE_JSCPD: false
           LINTER_RULES_PATH: '.'
+          VALIDATE_PHP_PHPCS: false
+
+      - name: Drupal coding standards
+        uses: guix77/phpcs-drupal-action@v1.0.0
 
       - name: Check README and CODEOWNER index
         uses: ./tools/pipeline-linter
