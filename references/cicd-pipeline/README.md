@@ -10,10 +10,10 @@ The CICD pipeline consists of:
   deployment of feature branches as separate proxies in the same environment
 - Static code analysis using [eslint](https://eslint.org/)
 - Unit testing using [mocha](https://mochajs.org/)
-- Integration testing of the deployed proxy using
-  [apickli](https://github.com/apickli/apickli)
 - Packaging and deployment of the API proxy bundle using
   [Apigee Deploy Maven Plugin](https://github.com/apigee/apigee-deploy-maven-plugin)
+- Integration testing of the deployed proxy using
+  [apickli](https://github.com/apickli/apickli)
 
 ## Development
 

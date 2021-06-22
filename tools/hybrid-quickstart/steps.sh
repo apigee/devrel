@@ -36,7 +36,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
 
-    export APIGEE_CTL_VERSION='1.4.2'
+    export APIGEE_CTL_VERSION='1.5.0'
     export KPT_VERSION='v0.34.0'
     export CERT_MANAGER_VERSION='v1.1.0'
     export ASM_VERSION='1.8'
@@ -460,10 +460,7 @@ create_self_signed_cert() {
 }
 
 create_sa() {
-    for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
-    do
-      yes | "$APIGEECTL_HOME"/tools/create-service-account "apigee-$SA" "$HYBRID_HOME/service-accounts"
-    done
+  yes | "$APIGEECTL_HOME"/tools/create-service-account -e prod -d "$HYBRID_HOME/service-accounts"
 }
 
 install_runtime() {
@@ -516,12 +513,12 @@ EOF
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
     "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
-    echo -n "⏳ Waiting for Apigeectl init "
+    sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
 
     "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
-    echo -n "⏳ Waiting for Apigeectl apply "
+    sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl apply: done."
 
     popd || return

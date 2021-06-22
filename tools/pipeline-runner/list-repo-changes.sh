@@ -16,5 +16,6 @@
 git fetch origin
 
 git diff --name-only origin/main | \
+    grep -v '\.md$' | \
     grep "labs/\|references/\|tools/" | \
     awk -F '/' '{ print $1 "/" $2}' | uniq | paste -sd , -

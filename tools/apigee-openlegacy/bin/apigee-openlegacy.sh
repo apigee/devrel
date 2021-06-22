@@ -51,7 +51,7 @@ GCP_REGION=${GCP_REGION:-europe-west1}
 # Check for required tools on path
 ###
 
-for TOOL in unzip ol gcloud jq node npm; do
+for TOOL in unzip ol gcloud jq node npm sackmesser; do
   if ! which $TOOL > /dev/null; then
     echo "Please ensure $TOOL is installed and on your PATH"
     exit 1
@@ -77,7 +77,7 @@ gcloud services enable containerregistry.googleapis.com run.googleapis.com
 gcloud auth configure-docker -q
 
 cat > Dockerfile <<EOF
-FROM openlegacy/as400-rpc:1.1.2
+FROM openlegacy/as400-rpc:1.1.9
 RUN mkdir -p /tmp/data
 RUN echo '{ \
   "source-provider": { \
@@ -147,7 +147,7 @@ EOF
 # Deploy Shared Flow to manage JWT token to OpenLegacy
 ###
 
-npm run deploy --prefix "$SCRIPTPATH"/../../../references/gcp-sa-auth-shared-flow
+sh "$SCRIPTPATH"/../../../references/gcp-sa-auth-shared-flow/deploy.sh --apigeeapi
 
 ###
 # Generate the Apigee Proxy
@@ -183,7 +183,7 @@ sleep 60 # service account can take up to 60 seconds to propogate
 # run some smoke tests
 ###
 
-APIKEY=APIKEY npm test --prefix ./aok-v1
+APIKEY=$APIKEY npm test --prefix ./aok-v1
 
 ### print result
 echo "Successfully Apigee OpenLegacy Kickstarter. API key is $APIKEY"

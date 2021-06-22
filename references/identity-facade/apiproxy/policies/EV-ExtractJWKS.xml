@@ -14,7 +14,7 @@
 <ExtractVariables name="EV-ExtractJWKS">
     <Source>jwks</Source>
     <JSONPayload>
-        <Variable name="private.flow.idp.jwks_payload" type="string">
+        <Variable name="flow.idp.jwks_payload" type="string">
             <JSONPath>$</JSONPath>
         </Variable>
     </JSONPayload>

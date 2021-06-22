@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Test-SF-SecurityProduct",
+        "displayName": "Test-SF-SecurityProduct",
+        "description": "Test-SF-SecurityProduct",
+        "apiResources": [
+            "/**",
+            "/"
+        ],
+        "approvalType": "auto",
+        "attributes": [
+            {
+                "name": "description",
+                "value": "Test-SF-SecurityProduct"
+            }
+        ],
+        "environments": [
+            "@env"
+        ],
+        "proxies": [
+            "Test-SF-Security-v1"
+        ],
+        "scopes": []
+    }
+]

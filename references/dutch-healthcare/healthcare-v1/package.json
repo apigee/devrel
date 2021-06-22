@@ -1,0 +1,14 @@
+{
+  "name": "healthcare-v1",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npm i && npx cucumber-js --retry 3 test"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "apickli": "^2.3.1",
+    "apigeetool": "^0.10.0",
+    "cucumber": "^5.1.0",
+    "sleep-promise": "^9.1.0"
+  }
+}

@@ -22,5 +22,5 @@
     <ExpirySettings>
         <TimeoutInSec>3600</TimeoutInSec>
     </ExpirySettings>
-    <Source>private.flow.idp.jwks_payload</Source>
+    <Source>jwks</Source>
 </PopulateCache>

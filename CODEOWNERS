@@ -1,26 +1,30 @@
-*       @seymen @laughingbiscuit
+*       @seymen @danistrebel
 
-/references/apigee-sandbox-v1         @laughingbiscuit
-/references/apimocker-hostedtargets   @laughingbiscuit
 /references/cicd-pipeline             @danistrebel
-/references/common-shared-flows       @laughingbiscuit
+/references/cicd-sharedflow-pipeline  @ssvaidyanathan
 /references/gcp-sa-auth-shared-flow   @danistrebel
 /references/identity-facade           @joelgauci
-/references/java-callout              @laughingbiscuit
 /references/js-callout                @seymen
 /references/oidc-mock                 @joelgauci
 /references/kvm-admin-api             @danistrebel
-/references/proxy-template            @laughingbiscuit
 /references/southbound-mtls           @danistrebel
-/labs/best-practices-hackathon        @laughingbiscuit @sauliuz @seymen
-/tools/organization-cleanup           @laughingbiscuit
-/tools/pipeline-runner                @laughingbiscuit @seymen @danistrebel
-/tools/pipeline-linter                @laughingbiscuit @seymen @danistrebel
+/labs/best-practices-hackathon        @sauliuz @seymen
+/tools/pipeline-runner                @seymen @danistrebel
+/tools/pipeline-linter                @seymen @danistrebel
 /tools/apigee-sackmesser              @danistrebel
-/tools/another-apigee-client          @laughingbiscuit
 /tools/hybrid-quickstart              @danistrebel
 /tools/decrypt-hybrid-assets          @yuriylesyuk
-/tools/oas-to-am                      @laughingbiscuit
 /tools/apigee-x-trial-provision       @yuriylesyuk @danistrebel
 /tools/oas-apigee-mock                @markjkelly
+
+# looking for new owners
+/references/apigee-sandbox-v1         @laughingbiscuit
+/references/apimocker-hostedtargets   @laughingbiscuit
+/references/common-shared-flows       @laughingbiscuit
+/references/dutch-healthcare          @laughingbiscuit
+/references/java-callout              @laughingbiscuit
+/references/proxy-template            @laughingbiscuit
+/tools/organization-cleanup           @laughingbiscuit
+/tools/another-apigee-client          @laughingbiscuit
+/tools/oas-to-am                      @laughingbiscuit
 /tools/apigee-openlegacy              @laughingbiscuit @tomfi

@@ -1,0 +1,12 @@
+{
+    "sharedflowtestuser@enterprise.com": [
+        {
+            "apiProducts": [
+                "Test-SF-SecurityProduct"
+            ],
+            "callbackUrl": "http://localhost:8080",
+            "name": "Test-SF-SecurityApp",
+            "scopes": []
+        }
+    ]
+}
