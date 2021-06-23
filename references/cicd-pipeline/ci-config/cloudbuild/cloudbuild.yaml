@@ -50,28 +50,28 @@ steps:
       # Config based on branch name
       if [ "$BRANCH_NAME" = "main" ]
       then
-        echo "APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
-        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
+        echo "export APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
+        echo "export APIGEE_DEPLOYMENT_SUFFIX=''" >> env.txt
       elif [ "$BRANCH_NAME" = "prod" ]
       then
-        echo "APIGEE_ENV=$_APIGEE_PROD_ENV" >> env.txt
-        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
+        echo "export APIGEE_ENV=$_APIGEE_PROD_ENV" >> env.txt
+        echo "export APIGEE_DEPLOYMENT_SUFFIX=''" >> env.txt
       else
-        echo "APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
-        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=\"-$(echo $BRANCH_NAME | \
+        echo "export APIGEE_ENV=$_APIGEE_TEST_ENV" >> env.txt
+        echo "export APIGEE_DEPLOYMENT_SUFFIX=\"-$(echo $BRANCH_NAME | \
         sed "s/[^A-Za-z0-9]/-/g")\"" >> env.txt
       fi
 
       if [ "$_API_VERSION" = "apigee" ]
       then
-        echo "APIGEE_BUILD_PASS=\"$(gcloud secrets versions access latest \
+        echo "export APIGEE_BUILD_PASS=\"$(gcloud secrets versions access latest \
           --secret=devrel_apigee_pass --format="get(payload.data)" | \
           base64 -d)\"" >> env.txt &&
-        echo "APIGEE_BUILD_USER=\"$(gcloud secrets versions access latest \
+        echo "export APIGEE_BUILD_USER=\"$(gcloud secrets versions access latest \
           --secret=devrel_apigee_user --format="get(payload.data)" | \
           base64 -d)\"" >> env.txt
       else
-        echo "APIGEE_BUILD_TOKEN=\"$(gcloud auth application-default print-access-token)\"" >> env.txt
+        echo "export APIGEE_BUILD_TOKEN=\"$(gcloud auth application-default print-access-token)\"" >> env.txt
       fi
 
       echo "[BUILD CONFIG]"
@@ -95,7 +95,7 @@ steps:
           -Dpassword="$${APIGEE_BUILD_PASS}" \
           -Dusername="$${APIGEE_BUILD_USER}" \
           -Dorg="$_DEPLOYMENT_ORG" \
-          -Ddeployment.suffix="$${APIGEE_BUILD_DEPLOYMENT_SUFFIX}" \
+          -Ddeployment.suffix="$${APIGEE_DEPLOYMENT_SUFFIX}" \
           -Ddeployment.description="CloudRun Build: $BUILD_ID"
       else
         source env.txt && \
@@ -104,7 +104,7 @@ steps:
           -Denv="$${APIGEE_ENV}" \
           -Dtoken="$${APIGEE_BUILD_TOKEN}" \
           -Dorg="$_DEPLOYMENT_ORG" \
-          -Ddeployment.suffix="$${APIGEE_BUILD_DEPLOYMENT_SUFFIX}" \
+          -Ddeployment.suffix="$${APIGEE_DEPLOYMENT_SUFFIX}" \
           -Ddeployment.description="CloudRun Build: $BUILD_ID"
       fi
   # Run integration tests
@@ -114,11 +114,11 @@ steps:
   args:
     - "-c"
     - |-
+      source env.txt && \
       npm run integration-test | tee report.e2e.html && \
       if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
   env:
     - "TEST_HOST=$_INT_TEST_HOST"
-    - "TEST_BASE_PATH=$_INT_TEST_BASE_PATH"
   # Copy coverage reports and other deployment artifacts to a storage bucket
 - name: "gcr.io/cloud-builders/gsutil"
   id: "Archive Report"
@@ -142,5 +142,3 @@ substitutions:
     _API_VERSION: apigee #apgiee|google
     # Host name for the integration test
     _INT_TEST_HOST: org-env.apigee.net
-    # Base path for the integration test
-    _INT_TEST_BASE_PATH: /my-proxy/v1
