@@ -55,6 +55,7 @@ jobs:
           VALIDATE_JSCPD: false
           LINTER_RULES_PATH: '.'
           VALIDATE_PHP_PHPCS: false
+          VALIDATE_PHP_PHPSTAN: false
 
       - name: Drupal coding standards
         uses: guix77/phpcs-drupal-action@v1.0.0
