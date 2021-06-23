@@ -131,7 +131,7 @@ if [ "$CERTIFICATES" = "provided" ];then
 fi
 
 if [ -z "$PEERING_CIDR" ]; then
-  PEERING_CIDR_DISPLAY="[automatic /23 block]"
+  PEERING_CIDR_DISPLAY="[automatic /22 block]"
 else
   PEERING_CIDR_DISPLAY="$PEERING_CIDR"
 fi
@@ -192,7 +192,7 @@ if [[ "$NETWORK" =~ ^projects/.*/networks.*$ ]]; then
 else
   echo "Step 4.1: Define a range of reserved IP addresses for your network. "
   if [ -z "$PEERING_CIDR" ]; then
-    gcloud compute addresses create google-managed-services-default --global --prefix-length=23 \
+    gcloud compute addresses create google-managed-services-default --global --prefix-length=22 \
       --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
       --purpose=VPC_PEERING --project="$PROJECT" --quiet || echo "Failed to create - ignoring assuming it already exists"
   else
