@@ -12,3 +12,7 @@ Feature: Sackmesser Example
     When I GET /json
     Then response code should be 200
     And response body should be valid json
+
+  Scenario: Invalid path
+    When I GET /not-part-of-oas
+    Then response code should be 500

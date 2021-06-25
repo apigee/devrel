@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Source:
-# https://github.com/apigee/api-platform-samples/blob/master/default-proxies/helloworld/openapi/mocktarget3.0.yaml
+# https://github.com/apigee/api-platform-samples
 
 openapi: 3.0.0
 info:
