@@ -52,7 +52,7 @@ steps:
         base64 -d )\"" >> env.txt
 - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
   id: 'Run Pipeline'
-  entrypoint: "sh"
+  entrypoint: "bash"
   args:
     - "-c"
     - |-
