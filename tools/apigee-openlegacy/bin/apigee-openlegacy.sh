@@ -51,7 +51,7 @@ GCP_REGION=${GCP_REGION:-europe-west1}
 # Check for required tools on path
 ###
 
-for TOOL in unzip ol gcloud jq node npm sackmesser; do
+for TOOL in unzip ol gcloud jq node npm sackmesser xmllint; do
   if ! which $TOOL > /dev/null; then
     echo "Please ensure $TOOL is installed and on your PATH"
     exit 1
