@@ -26,12 +26,20 @@ echo "🗑️ Delete Apigee hybrid cluster"
 gcloud container hub memberships unregister "$GKE_CLUSTER_NAME" --gke-cluster="${ZONE}/${GKE_CLUSTER_NAME}"
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME"
 
+for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
+   gcloud compute disks delete "$persistent_disk" --zone="$ZONE" -q
+done
+
 echo "✅ Apigee hybrid cluster deleted"
 
 
 echo "🗑️ Clean up Networking"
 
 gcloud compute addresses delete apigee-ingress-ip --region "$REGION" -q
+
+for target_pool in $(gcloud compute target-pools list --format="value(name)"); do
+   gcloud compute target-pools delete "$target_pool" --region "$REGION" -q
+done
 
 touch empty-file
 gcloud dns record-sets import -z apigee-dns-zone \
