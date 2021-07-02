@@ -14,7 +14,7 @@
 <PopulateCache name="PC-CacheJWKS">
     <CacheKey>
         <Prefix>IDP_JWKS_CACHE</Prefix>
-        <KeyFragment ref="flow.idp.issuer"/>
+        <KeyFragment ref="private.flow.idp.issuer"/>
         <KeyFragment>jwksPayload</KeyFragment>
     </CacheKey>
     <CacheResource>IDP_JWKS_CACHE</CacheResource>
@@ -22,5 +22,5 @@
     <ExpirySettings>
         <TimeoutInSec>3600</TimeoutInSec>
     </ExpirySettings>
-    <Source>flow.idp.jwks_payload</Source>
+    <Source>jwks</Source>
 </PopulateCache>

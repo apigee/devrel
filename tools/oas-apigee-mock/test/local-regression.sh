@@ -21,8 +21,8 @@ set -x
 rm -rf ../api_bundles
 
 node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders -s oas/orders.yaml
-node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-query -s oas/orders-apikey-query.yaml
-node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-header -s oas/orders-apikey-header.yaml
+node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-query -s oas/orders-apikey-query.yaml -o
+node ../bin/oas-apigee-mock generateApi oas-apigee-mock-orders-apikey-header -s oas/orders-apikey-header.yaml -o
 
 # Remove the licence from test files before comparing
 find . -name "*.xml" -exec sed -i '/<!--/,/-->/d' {} +

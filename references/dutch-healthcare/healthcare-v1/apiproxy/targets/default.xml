@@ -1,0 +1,59 @@
+<!--
+ Copyright 2020 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<TargetEndpoint name="default">
+
+  <DefaultFaultRule>
+    <AlwaysEnforce>true</AlwaysEnforce>	
+    <Step>
+      <Name>Shared.AddCORSHeaders</Name>
+    </Step>
+    <Step>
+      <Name>Shared.ErrorHandling</Name>
+    </Step>
+  </DefaultFaultRule>
+
+  <PreFlow>
+    <Request/>
+    <Response/>
+  </PreFlow>
+
+  <Flows>
+    <Flow name="GET /status">
+      <Request>
+        <Step>
+          <Name>Assign.StatusRequest</Name>
+        </Step>
+      </Request>
+      <Condition>
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "/status"
+      </Condition>
+    </Flow>
+  </Flows>
+
+  <PostFlow>
+    <Request>
+      <Step>
+        <Name>JS.SetMockPath</Name>
+      </Step>
+    </Request>
+  </PostFlow>
+
+  <LocalTargetConnection>
+      <Path>/</Path>
+  </LocalTargetConnection>
+
+</TargetEndpoint>

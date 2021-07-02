@@ -53,7 +53,7 @@ limitations under the License.
 		<apigee.apiversion>v1</apigee.apiversion>
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
-		<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
 		<apigee.authtype>oauth</apigee.authtype>
 		<apigee.username>${username}</apigee.username>
 		<apigee.password>${password}</apigee.password>
@@ -133,77 +133,84 @@ limitations under the License.
                 <version>${apigee.config-plugin.version}</version>
 
 				<executions>
+					<execution>
+                        <id>create-config-cache</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>caches</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>create-config-references</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>references</goal>
                         </goals>
                     </execution>
 					<execution>
                         <id>create-config-keystores</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>keystores</goal>
                         </goals>
                     </execution>
 					<execution>
                         <id>create-config-aliases</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>aliases</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>targetservers</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-kvm</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>keyvaluemaps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-resourcefiles</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>resourcefiles</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-apiproduct</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>apiproducts</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-developer</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>developers</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-app</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>apps</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>create-config-reports</id>
-                        <phase>install</phase>                        
+                        <phase>install</phase>
                         <goals>
                             <goal>reports</goal>
                         </goals>
                     </execution>
-                    <execution> 
+                    <execution>
                         <id>create-config-flowhooks</id>
                         <phase>install</phase>
                         <goals>

@@ -17,5 +17,6 @@
   <Set>
     <Payload contentType="application/json"/>
     <StatusCode>200</StatusCode>
+    <ReasonPhrase/>
   </Set>
 </AssignMessage>

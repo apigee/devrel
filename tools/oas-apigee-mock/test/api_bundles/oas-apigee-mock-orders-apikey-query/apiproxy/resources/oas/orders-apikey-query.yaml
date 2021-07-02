@@ -1,0 +1,179 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+openapi: 3.0.0
+info:
+  title: "Orders"
+  version: "1.0"
+security:
+  - ApiKeyAuth: []
+paths:
+  /orders:
+    get:
+      summary: Get all orders
+      operationId: Get all orders
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/orders"
+              example:
+                orders:
+                  - orderId: 61knu8gol56
+                    billingAddress: 999 Nobel Road
+                    cartToken: cHlwV0YX
+                    datePurchased: "2020-07-22T12:45:03Z"
+                    currency: AUD
+                    paymentDetails: jcb
+                    shippingAddress: 874 Graceland Court
+                    totalPrice: $110.57
+                    userId: gfrayne9
+                  - orderId: 9zyjdp268w
+                    billingAddress: 39 Coleman Drive
+                    cartToken: hoY6EK1c
+                    datePurchased: "2020-07-22T12:45:03Z"
+                    currency: CNY
+                    paymentDetails: jcb
+                    shippingAddress: 3560 Larry Park
+                    totalPrice: $8.71
+                    userId: mrawlence1
+  /orders/{orderId}:
+    get:
+      summary: Get a specific order
+      operationId: Get a specific order
+      parameters:
+        - name: orderId
+          in: path
+          description: order id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/order"
+              example:
+                orderId: 61knu8gol56
+                billingAddress: 999 Nobel Road
+                cartToken: cHlwV0YX
+                datePurchased: "2020-07-22T12:45:03Z"
+                currency: AUD
+                paymentDetails: jcb
+                shippingAddress: 874 Graceland Court
+                totalPrice: $110.57
+                userId: gfrayne9
+    post:
+      summary: Create a new order
+      operationId: Create order
+      parameters:
+        - name: orderId
+          in: path
+          description: order id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/order"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/order"
+              example:
+                orderId: 61knu8gol56
+                billingAddress: 999 Nobel Road
+                cartToken: cHlwV0YX
+                datePurchased: "2020-07-22T12:45:03Z"
+                currency: AUD
+                paymentDetails: jcb
+                shippingAddress: 874 Graceland Court
+                totalPrice: $110.57
+                userId: gfrayne9
+    put:
+      summary: Update a specific order
+      operationId: Update an order
+      parameters:
+        - name: orderId
+          in: path
+          description: order id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/order"
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: apikey
+  schemas:
+    order:
+      type: object
+      properties:
+        billingAddress:
+          type: string
+          description: Billing Address.
+        cartToken:
+          type: string
+          description: Cart token with products purchased
+        datePurchased:
+          type: string
+          description: Date when the customer purchased this cart.
+        currency:
+          type: string
+          description: Status of the package
+        paymentDetails:
+          type: string
+          description: Payment detaols
+        shippingAddress:
+          type: string
+          description: Shipping address.
+        totalPrice:
+          type: string
+          description: Total price of the order.
+        userId:
+          type: string
+          description: User ID that purchased the order
+      required:
+        - cartToken
+        - billingAddress
+        - currency
+        - paymentDetails
+        - shippingAddress
+        - totalPrice
+        - userId
+    orders:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/order"

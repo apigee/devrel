@@ -17,11 +17,11 @@
         <Headers>
             <Header name="content-type">application/x-www-form-urlencoded</Header>
             <Header name="accept">application/json</Header>
-            <Header name="Authorization">{flow.idp.Authorization}</Header>
+            <Header name="Authorization">{private.flow.idp.Authorization}</Header>
         </Headers>
         <FormParams>
             <FormParam name="code">{request.formparam.code}</FormParam>
-            <FormParam name="redirect_uri">{flow.idp.apigee.redirect_uri}</FormParam>
+            <FormParam name="redirect_uri">{private.flow.idp.apigee.redirect_uri}</FormParam>
             <FormParam name="scope">{oauthv2authcode.OA2-GetOriginalStateAttributes.scope}</FormParam>
             <FormParam name="grant_type">authorization_code</FormParam>
         </FormParams>

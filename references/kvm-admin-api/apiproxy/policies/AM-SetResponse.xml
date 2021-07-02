@@ -16,6 +16,6 @@
 -->
 <AssignMessage name="AM-SetResponse">
     <Set>
-        <Payload contentType="application/json">{"key": "{kvm-entry.key}", "value": "{private.kvm-entry.value}"}</Payload>
+        <Payload contentType="application/json">{"key": "{kvm-entry.key}", "value": "{escapeJSON(private.kvm-entry.value)}"}</Payload>
     </Set>
 </AssignMessage>

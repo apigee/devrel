@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +18,33 @@ DIRS="$1"
 PIPELINE_REPORT=""
 DEVREL_ROOT="$PWD"
 
+PATH=$PATH:"$DEVREL_ROOT/tools/another-apigee-client"
+PATH=$PATH:"$DEVREL_ROOT/tools/organization-cleanup/organization-cleanup.sh"
+PATH=$PATH:"$DEVREL_ROOT/tools/apigee-sackmesser/bin"
+
+append_pipeline_result() {
+  echo "$1" | awk 'NF' | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" >> pipeline-result.txt
+}
+
 run_single_pipeline() {
   DIR=$1
-  echo "[INFO] DevRel Pipeline: $DIR"
-  PATH=$PATH:"$DEVREL_ROOT/tools/another-apigee-client" "$DEVREL_ROOT/tools/organization-cleanup/organization-cleanup.sh"
-  (cd "$DIR" && ./pipeline.sh;)
+  STARTTIME=$(date +%s)
+  (cd "$DIR" && ./pipeline.sh > >(sed "s#^#$DIR: #") 2> >(sed "s#^#$DIR (err): #" >&2))
+  PIPELINE_EXIT=$?
+  ENDTIME=$(date +%s)
+  append_pipeline_result "$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
+  echo "[INFO] DevRel Pipeline done: $DIR"
 }
 
 if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   echo "[WARN] NO CREDENTIALS - SKIPPING PIPELINES"
   exit 0
 fi
+
+echo "[INFO] cleaning up organizations"
+APIGEE_TOKEN=$(gcloud auth print-access-token)
+sackmesser clean all --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet
+sackmesser clean all --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
 
 if [ -z "$DIRS" ]; then
   for TYPE in references labs tools; do
@@ -38,22 +55,37 @@ if [ -z "$DIRS" ]; then
   DIRS=$(echo "$DIRS" | cut -c 2-)
 fi
 
-for DIR in $(echo "$DIRS" | sed "s/,/ /g")
+async_pipelines=''
+
+STARTTIME=$(date +%s)
+
+for DIR in ${DIRS//,/ }
 do
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"
-    PIPELINE_REPORT="$PIPELINE_REPORT;[N/A] $DIR,0,0s"
+    append_pipeline_result "[N/A] $DIR,0,0s"
+  elif [ "$ASYNC_PIPELINE" = "true" ]; then
+    run_single_pipeline "$DIR" &
+    pid=$!
+    async_pipelines="$async_pipelines $pid"
+    echo "[INFO] DevRel Pipeline: $DIR (async) #$pid"
   else
-    STARTTIME=$(date +%s)
+    echo "[INFO] DevRel Pipeline: $DIR"
     run_single_pipeline "$DIR"
-    PIPELINE_EXIT=$?
-    ENDTIME=$(date +%s)
-    PIPELINE_REPORT="$PIPELINE_REPORT;$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
   fi
 done
 
+if [ "$ASYNC_PIPELINE" = "true" ]; then
+  for pid in $(echo "$async_pipelines" | tr ";" "\n"); do
+    wait "$pid"
+    echo "[INFO] Done #$pid (return=$?)"
+  done
+fi
+
+ENDTIME=$(date +%s)
+append_pipeline_result "TOTAL PIPELINE,0,$((ENDTIME-STARTTIME))s"
+
 # print report
-echo "$PIPELINE_REPORT" | tr ";" "\n" | awk 'NF' | awk -F"," '$2 = ($2 > 0 ? "fail" : "pass")' OFS=";" > pipeline-result.txt
 echo
 echo "FINAL RESULT"
 column -s ";" -t ./pipeline-result.txt

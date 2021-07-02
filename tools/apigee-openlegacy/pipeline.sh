@@ -28,10 +28,10 @@ cd "$SCRIPTPATH"/pipeline-workspace
 
 # Install OpenLegacy cli
 if ! [ -f "$SCRIPTPATH"/pipeline-workspace/openlegacy-cli.zip ]; then
-  curl -O https://ol-public-artifacts.s3.amazonaws.com/openlegacy-cli/1.30.0/linux-macos/openlegacy-cli.zip
+  curl -O https://ol-public-artifacts.s3.amazonaws.com/openlegacy-cli/1.35.0/linux-macos/openlegacy-cli.zip
   unzip openlegacy-cli.zip
 fi
 
 # call the script with ol and gcloud on our path
-PATH="$PATH":"$SCRIPTPATH"/pipeline-workspace/ol/bin:/google-cloud-sdk/bin \
+PATH="$PATH":"$SCRIPTPATH"/pipeline-workspace/ol/bin:/google-cloud-sdk/bin:"$SCRIPTPATH"/../apigee-sackmesser/bin \
   sh "$SCRIPTPATH"/bin/apigee-openlegacy.sh

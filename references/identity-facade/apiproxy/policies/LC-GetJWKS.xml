@@ -14,10 +14,10 @@
 <LookupCache name="LC-GetJWKS">
     <CacheKey>
         <Prefix>IDP_JWKS_CACHE</Prefix>
-        <KeyFragment ref="flow.idp.issuer"/>
+        <KeyFragment ref="private.flow.idp.issuer"/>
         <KeyFragment>jwksPayload</KeyFragment>
     </CacheKey>
     <CacheResource>IDP_JWKS_CACHE</CacheResource>
     <Scope>Exclusive</Scope>
-    <AssignTo>flow.idp.jwks_payload</AssignTo>
+    <AssignTo>jwks</AssignTo>
 </LookupCache>

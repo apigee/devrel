@@ -32,6 +32,21 @@ Feature:
     And response body path $.value should be test-value
     And response body path $.key should be test-entry
 
+  Scenario: Create an entry containing JSON in the KVM
+    Given I set body to {"key": "test-json", "value":"{\"a\": 42}"}
+    And I set Content-Type header to application/json
+    When I POST to /keyvaluemaps/kvmtestmap/entries
+    Then response code should be 200
+    And response body path $.value should be {\"a\": 42}
+    And response body path $.key should be test-json
+    And response header Authorization should not exist
+
+  Scenario: Retrieve an entry in the KVM
+    When I GET /keyvaluemaps/kvmtestmap/entries/test-json
+    Then response code should be 200
+    And response body path $.value should be {\"a\": 42}
+    And response body path $.key should be test-json
+
   Scenario: Retrieve a wrong entry in the KVM
     When I GET /keyvaluemaps/kvmtestmap/entries/wrong-entry
     Then response code should be 404

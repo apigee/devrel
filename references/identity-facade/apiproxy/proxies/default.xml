@@ -14,8 +14,7 @@
 <ProxyEndpoint name="default">
     <Flows>
         <Flow name="GET /authorize">
-            <Condition>(proxy.pathsuffix MatchesPath "/authorize") and 
-            (request.verb = "GET")</Condition>
+            <Condition>(proxy.pathsuffix MatchesPath "/authorize") and (request.verb = "GET")</Condition>
             <Request>
                 <Step>
                     <Name>JS-SanitizeClientId</Name>
@@ -31,18 +30,15 @@
                     <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.authorize.response_type != "code" ) and 
-                    ( oidc.flow.authorize.response_type != "token" )</Condition>
+                    <Condition>( oidc.flow.authorize.response_type != "code" ) and ( oidc.flow.authorize.response_type != "token" )</Condition>
                     <Name>RF-UnsupportedResponseType-Redirect</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.authorize.state1 Is null ) or 
-                    ( oidc.flow.authorize.state1 = "" )</Condition>
+                    <Condition>( oidc.flow.authorize.state1 Is null ) or( oidc.flow.authorize.state1 = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.authorize.scope Is null ) or 
-                    ( oidc.flow.authorize.scope = "" )</Condition>
+                    <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
                 <Step>
@@ -62,20 +58,17 @@
             </Response>
         </Flow>
         <Flow name="GET /callback">
-            <Condition>(proxy.pathsuffix MatchesPath "/callback") and 
-            (request.verb = "GET")</Condition>
+            <Condition>(proxy.pathsuffix MatchesPath "/callback") and (request.verb = "GET")</Condition>
             <Request>
                 <Step>
                     <Name>EV-InputQueryParamsCallback</Name>
                 </Step>
                 <Step>
-                    <Condition>( request.queryparam.code Is null ) or 
-                    ( request.queryparam.code = "" )</Condition>
+                    <Condition>( request.queryparam.code Is null ) or ( request.queryparam.code = "" )</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
-                    <Condition>( request.queryparam.state Is null ) or 
-                    ( request.queryparam.state = "" )</Condition>
+                    <Condition>( request.queryparam.state Is null ) or ( request.queryparam.state = "" )</Condition>
                     <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
@@ -98,8 +91,7 @@
             </Response>
         </Flow>
         <Flow name="POST /token">
-            <Condition>(proxy.pathsuffix MatchesPath "/token") and 
-            (request.verb = "POST")</Condition>
+            <Condition>(proxy.pathsuffix MatchesPath "/token") and (request.verb = "POST")</Condition>
             <Request>
                 <Step>
                     <Name>BA-GetClientCredentials</Name>
@@ -120,8 +112,7 @@
                     <Name>RF-UnsupportedGrantType</Name>
                 </Step>
                 <Step>
-                <Condition>( request.formparam.code Is null ) or 
-                ( request.formparam.code = "" )</Condition>
+                <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
@@ -153,15 +144,14 @@
                 </Step>
                 <Step>
                     <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
-                    <Name>SC-GetJwksFromIdp</Name>  
-                </Step>
-                <Step>
-                    <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
-                    <Name>EV-ExtractJWKS</Name>  
+                    <Name>SC-GetJwksFromIdp</Name>
                 </Step>
                 <Step>
                     <Condition>(lookupcache.LC-GetJWKS.cachehit == false)</Condition>
                     <Name>PC-CacheJWKS</Name>
+                </Step>
+                <Step>
+                    <Name>EV-ExtractJWKS</Name>
                 </Step>
                 <Step>
                     <Name>VJ-VerifyJwtFromIdp</Name>
@@ -179,8 +169,7 @@
             <Response/>
         </Flow>
         <Flow name="GET /protected">
-            <Condition>(proxy.pathsuffix MatchesPath "/protected") and 
-            (request.verb = "GET")</Condition>
+            <Condition>(proxy.pathsuffix MatchesPath "/protected") and (request.verb = "GET")</Condition>
             <Request>
                 <Step>
                     <Name>OA2-VerifyAccessToken</Name>

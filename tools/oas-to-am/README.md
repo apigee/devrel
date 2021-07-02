@@ -18,9 +18,9 @@ SPEC=./path/to/spec.json OPERATION=operationId oas-to-am
 
 ## Current Behaviour
 
-Takes the OAS spec [here](./test/features/fixtures/petstore.json) and a
-single Operation, parses it to generate [this](./test/features/fixtures/expected.xml)
-. The behaviour is described [here](./test/features/OASToAM.feature).
+Takes an OpenAPI Specification [(see example)](./test/petstore.json) and a
+single Operation and parses it to generate an AssignMessage Policy
+[(see example)](./test/expected.xml).
 
 ## Purpose
 
