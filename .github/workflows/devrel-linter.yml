@@ -20,7 +20,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-  - cron: "0 0 * * *"
+  - cron: "* * * * *"
 jobs:
 
   static-analysis:
