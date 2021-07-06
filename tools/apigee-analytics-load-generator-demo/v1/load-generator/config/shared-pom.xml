@@ -1,0 +1,162 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>apigee</groupId>
+    <artifactId>parent-pom</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Plugin Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order 
+         of execution is the same as the order in which you define them. -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.apigee.edge.config</groupId>
+                <artifactId>apigee-config-maven-plugin</artifactId>
+                <version>1.3.8</version>
+                <executions>
+                	<execution>
+                        <id>create-config-specs</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>specs</goal>
+                        </goals>
+                    </execution>
+                    <!--  <execution>
+                        <id>create-config-cache</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>caches</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-references</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>references</goal>
+                        </goals>
+                    </execution> -->
+                    <execution>
+                        <id>create-config-targetserver</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>targetservers</goal>
+                        </goals>
+                    </execution>
+                    <!-- <execution>
+                        <id>create-config-kvm</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>keyvaluemaps</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-resourcefiles</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>resourcefiles</goal>
+                        </goals>
+                    </execution> -->
+                    <execution>
+                        <id>create-config-apiproduct</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apiproducts</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-developer</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>developers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-config-app</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apps</goal>
+                        </goals>
+                    </execution>
+                    <!-- <execution>
+                        <id>create-config-app</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>apps</goal>
+                        </goals>
+                    </execution> -->
+                    <!-- <execution>
+                        <id>create-config-reports</id>
+                        <phase>install</phase>                        
+                        <goals>
+                            <goal>reports</goal>
+                        </goals>
+                    </execution> -->
+                    <!-- <execution> 
+                        <id>create-config-flowhooks</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>flowhooks</goal>
+                        </goals>
+                    </execution> -->
+                    <!-- <execution> 
+                        <id>create-config-userroles</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>userroles</goal>
+                        </goals>
+                    </execution> -->
+                </executions>
+            </plugin>            
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <properties>
+                <apigee.profile>test</apigee.profile>
+                <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+                <apigee.apiversion>v1</apigee.apiversion>
+                <apigee.org>${org}</apigee.org>
+                <apigee.env>${env}</apigee.env>
+                <apigee.username>${username}</apigee.username>
+                <apigee.password>${password}</apigee.password>
+                <apigee.authtype>basic</apigee.authtype> <!-- optional: oauth|basic(default) -->
+                <apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl> <!-- optional: oauth -->
+                <apigee.mfatoken>${mfatoken}</apigee.mfatoken> <!-- optional: mfa -->
+                <apigee.clientid>${clientId}</apigee.clientid> <!-- optional: Oauth Client Id - Default is edgecli-->
+                <apigee.clientsecret>${clientSecret}</apigee.clientsecret> <!-- optional: Oauth Client Secret Default is edgeclisecret-->
+                <apigee.bearer>${bearer}</apigee.bearer> <!-- optional: Bearer token override -->
+                <apigee.refresh>${refresh}</apigee.refresh> <!-- optional: Refresh token override -->
+            </properties>
+        </profile>
+    </profiles>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "<environment>",
+            "policies": [
+            ],
+            "proxies": [
+                {
+                    "name": "default.xml",
+                    "tokens": [
+                        {
+                            "xpath": "/ProxyEndpoint/HTTPProxyConnection/BasePath",
+                            "value": "/v1/user"
+                        }
+                    ]
+                }
+            ],
+            "targets": [
+                {
+                    "name": "default.xml",
+                    "tokens": [
+                        {
+                            "xpath": "/TargetEndpoint/HTTPTargetConnection/URL",
+                            "value": "https://<gproject>.appspot.com/user"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,287 @@
+{
+    "version": "1.0",
+    "envConfig": {
+    },
+    "orgConfig": {
+        "apiProducts": [
+            {
+                "name": "Load-Generator-Product-Admin",
+                "displayName": "Admin API Product",
+                "description": "This API Product contains all the APIs",
+                "apiResources": [
+                    "/**",
+                    "/"
+                ],
+                "approvalType": "auto",
+                "attributes": [
+                ],
+                "environments": [
+                    "test"
+                ],
+                "proxies": [
+                    "Load-Generator-Catalog",
+                    "Load-Generator-Checkout",
+                    "Load-Generator-Loyalty",
+                    "Load-Generator-Recommendation",
+                    "Load-Generator-Users"
+                ],
+                "quota": "1000",
+                "quotaInterval": "1",
+                "quotaTimeUnit": "hour",
+                "scopes": []
+            },
+            {
+                "name": "Load-Generator-Product-Consumer",
+                "displayName": "Consumer API Product",
+                "description": "This API Product contains Loyalty, Recommendation and users",
+                "apiResources": [
+                    "/**",
+                    "/"
+                ],
+                "approvalType": "auto",
+                "attributes": [
+                ],
+                "environments": [
+                    "test"
+                ],
+                "proxies": [
+                    "Load-Generator-Loyalty",
+                    "Load-Generator-Recommendation",
+                    "Load-Generator-Users"
+                ],
+                "quota": "3000",
+                "quotaInterval": "1",
+                "quotaTimeUnit": "hour",
+                "scopes": []
+            },
+            {
+                "name": "Load-Generator-Product-Catalog",
+                "displayName": "Catalog API Product",
+                "description": "This API Product contains Catalog",
+                "apiResources": [
+                    "/**",
+                    "/"
+                ],
+                "approvalType": "auto",
+                "attributes": [
+                ],
+                "environments": [
+                    "test"
+                ],
+                "proxies": [
+                    "Load-Generator-Catalog"
+                ],
+                "quota": "6000",
+                "quotaInterval": "1",
+                "quotaTimeUnit": "hour",
+                "scopes": []
+            },
+            {
+                "name": "Load-Generator-Product-Shopping",
+                "displayName": "Shopping API Product",
+                "description": "This API Product contains Checkout and Catalog",
+                "apiResources": [
+                    "/**",
+                    "/"
+                ],
+                "approvalType": "auto",
+                "attributes": [
+                ],
+                "environments": [
+                    "test"
+                ],
+                "proxies": [
+                    "Load-Generator-Checkout",
+                    "Load-Generator-Catalog"
+                ],
+                "quota": "50",
+                "quotaInterval": "1",
+                "quotaTimeUnit": "hour",
+                "scopes": []
+            },
+            {
+                "name": "Load-Generator-Product-Store",
+                "displayName": "Store API Product",
+                "description": "This API Product contains Catalog, Recommendation and Checkout",
+                "apiResources": [
+                    "/**",
+                    "/"
+                ],
+                "approvalType": "auto",
+                "attributes": [
+                ],
+                "environments": [
+                    "test"
+                ],
+                "proxies": [
+                    "Load-Generator-Checkout",
+                    "Load-Generator-Catalog",
+                    "Load-Generator-Recommendation"
+                ],
+                "quota": "7000",
+                "quotaInterval": "1",
+                "quotaTimeUnit": "hour",
+                "scopes": []
+            }
+        ],
+        "developers": [
+            {
+                "attributes": [],
+                "email": "hugh@startkaleo.com",
+                "firstName": "Hugh",
+                "lastName": "Jack",
+                "userName": "hughexample"
+            },
+            {
+                "attributes": [],
+                "email": "grant@enterprise.com",
+                "firstName": "Grant",
+                "lastName": "Smith",
+                "userName": "grantsmith"
+            },
+            {
+                "attributes": [],
+                "email": "petsell@wrong.com",
+                "firstName": "Peter",
+                "lastName": "Seller",
+                "userName": "petsell"
+            },
+            {
+                "attributes": [],
+                "email": "tomjones@enterprise.com",
+                "firstName": "Tommy",
+                "lastName": "Jones",
+                "userName": "tomjones"
+            },
+            {
+                "attributes": [],
+                "email": "joew@bringiton.com",
+                "firstName": "Joe",
+                "lastName": "Wonder",
+                "userName": "joew"
+            },
+            {
+                "attributes": [],
+                "email": "acop@enterprise.com",
+                "firstName": "Alice",
+                "lastName": "Cooper",
+                "userName": "acop"
+            },
+            {
+                "attributes": [],
+                "email": "barbg@enterprise.com",
+                "firstName": "Barbara",
+                "lastName": "Garcia",
+                "userName": "barbg"
+            },
+            {
+                "attributes": [],
+                "email": "dandee@enterprise.com",
+                "firstName": "Daniela",
+                "lastName": "Dee",
+                "userName": "dandee"
+            },
+            {
+                "attributes": [],
+                "email": "freds@bringiton.com",
+                "firstName": "Fred",
+                "lastName": "Sam",
+                "userName": "freds"
+            }
+        ],
+        "developerApps": {
+            "hugh@startkaleo.com": [
+                {
+                    "name": "coolhughapp",
+                    "apiProducts": [
+                        "Load-Generator-Product-Consumer"
+                    ],
+                    "callbackUrl": "http://coolhughapp.com",
+                    "scopes": []
+                }
+            ],
+            "grant@enterprise.com": [
+                {
+                    "name": "consummera",
+                    "apiProducts": [
+                        "Load-Generator-Product-Consumer"
+                    ],
+                    "callbackUrl": "http://consummera.com",
+                    "scopes": []
+                }
+            ],
+            "petsell@wrong.com": [
+                {
+                    "name": "showmeapp",
+                    "apiProducts": [
+                        "Load-Generator-Product-Catalog"
+                    ],
+                    "callbackUrl": "http://showmeapp.com",
+                    "scopes": []
+                }
+            ],
+            "tomjones@enterprise.com": [
+                {
+                    "name": "mysupermarketprices",
+                    "apiProducts": [
+                        "Load-Generator-Product-Catalog"
+                    ],
+                    "callbackUrl": "http://mysupermarketprices.com",
+                    "scopes": []
+                }
+            ],
+            "joew@bringiton.com": [
+                {
+                    "name": "thegreatprice",
+                    "apiProducts": [
+                        "Load-Generator-Product-Catalog",
+                        "Load-Generator-Product-Consumer"
+                    ],
+                    "callbackUrl": "http://thegreatprice.com",
+                    "scopes": []
+                }
+            ],
+            "acop@enterprise.com": [
+                {
+                    "name": "freshnew",
+                    "apiProducts": [
+                        "Load-Generator-Product-Catalog"
+                    ],
+                    "callbackUrl": "http://freshnew.com",
+                    "scopes": []
+                }
+            ],
+            "barbg@enterprise.com": [
+                {
+                    "name": "mystoreaggregator",
+                    "apiProducts": [
+                        "Load-Generator-Product-Store",
+                        "Load-Generator-Product-Shopping"
+                    ],
+                    "callbackUrl": "http://mystoreaggregator.com",
+                    "scopes": []
+                }
+            ],
+            "dandee@enterprise.com": [
+                {
+                    "name": "myadminapp-done",
+                    "apiProducts": [
+                        "Load-Generator-Product-Admin"
+                    ],
+                    "callbackUrl": "http://myadminapp-done.com",
+                    "scopes": []
+                }
+            ],
+            "freds@bringiton.com": [
+                {
+                    "name": "internalretail",
+                    "apiProducts": [
+                        "Load-Generator-Product-Consumer"
+                    ],
+                    "callbackUrl": "http://internalretail.com",
+                    "scopes": []
+                }
+            ]
+        }
+    }
+}

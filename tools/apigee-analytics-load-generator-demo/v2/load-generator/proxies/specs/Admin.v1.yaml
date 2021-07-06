@@ -1,0 +1,713 @@
+openapi: 3.0.0
+info:
+  title: Admin
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /catalog:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                response-catalog-empty:
+                  value: {}
+      operationId: get-catalog
+      description: Provides an empty response.
+    post:
+      summary: ''
+      operationId: post-catalog
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                priceUsd:
+                  type: object
+                  properties:
+                    units:
+                      type: string
+                      minLength: 1
+                    currencyCode:
+                      type: string
+                      minLength: 1
+                  required:
+                    - units
+                    - currencyCode
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                  minLength: 1
+                categories:
+                  type: array
+                  items:
+                    required: []
+                    properties: {}
+                id:
+                  type: string
+                  minLength: 1
+                picture:
+                  type: string
+                  minLength: 1
+              required:
+                - priceUsd
+                - name
+                - description
+                - categories
+                - id
+                - picture
+  '/catalog/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: id of the product
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  priceUsd:
+                    type: object
+                    required:
+                      - units
+                      - currencyCode
+                    properties:
+                      units:
+                        type: string
+                        minLength: 1
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  description:
+                    type: string
+                    minLength: 1
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                  id:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                required:
+                  - priceUsd
+                  - name
+                  - description
+                  - categories
+                  - id
+                  - picture
+      operationId: get-catalog-id
+      security:
+        - apikey: []
+  /recommendation:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  description:
+                    type: string
+                    minLength: 1
+                  id:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                  priceUsd:
+                    type: object
+                    properties:
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                      nanos:
+                        type: number
+                      units:
+                        type: string
+                        minLength: 1
+                    required:
+                      - currencyCode
+                      - nanos
+                      - units
+                required:
+                  - categories
+                  - description
+                  - id
+                  - name
+                  - picture
+                  - priceUsd
+      operationId: get-recommendation
+      description: Get a product recommendation
+      security:
+        - apikey: []
+  '/user/{id}':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  nat:
+                    type: string
+                    minLength: 1
+                  gender:
+                    type: string
+                    minLength: 1
+                  phone:
+                    type: string
+                    minLength: 1
+                  dob:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        minLength: 1
+                      age:
+                        type: number
+                    required:
+                      - date
+                      - age
+                  name:
+                    type: object
+                    properties:
+                      last:
+                        type: string
+                        minLength: 1
+                      title:
+                        type: string
+                        minLength: 1
+                      first:
+                        type: string
+                        minLength: 1
+                    required:
+                      - last
+                      - title
+                      - first
+                  registered:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        minLength: 1
+                      age:
+                        type: number
+                    required:
+                      - date
+                      - age
+                  location:
+                    type: object
+                    properties:
+                      city:
+                        type: string
+                        minLength: 1
+                      street:
+                        type: string
+                        minLength: 1
+                      timezone:
+                        type: object
+                        properties:
+                          offset:
+                            type: string
+                            minLength: 1
+                          description:
+                            type: string
+                            minLength: 1
+                        required:
+                          - offset
+                          - description
+                      coordinates:
+                        type: object
+                        properties:
+                          latitude:
+                            type: string
+                            minLength: 1
+                          longitude:
+                            type: string
+                            minLength: 1
+                        required:
+                          - latitude
+                          - longitude
+                      postcode:
+                        type: string
+                        minLength: 1
+                      state:
+                        type: string
+                        minLength: 1
+                    required:
+                      - city
+                      - street
+                      - timezone
+                      - coordinates
+                      - postcode
+                      - state
+                  id:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        minLength: 1
+                      value:
+                        type: string
+                        minLength: 1
+                    required:
+                      - name
+                      - value
+                  cell:
+                    type: string
+                    minLength: 1
+                  login:
+                    type: object
+                    properties:
+                      sha1:
+                        type: string
+                        minLength: 1
+                      password:
+                        type: string
+                        minLength: 1
+                      salt:
+                        type: string
+                        minLength: 1
+                      sha256:
+                        type: string
+                        minLength: 1
+                      uuid:
+                        type: string
+                        minLength: 1
+                      md5:
+                        type: string
+                        minLength: 1
+                      username:
+                        type: string
+                        minLength: 1
+                    required:
+                      - sha1
+                      - password
+                      - salt
+                      - sha256
+                      - uuid
+                      - md5
+                      - username
+                  email:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: object
+                    properties:
+                      thumbnail:
+                        type: string
+                        minLength: 1
+                      large:
+                        type: string
+                        minLength: 1
+                      medium:
+                        type: string
+                        minLength: 1
+                    required:
+                      - thumbnail
+                      - large
+                      - medium
+                required:
+                  - nat
+                  - gender
+                  - phone
+                  - dob
+                  - name
+                  - registered
+                  - location
+                  - id
+                  - cell
+                  - login
+                  - email
+                  - picture
+      operationId: get-user
+      description: Retrieve user
+      security:
+        - apikey: []
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: ID of the user
+  '/recommendation/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Product recommendation id
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  description:
+                    type: string
+                    minLength: 1
+                  id:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                  priceUsd:
+                    type: object
+                    properties:
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                      nanos:
+                        type: number
+                      units:
+                        type: string
+                        minLength: 1
+                    required:
+                      - currencyCode
+                      - nanos
+                      - units
+                required:
+                  - categories
+                  - description
+                  - id
+                  - name
+                  - picture
+                  - priceUsd
+      operationId: get-recommendation-id
+      security:
+        - apikey: []
+      description: ''
+  /loyalty:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-loyalty
+      security:
+        - apikey: []
+      description: Empty response from loyalty
+  '/loyalty/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Id of the loyalty card
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  healthy_choice_points:
+                    type: string
+                    minLength: 1
+                  transaction_id:
+                    type: string
+                    minLength: 1
+                  total_rewards_points:
+                    type: string
+                    minLength: 1
+                required:
+                  - healthy_choice_points
+                  - transaction_id
+                  - total_rewards_points
+      operationId: get-loyalty-id
+      description: Retrieves loyalty points
+      security:
+        - apikey: []
+  /checkout:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-checkout
+      security:
+        - apikey: []
+    post:
+      summary: ''
+      operationId: post-checkout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                cart:
+                  type: number
+              required:
+                - cart
+      security:
+        - apikey: []
+      description: Post a checkout to be done
+  '/checkout/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: id of the cart
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  total:
+                    type: string
+                    minLength: 1
+                  adjustments:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  adjustmentsTotal:
+                    type: string
+                    minLength: 1
+                  itemsTotal:
+                    type: string
+                    minLength: 1
+                  localeCode:
+                    type: string
+                    minLength: 1
+                  channel:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        minLength: 1
+                      _links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                                minLength: 1
+                            required:
+                              - href
+                        required:
+                          - self
+                      id:
+                        type: number
+                    required:
+                      - code
+                      - _links
+                      - id
+                  id:
+                    type: string
+                    minLength: 1
+                  checkoutState:
+                    type: string
+                    minLength: 1
+                  currencyCode:
+                    type: string
+                    minLength: 1
+                  items:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  customer:
+                    type: object
+                    properties:
+                      firstName:
+                        type: string
+                        minLength: 1
+                      lastName:
+                        type: string
+                        minLength: 1
+                      _links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                                minLength: 1
+                            required:
+                              - href
+                        required:
+                          - self
+                      id:
+                        type: number
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          enabled:
+                            type: string
+                            minLength: 1
+                          username:
+                            type: string
+                            minLength: 1
+                        required:
+                          - id
+                          - enabled
+                          - username
+                      email:
+                        type: string
+                        minLength: 1
+                    required:
+                      - firstName
+                      - lastName
+                      - _links
+                      - id
+                      - user
+                      - email
+                required:
+                  - total
+                  - adjustments
+                  - adjustmentsTotal
+                  - itemsTotal
+                  - localeCode
+                  - channel
+                  - id
+                  - checkoutState
+                  - currencyCode
+                  - items
+                  - customer
+      operationId: get-checkout-id
+      description: retrieve the info of a cart checkout
+      security:
+        - apikey: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      x-examples:
+        Alice Smith:
+          id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

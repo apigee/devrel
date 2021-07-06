@@ -1,0 +1,12 @@
+dispatch:
+  # Default service serves the typical web resources and all static resources.
+  - url: "catalog.loadgenerator.igngar.dev/catalog"
+    service: "catalog"
+  - url: "users.loadgenerator.igngar.dev/users"
+    service: "users"
+  - url: "loyalty.loadgenerator.igngar.dev/loyalty"
+    service: "loyalty"
+  - url: "recommendation.loadgenerator.igngar.dev/recommendation"
+    service: "recommendation"
+  - url: "checkout.loadgenerator.igngar.dev/checkout"
+    service: "checkout"

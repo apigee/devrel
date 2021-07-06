@@ -1,0 +1,3 @@
+locustio==0.9.0
+Flask==1.1.1
+gevent==1.4.0

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="Load-Generator-Loyalty">
+    <Basepaths>/v1/loyalty</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1582135539424</CreatedAt>
+    <CreatedBy>igngar@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Load-Generator-Loyalty</DisplayName>
+    <LastModifiedAt>1582135539424</LastModifiedAt>
+    <LastModifiedBy>igngar@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:80c66ee0eb966d955b755a829cc9a95c8e50c3f73a2c6132357462780a5232b48d1214cad7036a8e7e93bc0177fcf10bbc8f1c6bd8020f1bc7aca60255726d6f</ManifestVersion>
+    <Policies/>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

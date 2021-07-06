@@ -1,0 +1,2 @@
+service: catalog
+runtime: python37

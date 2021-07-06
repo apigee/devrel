@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="Load-Generator-Checkout">
+    <Basepaths>/v1/checkout</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1582135616242</CreatedAt>
+    <CreatedBy>igngar@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Load-Generator-Checkout</DisplayName>
+    <LastModifiedAt>1582135616242</LastModifiedAt>
+    <LastModifiedBy>igngar@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:9104b68057a03862d349f18647f0a2b7a8ae68863954f91af8baa62caf7fc1fbf04e1d4e4fce0c19c1e4aeef3429883bf8a35160fa8dbfa3d603a96bbacbedec</ManifestVersion>
+    <Policies/>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>
