@@ -8,6 +8,7 @@
 /references/oidc-mock                 @joelgauci
 /references/kvm-admin-api             @danistrebel
 /references/southbound-mtls           @danistrebel
+/references/threat-protect            @joelgauci
 /labs/best-practices-hackathon        @sauliuz @seymen
 /tools/pipeline-runner                @seymen @danistrebel
 /tools/pipeline-linter                @seymen @danistrebel
@@ -27,4 +28,4 @@
 /tools/organization-cleanup           @laughingbiscuit
 /tools/another-apigee-client          @laughingbiscuit
 /tools/oas-to-am                      @laughingbiscuit
-/tools/apigee-openlegacy              @laughingbiscuit @tomfi
+/tools/apigee-openlegacy              @laughingbiscuit @tomfi @joelgauci
