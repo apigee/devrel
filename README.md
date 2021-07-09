@@ -45,7 +45,7 @@ further to fit a particular use case.
 - [Dutch Healthcare Reference](references/dutch-healthcare) -
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
-  A reference to generate threats and test XML and JSON threat protection
+  A reference for protecting API proxies against XML and JSON threats
 
 ## Tools
 

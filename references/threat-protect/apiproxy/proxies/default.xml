@@ -30,6 +30,10 @@
                 <Step>
                     <Name>XTP-CheckStructuralLimits</Name>
                 </Step>
+                <Step>
+                    <Condition>xmlattack.failed = "true"</Condition>
+                    <Name>RF-BadRequest</Name>
+                </Step>
             </Response>
         </Flow>
         <Flow name="GET /json">
@@ -51,6 +55,10 @@
                 </Step>
                 <Step>
                     <Name>JTP-CheckStructuralLimits</Name>
+                </Step>
+                <Step>
+                    <Condition>jsonattack.failed = "true"</Condition>
+                    <Name>RF-BadRequest</Name>
                 </Step>
             </Response>
         </Flow>

@@ -11,9 +11,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<JSONThreatProtection name="JTP-CheckStructuralLimits" continueOnError="true">
-    <ArrayElementCount>30</ArrayElementCount>
-    <ContainerDepth>10</ContainerDepth>
-    <ObjectEntryCount>15</ObjectEntryCount>
-    <Source>response</Source>
-</JSONThreatProtection>
+<RaiseFault name="RF-BadRequest">
+    <FaultResponse>
+        <Set>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
+            <Payload contentType="application/json">{"code": "400.99.01", "message": "Bad Request"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>

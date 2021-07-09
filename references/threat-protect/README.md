@@ -101,31 +101,15 @@ list of required parameters for each of them:
 
 #### XML
 
-| HTTP Method |
-|:----|
-| GET |
-
-| Base Path |
-|:----|
-| /threats/v1 |
-
-| Endpoint URI |
-|:----|
-| /xml |
+| HTTP Method | Base Path |Endpoint URI |
+|:----|:----|:----|
+| GET |/threats/v1 |/xml |
 
 #### JSON
 
-| HTTP Method |
-|:----|
-| GET |
-
-| Base Path |
-|:----|
-| /threats/v1 |
-
-| Endpoint URI |
-|:----|
-| /json |
+| HTTP Method | Base Path |Endpoint URI |
+|:----|:----|:----|
+| GET |/threats/v1 |/json |
 
 #### List of parameters
 
