@@ -34,8 +34,6 @@ class Client extends OriginalClient {
 
   /**
    * MGMT API endpoint override url.
-   *
-   * @var mgmtApiEndpointOverride
    */
   private $mgmtApiEndpointOverride = NULL;
 

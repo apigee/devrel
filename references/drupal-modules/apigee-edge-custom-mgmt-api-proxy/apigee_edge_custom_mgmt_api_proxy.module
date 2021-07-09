@@ -1,0 +1,58 @@
+<?php
+/*
+function apigee_edge_custom_mgmt_api_proxy_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+    if ($form_id === 'developer_app_add_for_developer_form' ) {
+        $options = ['gkoli-demos' => 'gkoli-demos', 'chhats-apigeex-demo1' => 'chhats-apigeex-demo1'];
+        $default_org = $form_state->getValue('org_selector') ?: array_keys($options)[0];
+        $form['org_selector'] = [
+            '#type' => 'select',
+            '#title' => "Select an Org",
+            "#options" => $options,
+            '#default_value' => $default_org,
+            '#ajax' => [
+                'callback' => 'apigee_edge_custom_mgmt_api_proxy_filter_products',
+                'disabe-refocus' => true,
+                'event' => 'change',
+                'wrapper' => 'apiproducts-based-on-org-selector',
+                'progress' => [
+                    'type' => 'throbber',
+                    'message' => t('Filtering products...'),
+                ],
+            ],
+        ];
+        $options = [];
+        foreach ($form['api_products']['#options'] as $key => $value) {
+            if (strpos($key, "$default_org:") === 0) {
+                $options[$key] = $value;
+            }
+        };
+        $form['api_products']['#options'] = $options;
+        $form['api_products']['#prefix'] = '<div id="apiproducts-based-on-org-selector">';
+        $form['api_products']['#suffix'] = '</div>';
+    }
+    array_unshift($form['#validate'], 'apigee_edge_custom_mgmt_api_proxy_form_submit');
+}
+
+function apigee_edge_custom_mgmt_api_proxy_filter_products(array &$form, \Drupal\Core\Form\FormStateInterface $form_state)
+{
+    return $form['api_products'];
+}
+
+function apigee_edge_custom_mgmt_api_proxy_form_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+    //dpm($form['name']['#value']);
+    dpm($form['#id']);
+    $form['name']['#value'] = $form['org_selector']['#value'] + ":" + $form['name']['#value'];
+}
+*/
+
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function apigee_edge_custom_mgmt_api_proxy_entity_type_alter(array &$entity_types){
+    /* @var Drupal\apigee_edge\Entity\EdgeEntityType $entity_type*/
+    $entity_type = $entity_types['developer_app'];
+    $entity_type->setFormClass("add_for_developer", 'Drupal\apigee_edge_custom_mgmt_api_proxy\Form\MultiOrgDeveloperAppCreateFormForDeveloper');
+    $entity_type->setFormClass("edit_for_developer", 'Drupal\apigee_edge_custom_mgmt_api_proxy\Form\MultiOrgDeveloperAppEditFormForDeveloper');
+}
