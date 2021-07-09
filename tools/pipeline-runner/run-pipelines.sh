@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +29,7 @@ append_pipeline_result() {
 run_single_pipeline() {
   DIR=$1
   STARTTIME=$(date +%s)
-  (cd "$DIR" && ./pipeline.sh)
+  (cd "$DIR" && ./pipeline.sh > >(sed "s#^#$DIR: #") 2> >(sed "s#^#$DIR (err): #" >&2))
   PIPELINE_EXIT=$?
   ENDTIME=$(date +%s)
   append_pipeline_result "$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
@@ -58,7 +59,7 @@ async_pipelines=''
 
 STARTTIME=$(date +%s)
 
-for DIR in $(echo "$DIRS" | sed "s/,/ /g")
+for DIR in ${DIRS//,/ }
 do
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"

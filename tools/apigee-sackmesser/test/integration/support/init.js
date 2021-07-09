@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ const apickliModule = require("apickli");
 const { Before } = require("cucumber");
 
 Before(function () {
-  const host = process.env.TEST_HOST || "org-env.apigee.net";
-  const basePath = `/airports-cicd${process.env.APIGEE_DEPLOYMENT_SUFFIX}/v1`;
+  const host = process.env.TEST_HOST;
+  const basePath = process.env.TEST_BASE_PATH;
   this.apickli = new apickliModule.Apickli("https", `${host}${basePath}`);
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
 });

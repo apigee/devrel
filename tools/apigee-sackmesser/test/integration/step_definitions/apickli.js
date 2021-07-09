@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-invalid-this */ // See usage in apickli Documentation
-/* eslint-disable new-cap */
-"use strict";
-
-const apickliModule = require("apickli");
-const { Before } = require("cucumber");
-
-Before(function () {
-  const host = process.env.TEST_HOST || "org-env.apigee.net";
-  const basePath = `/airports-cicd${process.env.APIGEE_DEPLOYMENT_SUFFIX}/v1`;
-  this.apickli = new apickliModule.Apickli("https", `${host}${basePath}`);
-  this.apickli.addRequestHeader("Cache-Control", "no-cache");
-});
+module.exports = require("apickli/apickli-gherkin");

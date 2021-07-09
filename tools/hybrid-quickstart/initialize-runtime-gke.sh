@@ -48,8 +48,11 @@ configure_network $ENV_GROUP_NAME
 # create a minimal GKE cluster with a single node pool
 create_gke_cluster
 
-# install Anthos service mesh and certmanager
-install_asm_and_certmanager
+# install certmanager
+install_certmanager
+
+# install Anthos service mesh
+install_asm
 
 # download the Apigeectl utility
 download_apigee_ctl
@@ -63,8 +66,14 @@ create_self_signed_cert $ENV_GROUP_NAME
 # create all required service accounts and download their keys
 create_sa
 
+# configure the Apigee runtime
+configure_runtime $ENV_NAME $ENV_GROUP_NAME
+
 # install the Apigee runtime
 install_runtime $ENV_NAME $ENV_GROUP_NAME
+
+# enable distributed trace
+enable_trace $ENV_NAME
 
 # deploy an example proxy to the given environment
 deploy_example_proxy $ENV_NAME $ENV_GROUP_NAME
