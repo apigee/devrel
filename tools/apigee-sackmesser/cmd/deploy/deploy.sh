@@ -38,15 +38,20 @@ trap cleanup EXIT
 
 # copy resources to temp directory
 if [ -n "$url" ]; then
-    pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)\/tree\/([^\/]*)\/(.*)'
+    pattern='https?:\/\/github.com\/([^\/]*)\/([^\/]*)(\/tree\/([^\/]*)(\/(.*))?)?'
+
     [[ "$url" =~ $pattern ]]
     git_org="${BASH_REMATCH[1]}"
     git_repo="${BASH_REMATCH[2]}"
-    git_branch="${BASH_REMATCH[3]}"
-    git_path="${BASH_REMATCH[4]}"
+    git_branch="${BASH_REMATCH[4]}"
+    git_path="${BASH_REMATCH[6]}"
 
     git clone "https://github.com/${git_org}/${git_repo}.git" "$temp_folder/$git_repo"
-    (cd "$temp_folder/$git_repo" && git checkout "$git_branch")
+
+    if [[ -n "$git_branch" ]]; then
+        (cd "$temp_folder/$git_repo" && git checkout "$git_branch")
+    fi
+
     cp -R "$temp_folder/$git_repo/$git_path/"* "$temp_folder"
 else
     source_dir="${directory:-$PWD}"
