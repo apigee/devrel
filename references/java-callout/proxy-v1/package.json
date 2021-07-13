@@ -2,8 +2,8 @@
   "name": "currency-v1",
   "version": "1.0.0",
   "devDependencies": {
-    "apickli": "^2.3.1",
-    "cucumber": "^5.1.0"
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.0"
   },
   "scripts": {
     "test": "npx cucumber-js test"

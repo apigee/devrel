@@ -5,9 +5,9 @@
     "test": "./node_modules/.bin/jest test/unit && ./node_modules/.bin/cucumber-js test/integration/features"
   },
   "devDependencies": {
-    "apickli": "^2.3.3",
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.0",
     "apigeetool": "^0.14.2",
-    "cucumber": "^6.0.5",
     "jest": "^26.1.0"
   }
 }

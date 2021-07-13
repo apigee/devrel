@@ -27,8 +27,8 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     # deploy the API proxy
     sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
     # execute functional tests
-    cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test
-    
+    cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test
+
 fi
 
 ###
@@ -40,6 +40,6 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     APIGEE_TOKEN=$(gcloud auth print-access-token);
 
     sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"
-    cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test
-    
+    cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test
+
 fi

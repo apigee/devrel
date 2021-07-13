@@ -40,7 +40,7 @@ sackmesser deploy \
   -e "$APIGEE_X_ENV"
 
 (cd "$SCRIPT_FOLDER"/test && \
-  npm i && \
+  npm i --no-fund && \
   TEST_HOST="$APIGEE_X_HOSTNAME" \
   TEST_BASE_PATH="$BASE_PATH" \
   npm run test)
@@ -59,7 +59,7 @@ sackmesser deploy \
   --environment "$APIGEE_ENV"
 
 (cd "$SCRIPT_FOLDER"/test && \
-  npm i && \
+  npm i --no-fund && \
   TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" \
   TEST_BASE_PATH="$BASE_PATH" \
   npm run test)

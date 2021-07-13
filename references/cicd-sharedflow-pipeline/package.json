@@ -18,11 +18,11 @@
 		"integration-test": "cucumber-js ./test/integration/target/test/integration"
 	},
 	"devDependencies": {
+		"@cucumber/cucumber": "^7.3.0",
+		"apickli": "^3.0.0",
+		"apigeelint": "^2.6.0",
 		"eslint": "^7.0.0",
 		"eslint-config-google": "^0.14.0",
-		"eslint-config-prettier": "^6.11.0",
-		"apigeelint": "^2.6.0",
-		"apickli": "^2.3.3",
-		"cucumber": "^7.0.0-rc.0"
+		"eslint-config-prettier": "^6.11.0"
 	}
 }

@@ -11,10 +11,10 @@
         }
     ],
     "scripts": {
-        "test": "cucumber-js ./integration"
+        "test": "cucumber-js --publish-quiet ./integration"
     },
     "devDependencies": {
-        "apickli": "^2.3.3",
-        "cucumber": "^7.0.0-rc.0"
+        "@cucumber/cucumber": "^7.3.0",
+        "apickli": "^3.0.0"
     }
 }
