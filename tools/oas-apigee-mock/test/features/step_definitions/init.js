@@ -15,7 +15,7 @@
  */
 
 const apickli = require("apickli");
-const { Before: before, setDefaultTimeout } = require("cucumber");
+const { Before: before, setDefaultTimeout } = require("@cucumber/cucumber");
 
 before(function () {
   this.apickli = new apickli.Apickli(

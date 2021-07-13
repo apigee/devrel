@@ -19,7 +19,7 @@ const {
   When,
   Then,
   After
-} = require('cucumber')
+} = require('@cucumber/cucumber')
 const puppeteer = require('puppeteer')
 const hostname = process.env.TEST_HOST
 const state ='123-abc'

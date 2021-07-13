@@ -15,7 +15,7 @@
  */
 
 const apickli = require("apickli");
-const { Before: before } = require("cucumber");
+const { Before: before } = require("@cucumber/cucumber");
 
 before(function () {
   this.apickli = new apickli.Apickli(

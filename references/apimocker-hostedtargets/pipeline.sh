@@ -16,7 +16,7 @@
 set -e
 set -x
 
-npm install
+npm i --no-fund
 npm run deploy
 
 # wait for hosted target to be up

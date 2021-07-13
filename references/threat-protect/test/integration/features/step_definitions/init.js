@@ -22,7 +22,7 @@ const apickli = require('apickli')
 const {
   Before,
   setDefaultTimeout
-} = require('cucumber')
+} = require('@cucumber/cucumber')
 
 const basePath = '/threats/v1'
 const depth = 5

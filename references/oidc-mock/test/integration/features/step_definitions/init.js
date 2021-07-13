@@ -18,7 +18,7 @@ const apickli = require('apickli')
 const {
   Before,
   setDefaultTimeout
-} = require('cucumber')
+} = require('@cucumber/cucumber')
 
 const hostname = process.env.TEST_HOST
 const clientId = 'dummy-client_id-123'
