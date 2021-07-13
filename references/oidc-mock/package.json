@@ -1,7 +1,7 @@
 {
   "name": "oidc-mock",
   "scripts": {
-    "test": "./node_modules/.bin/cucumber-js test/integration/features"
+    "test": "./node_modules/.bin/cucumber-js --publish-quiet test/integration/features"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",

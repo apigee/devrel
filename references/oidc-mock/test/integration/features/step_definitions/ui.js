@@ -24,6 +24,8 @@ const puppeteer = require('puppeteer')
 const hostname = process.env.TEST_HOST
 const state ='abc-7890'
 const scope = 'openid email address'
+const assert = require('assert')
+
 
 Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
@@ -90,12 +92,12 @@ When('I sign in and consent', async function() {
 
 })
 
-Then('I am redirected to the Client App', function(cb) {
-  cb(this.page.url().indexOf('https://httpbin.org/get') === -1)
+Then('I am redirected to the Client App', function() {
+  assert.notStrictEqual(this.page.url().indexOf('https://httpbin.org/get'), -1);
 })
 
-Then('I receive an auth code in a query param',  function(cb) {
-  cb(this.page.url().indexOf('code=') === -1)
+Then('I receive an auth code in a query param',  function() {
+  assert.notStrictEqual(this.page.url().indexOf('code='), -1);
 })
 
 Then('I store the auth code in global scope', async function() {
@@ -107,12 +109,12 @@ Then('I store the state parameter in global scope', async function() {
   this.apickli.setGlobalVariable('state',state)
 })
 
-Then('I receive an unsupported_response_type error',  function(cb) {
-  cb(this.page.url().indexOf('error=unsupported_response_type') === -1)
+Then('I receive an unsupported_response_type error', function() {
+  assert.notStrictEqual(this.page.url().indexOf('error=unsupported_response_type'), -1);
 })
 
-Then('I receive an invalid_request error',  function(cb) {
-  cb(this.page.url().indexOf('error=invalid_request') === -1)
+Then('I receive an invalid_request error', function() {
+  assert.notStrictEqual(this.page.url().indexOf('error=invalid_request'), -1);
 })
 
 After(async function() {

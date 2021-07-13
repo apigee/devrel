@@ -251,7 +251,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     # deploy the OIDC mock identity provider...
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];then
         sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/../oidc-mock
-        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test)
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test)
     fi
 
     # set env variables for google oidc
@@ -281,7 +281,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # execute integration tests only against mock IDP
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
     fi
@@ -294,7 +294,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];
     then
         sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"/../oidc-mock
-        (cd "$SCRIPTPATH"/../oidc-mock && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm test)
+        (cd "$SCRIPTPATH"/../oidc-mock && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm test)
     fi
 
      # set env variables for google oidc
@@ -324,7 +324,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # execute integration tests only against mock IDP
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH" && npm i && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
     fi
