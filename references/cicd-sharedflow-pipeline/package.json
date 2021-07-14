@@ -3,13 +3,6 @@
 	"version": "1.0.0",
 	"description": "Sample Sharedflow for CI/CD Reference",
 	"author": "ssvaidyanathan",
-	"license": "Apache-2.0",
-	"licenses": [
-		{
-			"type": "Apache-2.0",
-			"url": "http://www.apache.org/licenses/LICENSE-2.0"
-		}
-	],
 	"scripts": {
 		"eslint": "eslint --format json",
 		"apigeelint-sharedflow": "apigeelint -s ./sharedflowbundle -f table.js",
