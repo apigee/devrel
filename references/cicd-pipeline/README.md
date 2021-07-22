@@ -15,6 +15,12 @@ The CICD pipeline consists of:
 - Integration testing of the deployed proxy using
   [apickli](https://github.com/apickli/apickli)
 
+It also contains an example configuration for running the CI/CD
+pipeline in an orchestration tool:
+
+- Using fully managed Google Cloud Build for Apigee X/hybrid and Edge
+- Using a self-managed Jenkins Server for Apigee Edge
+
 ## Development
 
 - Install dependencies:
