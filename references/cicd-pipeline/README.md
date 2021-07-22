@@ -15,6 +15,12 @@ The CICD pipeline consists of:
 - Integration testing of the deployed proxy using
   [apickli](https://github.com/apickli/apickli)
 
+It also contains an example configuration for running the CI/CD
+pipeline in an orchestration tool:
+
+- Using fully managed Google Cloud Build for Apigee X/hybrid and Edge
+- Using a self-managed Jenkins Server for Apigee Edge
+
 ## Development
 
 - Install dependencies:
@@ -71,7 +77,7 @@ git commit -m "initial commit"
 git push -u origin feature/cicd-pipeline
 ```
 
-## Run Cloud Build Deployment
+## Orchestration using Run Cloud
 
 The instructions below explain how to trigger an Apigee CI/CD pipeline manually
 via the gcloud command and via a push trigger on a Google Source Repository.
@@ -170,7 +176,9 @@ gcloud beta builds triggers create cloud-source-repositories \
     --substitutions="_API_VERSION=apigee,_DEPLOYMENT_ORG=$APIGEE_ORG,_APIGEE_TEST_ENV=$APIGEE_ENV,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
 ```
 
-## Run a Jenkins Deployment
+## Orchestration using Jenkins
+
+*Note:* Currently this Jenkins reference is designed for Apigee Edge only.
 
 ### Requirement: Jenkins Server
 

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jenkins/jenkins:2.285-alpine
+FROM jenkins/jenkins:2.302-alpine
 
 USER root
 RUN apk update && apk add --no-cache git maven nodejs npm
