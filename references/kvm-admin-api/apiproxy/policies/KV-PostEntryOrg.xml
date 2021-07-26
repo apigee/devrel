@@ -14,11 +14,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables name="EV-PathParameters">
-    <URIPath>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
-        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/keyvaluemaps/{kvm.name}/entries</Pattern>
-    </URIPath>
-</ExtractVariables>
+
+<KeyValueMapOperations name="KV-PostEntryOrg">
+    <MapName ref="kvm.name"/>
+    <Put override="true">
+        <Key>
+            <Parameter ref="kvm-entry.key"/>
+        </Key>
+        <Value ref="private.kvm-entry.value"/>
+    </Put>
+    <Scope>organization</Scope>
+</KeyValueMapOperations>

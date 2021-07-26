@@ -15,12 +15,17 @@
  limitations under the License.
 -->
 
-<KeyValueMapOperations name="KV-PostEntryDynamic">
+<KeyValueMapOperations name="KV-DeleteEntryEnv">
     <MapName ref="kvm.name"/>
-    <Put override="true">
+    <Get assignTo="private.kvm-entry.value">
         <Key>
             <Parameter ref="kvm-entry.key"/>
         </Key>
-        <Value ref="private.kvm-entry.value"/>
-    </Put>
+    </Get>
+    <Delete>
+        <Key>
+            <Parameter ref="kvm-entry.key"/>
+        </Key>
+    </Delete>
+    <Scope>environment</Scope>
 </KeyValueMapOperations>

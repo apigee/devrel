@@ -50,6 +50,6 @@
         <Properties>
             <Property name="success.codes">1xx,2xx,3xx,4xx</Property>
         </Properties>
-        <URL>https://apigee.googleapis.com/v1/organizations/{kvm.orgname}/environments/{kvm.envname}:testIamPermissions</URL>
+        <URL>https://apigee.googleapis.com/v1/organizations/{kvm.orgname}/environments/{environment.name}:testIamPermissions</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>
