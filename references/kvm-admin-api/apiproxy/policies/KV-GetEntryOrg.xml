@@ -15,16 +15,12 @@
  limitations under the License.
 -->
 
-<KeyValueMapOperations name="KV-DeleteEntryDynamic">
+<KeyValueMapOperations name="KV-GetEntryOrg">
     <MapName ref="kvm.name"/>
     <Get assignTo="private.kvm-entry.value">
         <Key>
             <Parameter ref="kvm-entry.key"/>
         </Key>
     </Get>
-    <Delete>
-        <Key>
-            <Parameter ref="kvm-entry.key"/>
-        </Key>
-    </Delete>
+    <Scope>organization</Scope>
 </KeyValueMapOperations>

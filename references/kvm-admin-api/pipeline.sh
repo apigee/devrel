@@ -29,8 +29,24 @@ curl -X POST \
     -H "Content-Type: application/json" \
     --data '{"name": "kvmtestmap", "encrypted": true}'
 
-APIGEE_TOKEN=$TOKEN npm run test
+curl -X POST \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/keyvaluemaps" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    --data '{"name": "kvmtestmap", "encrypted": true}'
+
+
+# Environment-Scoped Test
+APIGEE_TOKEN="$TOKEN" TEST_BASE_URI="$APIGEE_X_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_X_ORG/environments/$APIGEE_X_ENV" npm run test
+
+# Organization-Scoped Test
+APIGEE_TOKEN="$TOKEN" TEST_BASE_URI="$APIGEE_X_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_X_ORG" npm run test
 
 curl -X DELETE \
     "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/environments/$APIGEE_X_ENV/keyvaluemaps/kvmtestmap" \
     -H "Authorization: Bearer $TOKEN"
+
+curl -X DELETE \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_X_ORG}/keyvaluemaps/kvmtestmap" \
+    -H "Authorization: Bearer $TOKEN"
+
