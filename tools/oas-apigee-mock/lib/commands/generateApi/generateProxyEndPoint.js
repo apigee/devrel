@@ -176,4 +176,10 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
 
   const xmlString = root.end({ pretty: true, indent: '  ', newline: '\n' })
   await fs.writeFile(rootDirectory + '/proxies/default.xml', xmlString)
+
+  // Generate Base Configuration file
+  const baseConfig = builder.create('APIProxy')
+  baseConfig.att('name', apiProxy)
+  const baseXml = baseConfig.end({ pretty: true, indent: '  ', newline: '\n' })
+  await fs.writeFile(rootDirectory + '/' + apiProxy + '.xml', baseXml)
 }
