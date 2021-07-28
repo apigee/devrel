@@ -15,7 +15,7 @@ The IdP that is used is the [OIDC Mock IdP](../oidc-mock) but you may
 use any OIDC compliant IdP. Should you use your own IdP solution, please
 provide the following environment variables to the pipeline.sh script:
 
-- `TEST_IDP_DISCOVERY_DOCUMENT`: this variable MUST point to the URL of the
+- `IDP_DISCOVERY_DOCUMENT`: this variable MUST point to the URL of the
 discovery document of your IdP solution.
 - `TEST_IDP_APIGEE_CLIENT_ID`: the client_id Apigee can use to connect to
  the IdP
