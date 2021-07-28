@@ -22,7 +22,7 @@ const verifyApiKey = require('../../policy_templates/security/apikey.js')
 const oasValidation = require('../../policy_templates/validation/oas-validation.js')
 
 module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
-  let useCors
+
   let destination = options.destination || path.join(__dirname, '../../../api_bundles')
   if (destination.substr(-1) === '/') {
     destination = destination.substr(0, destination.length - 1)
@@ -171,14 +171,15 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
     httpProxyConn.ele('VirtualHost', {}, virtualhost)
   })
 
-  if (useCors) {
-    const routeRule1 = root.ele('RouteRule', { name: 'noRoute' })
-    routeRule1.ele('Condition', {}, 'request.verb == "OPTIONS"')
-  }
-
   // No back end, Assign message policies are used for responses, add noroute RouteRule
   root.ele('RouteRule', { name: 'noroute' })
 
   const xmlString = root.end({ pretty: true, indent: '  ', newline: '\n' })
   await fs.writeFile(rootDirectory + '/proxies/default.xml', xmlString)
+
+  // Generate Base Configuration file
+  const baseConfig = builder.create('APIProxy')
+  baseConfig.att('name', apiProxy)
+  const baseXml = baseConfig.end({ pretty: true, indent: '  ', newline: '\n' })
+  await fs.writeFile(rootDirectory + '/' + apiProxy + '.xml', baseXml)
 }
