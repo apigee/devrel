@@ -39,6 +39,7 @@ pipeline {
         stage('Install dependencies') {
           steps {
             sh "npm install --silent --no-fund"
+            echo sh(script: 'env|sort', returnStdout: true)
           }
         }
 
