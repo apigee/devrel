@@ -24,7 +24,8 @@ Standard endpoints are exposed, like:
     export APIGEE_PASS=xxx
 
     export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
-    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS"
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV"
+    -u "$APIGEE_USER" -p "$APIGEE_PASS"
     npm i
     npm test
 
@@ -427,152 +428,43 @@ A JSON content providing the different endpoints,
 the issuer and other security configuration specific to the Mock OIDC IdP:
 
     {
-        "issuer": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect",
-        "authorization_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/authorize",
-        "token_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/token",
-        "introspection_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/token/introspect",
-        "userinfo_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/userinfo",
-        "end_session_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/logout",
-        "jwks_uri": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/certs",
-        "check_session_iframe": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect/login-status-iframe.html",
+        "issuer": "https://x.iloveapis.io/v1/openid-connect",
+        "authorization_endpoint": "https://x.iloveapis.io/v1/openid-connect/authorize",
+        "token_endpoint": "https://x.iloveapis.io/v1/openid-connect/token",
+        "introspection_endpoint": "https://x.iloveapis.io/v1/openid-connect/token/introspect",
+        "userinfo_endpoint": "https://x.iloveapis.io/v1/openid-connect/userinfo",
+        "jwks_uri": "https://x.iloveapis.io/v1/openid-connect/certs",
         "grant_types_supported": [
-            "authorization_code",
-            "implicit",
-            "refresh_token",
-            "password",
-            "client_credentials"
+            "authorization_code"
         ],
         "response_types_supported": [
-            "code",
-            "none",
-            "id_token",
-            "token",
-            "id_token token",
-            "code id_token",
-            "code token",
-            "code id_token token"
+            "code"
         ],
         "subject_types_supported": [
-            "public",
-            "pairwise"
+            "public"
         ],
         "id_token_signing_alg_values_supported": [
-            "PS384",
-            "ES384",
-            "RS384",
-            "HS256",
-            "HS512",
-            "ES256",
-            "RS256",
-            "HS384",
-            "ES512",
-            "PS256",
-            "PS512",
-            "RS512"
-        ],
-        "id_token_encryption_alg_values_supported": [
-            "RSA-OAEP",
-            "RSA1_5"
-        ],
-        "id_token_encryption_enc_values_supported": [
-            "A256GCM",
-            "A192GCM",
-            "A128GCM",
-            "A128CBC-HS256",
-            "A192CBC-HS384",
-            "A256CBC-HS512"
+            "RS256"
         ],
         "userinfo_signing_alg_values_supported": [
-            "PS384",
-            "ES384",
-            "RS384",
-            "HS256",
-            "HS512",
-            "ES256",
-            "RS256",
-            "HS384",
-            "ES512",
-            "PS256",
-            "PS512",
-            "RS512",
-            "none"
-        ],
-        "request_object_signing_alg_values_supported": [
-            "PS384",
-            "ES384",
-            "RS384",
-            "HS256",
-            "HS512",
-            "ES256",
-            "RS256",
-            "HS384",
-            "ES512",
-            "PS256",
-            "PS512",
-            "RS512",
             "none"
         ],
         "response_modes_supported": [
-            "query",
-            "fragment",
-            "form_post"
+            "query"
         ],
-        "registration_endpoint": "https://jeanmartindemodevrel-eval-test.apigee.net/v1/openid-connect//clients-registrations",
         "token_endpoint_auth_methods_supported": [
-            "private_key_jwt",
-            "client_secret_basic",
-            "client_secret_post",
-            "tls_client_auth",
-            "client_secret_jwt"
-        ],
-        "token_endpoint_auth_signing_alg_values_supported": [
-            "PS384",
-            "ES384",
-            "RS384",
-            "HS256",
-            "HS512",
-            "ES256",
-            "RS256",
-            "HS384",
-            "ES512",
-            "PS256",
-            "PS512",
-            "RS512"
+            "client_secret_basic"
         ],
         "claims_supported": [
-            "aud",
             "sub",
-            "iss",
-            "auth_time",
             "name",
-            "given_name",
-            "family_name",
-            "preferred_username",
-            "email",
-            "acr"
+            "iat"
         ],
-        "claim_types_supported": [
-            "normal"
-        ],
-        "claims_parameter_supported": false,
         "scopes_supported": [
             "openid",
             "address",
-            "email",
-            "microprofile-jwt",
-            "offline_access",
-            "phone",
-            "profile",
-            "roles",
-            "web-origins"
-        ],
-        "request_parameter_supported": true,
-        "request_uri_parameter_supported": true,
-        "code_challenge_methods_supported": [
-            "plain",
-            "S256"
-        ],
-        "tls_client_certificate_bound_access_tokens": true
+            "email"
+        ]
     }
 
 Have fun using the OIDC Mock IdP !
