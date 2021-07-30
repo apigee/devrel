@@ -18,7 +18,7 @@ const apickli = require('apickli')
 const {
   Before,
   setDefaultTimeout
-} = require('cucumber')
+} = require('@cucumber/cucumber')
 
 const clientId = process.env.TEST_APP_CONSUMER_KEY
 const clientSecret = process.env.TEST_APP_CONSUMER_SECRET

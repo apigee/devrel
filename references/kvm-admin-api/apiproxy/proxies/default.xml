@@ -29,11 +29,12 @@
             </Step>
             <Step>
                 <Name>RF-404</Name>
-                <Condition>kvm.orgname is null or kvm.envname is null</Condition>
+                <Condition>kvm.orgname is null</Condition>
             </Step>
             <Step>
                 <Name>RF-403</Name>
-                <Condition>kvm.orgname != organization.name or kvm.envname != environment.name</Condition>
+                <!-- require the org name and optional env name in the path to match the deployment -->
+                <Condition>kvm.orgname != organization.name or !(kvm.envname is null or kvm.envname == environment.name)</Condition>
             </Step>
             <Step>
                 <Name>AM-OriginalRequest</Name>
@@ -42,11 +43,27 @@
     </PreFlow>
     <Flows>
         <Flow name="GET /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "GET")</Condition>
+            <Request/>
+            <Response>
+                <Step>
+                    <Name>KV-GetEntryOrg</Name>
+                </Step>
+                <Step>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="GET /environments/*/keyvaluemaps/*/entries/*">
             <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "GET")</Condition>
             <Request/>
             <Response>
                 <Step>
-                    <Name>KV-GetEntryDynamic</Name>
+                    <Name>KV-GetEntryEnv</Name>
                 </Step>
                 <Step>
                     <Name>RF-404Entry</Name>
@@ -58,6 +75,22 @@
             </Response>
         </Flow>
         <Flow name="POST /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/keyvaluemaps/*/entries") and (kvmreq.verb = "POST")</Condition>
+            <Request>
+                <Step>
+                    <Name>EV-ParseRequestBody</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>KV-PostEntryOrg</Name>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="POST /environments/*/keyvaluemaps/*/entries/*">
             <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries") and (kvmreq.verb = "POST")</Condition>
             <Request>
                 <Step>
@@ -66,7 +99,7 @@
             </Request>
             <Response>
                 <Step>
-                    <Name>KV-PostEntryDynamic</Name>
+                    <Name>KV-PostEntryEnv</Name>
                 </Step>
                 <Step>
                     <Name>AM-SetResponse</Name>
@@ -74,11 +107,27 @@
             </Response>
         </Flow>
         <Flow name="DELETE /keyvaluemaps/*/entries/*">
+            <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "DELETE")</Condition>
+            <Request/>
+            <Response>
+                <Step>
+                    <Name>KV-DeleteEntryOrg</Name>
+                </Step>
+                <Step>
+                    <Name>RF-404Entry</Name>
+                    <Condition>private.kvm-entry.value is null</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-SetResponse</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="DELETE /environments/*/keyvaluemaps/*/entries/*">
             <Condition>(kvmreq.pathsuffix MatchesPath "/organizations/*/environments/*/keyvaluemaps/*/entries/*") and (kvmreq.verb = "DELETE")</Condition>
             <Request/>
             <Response>
                 <Step>
-                    <Name>KV-DeleteEntryDynamic</Name>
+                    <Name>KV-DeleteEntryEnv</Name>
                 </Step>
                 <Step>
                     <Name>RF-404Entry</Name>

@@ -17,7 +17,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.11.0",
     "prettier": "^2.0.5",
-    "remark-cli": "^8.0.0",
+    "remark-cli": "^9.0.0",
     "remark-lint": "^7.0.0",
     "remark-lint-maximum-line-length": "^2.0.3",
     "remark-preset-lint-recommended": "^4.0.0",

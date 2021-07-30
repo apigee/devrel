@@ -1,11 +1,11 @@
 {
   "name": "identity-facade-v1",
   "scripts": {
-    "test": "./node_modules/.bin/cucumber-js test/integration/features"
+    "test": "./node_modules/.bin/cucumber-js --publish-quiet test/integration/features"
   },
   "devDependencies": {
-    "apickli": "^2.3.3",
-    "cucumber": "^6.0.5",
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.0",
     "puppeteer": "^5.2.1"
   }
 }

@@ -16,7 +16,7 @@
 
 set -e
 
-npm install
+npm install --no-fund
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 PATH=$PATH:$SCRIPTPATH/bin "$SCRIPTPATH/test/smoketest.sh"

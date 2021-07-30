@@ -19,7 +19,7 @@
 "use strict";
 
 const apickliModule = require("apickli");
-const { Before } = require("cucumber");
+const { Before } = require("@cucumber/cucumber");
 
 Before(function () {
   const host = process.env.TEST_HOST || "org-env.apigee.net";

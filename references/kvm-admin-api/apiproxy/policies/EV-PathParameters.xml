@@ -18,5 +18,7 @@
     <URIPath>
         <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
         <Pattern ignoreCase="true">/organizations/{kvm.orgname}/environments/{kvm.envname}/keyvaluemaps/{kvm.name}/entries</Pattern>
+        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/keyvaluemaps/{kvm.name}/entries/{kvm-entry.key}</Pattern>
+        <Pattern ignoreCase="true">/organizations/{kvm.orgname}/keyvaluemaps/{kvm.name}/entries</Pattern>
     </URIPath>
 </ExtractVariables>

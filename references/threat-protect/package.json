@@ -1,0 +1,11 @@
+{
+  "name": "threat-protect-v1",
+  "scripts": {
+    "test": "./node_modules/.bin/cucumber-js test/integration/features"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.0",
+    "puppeteer": "^5.2.1"
+  }
+}

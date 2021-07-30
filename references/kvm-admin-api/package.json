@@ -5,9 +5,8 @@
   "scripts": {
     "test": "npm i && npx cucumber-js --retry 10 --retry-tag-filter '@flaky' test"
   },
-  "license": "Apache-2.0",
   "dependencies": {
-    "apickli": "^2.3.3",
-    "cucumber": "^6.0.5"
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.0"
   }
 }

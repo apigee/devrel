@@ -19,7 +19,7 @@
 "use strict";
 
 const apickli = require('apickli');
-const { Before } = require("cucumber");
+const { Before } = require("@cucumber/cucumber");
 
 const config = require('../test-config.json');
 const appKey = require('../devAppKeys.json');
