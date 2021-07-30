@@ -24,8 +24,7 @@ Standard endpoints are exposed, like:
     export APIGEE_PASS=xxx
 
     export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
-    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV"
-    -u "$APIGEE_USER" -p "$APIGEE_PASS"
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS"
     npm i
     npm test
 
