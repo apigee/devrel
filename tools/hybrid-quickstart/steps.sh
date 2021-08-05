@@ -373,7 +373,7 @@ spec:
         serviceAnnotations:
           cloud.google.com/app-protocols: '{"https":"HTTPS"}'
           cloud.google.com/neg: '{"ingress": true}'
-          networking.gke.io.load-balancer-type: $INGRESS_TYPE
+          networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
           type: LoadBalancer
           loadBalancerIP: $INGRESS_IP
