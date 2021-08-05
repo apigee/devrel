@@ -466,7 +466,7 @@ create_self_signed_cert() {
   kubectl create secret tls tls-hybrid-ingress \
     --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
     --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-    -n istio-system
+    -n istio-system --dry-run -o yaml | kubectl apply -f -
 }
 
 create_sa() {
@@ -587,7 +587,7 @@ deploy_example_proxy() {
 }
 
 delete_apigee_keys() {
-  for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
+  for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace runtime
   do
     delete_sa_keys "apigee-${SA}"
   done
