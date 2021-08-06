@@ -79,6 +79,12 @@
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
+                    <Condition>request.header.content-type = "application/json"</Condition>
+                </Step>
+                <Step>
+                    <Name>AV-KVMParameters</Name>
+                    <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
+
                 </Step>
             </Request>
             <Response>
@@ -95,6 +101,12 @@
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
+                    <Condition>request.header.content-type = "application/json"</Condition>
+                </Step>
+                <Step>
+                    <Name>AV-KVMParameters</Name>
+                    <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
+
                 </Step>
             </Request>
             <Response>

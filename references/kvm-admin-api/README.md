@@ -80,7 +80,7 @@ export APIGEE_ENV=my-env # (env-scoped KVM only)
 
 ## Create or Update a KVM entry
 
-Environment-scoped KVM:
+Environment-scoped KVM with a JSON request payload:
 
 ```sh
 curl -X POST \
@@ -90,13 +90,53 @@ curl -X POST \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
 ```
 
-Organization-scoped KVM:
+Environment-scoped KVM with a form payload:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo -d value=bar \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
+```
+
+When used with the cURL utility, the form payload option allows you to obtain
+the `value` for the key-value pair from a text file. For example, the value
+could be a PEM-encoded private key, a JSON file, a YAML file, and so on. This
+command populates the value of the "foo" key in an Environment-scoped KVM with
+the contents of a text file:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo --data-urlencode value@/path/to/file/here.txt \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a JSON request payload:
 
 ```sh
 curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d '{ "key": "foo", "value": "bar" }' \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a form request payload:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo -d value=bar \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a value obtained from a file:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo --data-urlencode value@/path/to/file/here.txt \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
 ```
 
