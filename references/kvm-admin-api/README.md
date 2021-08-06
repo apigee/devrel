@@ -101,7 +101,7 @@ curl -X POST \
 
 When used with the cURL utility, the form payload option allows you to obtain
 the `value` for the key-value pair from a text file. For example, the value
-could be a PEM-encoded private key, a JSON file, a YAML file, and so on. This
+could be a PEM-encoded private key, the contents of a JSON file, and so on. This
 command populates the value of the "foo" key in an Environment-scoped KVM with
 the contents of a text file:
 
