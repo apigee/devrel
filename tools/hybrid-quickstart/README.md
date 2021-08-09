@@ -106,6 +106,18 @@ records. The quickstart checks if the `apigee-dns-zone` already exists and will
 skip its creation.
 If you use the default `DNS_NAME` you don't have to manually create a dns zone.
 
+## TLS/SSL Certificates
+
+You can use one of three different ways to issue TLS certificates for your
+Apigee hybrid ingress:
+
+- `export CERT_TYPE=''` (default) Automatically obtain trusted certificates (through
+  Let's encrypt). For details see [this](https://community.apigee.com/articles/86322/free-trusted-ssl-certificates-for-apigee-hybrid-in.html)
+  blog post in the Apigee community.
+- `export CERT_TYPE='self-signed'` creates self-signed certifificates
+- `export CERT_TYPE='skip'` skips the certificate creation and relies on you
+  creating a `tls-hybrid-ingress` certificate in the `istio-system` namespace.
+
 ## Initialize the Apigee hybrid runtime on a GKE cluster
 
 After the configuration is done run the following command to initialize you
@@ -115,11 +127,6 @@ Apigee hybrid organization and runtime. This typically takes between 15 and
 ```sh
 ./initialize-runtime-gke.sh
 ```
-
-## (Optional) Provision Trusted TLS/SSL Certificates
-
-See the [this](https://community.apigee.com/articles/86322/free-trusted-ssl-certificates-for-apigee-hybrid-in.html)
- blog post in the Apigee community.
 
 ## Clean up
 
