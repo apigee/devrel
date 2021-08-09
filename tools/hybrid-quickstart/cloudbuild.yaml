@@ -25,6 +25,9 @@ steps:
   env:
     - 'ENV_NAME=$_QUICKSTART_ENV_NAME'
     - 'ENV_GROUP_NAME=$_QUICKSTART_ENV_GROUP_NAME'
+    - 'CERT_TYPE=$_CERT_TYPE'
+    - 'QUIET_INSTALL=true'
+
 
 # Test that the proxy is successfully deployed
 - name: gcr.io/cloud-builders/gcloud
@@ -63,3 +66,4 @@ substitutions:
   _QUICKSTART_ENV_NAME: test1
   _QUICKSTART_ENV_GROUP_NAME: test
   _DESTROY_AFTER_VALIDATION: "false"
+  _CERT_TYPE: "" # default (let's encrypt)
