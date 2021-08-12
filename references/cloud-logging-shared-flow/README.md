@@ -6,7 +6,7 @@ from within an Apigee Proxy.
 ## Compatibility
 
 This example is built using the [GCP Service Account Association](https://cloud.google.com/apigee/docs/api-platform/security/google-auth/overview)
-that is available in Apigee X. For scenarios where this this option is not
+that is available in Apigee X. For scenarios where this option is not
 available you could make use of the [GCP SA shared flow](../gcp-sa-auth-shared-flow)
 to obtain a valid access token and use it within the ServiceCallout policy.
 
