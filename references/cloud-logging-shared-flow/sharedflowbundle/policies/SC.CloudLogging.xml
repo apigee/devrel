@@ -53,7 +53,7 @@ limitations under the License.
     }],
     "partialSuccess": true
   }
-</Payload>
+            </Payload>
             <Verb>POST</Verb>
         </Set>
     </Request>
@@ -67,9 +67,6 @@ limitations under the License.
                 <LifetimeInSeconds>3600</LifetimeInSeconds>
             </GoogleAccessToken>
         </Authentication>
-        <Properties>
-            <Property name="success.codes">2xx, 3xx</Property>
-        </Properties>
         <URL>https://logging.googleapis.com/v2/entries:write</URL>
     </HTTPTargetConnection>
 </ServiceCallout>
