@@ -24,9 +24,11 @@ further to fit a particular use case.
 - [CI/CD Pipeline](references/cicd-pipeline) -
   Reference implementation for a CI/CD Pipeline using the Apigee
   Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
-- [CI/CD Pipeline for SharedFlows](references/cicd-sharedflow-pipeline) -
+- [CI/CD Pipeline for Shared Flows](references/cicd-sharedflow-pipeline) -
   Reference implementation for a CI/CD Pipeline for Sharedflows using the Apigee
   Deploy Maven Plugin
+- [Cloud Logging Shared Flow](references/cloud-logging-shared-flow) -
+  Reference implementation for a shared flow to log to Google Cloud Logging
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
