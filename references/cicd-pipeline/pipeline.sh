@@ -51,8 +51,30 @@ docker run \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
+  -e APIGEE_TEST_ENV="$APIGEE_ENV" \
+  -e APIGEE_PROD_ENV="$APIGEE_ENV" \
+  -e TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" \
+  -e API_VERSION="apigee" \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
-  -e JENKINS_ADMIN_PASS=password \
-  -i \
-  apigee/devrel-jenkinsfile-runner-airports:latest
+  -e JENKINS_ADMIN_PASS="password" \
+  -i apigee/devrel-jenkinsfile-runner-airports:latest
+
+
+echo "[INFO] CICD Pipeline for Apigee X (Jenkins)"
+
+TOKEN=$(gcloud auth print-access-token)
+
+docker run \
+  -e APIGEE_USER="not-used" \
+  -e APIGEE_PASS="not-used" \
+  -e APIGEE_TOKEN="$TOKEN" \
+  -e APIGEE_ORG="$APIGEE_X_ORG" \
+  -e APIGEE_TEST_ENV="$APIGEE_X_ENV" \
+  -e APIGEE_PROD_ENV="$APIGEE_X_ENV" \
+  -e TEST_HOST="$APIGEE_X_HOSTNAME" \
+  -e API_VERSION="google" \
+  -e GIT_BRANCH=nightly \
+  -e AUTHOR_EMAIL="cicd@apigee.google.com" \
+  -e JENKINS_ADMIN_PASS="password" \
+  -i apigee/devrel-jenkinsfile-runner-airports:latest
