@@ -62,7 +62,7 @@ limitations under the License.
         <Authentication>
             <GoogleAccessToken>
                 <Scopes>
-                    <Scope>https://www.googleapis.com/auth/cloud-platform</Scope>
+                    <Scope>https://www.googleapis.com/auth/logging.write</Scope>
                 </Scopes>
                 <LifetimeInSeconds>3600</LifetimeInSeconds>
             </GoogleAccessToken>
