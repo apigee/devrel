@@ -26,8 +26,8 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 COPY --chown=jenkins jenkins.yml /var/jenkins_home/casc_configs/jenkins.yaml
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
 
-RUN CLOUDSDK_INSTALL_DIR=/var/jenkins_home && \
-  curl -sSL https://sdk.cloud.google.com | bash
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+RUN CLOUDSDK_INSTALL_DIR=/var/jenkins_home curl -sSL https://sdk.cloud.google.com | bash
 
 ENV PATH="/var/jenkins_home/google-cloud-sdk/bin:${PATH}"
 
