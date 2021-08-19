@@ -54,9 +54,6 @@ further to fit a particular use case.
 This folder contains ready-made utilities which simplify and assist the usage of
 Apigee products.
 
-- [Organization Cleanup](tools/organization-cleanup) -
-  A tool to cleanup proxies in an Apigee organization, leveraging
-  [Another Apigee Client](tools/another-apigee-client)
 - [Pipeline Runner](tools/pipeline-runner) -
   A tool to build and test groups of Apigee projects
 - [Pipeline Linter](tools/pipeline-linter) -

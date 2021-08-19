@@ -19,7 +19,6 @@ PIPELINE_REPORT=""
 DEVREL_ROOT="$PWD"
 
 PATH=$PATH:"$DEVREL_ROOT/tools/another-apigee-client"
-PATH=$PATH:"$DEVREL_ROOT/tools/organization-cleanup/organization-cleanup.sh"
 PATH=$PATH:"$DEVREL_ROOT/tools/apigee-sackmesser/bin"
 
 append_pipeline_result() {
