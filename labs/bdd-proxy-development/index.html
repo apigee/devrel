@@ -1,0 +1,155 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Behaviour-Driven Proxy Development with Apigee</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bdd-proxy-development"
+                  title="Behaviour-Driven Proxy Development with Apigee"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Overview" duration="2">
+        <p>This lab walks through the process of generating, deploying and testing a mock<br>proxy on Apigee.<br>The lab focuses on leveraging useful tools and best practices, with some<br>practical examples. Over the course of the lab you will step through<br>the process shown below. An Open API specification and test suite have already<br>been provided for the lab. You can use these as a reference<br>to leverge this same process in your own API development work.</p>
+<p class="image-container"><img alt="Overview" src="img/173d98dadc3450b8.png"></p>
+<p>We assume basic knowledge of the Apigee platform and you will get the most<br>from this lab if you already possess this knowledge.</p>
+<p>Ideally you will have completed the Apigee courses on<br><a href="https://www.coursera.org/learn/api-design-apigee-gcp" target="_blank">Design</a>,<br><a href="https://www.coursera.org/learn/api-development-apigee-gcp" target="_blank">Development</a> and<br><a href="https://www.coursera.org/learn/api-security-apigee-gcp" target="_blank">Security</a> Courses.<br>These are available through Coursera, Pluralsight or Qwiklabs.</p>
+<p>Alternatively, completing the Apigee<br><a href="https://github.com/apigee/apijam" target="_blank">API Jam</a> will cover the same topics in<br>less depth.</p>
+<p>Lets get started!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Prerequisites" duration="30">
+        <p>An Apigee organisation (X or Hybrid) configured for external exposure is<br>required to complete this lab. See<br><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision" target="_blank">here</a><br>for details on provisioning an Apigee X evaluation organisation.</p>
+<h2 is-upgraded>Tools</h2>
+<p>You will need to have the following dependencies configired in you local<br>enviornment in order to complete the lab tasks:</p>
+<ul>
+<li>Bash (Unix shell)</li>
+<li><a href="https://nodejs.org/en/" target="_blank">NodeJS</a> LTS version or above.</li>
+<li><a href="https://cloud.google.com/sdk/docs/install" target="_blank">gcloud</a></li>
+<li><a href="https://git-scm.com/" target="_blank">git</a></li>
+<li><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-sackmesser" target="_blank">apigee-sackmesser</a></li>
+<li><a href="https://github.com/srinandan/apigeecli" target="_blank">apigeecli</a></li>
+<li><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></li>
+</ul>
+<h2 is-upgraded>Environment Variables</h2>
+<p>Commands used during the lab will require the following environment variables<br>to be configured.</p>
+<pre><code>export TOKEN=$(gcloud auth application-default print-access-token)
+export APIGEE_ENV=&lt;apigee-environment-name&gt;
+export APIGEE_ORG=&lt;gcp-project-name&gt;
+</code></pre>
+<h2 is-upgraded>oas-apigee-mock</h2>
+<p>Clone the Apigee DevRel repo and install the dependencies for the<br>oas-apigee-mock tool.</p>
+<pre><code>git clone https://github.com/apigee/devrel.git
+cd devrel/tools/oas-apigee-mock/
+export LAB_HOME=$PWD
+npm install
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Generate the proxy bundle and prepare tests" duration="10">
+        <h2 is-upgraded>Generate an Apigee proxy from an Open API Specification</h2>
+<p>Use the <code>orders-apikey-header.yaml</code> Open API specification included<br>in the <code>$LAB_HOME/test/oas</code> folder to generate a proxy bundle.</p>
+<pre><code>node $LAB_HOME/bin/oas-apigee-mock generateApi web-orders-proxy-v1 \
+  -s $LAB_HOME/test/oas/orders-apikey-header.yaml \
+  -o
+</code></pre>
+<h2 is-upgraded>Update the apickli configuration to use your Environment Group&#39;s Hostname</h2>
+<p>Update the <code>before(function ()</code> block in<br><code>$LAB_HOME/test/features/step_definitions/init.js</code> with a hostname from the<br>environment group you will deploying to. For example:</p>
+<pre><code>before(function () {
+  this.apickli = new apickli.Apickli(
+    &#34;https&#34;,process.env.RUNTIME_HOST_ALIAS
+  );
+</code></pre>
+<p>If you followed the<br><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision" target="_blank">Apigee X Trial Provisioning</a><br>script, a hostname will have been stored in the <code>RUNTIME_HOST_ALIAS</code><br>enviornment variable associated with the <code>eval-group</code> environment group.</p>
+<p>You can also retrive environment group information from you Apigee organisation<br>using <code>apigeecli</code>.</p>
+<pre><code>apigeecli envgroups list -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34;
+</code></pre>
+<p>Using <code>jq</code> we can retrieve a hostname of an environment group and store it in the<br><code>RUNTIME_HOST_ALIAS</code> variable.</p>
+<pre><code>apigeecli envgroups list -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; &gt; environment-groups.json
+RUNTIME_HOST_ALIAS=$(jq &#39;.environmentGroups[0].hostnames[0]&#39; -r &lt; environment-groups.json )
+export RUNTIME_HOST_ALIAS
+echo &#34;RUNTIME_HOST_ALIAS is $RUNTIME_HOST_ALIAS&#34;
+</code></pre>
+<h2 is-upgraded>Update the test suite proxy reference</h2>
+<p>Update the test suite <code>$LAB_HOME/test/features/orders-apikey-header.feature</code><br>with the basepath for your proxy.<code>web-orders-proxy-v1</code> was used in the generate<br>proxy step earlier in this lab.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Deploy and Test the Proxy" duration="10">
+        <h2 is-upgraded>Test the Proxy</h2>
+<p>Lets start by running the test suite.</p>
+<pre><code>cd $LAB_HOME
+./node_modules/.bin/cucumber-js test/features/orders-apikey-header.feature --format json:test/test_report.json --publish-quiet
+</code></pre>
+<p>The test should fail as we have yet to deploy the proxy we generated<br>previously.</p>
+<h2 is-upgraded>Deploy the generated proxy to your Apigee Organisation</h2>
+<pre><code>sackmesser deploy -d &#34;$LAB_HOME/api_bundles/web-orders-proxy-v1&#34; --googleapi -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; -e &#34;$APIGEE_ENV&#34;
+</code></pre>
+<h2 is-upgraded>Start debugging</h2>
+<p>Turn on <a href="https://cloud.google.com/apigee/docs/api-platform/debug/trace" target="_blank">debug</a><br>and run the test suite again.</p>
+<pre><code>cd $LAB_HOME
+./node_modules/.bin/cucumber-js test/features/orders-apikey-header.feature --format json:test/test_report.json --publish-quiet
+</code></pre>
+<p>Once again the tests should fail but for a different reason. Use the Apigee<br>debug tool to investigate the cause.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create an  API Product, Developer and App" duration="10">
+        <p>The generated proxy is protected by a Verify API Key policy (as specificied<br>in the Open API Specification used), a valid API Key is needed in order to<br>sucessfully make API calls to the proxy. To obtain an API Key we need to<br>create an API product which includes our proxy and register a developer and<br>application which will use that API Product.</p>
+<pre><code>apigeecli products create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --name &#34;web-orders&#34; --proxies &#34;web-orders-proxy-v1&#34; --envs &#34;$APIGEE_ENV&#34; --approval &#34;auto&#34;
+apigeecli devs create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --email &#34;web-orders@example.com&#34; --user &#34;web-orders@example.com&#34; --first &#34;Web&#34; --last &#34;Developer&#34;
+apigeecli apps create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --email &#34;web-orders@example.com&#34; --prods &#34;web-orders&#34; --name &#34;web-orders-app&#34; &gt; app.json
+
+APIKEY=$(jq &#39;.credentials[0].consumerKey&#39; -r &lt; app.json )
+export APIKEY
+echo &#34;APIKEY is $APIKEY&#34;
+</code></pre>
+<h2 is-upgraded>Retest the Proxy</h2>
+<p>A valid API Key is now available as an environment variable and can now be<br>used by the test suite.<br>Turn on <a href="https://cloud.google.com/apigee/docs/api-platform/debug/trace" target="_blank">debug</a><br>again, run the test suite and verify the tests are now passing.</p>
+<pre><code>cd $LAB_HOME
+./node_modules/.bin/cucumber-js test/features/orders-apikey-header.feature --format json:test/test_report.json --publish-quiet
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Summary" duration="0">
+        <p>You have generated, deployed and tested a mock API<br>proxy on Apigee using a behavior-driven development approach.</p>
+<p class="image-container"><img alt="Overview" src="img/173d98dadc3450b8.png"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

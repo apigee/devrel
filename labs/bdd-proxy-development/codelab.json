@@ -4,14 +4,14 @@
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
   "updated": "2021-08-19T18:05:36Z",
-  "id": "best-practices-hackathon",
-  "duration": 0,
-  "title": "Apigee Best Practices Hackathon",
+  "id": "bdd-proxy-development",
+  "duration": 62,
+  "title": "Behaviour-Driven Proxy Development with Apigee",
   "summary": "",
   "source": "./lab.md",
   "theme": "",
   "status": null,
   "category": null,
   "tags": [],
-  "url": "best-practices-hackathon"
+  "url": "bdd-proxy-development"
 }
