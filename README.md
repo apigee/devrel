@@ -82,6 +82,9 @@ technical or non-technical topic.
 
 - [Best Practices Hackathon](labs/best-practices-hackathon) [(web)](https://apigee.github.io/devrel/labs/best-practices-hackathon)
   A 300 level lab to learn Apigee Best Practices
+- [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
+  A 200 level lab demonstrating behavior-driven API development by building,
+  deploying and testing a mock API, generated from an Open API Specification.
 
 ## Contributing
 
