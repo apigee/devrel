@@ -1,4 +1,4 @@
-# Apigee OAS Mock Lab
+# BDD Proxy Development Lab
 
 Use [claat](https://github.com/googlecodelabs/tools) to
 generate static HTML site from the Markdown document.

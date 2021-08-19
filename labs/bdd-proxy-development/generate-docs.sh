@@ -20,4 +20,4 @@ claat export ./lab.md
 # move to generated
 rm -rf ./generated
 mkdir -p ./generated
-mv ./oas-apigee-mock ./generated/docs
+mv ./bdd-proxy-development ./generated/docs

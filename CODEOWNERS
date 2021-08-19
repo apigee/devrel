@@ -11,7 +11,7 @@
 /references/southbound-mtls           @danistrebel
 /references/threat-protect            @joelgauci
 /labs/best-practices-hackathon        @sauliuz @seymen
-/labs/oas-apigee-mock                 @markjkelly
+/labs/bdd-proxy-development           @markjkelly
 /tools/pipeline-runner                @seymen @danistrebel
 /tools/pipeline-linter                @seymen @danistrebel
 /tools/apigee-sackmesser              @danistrebel
