@@ -79,6 +79,16 @@
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
+                    <Condition>request.header.content-type = "application/json"</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-ParseRequestFormBody</Name>
+                    <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
+
+                </Step>
+                <Step>
+                    <Name>RF-400</Name>
+                    <Condition>(private.kvm-entry.value = null) or (kvm-entry.key = null)</Condition>
                 </Step>
             </Request>
             <Response>
@@ -95,6 +105,16 @@
             <Request>
                 <Step>
                     <Name>EV-ParseRequestBody</Name>
+                    <Condition>request.header.content-type = "application/json"</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-ParseRequestFormBody</Name>
+                    <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
+
+                </Step>
+                <Step>
+                    <Name>RF-400</Name>
+                    <Condition>(private.kvm-entry.value = null) or (kvm-entry.key = null)</Condition>
                 </Step>
             </Request>
             <Response>
