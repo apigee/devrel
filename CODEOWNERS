@@ -21,8 +21,6 @@
 /tools/oas-apigee-mock                @markjkelly
 
 # looking for new owners
-/references/apigee-sandbox-v1         @laughingbiscuit
-/references/apimocker-hostedtargets   @laughingbiscuit
 /references/common-shared-flows       @laughingbiscuit
 /references/dutch-healthcare          @laughingbiscuit
 /references/java-callout              @laughingbiscuit
