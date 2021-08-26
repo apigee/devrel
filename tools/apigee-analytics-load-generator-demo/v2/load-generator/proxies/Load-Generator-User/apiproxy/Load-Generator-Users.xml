@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="Load-Generator-Users">
+    <Basepaths>/v1/user</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1582135430462</CreatedAt>
+    <CreatedBy>igngar@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Load-Generator-Users</DisplayName>
+    <LastModifiedAt>1582135430462</LastModifiedAt>
+    <LastModifiedBy>igngar@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:662af232251f052e39d4fe8e8c504d216e4e5f04536caa9fa0cb8f759e7c15d3907423e30cfe88fd75b988d2f5a478d96ba27bda2a229204006d497b6da2c196</ManifestVersion>
+    <Policies/>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

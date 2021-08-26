@@ -1,0 +1,2 @@
+service: default
+runtime: python37

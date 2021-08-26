@@ -1,0 +1,2 @@
+service: recommendation
+runtime: python37

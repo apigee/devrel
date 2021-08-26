@@ -1,0 +1,2 @@
+service: loyalty
+runtime: python37

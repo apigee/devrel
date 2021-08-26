@@ -1,0 +1,479 @@
+openapi: 3.0.0
+info:
+  title: Product Store
+  version: '1.0'
+  contact:
+    name: Ignacio Garcia
+    email: igngar@google.com
+servers:
+  - url: 'https://emea-cs-hybrid-demo20-test.hybrid-apigee.net/v1'
+paths:
+  /catalog:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                response-catalog-empty:
+                  value: {}
+      operationId: get-catalog
+      description: Provides an empty response.
+    post:
+      summary: ''
+      operationId: post-catalog
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                priceUsd:
+                  type: object
+                  properties:
+                    units:
+                      type: string
+                      minLength: 1
+                    currencyCode:
+                      type: string
+                      minLength: 1
+                  required:
+                    - units
+                    - currencyCode
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                  minLength: 1
+                categories:
+                  type: array
+                  items:
+                    required: []
+                    properties: {}
+                id:
+                  type: string
+                  minLength: 1
+                picture:
+                  type: string
+                  minLength: 1
+              required:
+                - priceUsd
+                - name
+                - description
+                - categories
+                - id
+                - picture
+  '/catalog/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: id of the product
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  priceUsd:
+                    type: object
+                    required:
+                      - units
+                      - currencyCode
+                    properties:
+                      units:
+                        type: string
+                        minLength: 1
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  description:
+                    type: string
+                    minLength: 1
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                  id:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                required:
+                  - priceUsd
+                  - name
+                  - description
+                  - categories
+                  - id
+                  - picture
+      operationId: get-catalog-id
+      security:
+        - apikey: []
+  '/recommendation/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Product recommendation id
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  description:
+                    type: string
+                    minLength: 1
+                  id:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                  priceUsd:
+                    type: object
+                    properties:
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                      nanos:
+                        type: number
+                      units:
+                        type: string
+                        minLength: 1
+                    required:
+                      - currencyCode
+                      - nanos
+                      - units
+                required:
+                  - categories
+                  - description
+                  - id
+                  - name
+                  - picture
+                  - priceUsd
+      operationId: get-recommendation-id
+      security:
+        - apikey: []
+      description: ''
+  /checkout:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-checkout
+      security:
+        - apikey: []
+    post:
+      summary: ''
+      operationId: post-checkout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                cart:
+                  type: number
+              required:
+                - cart
+      security:
+        - apikey: []
+      description: Post a checkout to be done
+  '/checkout/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: id of the cart
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  total:
+                    type: string
+                    minLength: 1
+                  adjustments:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  adjustmentsTotal:
+                    type: string
+                    minLength: 1
+                  itemsTotal:
+                    type: string
+                    minLength: 1
+                  localeCode:
+                    type: string
+                    minLength: 1
+                  channel:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        minLength: 1
+                      _links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                                minLength: 1
+                            required:
+                              - href
+                        required:
+                          - self
+                      id:
+                        type: number
+                    required:
+                      - code
+                      - _links
+                      - id
+                  id:
+                    type: string
+                    minLength: 1
+                  checkoutState:
+                    type: string
+                    minLength: 1
+                  currencyCode:
+                    type: string
+                    minLength: 1
+                  items:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  customer:
+                    type: object
+                    properties:
+                      firstName:
+                        type: string
+                        minLength: 1
+                      lastName:
+                        type: string
+                        minLength: 1
+                      _links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                                minLength: 1
+                            required:
+                              - href
+                        required:
+                          - self
+                      id:
+                        type: number
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          enabled:
+                            type: string
+                            minLength: 1
+                          username:
+                            type: string
+                            minLength: 1
+                        required:
+                          - id
+                          - enabled
+                          - username
+                      email:
+                        type: string
+                        minLength: 1
+                    required:
+                      - firstName
+                      - lastName
+                      - _links
+                      - id
+                      - user
+                      - email
+                required:
+                  - total
+                  - adjustments
+                  - adjustmentsTotal
+                  - itemsTotal
+                  - localeCode
+                  - channel
+                  - id
+                  - checkoutState
+                  - currencyCode
+                  - items
+                  - customer
+      operationId: get-checkout-id
+      description: retrieve the info of a cart checkout
+      security:
+        - apikey: []
+  /recommendation:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      required: []
+                      properties: {}
+                  description:
+                    type: string
+                    minLength: 1
+                  id:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: string
+                    minLength: 1
+                  picture:
+                    type: string
+                    minLength: 1
+                  priceUsd:
+                    type: object
+                    properties:
+                      currencyCode:
+                        type: string
+                        minLength: 1
+                      nanos:
+                        type: number
+                      units:
+                        type: string
+                        minLength: 1
+                    required:
+                      - currencyCode
+                      - nanos
+                      - units
+                required:
+                  - categories
+                  - description
+                  - id
+                  - name
+                  - picture
+                  - priceUsd
+      operationId: get-recommendation
+      description: Get a product recommendation
+      security:
+        - apikey: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      x-examples:
+        Alice Smith:
+          id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+  securitySchemes:
+    apikey:
+      name: apikey
+      type: apiKey
+      in: query
+security:
+  - apikey: []

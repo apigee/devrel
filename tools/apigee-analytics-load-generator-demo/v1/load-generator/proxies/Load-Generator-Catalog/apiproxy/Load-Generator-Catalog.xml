@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="Load-Generator-Catalog">
+    <Basepaths>/v1/catalog</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1582135665941</CreatedAt>
+    <CreatedBy>igngar@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Load-Generator-Catalog</DisplayName>
+    <LastModifiedAt>1582135665941</LastModifiedAt>
+    <LastModifiedBy>igngar@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:9005bbc89e9082d35ed8f44a399833713c70e064e2c0d749b04e7dbd5bb33770bd60c42e9aca39ca68a2537e216f9e103b6b854dda5965e31b2a00237b56c0b9</ManifestVersion>
+    <Policies/>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

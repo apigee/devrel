@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Quota name="Quota-1">
+    <Identifier ref="verifyapikey.verify-api-key.apiproduct.name"/>
+    <Interval ref="verifyapikey.VAK.apiproduct.developer.quota.interval"/>
+    <TimeUnit ref="verifyapikey.VAK.apiproduct.developer.quota.timeunit "/>
+    <Allow countRef="verifyapikey.VAK.apiproduct.developer.quota.limit"/>
+    <Distributed>true</Distributed>
+    <Synchronous>true</Synchronous>
+</Quota>

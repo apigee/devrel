@@ -1,0 +1,39 @@
+{
+    "version": "1.0",
+    "envConfig": {
+        "<environment>": {
+            "targetServers": [
+              {
+                  "name": "Load-Generator-Catalog-Target",
+                  "host": "catalog<domain>",
+                  "isEnabled": true,
+                  "port": 80                
+              },
+              {
+                  "name": "Load-Generator-Checkout-Target",
+                  "host": "checkout<domain>",
+                  "isEnabled": true,
+                  "port": 80 
+              },
+              {
+                  "name": "Load-Generator-Loyalty-Target",
+                  "host": "loyalty<domain>",
+                  "isEnabled": true,
+                  "port": 80 
+              },
+              {
+                  "name": "Load-Generator-Users-Target",
+                  "host": "users<domain>",
+                  "isEnabled": true,
+                  "port": 80 
+              },
+              {
+                  "name": "Load-Generator-Recommendation-Target",
+                  "host": "recommendation<domain>",
+                  "isEnabled": true,
+                  "port": 80 
+              }
+          ]
+      }
+    }
+}

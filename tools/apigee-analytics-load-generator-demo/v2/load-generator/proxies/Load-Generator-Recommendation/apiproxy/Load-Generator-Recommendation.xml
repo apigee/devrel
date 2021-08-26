@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="Load-Generator-Recommendation">
+    <Basepaths>/v1/recommendation</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1582135712302</CreatedAt>
+    <CreatedBy>igngar@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>Load-Generator-Recommendation</DisplayName>
+    <LastModifiedAt>1582135712302</LastModifiedAt>
+    <LastModifiedBy>igngar@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:eb6856132dba6c7d2136d026fc4bba012f2dbe3a4b738047ca06cb43288089dd8231664a96256d7839fd2dacbb1d563dadb6aaa5734fcbe0fb8b137871ee17ab</ManifestVersion>
+    <Policies/>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>
