@@ -82,9 +82,13 @@
                     <Condition>request.header.content-type = "application/json"</Condition>
                 </Step>
                 <Step>
-                    <Name>AV-KVMParameters</Name>
+                    <Name>EV-ParseRequestFormBody</Name>
                     <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
 
+                </Step>
+                <Step>
+                    <Name>RF-400</Name>
+                    <Condition>(private.kvm-entry.value = null) or (kvm-entry.key = null)</Condition>
                 </Step>
             </Request>
             <Response>
@@ -104,9 +108,13 @@
                     <Condition>request.header.content-type = "application/json"</Condition>
                 </Step>
                 <Step>
-                    <Name>AV-KVMParameters</Name>
+                    <Name>EV-ParseRequestFormBody</Name>
                     <Condition>request.header.content-type = "application/x-www-form-urlencoded"</Condition>
 
+                </Step>
+                <Step>
+                    <Name>RF-400</Name>
+                    <Condition>(private.kvm-entry.value = null) or (kvm-entry.key = null)</Condition>
                 </Step>
             </Request>
             <Response>

@@ -14,13 +14,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage name="AV-KVMParameters">
-    <AssignVariable>
-        <Name>kvm-entry.key</Name>
-        <Ref>request.formparam.key</Ref>
-    </AssignVariable>
-    <AssignVariable>
-        <Name>private.kvm-entry.value</Name>
-        <Ref>request.formparam.value</Ref>
-    </AssignVariable>
-</AssignMessage>
+<RaiseFault name="RF-400">
+    <FaultResponse>
+        <Set>
+            <StatusCode>400</StatusCode>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
+            <Payload contentType="application/json">{"code": "400.01.01", "message": "Bad Request, missing information"}</Payload>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
