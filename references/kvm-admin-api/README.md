@@ -29,8 +29,13 @@ of your choice.
 ```sh
 export TOKEN=$(gcloud auth print-access-token)
 export APIGEE_ORG=my-org-name
-export APIGEE_ENV=my-env
 export KVM_NAME=my-kvm
+```
+
+For an environment-scoped KVM run the following:
+
+```sh
+export APIGEE_ENV=my-env
 
 curl -X POST \
     "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/environments/$APIGEE_ENV/keyvaluemaps" \
@@ -39,11 +44,21 @@ curl -X POST \
     --data "{\"name\":\"$KVM_NAME\",\"encrypted\": true}"
 ```
 
+For an organization-scoped KVM run the following:
+
+```sh
+curl -X POST \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/keyvaluemaps" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    --data "{\"name\":\"$KVM_NAME\",\"encrypted\": true}"
+```
+
 ## Create the Proxy
 
 ```sh
-mvn clean install -ntp -B -Pgoogleapi -Dtoken=$(gcloud auth print-access-token) \
-  -Dorg=$APIGEE_ORG -Dapigee.env=$APIGEE_ENV
+mvn clean install -ntp -B -Pgoogleapi -Dtoken="$TOKEN" \
+  -Dorg="$APIGEE_ORG" -Dapigee.env="$APIGEE_ENV"
 ```
 
 ## Use the KVM Proxy
@@ -51,17 +66,23 @@ mvn clean install -ntp -B -Pgoogleapi -Dtoken=$(gcloud auth print-access-token) 
 First, set the hostname that is used to reach your KVM admin proxy:
 
 ```sh
-export $API_HOSTNAME=api.my-domain.com
+export API_HOSTNAME=api.my-domain.com
 ```
 
-## Create or Update a KVM entry
+and the following configuration
 
 ```sh
 export TOKEN=$(gcloud auth print-access-token)
 export APIGEE_ORG=my-org-name
-export APIGEE_ENV=my-env
 export KVM_NAME=my-kvm
+export APIGEE_ENV=my-env # (env-scoped KVM only)
+```
 
+## Create or Update a KVM entry
+
+Environment-scoped KVM with a JSON request payload:
+
+```sh
 curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
@@ -69,7 +90,59 @@ curl -X POST \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
 ```
 
+Environment-scoped KVM with a form payload:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo -d value=bar \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
+```
+
+When used with the cURL utility, the form payload option allows you to obtain
+the `value` for the key-value pair from a text file. For example, the value
+could be a PEM-encoded private key, the contents of a JSON file, and so on. This
+command populates the value of the "foo" key in an Environment-scoped KVM with
+the contents of a text file:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo --data-urlencode value@/path/to/file/here.txt \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a JSON request payload:
+
+```sh
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d '{ "key": "foo", "value": "bar" }' \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a form request payload:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo -d value=bar \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
+```
+
+Organization-scoped KVM with a value obtained from a file:
+
+```sh
+curl -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -d key=foo --data-urlencode value@/path/to/file/here.txt \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries"
+```
+
 ## Read a KVM entry
+
+Environment-scoped KVM:
 
 ```sh
 curl -X GET \
@@ -77,12 +150,30 @@ curl -X GET \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries/foo"
 ```
 
+Organization-scoped KVM:
+
+```sh
+curl -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries/foo"
+```
+
 ## Delete a KVM entry
+
+Environment-scoped KVM:
 
 ```sh
 curl -X DELETE \
     -H "Authorization: Bearer $TOKEN" \
     "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/environments/$APIGEE_ENV/keyvaluemaps/$KVM_NAME/entries/foo"
+```
+
+Organization-scoped KVM:
+
+```sh
+curl -X DELETE \
+    -H "Authorization: Bearer $TOKEN" \
+    "https://$API_HOSTNAME/kvm-admin/v1/organizations/$APIGEE_ORG/keyvaluemaps/$KVM_NAME/entries/foo"
 ```
 
 ## Troubleshooting

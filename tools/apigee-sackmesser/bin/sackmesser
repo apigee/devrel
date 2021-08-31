@@ -49,8 +49,9 @@ Options:
 -t,--token, GCP token (X,hybrid only) or OAuth2 token (Edge)
 -u,--username, Apigee User Name (Edge only)
 --async, Asynchronous deployment option (X,hybrid only)
---description, Human friendly proxy or shared flow description
 --debug, show verbose debug output
+--deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
+--description, Human friendly proxy or shared flow description
 EOF
 }
 
@@ -73,31 +74,32 @@ while [ "$#" -gt 0 ]; do
     -d) export directory="$2"; shift 2;;
     -e) export environment="$2"; shift 2;;
     -g) export url="$2"; shift 2;;
+    -h) export hostname="$2"; shift 2;;
+    -L) export baseuri="$2"; shift 2;;
     -m) export mfa="$2"; shift 2;;
     -n) export bundle_name="$2"; shift 2;;
     -o) export organization="$2"; shift 2;;
     -p) export password="$2"; shift 2;;
     -t) export token="$2"; shift 2;;
     -u) export username="$2"; shift 2;;
-    -h) export hostname="$2"; shift 2;;
-    -L) export baseuri="$2"; shift 2;;
 
     --async) export deploy_options="async"; shift 1;;
-    --directory) export directory="${2}"; shift 2;;
-    --github) export url="${2}"; shift 2;;
-    --token) export token="${2}"; shift 2;;
-    --mfa) export mfa="${2}"; shift 2;;
-    --name) export bundle_name="${2}"; shift 2;;
     --base-path) export base_path="${2}"; shift 2;;
-    --username) export username="${2}"; shift 2;;
-    --password) export password="${2}"; shift 2;;
-    --environment) export environment="${2}"; shift 2;;
-    --organization) export organization="${2}"; shift 2;;
-    --hostname) export hostname="${2}"; shift 2;;
-    --description) export description="${2}"; shift 2;;
     --baseuri) export baseuri="${2}"; shift 2;;
     --debug) export debug="T"; shift 1;;
+    --deployment-sa) export deployment_sa="${2}"; shift 2;;
+    --description) export description="${2}"; shift 2;;
+    --directory) export directory="${2}"; shift 2;;
+    --environment) export environment="${2}"; shift 2;;
+    --github) export url="${2}"; shift 2;;
+    --hostname) export hostname="${2}"; shift 2;;
+    --mfa) export mfa="${2}"; shift 2;;
+    --name) export bundle_name="${2}"; shift 2;;
+    --organization) export organization="${2}"; shift 2;;
+    --password) export password="${2}"; shift 2;;
     --quiet) export quiet="T"; shift 1;;
+    --token) export token="${2}"; shift 2;;
+    --username) export username="${2}"; shift 2;;
 
     --apigeeapi) export apiversion="apigee"; shift 1;;
     --googleapi) export apiversion="google"; shift 1;;

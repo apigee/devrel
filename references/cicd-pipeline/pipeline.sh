@@ -39,13 +39,13 @@ gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
 echo "[INFO] CICD Pipeline for Apigee Edge (Jenkins)"
 
 # because volume mounts don't work inside docker in docker without reference to the host file system
-cat << EOF >> /tmp/Dockerfile-jenkins-cicd
+cat << EOF >> ./Dockerfile-jenkins-cicd
 FROM ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
 COPY . /workspace
 RUN cp /workspace/ci-config/jenkins/Jenkinsfile /workspace/Jenkinsfile
 EOF
-docker build -f /tmp/Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-runner-airports:latest .
-rm /tmp/Dockerfile-jenkins-cicd
+docker build -f ./Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-runner-airports:latest .
+rm ./Dockerfile-jenkins-cicd
 
 docker run \
   -e APIGEE_USER \

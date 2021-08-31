@@ -30,6 +30,9 @@ enable_all_apis
 # configure installation
 set_config_params
 
+# ask for confirmation (skip with QUIET_INSTALL=true)
+ask_confirm
+
 # create an Apigee organization with the same name as the GCP project
 create_apigee_org
 
@@ -60,8 +63,9 @@ download_apigee_ctl
 # configure the Apigee override parameters
 prepare_resources
 
-# create self-signed certificate for env group hostname
-create_self_signed_cert $ENV_GROUP_NAME
+# create certificate for env group hostname
+
+create_cert $ENV_GROUP_NAME
 
 # create all required service accounts and download their keys
 create_sa

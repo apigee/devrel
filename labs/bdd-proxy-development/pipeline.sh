@@ -14,4 +14,5 @@
 # limitations under the License.
 
 
-# no pipeline required, as this is tested in pipeline-runner
+# build labs
+claat export ./lab.md

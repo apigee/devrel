@@ -24,9 +24,11 @@ further to fit a particular use case.
 - [CI/CD Pipeline](references/cicd-pipeline) -
   Reference implementation for a CI/CD Pipeline using the Apigee
   Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
-- [CI/CD Pipeline for SharedFlows](references/cicd-sharedflow-pipeline) -
+- [CI/CD Pipeline for Shared Flows](references/cicd-sharedflow-pipeline) -
   Reference implementation for a CI/CD Pipeline for Sharedflows using the Apigee
   Deploy Maven Plugin
+- [Cloud Logging Shared Flow](references/cloud-logging-shared-flow) -
+  Reference implementation for a shared flow to log to Google Cloud Logging
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
@@ -52,9 +54,6 @@ further to fit a particular use case.
 This folder contains ready-made utilities which simplify and assist the usage of
 Apigee products.
 
-- [Organization Cleanup](tools/organization-cleanup) -
-  A tool to cleanup proxies in an Apigee organization, leveraging
-  [Another Apigee Client](tools/another-apigee-client)
 - [Pipeline Runner](tools/pipeline-runner) -
   A tool to build and test groups of Apigee projects
 - [Pipeline Linter](tools/pipeline-linter) -
@@ -83,6 +82,9 @@ technical or non-technical topic.
 
 - [Best Practices Hackathon](labs/best-practices-hackathon) [(web)](https://apigee.github.io/devrel/labs/best-practices-hackathon)
   A 300 level lab to learn Apigee Best Practices
+- [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
+  A 200 level lab demonstrating behavior-driven API development by building,
+  deploying and testing a mock API, generated from an Open API Specification.
 
 ## Contributing
 

@@ -18,13 +18,9 @@ const apickli = require("apickli");
 const { Before: before } = require("@cucumber/cucumber");
 
 before(function () {
-  const host = process.env.APIGEE_X_HOSTNAME;
-  const org = process.env.APIGEE_X_ORG;
-  const env = process.env.APIGEE_X_ENV;
-
   this.apickli = new apickli.Apickli(
     "https",
-    `${host}/kvm-admin/v1/organizations/${org}/environments/${env}`
+    process.env.TEST_BASE_URI
   );
 
   this.apickli.addRequestHeader("Cache-Control", "no-cache");

@@ -15,11 +15,12 @@
  limitations under the License.
 -->
 
-<KeyValueMapOperations name="KV-GetEntryDynamic">
+<KeyValueMapOperations name="KV-GetEntryEnv">
     <MapName ref="kvm.name"/>
     <Get assignTo="private.kvm-entry.value">
         <Key>
             <Parameter ref="kvm-entry.key"/>
         </Key>
     </Get>
+    <Scope>environment</Scope>
 </KeyValueMapOperations>
