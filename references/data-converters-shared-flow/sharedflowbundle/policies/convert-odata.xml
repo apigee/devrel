@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript continueOnError="false" enabled="true" timeLimit="200" name="convert-odata">
+    <DisplayName>convert-odata</DisplayName>
+    <Properties/>
+    <ResourceURL>jsc://convert-odata.js</ResourceURL>
+    <IncludeURL>jsc://odataconverter.js</IncludeURL>
+</Javascript>

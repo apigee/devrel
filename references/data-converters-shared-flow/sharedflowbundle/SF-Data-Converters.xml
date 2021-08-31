@@ -1,0 +1,21 @@
+<SharedFlowBundle revision="7" name="SF-Data-Converters">
+    <DisplayName></DisplayName>
+    <Description></Description>
+    <CreatedAt>1630312697284</CreatedAt>
+    <LastModifiedAt>1630312735536</LastModifiedAt>
+    <Policies>
+        <Policy>convert-odata</Policy>
+    </Policies>
+    <Resources>
+        <Resource>jsc://convert-odata.js</Resource>
+        <Resource>jsc://bigqueryconverter.js</Resource>
+        <Resource>jsc://convert-bigquery.js</Resource>
+        <Resource>jsc://odataconverter.js</Resource>
+        <Resource>jsc://convert-firestore.js</Resource>
+        <Resource>jsc://firestoreconverter.js</Resource>
+    </Resources>
+    <SharedFlows>
+        <SharedFlow>default</SharedFlow>
+    </SharedFlows>
+    <subType>SharedFlow</subType>
+</SharedFlowBundle>
