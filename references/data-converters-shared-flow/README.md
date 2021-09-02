@@ -9,8 +9,8 @@ In order to deploy this shared flow from your local machine, you must have `gclo
 To deploy this shared flow to your `Apigee X` org:
 
 ```sh
-export ORG=<your Apigee X org>
-export ENV=<your Apigee X environment>
+export APIGEE_X_ORG=<your Apigee X org>
+export APIGEE_X_ENV=<your Apigee X environment>
 ./deploy.sh
 ```
 
