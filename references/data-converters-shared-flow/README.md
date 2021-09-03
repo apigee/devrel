@@ -40,7 +40,8 @@ Simply set the following variables to configure how and what this sharedflow con
     </Parameters>
 </FlowCallout>
 ```
-The type of data conversion is determined by `dataconverter.type`, and currently supports these values:
+
+The type of data conversion is determined by **`dataconverter.type`**, and currently supports these values:
 
 ```xml
 <!--Converts OData responses to simple REST -->
@@ -51,7 +52,11 @@ The type of data conversion is determined by `dataconverter.type`, and currently
 <Parameter name="dataconverter.type">firestore2rest</Parameter>
 ```
 
-The result of the conversion is returned in the `dataconverter.output` parameter, which can be assigned to the response with an **AssignMesssage** policy like this:
+The **`dataconverter.resource`** should contain the name of the resource object, which will be used to format the JSON output.  This can easily be extracted from the URL path of the API using the [`ExtractVariables`](https://cloud.google.com/apigee/docs/api-platform/reference/policies/extract-variables-policy#uripathelement) policy (so for example extracting `orders` as the resource name from the URL `https://api.example.com/orderservice/{orders})` into the `resource` variable, and which can be passed to the shared flow as in the example above.
+
+The **`dataconvert.input`** parameter should contain the source data either in the `odata`, `bigquery`, or `firestore` formats.  The `response.content` variable is commonly used for this after calling the source systems API for data.
+
+The result of the conversion is returned in the **`dataconverter.output`** parameter, which can be assigned to the response with an **AssignMesssage** policy like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -59,10 +64,31 @@ The result of the conversion is returned in the `dataconverter.output` parameter
     <DisplayName>Set-Response</DisplayName>
     <Properties/>
     <Set>
-        <Payload>{dataconverter.output}</Payload>
+        <Payload contentType="application/json">{dataconverter.output}</Payload>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <AssignTo createNew="false" transport="http" type="response"/>
 </AssignMessage>
 ```
 
+## Extending
+The shared flow default flow has 3 policies to do the conversions, which are optionally triggered depending on the value of `dataconverter.type`.  
+
+```xml
+<SharedFlow name="default">
+    <Step>
+        <Condition>dataconverter.type = "odata"</Condition>
+        <Name>convert-odata</Name>
+    </Step>
+    <Step>
+        <Condition>dataconverter.type = "bigquery"</Condition>
+        <Name>convert-bigquery</Name>
+    </Step>
+    <Step>
+        <Condition>dataconverter.type = "firestore"</Condition>
+        <Name>convert-firestore</Name>
+    </Step>
+</SharedFlow>
+```
+
+You can easily extend this with further conversions as needed, so adding any other specific formats that you need converted into simple JSON.  Also the conversions here are pretty simple, and ignore some things like nested objects, but which could be added if needed for specific use-cases.

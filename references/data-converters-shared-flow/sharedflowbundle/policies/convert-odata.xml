@@ -10,8 +10,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Javascript continueOnError="false" enabled="true" timeLimit="200" name="convert-odata">
     <DisplayName>convert-odata</DisplayName>
     <Properties/>

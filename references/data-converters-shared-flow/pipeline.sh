@@ -13,8 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-
-APIGEE_TOKEN=$(gcloud auth print-access-token)
-
 ./deploy.sh

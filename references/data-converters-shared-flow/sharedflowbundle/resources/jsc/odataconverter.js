@@ -33,9 +33,7 @@ function ConvertODataToRest(inputObject, resource) {
             newBody = convertObject(inputObject.d);
         }
     }
-    else
-        print("No OData body found to convert.")
-    
+
     return newBody;
 }
 

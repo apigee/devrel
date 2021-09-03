@@ -10,17 +10,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<SharedFlow name="default">
-    <Step>
-        <Condition>dataconverter.type = "odata"</Condition>
-        <Name>convert-odata</Name>
-    </Step>
-    <Step>
-        <Condition>dataconverter.type = "bigquery"</Condition>
-        <Name>convert-bigquery</Name>
-    </Step>
-    <Step>
-        <Condition>dataconverter.type = "firestore"</Condition>
-        <Name>convert-firestore</Name>
-    </Step>
-</SharedFlow>
+<Javascript continueOnError="false" enabled="true" timeLimit="200" name="convert-firestore">
+    <DisplayName>convert-firestore</DisplayName>
+    <Properties/>
+    <ResourceURL>jsc://convert-firestore.js</ResourceURL>
+    <IncludeURL>jsc://firestoreconverter.js</IncludeURL>
+</Javascript>

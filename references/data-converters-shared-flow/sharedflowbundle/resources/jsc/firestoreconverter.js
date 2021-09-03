@@ -26,7 +26,7 @@ function convertFsRequest(inputObject, topCollectionKeyName, collectionKeyName) 
             if (typeof value == "string")
                 parts = value.split(", ");
             if (key == topCollectionKeyName)
-                result["documentKey"] = value; //context.setVariable("firestore.document", value);
+                result["documentKey"] = value; 
             else if (key == collectionKeyName)
                 result["subDocumentKey"] = value;
             if (value && parts.length > 1 && !isNaN(parts[0])) {
@@ -117,7 +117,7 @@ function convertFsNestedResponse(firestoreResponse, tableName, tableKey, tableKe
             if (record.name) {
                 var name = record.name.split('/').slice(-1)[0];
                 var newRecordCollection = [];
-                //newRecord[topcollectionKeyName] = name;
+
                 if (record.fields) {
                     processFields(record.fields, topcollectionName, tableName, tableKey, tableKeyValue, newRecordCollection);
                     for (var l = 0; l < newRecordCollection.length; l++) {
@@ -145,7 +145,6 @@ function processFields(fieldCollection, colName, tableName, tableKey, tableKeyVa
                 result[key] = newValue;
         }
         else if (key == tableName && value.arrayValue) {
-            // we have an array
             processFields(value.arrayValue.values, key, tableName, tableKey, tableKeyValue, resultCollection);
         }
         else if (colName == tableName && value.mapValue) {
