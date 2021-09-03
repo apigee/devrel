@@ -2,8 +2,40 @@
 
 This shared flow can be used to convert between some common data response formats (currently **OData**, **BigQuery**, and **Firestore**) and clean, JSON objects that are ideal to return as response objects of RESTful APIs. 
 
+## Example
+You are retrieving data from an OData backend, and need to convert it to nice, RESTful JSON for the response payload.  This shared flow can simply be added to your proxy `PostFlow` and will take care of the conversion for you.
+
+### Response **before** using this shared flow
+```json
+{
+    "d": {
+        "results": [
+            {
+                "__metadata": {
+                    "id": "https://sap-orders-mock-h7pi7igbcq-ew.a.run.app/sap/opu/odata/sap/API_SALES_ORDER_SRV/A_SalesOrder('1')",
+                    "uri": "https://sap-orders-mock-h7pi7igbcq-ew.a.run.app/sap/opu/odata/sap/API_SALES_ORDER_SRV/A_SalesOrder('1')",
+                    "type": "API_SALES_ORDER_SRV.A_SalesOrderType",
+                    "etag": "W/\"datetimeoffset'2016-09-02T06%3A15%3A47.1257050Z'\""
+                },
+                "SalesOrder": "9000000232",
+                "SalesOrderType": "ZOR",
+                "SalesOrganization": "2000",
+                ...
+```
+
+### Response **after** using this shared flow
+```json
+{
+    "orders": [
+        {
+            "SalesOrder": "9000000232",
+            "SalesOrderType": "ZOR",
+            "SalesOrganization": "2000",
+            ...
+```
+
 ## Prerequisites
-In order to deploy this shared flow from your local machine, you must have `gcloud`, `zip` and `jq` installed.
+In order to deploy this shared flow from your local machine, you must have `gcloud` and `maven` installed (it uses the [Sackmesser](https://github.com/apigee/devrel/tree/main/tools/apigee-sackmesser) tool, referenced locally from this repo, for the Apigee X deployment).
 
 ## How to deploy
 To deploy this shared flow to your `Apigee X` org:
