@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ var bigqueryconverter = require('../sharedflowbundle/resources/jsc/bigqueryconve
 describe('BigQuery converters', function() {
   describe('#ConvertBigQueryToRest()', function() {
     it('should return valid and correct JSON object of BigQuery input', function() {
-      assert.equal(JSON.stringify(bigqueryconverter.ConvertBigQueryResponse(bigquery_payload, "trends")), JSON.stringify({
+      assert.equal(JSON.stringify(bigqueryconverter.convertBigQueryResponse(bigquery_payload, "trends")), JSON.stringify({
         "trends": [
             {
                 "dma_id": "522",

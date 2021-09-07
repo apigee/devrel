@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,6 @@
 var input = context.getVariable("dataconverter.input");
 var resource = context.getVariable("dataconverter.resource");
 
-var newBody = ConvertBigQueryResponse(JSON.parse(input), resource);
+var newBody = convertBigQueryResponse(JSON.parse(input), resource);
 
 context.setVariable("dataconverter.output", JSON.stringify(newBody));

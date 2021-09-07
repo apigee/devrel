@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ var odataconverter = require('../sharedflowbundle/resources/jsc/odataconverter')
 describe('OData converters', function() {
   describe('#ConvertODataToRest()', function() {
     it('should return valid and correct JSON object of OData input', function() {
-      assert.equal(JSON.stringify(odataconverter.ConvertODataToRest(odata_payload, "orders")), JSON.stringify(rest_payload));
+      assert.equal(JSON.stringify(odataconverter.convertODataResponse(odata_payload, "orders")), JSON.stringify(rest_payload));
     });
   });
 });
