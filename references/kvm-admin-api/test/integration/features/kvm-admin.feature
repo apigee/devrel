@@ -69,10 +69,6 @@ Feature:
     When I DELETE /keyvaluemaps/wrongtestmap/entries/test-entry
     Then response code should be 404
 
-  Scenario: Query an invalid resource in the proxy
-    When I DELETE /keyvaluemaps/invalidresource
-    Then response code should be 404
-
   Scenario: Invalid PUT call
     Given I set body to {"key": "test-entry", "value":"test-value"}
     And I set Content-Type header to application/json
