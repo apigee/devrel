@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-let assert = require('assert');
-let bigqueryconverter = require('../sharedflowbundle/resources/jsc/bigqueryconverter')
+const assert = require('assert');
+const bigqueryconverter = require('../sharedflowbundle/resources/jsc/bigqueryconverter')
 
 describe('BigQuery converters', function() {
   describe('#ConvertBigQueryToRest()', function() {
@@ -37,7 +37,7 @@ describe('BigQuery converters', function() {
   });
 });
 
-let bigQueryPayload = {
+const bigQueryPayload = {
   "kind": "bigquery#queryResponse",
   "schema": {
       "fields": [

@@ -15,8 +15,8 @@
  */
 
 
-let assert = require('assert');
-let odataconverter = require('../sharedflowbundle/resources/jsc/odataconverter')
+const assert = require('assert');
+const odataconverter = require('../sharedflowbundle/resources/jsc/odataconverter')
 
 describe('OData converters', function() {
   describe('#ConvertODataToRest()', function() {
@@ -26,7 +26,7 @@ describe('OData converters', function() {
   });
 });
 
-let odataPayload = {
+const odataPayload = {
   "d": {
       "results": [
           {
@@ -64,7 +64,7 @@ let odataPayload = {
               "PriceDetnExchangeRate": "",
               "RequestedDeliveryDate": "6/10/2021",
               "ShippingCondition": "",
-              "CompleteDeliveryIsDefined": "",
+              "CompconsteDeliveryIsDefined": "",
               "ShippingType": "",
               "HeaderBillingBlockReason": "",
               "DeliveryBlockReason": "",
@@ -138,7 +138,7 @@ let odataPayload = {
   }
 };
 
-let restPayload = {
+const restPayload = {
   "orders": [
       {
           "SalesOrder": "9000000232",

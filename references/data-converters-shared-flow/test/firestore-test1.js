@@ -15,8 +15,8 @@
  */
 
 
-let assert = require('assert');
-let firestoreconverter = require('../sharedflowbundle/resources/jsc/firestoreconverter')
+const assert = require('assert');
+const firestoreconverter = require('../sharedflowbundle/resources/jsc/firestoreconverter')
 
 describe('Firestore converters', function() {
   describe('#Convert Firestore response to REST()', function() {
@@ -36,7 +36,7 @@ describe('Firestore converters', function() {
   });
 });
 
-let firestorePayload = {
+const firestorePayload = {
   documents: [
     {
       name: "projects/bruno-1407a/databases/(default)/documents/jokes/1",

@@ -64,8 +64,8 @@ function convertFirestoreResponse(inputObject, resource, keyName) {
 
 /**
  * Retrieves a Firestore value from different data type objects (String, Boolean, Geo, Timestamp)
- * @param {node} inputObject - the Firestore input object
- * @return {resultObject} - the string value of the data type
+ * @param {object} node - the Firestore input object
+ * @return {object} - the string value of the data type
  */
 function getValue(node) {
     var result;
