@@ -1,16 +1,12 @@
 {
   "name": "apigee-data-converters",
   "version": "1.0.0",
-  "description": "",
-  "main": "",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "mocha": "^9.1.1"
   }
