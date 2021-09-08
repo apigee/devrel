@@ -1,11 +1,14 @@
-# Common Data Converters - Shared Flow
+<!-- markdownlint-disable MD013 -->
+# Data Converters - Shared Flow
 
-This shared flow can be used to convert between some common data response formats (currently **OData**, **BigQuery**, and **Firestore**) and clean, JSON objects that are ideal to return as response objects of RESTful APIs. 
+This shared flow can be used to convert between some common data response formats (currently **OData**, **BigQuery**, and **Firestore**) and clean, JSON objects that are ideal to return as response objects of RESTful APIs.
 
 ## Example
+
 You are retrieving data from an OData backend, and need to convert it to nice, RESTful JSON for the response payload.  This shared flow can simply be added to your proxy `PostFlow` and will take care of the conversion for you.
 
 ### Response **before** using this shared flow
+
 ```json
 {
     "d": {
@@ -24,6 +27,7 @@ You are retrieving data from an OData backend, and need to convert it to nice, R
 ```
 
 ### Response **after** using this shared flow
+
 ```json
 {
     "orders": [
@@ -35,9 +39,11 @@ You are retrieving data from an OData backend, and need to convert it to nice, R
 ```
 
 ## Prerequisites
+
 In order to deploy this shared flow from your local machine, you must have `gcloud` and `maven` installed (it uses the [Sackmesser](https://github.com/apigee/devrel/tree/main/tools/apigee-sackmesser) tool, referenced locally from this repo, for the Apigee X deployment).
 
 ## How to deploy
+
 To deploy this shared flow to your `Apigee X` org:
 
 ```sh
@@ -47,6 +53,7 @@ export APIGEE_X_ENV=<your Apigee X environment>
 ```
 
 ## How to test
+
 You can test the javascript logic used in this sharedflow by executing this:
 
 ```sh
@@ -57,6 +64,7 @@ npm test
 The tests for an example OData, BigQuery and Firestore payload are in the `test` directory.
 
 ## How to use
+
 Simply set the following variables to configure how and what this sharedflow converts from your API proxy in the **FlowCallout** policy:
 
 ```xml
@@ -104,6 +112,7 @@ The result of the conversion is returned in the **`dataconverter.output`** param
 ```
 
 ## Extending
+
 The shared flow default flow has 3 policies to do the conversions, which are optionally triggered depending on the value of `dataconverter.type`.  
 
 ```xml
