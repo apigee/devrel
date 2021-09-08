@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-var assert = require('assert');
-var bigqueryconverter = require('../sharedflowbundle/resources/jsc/bigqueryconverter')
+let assert = require('assert');
+let bigqueryconverter = require('../sharedflowbundle/resources/jsc/bigqueryconverter')
 
 describe('BigQuery converters', function() {
   describe('#ConvertBigQueryToRest()', function() {
     it('should return valid and correct JSON object of BigQuery input', function() {
-      assert.equal(JSON.stringify(bigqueryconverter.convertBigQueryResponse(bigquery_payload, "trends")), JSON.stringify({
+      assert.equal(JSON.stringify(bigqueryconverter.convertBigQueryResponse(bigQueryPayload, "trends")), JSON.stringify({
         "trends": [
             {
                 "dma_id": "522",
@@ -37,7 +37,7 @@ describe('BigQuery converters', function() {
   });
 });
 
-var bigquery_payload = {
+let bigQueryPayload = {
   "kind": "bigquery#queryResponse",
   "schema": {
       "fields": [

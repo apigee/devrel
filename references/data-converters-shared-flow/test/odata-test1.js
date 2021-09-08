@@ -15,18 +15,18 @@
  */
 
 
-var assert = require('assert');
-var odataconverter = require('../sharedflowbundle/resources/jsc/odataconverter')
+let assert = require('assert');
+let odataconverter = require('../sharedflowbundle/resources/jsc/odataconverter')
 
 describe('OData converters', function() {
   describe('#ConvertODataToRest()', function() {
     it('should return valid and correct JSON object of OData input', function() {
-      assert.equal(JSON.stringify(odataconverter.convertODataResponse(odata_payload, "orders")), JSON.stringify(rest_payload));
+      assert.equal(JSON.stringify(odataconverter.convertODataResponse(odataPayload, "orders")), JSON.stringify(restPayload));
     });
   });
 });
 
-var odata_payload = {
+let odataPayload = {
   "d": {
       "results": [
           {
@@ -138,7 +138,7 @@ var odata_payload = {
   }
 };
 
-var rest_payload = {
+let restPayload = {
   "orders": [
       {
           "SalesOrder": "9000000232",

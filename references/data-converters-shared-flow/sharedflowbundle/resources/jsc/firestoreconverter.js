@@ -17,9 +17,9 @@
 /**
  * Converts a Firestore JSON response object to clean JSON object
  * @param {object} inputObject - the parsed Firestore javascript object
- * @param {resource} - the resource name of the object - so for example 'orders' or 'customers'
- * @param {keyName} - the name of the primary key of the resource - so for example 'orderId' or 'customerId'
- * @return {resultObject} - the converted resource object
+ * @param {string} resource - the resource name of the object - so for example 'orders' or 'customers'
+ * @param {string} keyName - the name of the primary key of the resource - so for example 'orderId' or 'customerId'
+ * @return {object} the converted resource object
  */
 function convertFirestoreResponse(inputObject, resource, keyName) {
     var singleResponse = false;

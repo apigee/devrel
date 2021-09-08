@@ -15,13 +15,13 @@
  */
 
 
-var assert = require('assert');
-var firestoreconverter = require('../sharedflowbundle/resources/jsc/firestoreconverter')
+let assert = require('assert');
+let firestoreconverter = require('../sharedflowbundle/resources/jsc/firestoreconverter')
 
 describe('Firestore converters', function() {
   describe('#Convert Firestore response to REST()', function() {
     it('should return valid and correct JSON object of Firestore input', function() {
-      assert.equal(JSON.stringify(firestoreconverter.convertFirestoreResponse(firestore_payload, "jokes", "jokeId")), JSON.stringify({
+      assert.equal(JSON.stringify(firestoreconverter.convertFirestoreResponse(firestorePayload, "jokes", "jokeId")), JSON.stringify({
         jokes: [
           {
             jokeId: "1",
@@ -36,7 +36,7 @@ describe('Firestore converters', function() {
   });
 });
 
-let firestore_payload = {
+let firestorePayload = {
   documents: [
     {
       name: "projects/bruno-1407a/databases/(default)/documents/jokes/1",
