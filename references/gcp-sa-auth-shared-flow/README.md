@@ -1,8 +1,14 @@
 # GCP Service Account Authentication - Shared Flow
 
-This shared flow can be used obtain access tokens for Google Cloud service
-accounts. Access tokens are cached in a dedicated environment cache resource for
-10min.
+***Note:*** Apigee X can now directly authenticate as a service account against
+Google APIs without the need to export service account keys.
+We recommend the [built-in authentication](https://cloud.google.com/apigee/docs/api-platform/security/google-auth/overview)
+mechanism over this shared flow because it is simpler and does not require you
+to handle service account keys.
+
+This shared flow can be used obtain identity or access tokens for Google Cloud
+service accounts. Tokens are cached in a dedicated environment cache resource
+for 10min.
 
 ## How to deploy this shared flow
 
