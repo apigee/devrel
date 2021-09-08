@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
+/**
+ * Converts BigQuery JSON response format to clean JSON object
+ * @param {object} inputObject - the parsed BigQuery Javascript object
+ * @param {resource} - the resource name of the object - so for example 'orders' or 'customers'
+ * @return {resultObject} - the converted resource object
+ */
 function convertBigQueryResponse(inputObject, resource) {
     var result = {};
     result[resource] = [];
     
     for (var rowKey in inputObject.rows) {
-        var row = inputObject.rows[rowKey];
-        var newRow = {};
-        for (var valueKey in row.f) {
-            var value = row.f[valueKey];
-            newRow[inputObject.schema.fields[valueKey].name] = value.v;
+        if (inputObject.rows[rowKey]) {
+            var row = inputObject.rows[rowKey];
+            var newRow = {};
+            for (var valueKey in row.f) {
+                if (row.f[valueKey]) {
+                    var value = row.f[valueKey];
+                    newRow[inputObject.schema.fields[valueKey].name] = value.v;
+                }
+            }
+            result[resource].push(newRow);
         }
-        result[resource].push(newRow);
     }
     
     return result;

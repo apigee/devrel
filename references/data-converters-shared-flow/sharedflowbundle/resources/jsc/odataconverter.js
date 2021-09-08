@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Converts an OData JSON response object to clean JSON object
+ * @param {object} inputObject - the parsed OData javascript object
+ * @param {resource} - the resource name of the object - so for example 'orders' or 'customers'
+ * @return {resultObject} - the converted resource object
+ */
 function convertODataResponse(inputObject, resource) {
 
     var newBody = {};
@@ -37,15 +43,20 @@ function convertODataResponse(inputObject, resource) {
     return newBody;
 }
 
-function convertObject(inputObj) {
+/**
+ * Converts an OData JSON object to a simple JSON object
+ * @param {object} inputObject - the parsed OData javascript object
+ * @return {resultObject} - the converted object
+ */
+function convertObject(inputObject) {
     var result = {};
     
-    for (var prop in inputObj) {
+    for (var prop in inputObject) {
 
-        var myVar = inputObj[prop];
+        var myVar = inputObject[prop];
 
         if ((typeof myVar === 'string' || myVar instanceof String) && myVar !== "")
-            result[prop] = inputObj[prop];        
+            result[prop] = inputObject[prop];        
     }
     
     return result;

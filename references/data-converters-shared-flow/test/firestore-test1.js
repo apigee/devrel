@@ -21,7 +21,7 @@ var firestoreconverter = require('../sharedflowbundle/resources/jsc/firestorecon
 describe('Firestore converters', function() {
   describe('#Convert Firestore response to REST()', function() {
     it('should return valid and correct JSON object of Firestore input', function() {
-      assert.equal(JSON.stringify(firestoreconverter.convertFsResponse(firestore_payload, "jokes", "jokeId")), JSON.stringify({
+      assert.equal(JSON.stringify(firestoreconverter.convertFirestoreResponse(firestore_payload, "jokes", "jokeId")), JSON.stringify({
         jokes: [
           {
             jokeId: "1",

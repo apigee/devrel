@@ -14,146 +14,59 @@
  * limitations under the License.
  */
 
-function convertFsRequest(inputObject, topCollectionKeyName, collectionKeyName) {
-    var firestoreObject = {
-        "fields": {}
-    };
-    var result = {};
-    if (inputObject) {
-        for (var key in inputObject) {
-            var value = inputObject[key];
-            var parts = [];
-            if (typeof value == "string")
-                parts = value.split(", ");
-            if (key == topCollectionKeyName)
-                result["documentKey"] = value; 
-            else if (key == collectionKeyName)
-                result["subDocumentKey"] = value;
-            if (value && parts.length > 1 && !isNaN(parts[0])) {
-                // Is a location
-                firestoreObject["fields"][key] = {
-                    "geoPointValue": {
-                        "latitude": parts[0],
-                        "longitude": parts[1]
-                    }
-                };
-            }
-            else if (value && value.toString().length > 8 && !isNaN(Date.parse(value))) {
-                var dateobj = new Date(value);
-                firestoreObject["fields"][key] = {
-                    "timestampValue": dateobj.toISOString()
-                };
-            }
-            else if (value && (value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false")) {
-                firestoreObject["fields"][key] = {
-                    "booleanValue": (value.toString().toLowerCase() == "true")
-                };
-            }
-            else {
-                firestoreObject["fields"][key] = {
-                    "stringValue": value
-                };
-            }
-        }
-    }
-    result.firestoreObject = firestoreObject;
-    return result;
-}
-function convertFsResponse(firestoreResponse, tableName, keyName) {
+/**
+ * Converts a Firestore JSON response object to clean JSON object
+ * @param {object} inputObject - the parsed Firestore javascript object
+ * @param {resource} - the resource name of the object - so for example 'orders' or 'customers'
+ * @param {keyName} - the name of the primary key of the resource - so for example 'orderId' or 'customerId'
+ * @return {resultObject} - the converted resource object
+ */
+function convertFirestoreResponse(inputObject, resource, keyName) {
     var singleResponse = false;
     var responseObject = {};
-    responseObject[tableName] = [];
-    if (firestoreResponse) {
-        if (!firestoreResponse.documents) {
+    responseObject[resource] = [];
+    if (inputObject) {
+        if (!inputObject.documents) {
             singleResponse = true;
-            firestoreResponse = {
+            inputObject = {
                 "documents": [
-                    firestoreResponse
+                    inputObject
                 ]
             };
         }
-        for (var i = 0; i < firestoreResponse.documents.length; i++) {
-            var record = firestoreResponse.documents[i];
+        for (var i = 0; i < inputObject.documents.length; i++) {
+            var record = inputObject.documents[i];
             if (record.name) {
                 var name = record.name.split('/').slice(-1)[0];
                 var newRecord = {};
                 newRecord[keyName] = name;
                 if (record.fields) {
                     for (var key in record.fields) {
-                        var value = record.fields[key];
-                        var newValue = getValue(value);
-                        if (!(newValue === undefined)) {
-                          newRecord[key] = newValue;
+                        if (record.fields[key]) {
+                            var value = record.fields[key];
+                            var newValue = getValue(value);
+                            if (!(newValue === undefined)) {
+                            newRecord[key] = newValue;
+                            }
                         }
                     }
-                    responseObject[tableName].push(newRecord);
+                    responseObject[resource].push(newRecord);
                 }
             }
         }
     }
     if (singleResponse) {
-        responseObject = responseObject[tableName][0];
+        responseObject = responseObject[resource][0];
     }
-    return responseObject;
-}
-function convertFsNestedResponse(firestoreResponse, tableName, tableKey, tableKeyValue, topcollectionName, topcollectionKeyName) {
-    var singleResponse = false;
-    var responseObject = {};
-    responseObject[tableName] = [];
-    if (firestoreResponse) {
-        if (!firestoreResponse.documents) {
-            singleResponse = true;
-            firestoreResponse = {
-                "documents": [
-                    firestoreResponse
-                ]
-            };
-        }
-        else if (tableKeyValue) {
-            singleResponse = true;
-        }
-        for (var i = 0; i < firestoreResponse.documents.length; i++) {
-            var record = firestoreResponse.documents[i];
-            if (record.name) {
-                var name = record.name.split('/').slice(-1)[0];
-                var newRecordCollection = [];
 
-                if (record.fields) {
-                    processFields(record.fields, topcollectionName, tableName, tableKey, tableKeyValue, newRecordCollection);
-                    for (var l = 0; l < newRecordCollection.length; l++) {
-                        newRecordCollection[l][topcollectionKeyName] = name;
-                    }
-                    responseObject[tableName] = responseObject[tableName].concat(newRecordCollection);
-                }
-            }
-        }
-    }
-    if (singleResponse && tableKeyValue && responseObject[tableName].length > 0) {
-        responseObject = responseObject[tableName][0];
-    }
-    else if (singleResponse && tableKeyValue)
-        responseObject = {};
     return responseObject;
 }
-function processFields(fieldCollection, colName, tableName, tableKey, tableKeyValue, resultCollection) {
-    var result = {};
-    for (var key in fieldCollection) {
-        var value = fieldCollection[key];
-        var newValue = getValue(value);
-        if (!(newValue === undefined)) {
-            if (colName == tableName)
-                result[key] = newValue;
-        }
-        else if (key == tableName && value.arrayValue) {
-            processFields(value.arrayValue.values, key, tableName, tableKey, tableKeyValue, resultCollection);
-        }
-        else if (colName == tableName && value.mapValue) {
-            processFields(value.mapValue.fields, colName, tableName, tableKey, tableKeyValue, resultCollection);
-        }
-    }
-    if (colName == tableName && Object.keys(result).length > 0 && (!tableKeyValue || (result[tableKey] == tableKeyValue)))
-        resultCollection.push(result);
-}
+
+/**
+ * Retrieves a Firestore value from different data type objects (String, Boolean, Geo, Timestamp)
+ * @param {node} inputObject - the Firestore input object
+ * @return {resultObject} - the string value of the data type
+ */
 function getValue(node) {
     var result;
     if (node && node.stringValue)
@@ -166,8 +79,7 @@ function getValue(node) {
         result = node.timestampValue;
     return result;
 }
+
 if (typeof exports !== 'undefined') {
-    exports.convertFsRequest = convertFsRequest;
-    exports.convertFsResponse = convertFsResponse;
-    exports.convertFsNestedResponse = convertFsNestedResponse;
+    exports.convertFirestoreResponse = convertFirestoreResponse;
 }
