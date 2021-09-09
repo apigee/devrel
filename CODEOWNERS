@@ -24,7 +24,3 @@
 /tools/oas-apigee-mock                @markjkelly
 /tools/pipeline-linter                @seymen @danistrebel
 /tools/pipeline-runner                @seymen @danistrebel
-
-# looking for new owners
-/tools/another-apigee-client          @laughingbiscuit
-/tools/oas-to-am                      @laughingbiscuit
