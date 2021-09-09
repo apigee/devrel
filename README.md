@@ -45,7 +45,7 @@ further to fit a particular use case.
 - [XML & JSON Threat Protection](references/threat-protect) -
   A reference for protecting API proxies against XML and JSON threats
 - [Data Converters Shared Flow](references/data-converters-shared-flow) -
-  A reference shared flow for doing common response data conversions (from OData, BigQuery JSON, and Firestore JSON)
+  A reference shared flow for doing common response data JSON conversions
 
 ## Tools
 
