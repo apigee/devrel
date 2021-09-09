@@ -44,6 +44,8 @@ further to fit a particular use case.
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
   A reference for protecting API proxies against XML and JSON threats
+- [Data Converters Shared Flow](references/data-converters-shared-flow) -
+  A reference shared flow for doing common response data conversions (from OData, BigQuery JSON, and Firestore JSON)
 
 ## Tools
 
