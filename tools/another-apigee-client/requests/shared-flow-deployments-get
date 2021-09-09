@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Get Shared Flow Deployments
-# https://apidocs.apigee.com/shared-flow-api/apis/get/organizations/%7Borg_name%7D/sharedflows/%7Bshared_flow_name%7D/deployments
-
-curl -sSf \
-  -H "Authorization: Bearer $TOKEN" \
-  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/deployments?includeServerStatus=false&includeApiConfig=false&sharedFlows=true"
-

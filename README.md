@@ -54,14 +54,10 @@ Apigee products.
   A tool to build and test groups of Apigee projects
 - [Pipeline Linter](tools/pipeline-linter) -
   A tool to lint groups of Apigee projects
-- [Another Apigee Client](tools/another-apigee-client) -
-  A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
   A rescue utility to decrypt proxies and shared flows
-- [OpenAPI to AssignMessage](tools/oas-to-am) -
-  A utility to derive an AssignMessage policy from a spec
 - [Apigee X Trial Provisioning Reference](tools/apigee-x-trial-provision) -
   A reference provisioning script for Apigee X trial provisioning
 - [Apigee Sackmesser](tools/apigee-sackmesser) -

@@ -1,30 +1,26 @@
-*       @seymen @danistrebel
+*       @seymen @danistrebel @OmidTahouri
 
 /references/cicd-pipeline             @danistrebel
 /references/cicd-sharedflow-pipeline  @ssvaidyanathan
 /references/cloud-logging-shared-flow @danistrebel
+/references/common-shared-flows       @seymen @danistrebel @OmidTahouri
+/references/dutch-healthcare          @seymen
 /references/gcp-sa-auth-shared-flow   @danistrebel
 /references/identity-facade           @joelgauci
+/references/java-callout              @OmidTahouri
 /references/js-callout                @seymen
-/references/oidc-mock                 @joelgauci
 /references/kvm-admin-api             @danistrebel
+/references/oidc-mock                 @joelgauci
+/references/proxy-template            @seymen @danistrebel @OmidTahouri
 /references/southbound-mtls           @danistrebel
 /references/threat-protect            @joelgauci
 /labs/best-practices-hackathon        @sauliuz @seymen
 /labs/bdd-proxy-development           @markjkelly
-/tools/pipeline-runner                @seymen @danistrebel
-/tools/pipeline-linter                @seymen @danistrebel
+/tools/apigee-openlegacy              @tomfi @joelgauci
 /tools/apigee-sackmesser              @danistrebel
-/tools/hybrid-quickstart              @danistrebel
-/tools/decrypt-hybrid-assets          @yuriylesyuk
 /tools/apigee-x-trial-provision       @yuriylesyuk @danistrebel
+/tools/decrypt-hybrid-assets          @yuriylesyuk
+/tools/hybrid-quickstart              @danistrebel
 /tools/oas-apigee-mock                @markjkelly
-
-# looking for new owners
-/references/common-shared-flows       @laughingbiscuit
-/references/dutch-healthcare          @laughingbiscuit
-/references/java-callout              @laughingbiscuit
-/references/proxy-template            @laughingbiscuit
-/tools/another-apigee-client          @laughingbiscuit
-/tools/oas-to-am                      @laughingbiscuit
-/tools/apigee-openlegacy              @laughingbiscuit @tomfi @joelgauci
+/tools/pipeline-linter                @seymen @danistrebel
+/tools/pipeline-runner                @seymen @danistrebel

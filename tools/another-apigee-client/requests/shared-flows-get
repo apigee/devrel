@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# List Shared Flows
-# https://apidocs.apigee.com/shared-flow-api/apis/get/organizations/%7Borg_name%7D/sharedflows 
-
-curl -sSf \
-  -H "Authorization: Bearer $TOKEN" \
-  "https://api.enterprise.apigee.com/v1/organizations/$APIGEE_ORG/sharedflows"
-
