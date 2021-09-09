@@ -4,6 +4,7 @@
 /references/cicd-sharedflow-pipeline    @ssvaidyanathan
 /references/cloud-logging-shared-flow   @danistrebel
 /references/common-shared-flows         @seymen @danistrebel @OmidTahouri
+/references/data-converters-shared-flow @tyayers
 /references/dutch-healthcare            @seymen
 /references/gcp-sa-auth-shared-flow     @danistrebel
 /references/identity-facade             @joelgauci
@@ -14,7 +15,6 @@
 /references/proxy-template              @seymen @danistrebel @OmidTahouri
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
-/references/data-converters-shared-flow @tyayers
 /labs/best-practices-hackathon          @sauliuz @seymen
 /labs/bdd-proxy-development             @markjkelly
 /tools/apigee-openlegacy                @tomfi @joelgauci

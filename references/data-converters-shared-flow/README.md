@@ -1,11 +1,14 @@
-<!-- markdownlint-disable MD013 -->
 # Data Converters - Shared Flow
 
-This shared flow can be used to convert between some common data response formats (currently **OData**, **BigQuery**, and **Firestore**) and clean, JSON objects that are ideal to return as response objects of RESTful APIs.
+This shared flow can be used to convert between some common data response
+formats (currently **OData**, **BigQuery**, and **Firestore**) and clean, JSON
+objects that are ideal to return as response objects of RESTful APIs.
 
 ## Example
 
-You are retrieving data from an OData backend, and need to convert it to nice, RESTful JSON for the response payload.  This shared flow can simply be added to your proxy `PostFlow` and will take care of the conversion for you.
+You are retrieving data from an OData backend, and need to convert it to nice,
+RESTful JSON for the response payload.  This shared flow can simply be added to
+your proxy `PostFlow` and will take care of the conversion for you.
 
 ### Response **before** using this shared flow
 
@@ -40,7 +43,10 @@ You are retrieving data from an OData backend, and need to convert it to nice, R
 
 ## Prerequisites
 
-In order to deploy this shared flow from your local machine, you must have `gcloud` and `maven` installed (it uses the [Sackmesser](https://github.com/apigee/devrel/tree/main/tools/apigee-sackmesser) tool, referenced locally from this repo, for the Apigee X deployment).
+In order to deploy this shared flow from your local machine, you must have
+`gcloud` and `maven` installed (it uses the
+[Sackmesser](https://github.com/apigee/devrel/tree/main/tools/apigee-sackmesser)
+tool, referenced locally from this repo, for the Apigee X deployment).
 
 ## How to deploy
 
@@ -61,11 +67,13 @@ npm install
 npm test
 ```
 
-The tests for an example OData, BigQuery and Firestore payload are in the `test` directory.
+The tests for an example OData, BigQuery and Firestore payload are in the `test`
+directory.
 
 ## How to use
 
-Simply set the following variables to configure how and what this sharedflow converts from your API proxy in the **FlowCallout** policy:
+Simply set the following variables to configure how and what this sharedflow
+converts from your API proxy in the **FlowCallout** policy:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -81,22 +89,34 @@ Simply set the following variables to configure how and what this sharedflow con
 </FlowCallout>
 ```
 
-The type of data conversion is determined by **`dataconverter.type`**, and currently supports these values:
+The type of data conversion is determined by **`dataconverter.type`**, and
+currently supports these values:
 
 ```xml
 <!--Converts OData responses to simple REST -->
-<Parameter name="dataconverter.type">odata2rest</Parameter> 
+<Parameter name="dataconverter.type">odata2rest</Parameter>
 <!--Converts BigQuery responses to simple REST -->
 <Parameter name="dataconverter.type">bigquery2rest</Parameter>
 <!--Converts Firestore responses to simple REST -->
 <Parameter name="dataconverter.type">firestore2rest</Parameter>
 ```
 
-The **`dataconverter.resource`** should contain the name of the resource object, which will be used to format the JSON output.  This can easily be extracted from the URL path of the API using the [`ExtractVariables`](https://cloud.google.com/apigee/docs/api-platform/reference/policies/extract-variables-policy#uripathelement) policy (so for example extracting `orders` as the resource name from the URL `https://api.example.com/orderservice/{orders})` into the `resource` variable, and which can be passed to the shared flow as in the example above.
+The **`dataconverter.resource`** should contain the name of the resource object,
+which will be used to format the JSON output.  This can easily be extracted from
+the URL path of the API using the
+[`ExtractVariables`](https://cloud.google.com/apigee/docs/api-platform/reference/policies/extract-variables-policy#uripathelement)
+policy (so for example extracting `orders` as the resource name from the URL
+`https://api.example.com/orderservice/{orders})` into the `resource` variable,
+and which can be passed to the shared flow as in the example above.
 
-The **`dataconvert.input`** parameter should contain the source data either in the `odata`, `bigquery`, or `firestore` formats.  The `response.content` variable is commonly used for this after calling the source systems API for data.
+The **`dataconvert.input`** parameter should contain the source data either in
+the `odata`, `bigquery`, or `firestore` formats.  The `response.content`
+variable is commonly used for this after calling the source systems API for
+data.
 
-The result of the conversion is returned in the **`dataconverter.output`** parameter, which can be assigned to the response with an **AssignMesssage** policy like this:
+The result of the conversion is returned in the **`dataconverter.output`**
+parameter, which can be assigned to the response with an **AssignMesssage**
+policy like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -113,7 +133,8 @@ The result of the conversion is returned in the **`dataconverter.output`** param
 
 ## Extending
 
-The shared flow default flow has 3 policies to do the conversions, which are optionally triggered depending on the value of `dataconverter.type`.  
+The shared flow default flow has 3 policies to do the conversions, which are
+optionally triggered depending on the value of `dataconverter.type`.
 
 ```xml
 <SharedFlow name="default">
@@ -132,4 +153,7 @@ The shared flow default flow has 3 policies to do the conversions, which are opt
 </SharedFlow>
 ```
 
-You can easily extend this with further conversions as needed, so adding any other specific formats that you need converted into simple JSON.  Also the conversions here are pretty simple, and ignore some things like nested objects, but which could be added if needed for specific use-cases.
+You can easily extend this with further conversions as needed, so adding any
+other specific formats that you need converted into simple JSON.  Also the
+conversions here are pretty simple, and ignore some things like nested objects,
+but which could be added if needed for specific use-cases.
