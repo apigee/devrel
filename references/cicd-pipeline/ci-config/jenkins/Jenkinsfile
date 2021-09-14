@@ -4,11 +4,16 @@ pipeline {
 
     environment {
         APIGEE_CREDS = credentials('apigee')
-        // Mutliple options for setting the Apigee target org:
+
+        // Multiple options for setting the Apigee deployment target config:
         // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
-        // 2. As a environment variable for all branches (see below)
-        // 3. As a branch specific environment variable in the first pipeline stage
-        // APIGEE_ORG = 'apigee-org-name'
+        // 2. As a branch specific environment variable in the first pipeline stage
+        // 3. As an environment variable for all branches (see below)
+
+        // API_VERSION = 'google'
+        // APIGEE_ORG = 'my-org'
+        // APIGEE_TEST_ENV = 'test1'
+        // TEST_HOST= 'api.example.com'
     }
 
     stages {
@@ -18,19 +23,22 @@ pipeline {
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.APIGEE_ENV = "test"
+                  env.APIGEE_ENV = env.APIGEE_TEST_ENV
                   // env.APIGEE_ORG = 'apigee-org-name'
               // Prod branch for Apigee prod environment
               } else if (env.GIT_BRANCH == "prod") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
-                  env.APIGEE_ENV = "prod"
+                  env.APIGEE_ENV = env.APIGEE_PROD_ENV
                   // env.APIGEE_ORG = 'apigee-org-name'
               // All other branches are deployed as separate proxies with suffix in the test environment
               } else {
                   env.APIGEE_DEPLOYMENT_SUFFIX = env.GIT_BRANCH ? "-" + env.GIT_BRANCH.replaceAll("\\W", "-") : "-devrel-jenkins"
-                  env.APIGEE_ENV = "test"
+                  env.APIGEE_ENV = env.APIGEE_TEST_ENV
                   // env.APIGEE_ORG = 'apigee-org-name'
               }
+              println "---------- Branch-Dependent Build Config ----------"
+              println "Apigee Org: " + env.APIGEE_ORG
+              println "Apigee Env: " + env.APIGEE_ENV
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
             }
           }
@@ -87,7 +95,7 @@ pipeline {
           }
         }
 
-        stage('Env Config') {
+        stage('Commit Author Extraction') {
           steps {
             script {
               if (!env.AUTHOR_EMAIL) {
@@ -97,13 +105,40 @@ pipeline {
                 ).trim()
               }
             }
+          }
+        }
 
+        stage('Deploy Edge') {
+          when {
+            expression { env.API_VERSION ==  'apigee'}
+          }
+          steps {
             sh """
               mvn clean install \
-                -P"apigeeapi" \
+                -Papigeeapi \
                 -Dpassword="${APIGEE_CREDS_PSW}" \
                 -Denv="${env.APIGEE_ENV}" \
                 -Dusername="${APIGEE_CREDS_USR}" \
+                -Dorg="${env.APIGEE_ORG}" \
+                -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
+                -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
+                """
+
+          }
+        }
+
+        stage('Deploy X/hybrid') {
+          when {
+            expression { env.API_VERSION ==  'google'}
+          }
+          steps {
+            sh """
+              APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
+
+              mvn clean install \
+                -Pgoogleapi \
+                -Denv="${env.APIGEE_ENV}" \
+                -Dtoken="\$APIGEE_SA_TOKEN" \
                 -Dorg="${env.APIGEE_ORG}" \
                 -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
                 -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
@@ -113,7 +148,7 @@ pipeline {
 
         stage('Functional Test') {
           steps {
-            sh "node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
+            sh "TEST_HOST=${env.TEST_HOST} node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
           }
         }
     }

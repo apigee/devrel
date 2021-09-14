@@ -28,8 +28,20 @@ jenkins:
         env:
           - key: APIGEE_ORG
             value: ${APIGEE_ORG}
+          - key: APIGEE_TEST_ENV
+            value: ${APIGEE_TEST_ENV}
+          - key: APIGEE_PROD_ENV
+            value: ${APIGEE_PROD_ENV}
           - key: APIGEE_HOSTURL
             value: ${APIGEE_HOSTURL}
+          - key: TEST_HOST
+            value: ${TEST_HOST}
+          - key: API_VERSION
+            value: ${API_VERSION}
+          - key: APIGEE_TOKEN
+            value: ${APIGEE_TOKEN}
+          - key: AUTHOR_EMAIL
+            value: ${AUTHOR_EMAIL}
 credentials:
   system:
     domainCredentials:
