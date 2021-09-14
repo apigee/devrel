@@ -25,6 +25,8 @@ further to fit a particular use case.
   Deploy Maven Plugin
 - [Cloud Logging Shared Flow](references/cloud-logging-shared-flow) -
   Reference implementation for a shared flow to log to Google Cloud Logging
+- [Data Converters Shared Flow](references/data-converters-shared-flow) -
+  A reference shared flow for doing common response data JSON conversions
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
