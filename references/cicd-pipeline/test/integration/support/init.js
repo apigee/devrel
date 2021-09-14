@@ -23,7 +23,9 @@ const { Before } = require("@cucumber/cucumber");
 
 Before(function () {
   const host = process.env.TEST_HOST || "org-env.apigee.net";
-  const basePath = `/airports-cicd${process.env.APIGEE_DEPLOYMENT_SUFFIX}/v1`;
-  this.apickli = new apickliModule.Apickli("https", `${host}${basePath}`);
+  const basePath = `/airports-cicd${process.env.APIGEE_DEPLOYMENT_SUFFIX || ''}/v1`;
+  const baseUri = `${host}${basePath}`;
+  console.log(`Test Base URI: ${baseUri}`);
+  this.apickli = new apickliModule.Apickli("https", baseUri);
   this.apickli.addRequestHeader("Cache-Control", "no-cache");
 });
