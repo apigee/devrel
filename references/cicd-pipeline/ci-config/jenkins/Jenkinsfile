@@ -5,10 +5,10 @@ pipeline {
     environment {
         APIGEE_CREDS = credentials('apigee')
 
-        // Mutliple options for setting the Apigee deployment target config:
+        // Multiple options for setting the Apigee deployment target config:
         // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
         // 2. As a branch specific environment variable in the first pipeline stage
-        // 3. As a environment variable for all branches (see below)
+        // 3. As an environment variable for all branches (see below)
 
         // API_VERSION = 'google'
         // APIGEE_ORG = 'my-org'

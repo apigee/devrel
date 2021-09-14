@@ -41,13 +41,13 @@ docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins
 
 ### Run the Jenkins Container
 
-In this section we describe how to setup Jenkins on a either a GCP VM or
+In this section we describe how to setup Jenkins on either a GCP VM or
 locally via Docker.
 
 #### Option A Run Jenkins on a GCP Compute Engine VM
 
-To run Jenkins on a Compute Engine VM firs make sure you have the Container
-Image in GCR. If you have not used cloud build to build your Image then push it
+To run Jenkins on a Compute Engine VM first make sure you have the Container
+Image in GCR. If you have not used Cloud Build to build your Image then push it
 to GCR like so:
 
 ```sh
@@ -63,6 +63,7 @@ JENKINS_SA_NAME="jenkins"
 JENKINS_SA_EMAIL="$JENKINS_SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 gcloud iam service-accounts create "$JENKINS_SA_NAME" --project "$PROJECT_ID"
 
+# Permissions to deploy to Apigee
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$JENKINS_SA_EMAIL" \
   --role="roles/apigee.environmentAdmin"
@@ -71,6 +72,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$JENKINS_SA_EMAIL" \
   --role="roles/apigee.apiAdmin"
 
+# Permission to pull the jenkins image from GCR
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$JENKINS_SA_EMAIL" \
   --role="roles/storage.objectViewer"
