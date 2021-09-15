@@ -30,26 +30,32 @@ set_config_params() {
     export ZONE=${ZONE:-'europe-west1-c'}
     gcloud config set compute/zone "$ZONE"
 
+    printf "\n🔧 Apigee hybrid Configuration:\n"
     export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
+    echo "- Ingress type $INGRESS_TYPE"
+    echo "- TLS Certificate ${CERT_TYPE:-let\'s encrypt}"
 
-    echo "🔧 Configuring Apigee hybrid"
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
-
-    export APIGEE_CTL_VERSION='1.5.2'
+    echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
+    export APIGEE_CTL_VERSION='1.5.3'
+    echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
+    echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.2.0'
+    echo "- Cert Manager version $CERT_MANAGER_VERSION"
     export ASM_VERSION='1.8'
+    echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
 
     if [[ "$OS_NAME" == "Linux" ]]; then
-      echo "🐧 Using Linux binaries"
+      echo "- 🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
       export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
       export JQ_VERSION='jq-1.6/jq-linux64'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
-      echo "🍏 Using macOS binaries"
+      echo "- 🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
       export JQ_VERSION='jq-1.6/jq-osx-amd64'
@@ -58,24 +64,30 @@ set_config_params() {
       exit 2
     fi
 
-    echo "🔧 Setting derived config parameters"
+
+    printf "\n🔧 Derived config parameters\n"
+    echo "- GCP Project $PROJECT_ID"
     PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
     export PROJECT_NUMBER
     export WORKLOAD_POOL="${PROJECT_ID}.svc.id.goog"
+    echo "- Workload Pool $WORKLOAD_POOL"
     export MESH_ID="proj-${PROJECT_NUMBER}"
+    echo "- Mesh ID $MESH_ID"
 
     # these will be set if the steps are run in order
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)" || echo "")
     export INGRESS_IP
+    echo "- Ingress IP ${INGRESS_IP:-N/A}"
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
+    echo "- Nameserver ${NAME_SERVER:-N/A}"
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:-$PWD}"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
     export APIGEECTL_HOME=$QUICKSTART_TOOLS/apigeectl/apigeectl_$APIGEE_CTL_VERSION
     export HYBRID_HOME=$QUICKSTART_ROOT/hybrid-files
 
-    echo "Running hybrid quickstart script from: $QUICKSTART_ROOT"
+    echo "- Script root from: $QUICKSTART_ROOT"
 }
 
 token() { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
@@ -108,6 +120,19 @@ function wait_for_ready(){
     done
 }
 
+ask_confirm() {
+  if [ ! "$QUIET_INSTALL" = "true" ]; then
+    printf "\n\n"
+    read -p "Do you want to continue with the config above? [Y/n]: " -n 1 -r REPLY; printf "\n"
+    REPLY=${REPLY:-Y}
+
+    if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+      echo "starting provisioning"
+    else
+      exit 1
+    fi
+  fi
+}
 
 check_existing_apigee_resource() {
   RESOURCE_URI=$1
@@ -130,12 +155,6 @@ enable_all_apis() {
   PROJECT_ID=${PROJECT_ID:-$(gcloud config get-value "project")}
 
   echo "📝 Enabling all required APIs in GCP project \"$PROJECT_ID\""
-
-  # Assuming we already enabled the APIs if the Apigee Org exists
-  if check_existing_apigee_resource "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID" ; then
-    echo "(assuming APIs are already enabled)"
-    return
-  fi
   echo -n "⏳ Waiting for APIs to be enabled"
 
   gcloud services enable \
@@ -166,7 +185,7 @@ create_apigee_org() {
 
     if check_existing_apigee_resource "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID" ; then
       echo "(skipping org creation, already exists)"
-      return
+      return 0
     fi
 
     curl -X POST --fail -H "Authorization: Bearer $(token)" -H "content-type:application/json" \
@@ -373,7 +392,7 @@ spec:
         serviceAnnotations:
           cloud.google.com/app-protocols: '{"https":"HTTPS"}'
           cloud.google.com/neg: '{"ingress": true}'
-          networking.gke.io.load-balancer-type: $INGRESS_TYPE
+          networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
           type: LoadBalancer
           loadBalancerIP: $INGRESS_IP
@@ -441,32 +460,69 @@ prepare_resources() {
     echo "✅ Hybrid Config Setup"
 }
 
-create_self_signed_cert() {
+create_cert() {
 
   ENV_GROUP_NAME=$1
 
-  echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
-  mkdir  -p "$HYBRID_HOME/certs"
+  if [ "$CERT_TYPE" = "self-signed" ];then
+    echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
+    mkdir  -p "$HYBRID_HOME/certs"
 
-  CA_CERT_NAME="quickstart-ca"
+    CA_CERT_NAME="quickstart-ca"
 
-  # create CA cert if not exist
-  if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
-    echo "CA already exists! Reusing that one."
+    # create CA cert if not exist
+    if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
+      echo "CA already exists! Reusing that one."
+    else
+      openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+    fi
+
+    openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
+
+    openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
+
+    cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
+
+    kubectl create secret tls tls-hybrid-ingress \
+      --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
+      --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
+      -n istio-system --dry-run -o yaml | kubectl apply -f -
+
+  elif [ "$CERT_TYPE" = "skip" ];then
+    return
   else
-    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+    echo "🔒 Creating let's encrypt cert - $ENV_GROUP_NAME"
+    cat <<EOF | kubectl apply -f -
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: istio-system
+spec:
+  acme:
+    email: admin@$DNS_NAME
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-issuer-account-key
+    solvers:
+    - http01:
+       ingress:
+         class: istio
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-hybrid-ingress
+  namespace: istio-system
+spec:
+  secretName: tls-hybrid-ingress
+  issuerRef:
+    name: letsencrypt
+  commonName: $ENV_GROUP_NAME.$DNS_NAME
+  dnsNames:
+  - $ENV_GROUP_NAME.$DNS_NAME
+EOF
   fi
-
-  openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
-
-  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
-
-  cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
-
-  kubectl create secret tls tls-hybrid-ingress \
-    --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
-    --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-    -n istio-system
 }
 
 create_sa() {
@@ -578,16 +634,17 @@ deploy_example_proxy() {
 
   echo "🤓 Try without DNS (first deployment takes a few seconds. Relax and breathe!):"
 
-  if echo "$DNS_NAME" | grep -q ".nip.io"; then
+  if [ "$CERT_TYPE" = "self-signed" ];then
    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   else
-    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
-    echo "👋 To reach it via the FQDN: Make sure you add this as an NS record for $DNS_NAME: $NAME_SERVER"
+    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   fi
+  echo "👋 To reach your API via the FQDN: Make sure you add a DNS record for your FQDN or an NS record for $DNS_NAME: $NAME_SERVER"
+  echo "👋 During development you can also use --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP to resolve the hostname for your curl command"
 }
 
 delete_apigee_keys() {
-  for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace
+  for SA in mart cassandra udca metrics synchronizer logger watcher distributed-trace runtime
   do
     delete_sa_keys "apigee-${SA}"
   done

@@ -10,10 +10,6 @@ This folder contains reference solutions across a variety of Apigee products.
 It is expected that these solutions are used as an illustration or extended
 further to fit a particular use case.
 
-- [Swagger 2 based Mocks on Apigee Hosted Targets](references/apigee-sandbox-v1)
-  - Swagger 2 based Mocks on Apigee SaaS
-- [API Mocker on Apigee Hosted Targets](references/apimocker-hostedtargets) -
-  API Mocks hosted on Apigee SaaS
 - [Common Shared Flows](references/common-shared-flows) -
   Reusable API Policies including Security, Traffic Management, Error Handling
   and CORS
@@ -24,9 +20,13 @@ further to fit a particular use case.
 - [CI/CD Pipeline](references/cicd-pipeline) -
   Reference implementation for a CI/CD Pipeline using the Apigee
   Deploy Maven Plugin and a choice of either Jenkins or Google Cloud Build
-- [CI/CD Pipeline for SharedFlows](references/cicd-sharedflow-pipeline) -
+- [CI/CD Pipeline for Shared Flows](references/cicd-sharedflow-pipeline) -
   Reference implementation for a CI/CD Pipeline for Sharedflows using the Apigee
   Deploy Maven Plugin
+- [Cloud Logging Shared Flow](references/cloud-logging-shared-flow) -
+  Reference implementation for a shared flow to log to Google Cloud Logging
+- [Data Converters Shared Flow](references/data-converters-shared-flow) -
+  A reference shared flow for doing common response data JSON conversions
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
   Traffic Management, Error Handling
@@ -52,21 +52,14 @@ further to fit a particular use case.
 This folder contains ready-made utilities which simplify and assist the usage of
 Apigee products.
 
-- [Organization Cleanup](tools/organization-cleanup) -
-  A tool to cleanup proxies in an Apigee organization, leveraging
-  [Another Apigee Client](tools/another-apigee-client)
 - [Pipeline Runner](tools/pipeline-runner) -
   A tool to build and test groups of Apigee projects
 - [Pipeline Linter](tools/pipeline-linter) -
   A tool to lint groups of Apigee projects
-- [Another Apigee Client](tools/another-apigee-client) -
-  A lightweight Apigee Management CLI
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -
   A rescue utility to decrypt proxies and shared flows
-- [OpenAPI to AssignMessage](tools/oas-to-am) -
-  A utility to derive an AssignMessage policy from a spec
 - [Apigee X Trial Provisioning Reference](tools/apigee-x-trial-provision) -
   A reference provisioning script for Apigee X trial provisioning
 - [Apigee Sackmesser](tools/apigee-sackmesser) -
@@ -83,6 +76,9 @@ technical or non-technical topic.
 
 - [Best Practices Hackathon](labs/best-practices-hackathon) [(web)](https://apigee.github.io/devrel/labs/best-practices-hackathon)
   A 300 level lab to learn Apigee Best Practices
+- [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
+  A 200 level lab demonstrating behavior-driven API development by building,
+  deploying and testing a mock API, generated from an Open API Specification.
 
 ## Contributing
 

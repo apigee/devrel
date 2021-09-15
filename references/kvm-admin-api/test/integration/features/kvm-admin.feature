@@ -69,15 +69,38 @@ Feature:
     When I DELETE /keyvaluemaps/wrongtestmap/entries/test-entry
     Then response code should be 404
 
-  Scenario: Query an invalid resource in the proxy
-    When I DELETE /keyvaluemaps/invalidresource
-    Then response code should be 404
-
   Scenario: Invalid PUT call
     Given I set body to {"key": "test-entry", "value":"test-value"}
     And I set Content-Type header to application/json
     When I PUT to /keyvaluemaps/kvmtestmap/entries
     Then response code should be 403
+
+  Scenario: Create an entry using form parameters
+    Given I set form parameters to
+      | parameter | value           |
+      | key       | test-form-entry |
+      | value     | test-form-value |
+    And I set Content-Type header to application/x-www-form-urlencoded
+    When I POST to /keyvaluemaps/kvmtestmap/entries
+    Then response code should be 200
+    And response body path $.key should be test-form-entry
+    And response body path $.value should be test-form-value
+    And response header Authorization should not exist
+
+  Scenario: Incomplete params using form parameters
+    Given I set form parameters to
+      | parameter | value                |
+      | key       | test-form-entry      |
+      | not-value | this-does-not-matter |
+    And I set Content-Type header to application/x-www-form-urlencoded
+    When I POST to /keyvaluemaps/kvmtestmap/entries
+    Then response code should be 400
+
+  Scenario: Retrieve an entry that was posted via form params
+    When I GET /keyvaluemaps/kvmtestmap/entries/test-form-entry
+    Then response code should be 200
+    And response body path $.key should be test-form-entry
+    And response body path $.value should be test-form-value
 
   @flaky
   Scenario: Retrieve an entry after deleting it
