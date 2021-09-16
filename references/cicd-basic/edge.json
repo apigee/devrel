@@ -1,0 +1,23 @@
+{
+   "version":"1.0",
+   "envConfig":{
+      "eval":{
+         "targetServers":[
+            {
+                "name": "MockTarget",
+                "host": "mocktarget.apigee.net",
+                "port": 443,
+                "isEnabled": true,
+                "sSLInfo": {
+                    "enabled": true
+                },
+                "protocol": "HTTP"
+            }            
+         ]
+      }
+   },
+   "orgConfig":{
+      "apiProducts":[
+      ]
+   }
+}

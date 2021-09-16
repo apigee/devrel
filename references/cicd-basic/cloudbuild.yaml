@@ -1,0 +1,54 @@
+#  Copyright 2020 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+steps:
+- name: node
+  id: Lint Apigee API bundle
+  entrypoint: bash
+  args:
+    - -c
+    - |-
+      npm install --silent -g --no-fund apigeelint@2.6.x
+      apigeelint -s ./apiproxy --profile apigeex -f table.js
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  id: Fetch token for deployment
+  args:
+    - -c
+    - gcloud auth print-access-token > /workspace/.build_token
+- name: gcr.io/cloud-builders/mvn
+  entrypoint: bash
+  id: Package deploy and upload artifact
+  args: 
+    - -c
+    - |
+      mvn install -Peval \
+                  -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
+                  -Dbearer=$(cat /workspace/.build_token)
+- name: node
+  id: Integration test
+  entrypoint: bash
+  args:
+    - -c
+    - |-
+      npm install --silent -g newman
+      newman run test/MockTarget.postman_collection.json \
+                -e test/MockTargetEval.postman_environment.json
+artifacts:
+  objects:
+    location: 'gs://apigee-build/${_API_PROJECT}/${COMMIT_SHA}'
+    paths: ['target/*.zip', 'edge.json']
+substitutions:
+    _API_PROJECT: MockTarget
+    _APIGEE_ORG: your_project
+    _APIGEE_ENV: eval
