@@ -18,17 +18,35 @@ set -x
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
+# default proxy name and version
+PROXY=example 
+VERSION=v1
+
 # clean up
-rm -rf example-v1
+rm -rf "$PROXY"-"$VERSION"
 
 # deploy all shared flows
 (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
 
+# set target server environment variables
+export TARGET_URL=https://httpbin.org
+# shellcheck disable=SC1091
+. ./set-targetserver-envs.sh
+
+# create target server if does not exist
+response=$(curl -X GET \
+    -u "$APIGEE_USER":"$APIGEE_PASS" -H "Accept: application/json" -w "%{http_code}" \
+    https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/environments/"$APIGEE_ENV"/targetservers/"$TARGET_SERVER_NAME")
+
 # generate proxy
-PROXY=example VERSION=v1 VHOST=secure TARGETURL=https://httpbin.org/get sh ./generate-proxy.sh
+PROXY=$PROXY VERSION=$VERSION VHOST=secure TARGET_PATH="$TARGET_PATH" TARGET_SERVER_NAME="$TARGET_SERVER_NAME" sh ./generate-proxy.sh
+
+if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
+    npm run deployTargetServer --prefix ./"$PROXY"-"$VERSION"
+fi
 
 # deploy generated proxy
-npm run deploy --prefix ./example-v1
+npm run deploy --prefix ./"$PROXY"-"$VERSION"
 
 # run tests
-npm test --prefix ./example-v1
+npm test --prefix ./"$PROXY"-"$VERSION"

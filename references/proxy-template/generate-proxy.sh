@@ -13,16 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 set -e
-
 
 # Ask for input parameters if they are not set
 
 [ -z "$PROXY" ]     && printf "Proxy Name: "    && read -r PROXY
 [ -z "$VERSION" ]   && printf "Proxy Version: " && read -r VERSION
 [ -z "$VHOST" ]     && printf "Virtual Host: "  && read -r VHOST
-[ -z "$TARGETURL" ] && printf "Target URL: "    && read -r TARGETURL
+[ -z "$TARGET_SERVER_NAME" ] && printf "Target Server Name: "    && read -r TARGET_SERVER_NAME
+[ -z "$TARGET_PATH" ] && printf "Target Path: "    && read -r TARGET_PATH
 
 # Abort if directory exists
 
@@ -38,7 +37,8 @@ sed -i.bak "s|@Proxy@|$PROXY|" ./"$PROXY"-"$VERSION"/test/features/step_definiti
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/package.json
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js
-sed -i.bak "s|@TargetURL@|$TARGETURL|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
+sed -i.bak "s|@TargetPath@|$TARGET_PATH|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
+sed -i.bak "s|@TargetServerName@|$TARGET_SERVER_NAME|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
 
 rm ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml.bak
 rm ./"$PROXY"-"$VERSION"/package.json.bak

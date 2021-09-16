@@ -27,15 +27,20 @@ It also has the following features:
 
 ## Quick start
 
+    # Set environment variables to create target server and target path
+    source ./set-targetserver-envs.sh
+
+    # Generate an API proxy based on proxy template
     ./generate-proxy.sh
 
-    # Answer questions and note that ./xxx-v1/ has been created for you
+    # Answer questions and note that ./xxx-vn/ has been created for you
 
     # To deploy and test
-    cd ./xxx-v1
+    cd ./xxx-vn
     export APIGEE_ORG=xxx
     export APIGEE_ENV=xxx
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
+    npm run deployTargetServer
     npm run deploy
     npm test
