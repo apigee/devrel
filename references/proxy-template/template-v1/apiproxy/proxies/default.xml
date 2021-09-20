@@ -40,7 +40,7 @@
           request.verb != "OPTIONS" and 
           !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/ping") and 
           !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/status") and 
-          !(request.verb = "GET" and proxy.pathsuffix MatchesPath "/headers")
+          !(request.verb = "GET" and proxy.pathsuffix MatchesPath "@TargetPath@")
         </Condition>
         <Name>Shared.VerifyToken</Name>
       </Step>
@@ -74,13 +74,13 @@
       </Response>
     </Flow>
 
-    <!-- insert your flows here and check scopes -->
+     <!-- insert your flows here and check scopes -->
 
-    <Flow name="GET /headers">
+     <Flow name="GET @TargetPath@">
       <Request/>
       <Response/>
       <Condition>
-        request.verb = "GET" and proxy.pathsuffix MatchesPath "/headers"
+        request.verb = "GET" and proxy.pathsuffix MatchesPath "@TargetPath@"
       </Condition>
       </Flow>
 

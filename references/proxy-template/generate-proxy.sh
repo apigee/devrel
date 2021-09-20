@@ -37,12 +37,14 @@ sed -i.bak "s|@Proxy@|$PROXY|" ./"$PROXY"-"$VERSION"/test/features/step_definiti
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/package.json
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js
-sed -i.bak "s|@TargetPath@|$TARGET_PATH|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
+sed -i.bak "s|@TargetPath@|$TARGET_PATH|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
+sed -i.bak "s|@TargetPath@|$TARGET_PATH|" ./"$PROXY"-"$VERSION"/test/features/TargetServer.feature
 sed -i.bak "s|@TargetServerName@|$TARGET_SERVER_NAME|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
 
 rm ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml.bak
 rm ./"$PROXY"-"$VERSION"/package.json.bak
 rm ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js.bak
+rm ./"$PROXY"-"$VERSION"/test/features/TargetServer.feature.bak
 rm ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml.bak
 
 echo "Complete Proxy Generation for $PROXY-$VERSION"

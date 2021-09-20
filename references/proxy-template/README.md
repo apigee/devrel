@@ -42,5 +42,5 @@ It also has the following features:
     export APIGEE_USER=xxx
     export APIGEE_PASS=xxx
     npm run deployTargetServer
-    npm run deploy
+    npm run deployProxy
     npm test

@@ -54,7 +54,7 @@
       <Server name="@TargetServerName@" />
       <MaxFailures>0</MaxFailures>
     </LoadBalancer>
-    <Path>@TargetPath@</Path>
+    <Path>/</Path>
   </HTTPTargetConnection>
 
 </TargetEndpoint>

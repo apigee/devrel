@@ -29,7 +29,9 @@ rm -rf "$PROXY"-"$VERSION"
 (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
 
 # set target server environment variables
-export TARGET_URL=https://httpbin.org
+DEFAULT_TARGET_URL=https://httpbin.org/get
+export TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
+
 # shellcheck disable=SC1091
 . ./set-targetserver-envs.sh
 
@@ -46,7 +48,7 @@ if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
 fi
 
 # deploy generated proxy
-npm run deploy --prefix ./"$PROXY"-"$VERSION"
+npm run deployProxy --prefix ./"$PROXY"-"$VERSION"
 
 # run tests
 npm test --prefix ./"$PROXY"-"$VERSION"
