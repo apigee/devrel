@@ -14,7 +14,7 @@
 steps:
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: bash
-  id: &copy_artifact 'Copying Apigee artifact'
+  id: Copying Apigee artifact
   args:
     - -c
     - |
@@ -27,8 +27,6 @@ steps:
   args:
     - -c
     - |
-      ls -l
-      ls -l *
       gcloud auth print-access-token > /workspace/.build_token
 - name: gcr.io/cloud-builders/mvn
   entrypoint: bash
@@ -38,6 +36,7 @@ steps:
     - |
       mvn install -f pom-release.xml \
                   -Peval \
+                  -Dapigee.config.options=update \
                   -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
                   -Dbearer=$(cat /workspace/.build_token)
 - name: node
@@ -48,12 +47,16 @@ steps:
     - |-
       npm install --silent -g newman
       newman run test/MockTarget.postman_collection.json \
-                -e test/MockTargetEval.postman_environment.json
+                --env-var DOMAIN=${_APIGEE_RUNTIME_HOST} \
+                --env-var SERVER=${_APIGEE_RUNTIME_IP}
 
 substitutions:
     _COMMIT_SHA: from_user
     _API_PROJECT: MockTarget
     _APIGEE_ORG: your_project
     _APIGEE_ENV: eval
+    _APIGEE_RUNTIME_HOST: your_api_runtime_domain
+    _APIGEE_RUNTIME_IP: your_api_runtime_ip_if_needed
 options:
     substitution_option: 'ALLOW_LOOSE'
+

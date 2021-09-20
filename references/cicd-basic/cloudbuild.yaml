@@ -29,10 +29,11 @@ steps:
 - name: gcr.io/cloud-builders/mvn
   entrypoint: bash
   id: Package deploy and upload artifact
-  args: 
+  args:
     - -c
     - |
       mvn install -Peval \
+                  -Dapigee.config.options=update \
                   -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
                   -Dbearer=$(cat /workspace/.build_token)
 - name: node
@@ -43,12 +44,18 @@ steps:
     - |-
       npm install --silent -g newman
       newman run test/MockTarget.postman_collection.json \
-                -e test/MockTargetEval.postman_environment.json
+                --env-var DOMAIN=${_APIGEE_RUNTIME_HOST} \
+                --env-var SERVER=${_APIGEE_RUNTIME_IP}
+
 artifacts:
   objects:
     location: 'gs://apigee-build/${_API_PROJECT}/${COMMIT_SHA}'
     paths: ['target/*.zip', 'edge.json']
+#logsBucket: 'gs://apigee-build-logs/${_API_PROJECT}'
+#serviceAccount: 'projects/madhans-apigeex/serviceAccounts/apigee-cicd-bot@madhans-apigeex.iam.gserviceaccount.com'
 substitutions:
     _API_PROJECT: MockTarget
-    _APIGEE_ORG: your_project
+    _APIGEE_ORG: your_apigee_org
     _APIGEE_ENV: eval
+    _APIGEE_RUNTIME_HOST: your_api_runtime_domain
+    _APIGEE_RUNTIME_IP: your_api_runtime_ip_if_needed
