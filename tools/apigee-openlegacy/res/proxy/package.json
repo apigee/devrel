@@ -11,7 +11,7 @@
     "test": "npm i && npx cucumber-js test"
   },
   "dependencies": {
-    "apickli": "^3.0.0",
+    "apickli": "^3.0.1",
     "apigeetool": "^0.10.0",
     "@cucumber/cucumber": "^7.3.0"
   }

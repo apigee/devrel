@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@cucumber/cucumber": "^7.3.0",
-    "apickli": "^3.0.0",
+    "apickli": "^3.0.1",
     "apigeetool": "^0.10.0",
     "sleep-promise": "^9.1.0"
   }
