@@ -15,13 +15,17 @@
 
 set -e
 
+# Abort if TARGET_SERVER_NAME or TARGET_PATH have not been set
+
+if [ -z "$TARGET_SERVER_NAME" ] || [ -z "$TARGET_PATH" ]; then
+    echo "Target server environment variables not set: please set TARGET_URL and 'source ./set-targetserver-envs.sh'." && exit
+fi
+
 # Ask for input parameters if they are not set
 
 [ -z "$PROXY" ]     && printf "Proxy Name: "    && read -r PROXY
 [ -z "$VERSION" ]   && printf "Proxy Version: " && read -r VERSION
 [ -z "$VHOST" ]     && printf "Virtual Host: "  && read -r VHOST
-[ -z "$TARGET_SERVER_NAME" ] && printf "Target Server Name: "    && read -r TARGET_SERVER_NAME
-[ -z "$TARGET_PATH" ] && printf "Target Path: "    && read -r TARGET_PATH
 
 # Abort if directory exists
 

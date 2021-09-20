@@ -32,8 +32,7 @@ rm -rf "$PROXY"-"$VERSION"
 DEFAULT_TARGET_URL=https://httpbin.org/get
 export TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
-# shellcheck disable=SC1091
-. ./set-targetserver-envs.sh
+. "$SCRIPTPATH"/set-targetserver-envs.sh
 
 # create target server if does not exist
 response=$(curl -X GET \
