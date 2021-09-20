@@ -5,8 +5,9 @@ Sample repo to demonstrate Apigee Continuous Integration and Continuous Deployme
  * Apigee X or Apigee Hybrid org with an env called "eval"
  * GCS - create a bucket named MockTarget in the same region as your Apigee org
  * Grant Apigee API Admin, Apigee Environment Admin roles to default Cloud Build service account [project_number]@cloudbuild.gserviceaccount.com
- * Update cloudbuild.yaml, cloudbuild-release.yaml and fill in your Apigee org details in variables ```
-      _APIGEE_ORG,
+ * Update cloudbuild.yaml, cloudbuild-release.yaml and fill in your Apigee org details in variables 
+```yaml
+      _APIGEE_ORG: your_apigee_org
       _APIGEE_RUNTIME_HOST: your_api_runtime_domain
       _APIGEE_RUNTIME_IP: your_api_runtime_ip_if_needed
 ``` 
