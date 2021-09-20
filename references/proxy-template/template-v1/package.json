@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@cucumber/cucumber": "^7.3.0",
-    "apickli": "^3.0.0",
+    "apickli": "^3.0.1",
     "apigeetool": "^0.15.1"
   }
 }
