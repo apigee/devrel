@@ -43,30 +43,9 @@
                 <executions>
                     <execution>
                         <id>create-config-targetserver</id>
-                        <phase>verify</phase>                        
+                        <phase>verify</phase>
                         <goals>
                             <goal>targetservers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-apiproduct</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>apiproducts</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-developer</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>developers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-app</id>
-                        <phase>install</phase>                        
-                        <goals>
-                            <goal>apps</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -75,7 +54,7 @@
     </build>
     <profiles>
         <profile>
-            <id>eval</id>
+            <id>prod</id>
             <properties>
                 <apigee.profile>eval</apigee.profile>
                 <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
@@ -87,13 +66,5 @@
                 <apigee.options>override</apigee.options>
             </properties>
         </profile>
-    </profiles>   
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    </profiles>
 </project>

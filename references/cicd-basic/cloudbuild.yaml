@@ -12,50 +12,55 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 steps:
-- name: node
-  id: Lint Apigee API bundle
+- id: Lint Apigee API bundle
+  name: node
   entrypoint: bash
   args:
     - -c
     - |-
       npm install --silent -g --no-fund apigeelint@2.6.x
       apigeelint -s ./apiproxy --profile apigeex -f table.js
-- name: gcr.io/cloud-builders/gcloud
+- id: Fetch token for deployment
+  name: gcr.io/cloud-builders/gcloud
   entrypoint: bash
-  id: Fetch token for deployment
   args:
     - -c
     - gcloud auth print-access-token > /workspace/.build_token
-- name: gcr.io/cloud-builders/mvn
+- id: Package deploy to nonprod
+  name: gcr.io/cloud-builders/mvn
   entrypoint: bash
-  id: Package deploy and upload artifact
   args:
     - -c
     - |
-      mvn install -Peval \
+      mvn install -Pdev \
                   -Dapigee.config.options=update \
                   -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
                   -Dbearer=$(cat /workspace/.build_token)
-- name: node
-  id: Integration test
+- id: Fetch API key for test
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  args:
+    - -c
+    - |-
+      gcloud secrets versions access latest \
+           --secret=mocktarget-apikey-nonprod-qa > /workspace/.qa_apikey
+- id: Integration test
+  name: node
   entrypoint: bash
   args:
     - -c
     - |-
       npm install --silent -g newman
       newman run test/MockTarget.postman_collection.json \
-                --env-var DOMAIN=${_APIGEE_RUNTIME_HOST} \
-                --env-var SERVER=${_APIGEE_RUNTIME_IP}
-
+                --env-var SERVER=${_APIGEE_RUNTIME_HOST} \
+                --env-var APIKEY=$(cat /workspace/.qa_apikey)
 artifacts:
   objects:
     location: 'gs://apigee-build/${_API_PROJECT}/${COMMIT_SHA}'
     paths: ['target/*.zip', 'edge.json']
-#logsBucket: 'gs://apigee-build-logs/${_API_PROJECT}'
-#serviceAccount: 'projects/madhans-apigeex/serviceAccounts/apigee-cicd-bot@madhans-apigeex.iam.gserviceaccount.com'
 substitutions:
     _API_PROJECT: MockTarget
     _APIGEE_ORG: your_apigee_org
     _APIGEE_ENV: eval
     _APIGEE_RUNTIME_HOST: your_api_runtime_domain
-    _APIGEE_RUNTIME_IP: your_api_runtime_ip_if_needed
+

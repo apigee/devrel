@@ -77,34 +77,13 @@
                             <goal>targetservers</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>create-config-apiproduct</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>apiproducts</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-developer</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>developers</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-config-app</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>apps</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>            
         </plugins>
     </build>
     <profiles>
         <profile>
-            <id>eval</id>
+            <id>dev</id>
             <properties>
                 <apigee.profile>eval</apigee.profile>
                 <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
@@ -118,10 +97,3 @@
         </profile>
     </profiles>
 </project>
-
-
-
-
-
-
-

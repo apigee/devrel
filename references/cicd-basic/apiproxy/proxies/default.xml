@@ -5,9 +5,11 @@
             <Step>
                 <Name>SpikeArrest</Name>
             </Step>
+            <Step>
+                <Name>VerifyAPIKey</Name>
+            </Step>
         </Request>
-        <Response>
-        </Response>
+        <Response/>
     </PreFlow>
     <Flows>
         <Flow name="View a personalized greeting">

@@ -22,19 +22,11 @@
 			],
 			"protocolProfileBehavior": {
 				"strictSSL": false,
-				"disabledSystemHeaders": {
-					"host": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "HOST",
-						"value": "{{DOMAIN}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "https://{{SERVER}}/mocktarget/v1/echo",
 					"protocol": "https",
@@ -70,19 +62,11 @@
 			],
 			"protocolProfileBehavior": {
 				"strictSSL": false,
-				"disabledSystemHeaders": {
-					"host": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "HOST",
-						"value": "{{DOMAIN}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "https://{{SERVER}}/mocktarget/v1/json",
 					"protocol": "https",
@@ -115,19 +99,11 @@
 			],
 			"protocolProfileBehavior": {
 				"strictSSL": false,
-				"disabledSystemHeaders": {
-					"host": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "HOST",
-						"value": "{{DOMAIN}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{ \"command\": \"greetings\" }",
@@ -172,19 +148,11 @@
 			],
 			"protocolProfileBehavior": {
 				"strictSSL": false,
-				"disabledSystemHeaders": {
-					"host": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "HOST",
-						"value": "{{DOMAIN}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "https://{{SERVER}}/mocktarget/v1/xml",
 					"protocol": "https",
@@ -199,6 +167,41 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{APIKEY}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-apikey",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
