@@ -374,6 +374,9 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
+  # patch ASM installer to allow for cloud build SA
+  sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
+
   cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
