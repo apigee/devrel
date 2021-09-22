@@ -374,12 +374,6 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  # patch ASM installer to work on OSX and Linux
-  # (sacrificing the YAML fix which we don't rely on at the moment)
-  sed -i -e '/handle_multi_yaml_bug$/s/^/#/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
-  # patch ASM installer to allow for cloud build SA
-  sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
-
   cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
@@ -389,23 +383,9 @@ spec:
     - name: istio-ingressgateway
       enabled: true
       k8s:
-        serviceAnnotations:
-          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
-          cloud.google.com/neg: '{"ingress": true}'
-          networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
           type: LoadBalancer
           loadBalancerIP: $INGRESS_IP
-          ports:
-          - name: status-port
-            port: 15021 # for ASM 1.7.x and above, else 15020
-            targetPort: 15021 # for ASM 1.7.x and above, else 15020
-          - name: http2
-            port: 80
-            targetPort: 8080
-          - name: https
-            port: 443
-            targetPort: 8443
 EOF
 
   rm -rf "$QUICKSTART_TOOLS"/istio-asm/install-out
