@@ -1,5 +1,5 @@
 # CICD-basic 
-Sample repo to demonstrate Apigee Continuous Integration and Continuous Deployment using GCP services.
+An easy to follow tutorial on Integration Apigee into you Continuous Integration and Continuous Deployment pipeline in GCP. 
 
 ## Prerequisites
  1. Select an existing Apigee X or Apigee Hybrid org with an env called *eval* or signup for an Apigee trial.
