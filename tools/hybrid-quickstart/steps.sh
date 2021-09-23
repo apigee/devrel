@@ -374,35 +374,19 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  # patch ASM installer to allow for cloud build SA
-  sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
-
-  cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-spec:
-  components:
-    ingressGateways:
-    - name: istio-ingressgateway
-      enabled: true
-      k8s:
-        service:
-          type: LoadBalancer
-          loadBalancerIP: $INGRESS_IP
-EOF
-
-  rm -rf "$QUICKSTART_TOOLS"/istio-asm/install-out
-  mkdir -p "$QUICKSTART_TOOLS"/istio-asm/install-out
-  ln -s "$QUICKSTART_TOOLS/kpt/kpt"  "$QUICKSTART_TOOLS"/istio-asm/install-out/kpt
-
   "$QUICKSTART_TOOLS"/istio-asm/install_asm \
     --project_id "$PROJECT_ID" \
     --cluster_name "$GKE_CLUSTER_NAME" \
     --cluster_location "$ZONE" \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
-    --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
-    --enable_all \
-    --mode install
+    --mode install \
+    --only_validate
+
+  (cd "$QUICKSTART_TOOLS"/istio-asm/install-out && ./istioctl install -y --set profile=asm-multicloud \
+ --set meshConfig.enableAutoMtls=false \
+ --set meshConfig.accessLogFile=/dev/stdout \
+ --set meshConfig.accessLogEncoding=1 \
+ --set meshConfig.accessLogFormat='{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}')
 
   echo "✅ ASM installed"
 }
@@ -577,6 +561,8 @@ install_runtime() {
     "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
+    echo -n "⏳ Waiting for Webhook endpoints"
+    wait_for_ready "0" "kubectl get endpoints apigee-webhook-service -n apigee-system -o=jsonpath='{.subsets[0]}' > /dev/null  2>&1; echo \$?" "webhook endpoints: created."
 
     "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
