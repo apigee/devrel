@@ -38,13 +38,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.6.0'
+    export APIGEE_CTL_VERSION='1.5.3'
     echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.2.0'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.9'
+    export ASM_VERSION='1.8'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
@@ -567,9 +567,6 @@ envs:
       runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-runtime.json"
 mart:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
-
-udca:
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
 
 connectAgent:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
