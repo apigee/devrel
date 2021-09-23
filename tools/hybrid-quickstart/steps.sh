@@ -27,7 +27,7 @@ set_config_params() {
     export REGION=${REGION:-'europe-west1'}
     gcloud config set compute/region "$REGION"
 
-    export ZONE=${ZONE:-'europe-west1-c'}
+    export ZONE=${ZONE:-'europe-west1-d'}
     gcloud config set compute/zone "$ZONE"
 
     printf "\n🔧 Apigee hybrid Configuration:\n"
@@ -570,6 +570,10 @@ install_runtime() {
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl apply: done."
+
+
+    echo -n "⏳ Waiting for Runtime Pods "
+    wait_for_ready "Running" "get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}'" "webhook endpoints: created."
 
     popd || return
 
