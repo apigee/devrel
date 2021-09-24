@@ -464,33 +464,35 @@ create_cert() {
 
   ENV_GROUP_NAME=$1
 
-  if [ "$CERT_TYPE" = "self-signed" ];then
-    echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
-    mkdir  -p "$HYBRID_HOME/certs"
-
-    CA_CERT_NAME="quickstart-ca"
-
-    # create CA cert if not exist
-    if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
-      echo "CA already exists! Reusing that one."
-    else
-      openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
-    fi
-
-    openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
-
-    openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
-
-    cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
-
-    kubectl create secret tls tls-hybrid-ingress \
-      --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
-      --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-      -n istio-system --dry-run -o yaml | kubectl apply -f -
-
-  elif [ "$CERT_TYPE" = "skip" ];then
+  if [ "$CERT_TYPE" = "skip" ];then
     return
+  fi
+
+  echo "🙈 Creating (temporary) self-signed cert - $ENV_GROUP_NAME"
+  mkdir  -p "$HYBRID_HOME/certs"
+
+  CA_CERT_NAME="quickstart-ca"
+
+  # create CA cert if not exist
+  if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
+    echo "CA already exists! Reusing that one."
   else
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+  fi
+
+  openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
+
+  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
+
+  cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
+
+  kubectl create secret tls tls-hybrid-ingress \
+    --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
+    --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
+    -n istio-system --dry-run -o yaml | kubectl apply -f -
+
+
+  if [ "$CERT_TYPE" != "self-signed" ];then
     echo "🔒 Creating let's encrypt cert - $ENV_GROUP_NAME"
     cat <<EOF | kubectl apply -f -
 apiVersion: cert-manager.io/v1
@@ -562,7 +564,7 @@ envs:
     serviceAccountPaths:
       synchronizer: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-synchronizer.json"
       udca: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
-      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-distributed-trace.json"
+      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-runtime.json"
 mart:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
@@ -637,7 +639,7 @@ deploy_example_proxy() {
   if [ "$CERT_TYPE" = "self-signed" ];then
    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   else
-    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything (use -k while Let's encrypt is issuing your cert)"
   fi
   echo "👋 To reach your API via the FQDN: Make sure you add a DNS record for your FQDN or an NS record for $DNS_NAME: $NAME_SERVER"
   echo "👋 During development you can also use --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP to resolve the hostname for your curl command"

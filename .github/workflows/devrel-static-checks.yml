@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: DevRel Linter Pipeline
+name: DevRel Static Checks Pipeline
 on:
   push:
   pull_request:
@@ -23,29 +23,45 @@ on:
   - cron: "0 0 * * *"
 jobs:
 
-  static-analysis:
-
-    name: Lint Codebase
+  license:
+    name: License Headers
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
-      - name: Check all files are licensed
+      - name: Check File License Headers
         uses: ./tools/pipeline-linter
         with:
           pipeline-action: check-license.sh
 
+  structure:
+    name: Repo Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Check README
+        uses: ./tools/pipeline-linter
+        with:
+          pipeline-action: check-readme.sh
+      - name: Check CODEOWNERS
+        uses: ./tools/pipeline-linter
+        with:
+          pipeline-action: check-codeowners.sh
+
+  superlinter:
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-
       - name: Install Linter dependencies
         run: npm install
-
-      - name: Run Super-Linter
+      - name: Run GitHub Super-Linter
         uses: docker://github/super-linter:v3.16.1
         env:
           DEFAULT_BRANCH: main
@@ -54,8 +70,3 @@ jobs:
           VALIDATE_GHERKIN: false
           VALIDATE_JSCPD: false
           LINTER_RULES_PATH: '.'
-
-      - name: Check README and CODEOWNER index
-        uses: ./tools/pipeline-linter
-        with:
-          pipeline-action: check-readme.sh
