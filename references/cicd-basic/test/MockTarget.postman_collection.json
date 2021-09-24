@@ -14,6 +14,13 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Echo method\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.method).to.eql(\"GET\");",
+							"});",
+							"pm.test(\"Content-Type is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.contain('application/json');",
 							"});"
 						],
 						"type": "text/javascript"
@@ -52,8 +59,8 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"Content-Type is present\", function () {",
-							"    pm.response.to.have.header(\"Content-Type\");",
+							"pm.test(\"Content-Type is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.contain('application/json');",
 							"});"
 						],
 						"type": "text/javascript"
@@ -91,6 +98,13 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Echo method\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.method).to.eql(\"POST\");",
+							"});",
+							"pm.test(\"Content-Type is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.contain('application/json');",
 							"});"
 						],
 						"type": "text/javascript"
@@ -138,9 +152,10 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"Content-Type is present\", function () {",
-							"    pm.response.to.have.header(\"Content-Type\");",
-							"});"
+							"pm.test(\"Content-Type is XML\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.contain('application/xml');",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -163,6 +178,304 @@
 						"mocktarget",
 						"v1",
 						"xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - no auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - invalid auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer notavalidtoken",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - empty auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - invalid auth query",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo?apikey=notavalidkey",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "notavalidkey"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - invalid auth key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "notavalidkey",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - http not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{SERVER}}/mocktarget/v1/echo",
+					"protocol": "http",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET echo - not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{SERVER}}/mocktarget/v1/echo2",
+					"protocol": "https",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"mocktarget",
+						"v1",
+						"echo2"
 					]
 				}
 			},
