@@ -22,25 +22,33 @@ SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 PROXY=example 
 VERSION=v1
 
+# default target server URL
+DEFAULT_TARGET_URL=https://httpbin.org/headers
+
+# default Virtual Host
+VHOST=secure
+
 # clean up
 rm -rf "$PROXY"-"$VERSION"
 
 # deploy all shared flows
 (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
 
-# set target server environment variables
-DEFAULT_TARGET_URL=https://httpbin.org/get
-export TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
+# set target URL that is used to configure a target server
+TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
-. "$SCRIPTPATH"/set-targetserver-envs.sh
+# generate proxy
+PROXY="$PROXY"
+VERSION="$VERSION" 
+VHOST="$VHOST" 
+
+# source the generate-proxy.sh script
+. "$SCRIPTPATH"/generate-proxy.sh
 
 # create target server if does not exist
 response=$(curl -X GET \
     -u "$APIGEE_USER":"$APIGEE_PASS" -H "Accept: application/json" -w "%{http_code}" \
     https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/environments/"$APIGEE_ENV"/targetservers/"$TARGET_SERVER_NAME")
-
-# generate proxy
-PROXY=$PROXY VERSION=$VERSION VHOST=secure TARGET_PATH="$TARGET_PATH" TARGET_SERVER_NAME="$TARGET_SERVER_NAME" sh ./generate-proxy.sh
 
 if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
     npm run deployTargetServer --prefix ./"$PROXY"-"$VERSION"

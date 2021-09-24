@@ -18,6 +18,11 @@ It also has the following features:
 - Includes BDD integration tests using `apickli`
 - Easily extensible by editing the `template-v1` proxy or `generate-proxy`
   script
+- Uses a TargetServer, which is deployed and whose properties (name, host,
+port, ssl enabled or not) are based on the environment variable `TARGET_URL`
+  - The path that is set in `TARGET_URL` is used to configure a conditional flow
+on the proxy template. This flow is used to test the TargetServer
+  - The default value of `TARGET_URL` is `https://httpbin.org/headers`
 
 ## Dependencies
 
@@ -27,20 +32,19 @@ It also has the following features:
 
 ## Quick start
 
-    # Set environment variables to create target server and target path
-    source ./set-targetserver-envs.sh
+    # Set APIGEE_XXX env variables
+    export APIGEE_ORG=xxx
+    export APIGEE_ENV=xxx
+    export APIGEE_USER=xxx
+    export APIGEE_PASS=xxx
 
     # Generate an API proxy based on proxy template
-    ./generate-proxy.sh
+    . ./generate-proxy.sh
 
     # Answer questions and note that ./xxx-vn/ has been created for you
 
     # To deploy and test
     cd ./xxx-vn
-    export APIGEE_ORG=xxx
-    export APIGEE_ENV=xxx
-    export APIGEE_USER=xxx
-    export APIGEE_PASS=xxx
     npm run deployTargetServer
     npm run deployProxy
     npm test
