@@ -14,7 +14,7 @@ The provided template uses Shared Flows for:
 
 It also has the following features:
 
-- Deploys on Apigee Edge, X or hybrid using `sackmesser`
+- Deploys on Apigee Edge, X or hybrid using `maven` or `sackmesser`
 - Includes BDD integration tests using `apickli`
 - Easily extensible by editing the `template-v1` proxy or `generate-proxy`
   script
