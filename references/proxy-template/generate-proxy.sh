@@ -19,7 +19,7 @@ set -e
 
 [ -z "$PROXY" ]     && printf "Proxy Name: "    && read -r PROXY
 [ -z "$VERSION" ]   && printf "Proxy Version: " && read -r VERSION
-[ -z "$VHOST" ]     && printf "Virtual Host: "  && read -r VHOST
+[ -z "$VHOST" ]     && printf "Virtual Host (Edge only): "  && read -r VHOST
 [ -z "$TARGET_URL" ] && printf "Target Server URL: "    && read -r TARGET_URL
 
 # Abort if directory exists
@@ -53,17 +53,19 @@ fi
 # based on the target server protocol, enable SSL or not
 if [ "$TARGET_PROTOCOL" = "https://" ]
 then
-    APIGEETOOL_DEPLOY_TARGETSERVER_SSLOPTION="--targetSSL true"
+    TARGET_SSL="true"
 else
-    APIGEETOOL_DEPLOY_TARGETSERVER_SSLOPTION=""
+    TARGET_SSL="false"
 fi
 
 # set target server name
 TARGET_SERVER_NAME="ts-$TARGET_HOST-$TARGET_PORT"
 
-# Copy template and replace variables
-
+# Copy proxy template and replace variables
 cp -r ./template-v1 ./"$PROXY"-"$VERSION"
+mv ./"$PROXY"-"$VERSION"/apiproxy/apigee-v1.xml ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml
+sed -i.bak "s|@ProxyName@|$PROXY|" ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml
+sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml
 sed -i.bak "s|@Basepath@|$PROXY|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
 sed -i.bak "s|@VirtualHost@|$VHOST|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml
 sed -i.bak "s|@Proxy@|$PROXY|" ./"$PROXY"-"$VERSION"/package.json
@@ -75,15 +77,58 @@ sed -i.bak "s|@ProxyPath@|$PROXY_PATH|" ./"$PROXY"-"$VERSION"/apiproxy/proxies/d
 sed -i.bak "s|@ProxyPath@|$PROXY_PATH|" ./"$PROXY"-"$VERSION"/test/features/TargetServer.feature
 sed -i.bak "s|@TargetServerName@|$TARGET_SERVER_NAME|" ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml
 
+if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
+
+    # create target server if does not exist
+    response=$(curl -X GET \
+        -u "$APIGEE_USER":"$APIGEE_PASS" -H "Accept: application/json" -w "%{http_code}" \
+        https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/environments/"$APIGEE_ENV"/targetservers/"$TARGET_SERVER_NAME")
+
+        if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
+
+            # Copy the target server's template file and replace variables
+            cp ./edge.template.json ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@ENV_NAME@/$APIGEE_ENV/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetSSL@/$TARGET_SSL/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetHost@/$TARGET_HOST/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetServerName@/$TARGET_SERVER_NAME/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetPort@/$TARGET_PORT/g" ./"$PROXY"-"$VERSION"/edge.json
+
+            rm ./"$PROXY"-"$VERSION"/edge.json.bak
+            echo "Complete TargetServer ($TARGET_SERVER_NAME) Generation for $PROXY-$VERSION"
+        fi
+fi
+
+if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
+
+    # get apigee token
+    APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+    # create target server if does not exist
+    response=$(curl -X GET \
+        -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -w "%{http_code}" \
+        https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/environments/"$APIGEE_X_ENV"/targetservers/"$TARGET_SERVER_NAME")
+
+        if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
+
+            # Copy the target server's template file and replace variables
+            cp ./edge.template.json ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetSSL@/$TARGET_SSL/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetHost@/$TARGET_HOST/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetServerName@/$TARGET_SERVER_NAME/g" ./"$PROXY"-"$VERSION"/edge.json
+            sed -i.bak "s/@TargetPort@/$TARGET_PORT/g" ./"$PROXY"-"$VERSION"/edge.json
+
+            rm ./"$PROXY"-"$VERSION"/edge.json.bak
+            echo "Complete TargetServer ($TARGET_SERVER_NAME) Generation for $PROXY-$VERSION"
+        fi
+fi
+
+rm ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml.bak
 rm ./"$PROXY"-"$VERSION"/apiproxy/proxies/default.xml.bak
 rm ./"$PROXY"-"$VERSION"/package.json.bak
 rm ./"$PROXY"-"$VERSION"/test/features/step_definitions/init.js.bak
 rm ./"$PROXY"-"$VERSION"/test/features/TargetServer.feature.bak
 rm ./"$PROXY"-"$VERSION"/apiproxy/targets/default.xml.bak
-
-export APIGEETOOL_DEPLOY_TARGETSERVER_SSLOPTION
-export TARGET_HOST
-export TARGET_PORT
-export TARGET_SERVER_NAME
 
 echo "Complete Proxy Generation for $PROXY-$VERSION"

@@ -14,7 +14,7 @@ The provided template uses Shared Flows for:
 
 It also has the following features:
 
-- Deploys with Node JS using `apigeetool`
+- Deploys on Apigee Edge, X or hybrid using `sackmesser`
 - Includes BDD integration tests using `apickli`
 - Easily extensible by editing the `template-v1` proxy or `generate-proxy`
   script
@@ -26,11 +26,39 @@ on the proxy template. This flow is used to test the TargetServer
 
 ## Dependencies
 
+- [Maven](https://maven.apache.org/)
 - [Common Shared Flows](../common-shared-flows)
 - [NodeJS](https://nodejs.org/en/) LTS version or above
 - Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Quick start
+
+### Deploy to Apigee X / hybrid
+
+    # Set APIGEE_X_YYY env variables
+    export APIGEE_X_ORG=xxx
+    export APIGEE_X_ENV=xxx
+    export APIGEE_X_HOSTNAME=api.example.com
+
+    ./generate-proxy.sh --googleapi
+
+    # Answer questions and note that ./xxx-vn/ has been created for you
+
+    # To deploy...
+    APIGEE_TOKEN=$(gcloud auth print-access-token)
+
+    sackmesser deploy --googleapi \
+    -o "$APIGEE_X_ORG" \
+    -e "$APIGEE_X_ENV" \
+    -t "$APIGEE_TOKEN" \
+    -h "$APIGEE_X_HOSTNAME" \
+    -d ./xxx-vn
+
+    # ...and test
+    cd ./xxx-vn
+    TEST_HOST="$APIGEE_X_HOSTNAME" npm test
+
+### Deploy to Apigee Edge
 
     # Set APIGEE_XXX env variables
     export APIGEE_ORG=xxx
@@ -39,12 +67,18 @@ on the proxy template. This flow is used to test the TargetServer
     export APIGEE_PASS=xxx
 
     # Generate an API proxy based on proxy template
-    . ./generate-proxy.sh
+    ./generate-proxy.sh --apigeeapi
 
     # Answer questions and note that ./xxx-vn/ has been created for you
 
-    # To deploy and test
+    # To deploy...
+    sackmesser deploy --apigeeapi \
+    -o "$APIGEE_ORG" \
+    -e "$APIGEE_ENV" \
+    -u "$APIGEE_USER" \
+    -p "$APIGEE_PASS" \
+    -d ./xxx-vn
+
+    # ...and test
     cd ./xxx-vn
-    npm run deployTargetServer
-    npm run deployProxy
-    npm test
+    TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test

@@ -14,9 +14,23 @@
 # limitations under the License.
 
 set -e
-set -x
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+
+if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
+    apiversion="--apigeeapi"
+    TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+elif [ -z "$1" ] || [ "$1" = "--googleapi" ];then
+    apiversion="--googleapi"
+    TEST_HOST="$APIGEE_X_HOSTNAME"
+fi
+
+if [ "$apiversion" = "--googleapi" ] || [ "$apiversion" = "--apigeeapi" ]; then
+  echo "[INFO] using API version $apiversion"
+else
+  echo "[FATAL] choose either --googleapi (for Apigee X or hybrid) or --apigeeapi (for Edge)"
+  exit 1
+fi
 
 # default proxy name and version
 PROXY=example 
@@ -32,30 +46,33 @@ VHOST=secure
 rm -rf "$PROXY"-"$VERSION"
 
 # deploy all shared flows
-(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all $apiversion)
 
 # set target URL that is used to configure a target server
 TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
-# generate proxy
-PROXY="$PROXY"
-VERSION="$VERSION" 
-VHOST="$VHOST" 
+# generate the proxy
+echo "[INFO] Creating Proxy template and Target Server configuration"
+PROXY="$PROXY" VERSION="$VERSION" VHOST="$VHOST" TARGET_URL="$TARGET_URL" "$SCRIPTPATH"/generate-proxy.sh $apiversion
 
-# source the generate-proxy.sh script
-. "$SCRIPTPATH"/generate-proxy.sh
+if [ "$apiversion" = "--apigeeapi" ];then
 
-# create target server if does not exist
-response=$(curl -X GET \
-    -u "$APIGEE_USER":"$APIGEE_PASS" -H "Accept: application/json" -w "%{http_code}" \
-    https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/environments/"$APIGEE_ENV"/targetservers/"$TARGET_SERVER_NAME")
+    echo "[INFO] Deploying Proxy template to Apigee API (For Edge)"
 
-if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
-    npm run deployTargetServer --prefix ./"$PROXY"-"$VERSION"
+    # deploy Apigee artifacts: proxy and target server
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 fi
 
-# deploy generated proxy
-npm run deployProxy --prefix ./"$PROXY"-"$VERSION"
+if [ "$apiversion" = "--googleapi" ];then
+
+    echo "[INFO] Deploying Proxy Template to Google API (For X/hybrid)"
+
+    # get apigee token
+    APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+    # deploy Apigee artifacts: proxy and target server
+    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
+fi
 
 # run tests
-npm test --prefix ./"$PROXY"-"$VERSION"
+TEST_HOST="$TEST_HOST" npm test --prefix ./"$PROXY"-"$VERSION"
