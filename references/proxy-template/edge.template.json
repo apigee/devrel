@@ -7,9 +7,9 @@
             "host": "@TargetHost@",
             "isEnabled": true,
             "name": "@TargetServerName@",
-            "port": @TargetPort@,
+            "port": "@TargetPort@",
             "sSLInfo": {
-              "enabled": @TargetSSL@,
+              "enabled": "@TargetSSL@",
               "ignoreValidationErrors": false
             }
           }
