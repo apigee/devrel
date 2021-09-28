@@ -53,14 +53,23 @@ TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
 # generate the proxy
 echo "[INFO] Creating Proxy template and Target Server configuration"
-PROXY="$PROXY" VERSION="$VERSION" VHOST="$VHOST" TARGET_URL="$TARGET_URL" "$SCRIPTPATH"/generate-proxy.sh $apiversion
+PROXY="$PROXY" \
+VERSION="$VERSION" \
+VHOST="$VHOST" \
+TARGET_URL="$TARGET_URL" \
+"$SCRIPTPATH"/generate-proxy.sh $apiversion
 
 if [ "$apiversion" = "--apigeeapi" ];then
 
     echo "[INFO] Deploying Proxy template to Apigee API (For Edge)"
 
     # deploy Apigee artifacts: proxy and target server
-    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
+    sackmesser deploy --apigeeapi \
+    -o "$APIGEE_ORG" \
+    -e "$APIGEE_ENV" \
+    -u "$APIGEE_USER" \
+    -p "$APIGEE_PASS" \
+    -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 fi
 
 if [ "$apiversion" = "--googleapi" ];then
@@ -71,7 +80,12 @@ if [ "$apiversion" = "--googleapi" ];then
     APIGEE_TOKEN=$(gcloud auth print-access-token);
 
     # deploy Apigee artifacts: proxy and target server
-    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
+    sackmesser deploy --googleapi \
+    -o "$APIGEE_X_ORG" \
+    -e "$APIGEE_X_ENV" \
+    -t "$APIGEE_TOKEN" \
+    -h "$APIGEE_X_HOSTNAME" \
+    -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 fi
 
 # run tests
