@@ -38,13 +38,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.5.3'
+    export APIGEE_CTL_VERSION='1.6.0'
     echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.2.0'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.8'
+    export ASM_VERSION='1.9'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
@@ -374,9 +374,6 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  # patch ASM installer to work on OSX and Linux
-  # (sacrificing the YAML fix which we don't rely on at the moment)
-  sed -i -e '/handle_multi_yaml_bug$/s/^/#/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
   # patch ASM installer to allow for cloud build SA
   sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
@@ -390,8 +387,6 @@ spec:
       enabled: true
       k8s:
         serviceAnnotations:
-          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
-          cloud.google.com/neg: '{"ingress": true}'
           networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
           type: LoadBalancer
@@ -400,9 +395,6 @@ spec:
           - name: status-port
             port: 15021 # for ASM 1.7.x and above, else 15020
             targetPort: 15021 # for ASM 1.7.x and above, else 15020
-          - name: http2
-            port: 80
-            targetPort: 8080
           - name: https
             port: 443
             targetPort: 8443
@@ -571,6 +563,9 @@ mart:
 connectAgent:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
+udca:
+  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
+
 metrics:
   enabled: true
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-metrics.json"
@@ -596,6 +591,9 @@ install_runtime() {
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl apply: done."
+
+    echo -n "⏳ Waiting for Runtime Pod Status \"Running\" "
+    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}'" "webhook endpoints: created."
 
     popd || return
 
