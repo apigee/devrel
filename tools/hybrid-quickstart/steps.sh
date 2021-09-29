@@ -100,6 +100,7 @@ function wait_for_ready(){
     local iterations=0
     local actual_out
 
+    echo -e "Waiting for $action to return output $expected_output"
     echo -e "Start: $(date)\n"
 
     while true; do
@@ -330,7 +331,8 @@ create_gke_cluster() {
 
     if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
       gcloud container clusters create "$GKE_CLUSTER_NAME" \
-        --zone "$ZONE" \
+        --region "$REGION" \
+        --node-locations "$ZONE" \
         --network default \
         --subnetwork default \
         --default-max-pods-per-node "110" \
@@ -343,7 +345,7 @@ create_gke_cluster() {
         --enable-stackdriver-kubernetes
     fi
 
-    gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --zone "$ZONE"
+    gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --region "$REGION"
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
@@ -407,7 +409,7 @@ EOF
   "$QUICKSTART_TOOLS"/istio-asm/install_asm \
     --project_id "$PROJECT_ID" \
     --cluster_name "$GKE_CLUSTER_NAME" \
-    --cluster_location "$ZONE" \
+    --cluster_location "$REGION" \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
     --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
     --enable_all \
@@ -586,14 +588,14 @@ install_runtime() {
     "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
+    wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
+    echo "waiting for 30s for the webhook certs to propagate" && sleep 30
 
     "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl apply: done."
-
-    echo -n "⏳ Waiting for Runtime Pod Status \"Running\" "
-    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}'" "webhook endpoints: created."
+    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Runtime: Running."
 
     popd || return
 
