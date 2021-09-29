@@ -32,6 +32,14 @@
         <Name>oidc.flow.callback.scope</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.scope</Ref>
     </AssignVariable>
+    <AssignVariable>
+        <Name>oidc.flow.callback.code_challenge</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.code_challenge</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>oidc.flow.callback.code_challenge_method</Name>
+        <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.code_challenge_method</Ref>
+    </AssignVariable>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <AssignTo createNew="false" type="request"/>
 </AssignMessage>

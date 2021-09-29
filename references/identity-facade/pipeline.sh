@@ -238,8 +238,46 @@ set_functional_test_env_var() {
     export TEST_APP_CONSUMER_KEY
     TEST_APP_CONSUMER_SECRET='xsecret'
     export TEST_APP_CONSUMER_SECRET
+    # pkce test variables. Challenge method is set to 'S256' (sha256)
+    TEST_APP_PKCE_CODE_CHALLENGE='hoLP4vNbBccHkhNAbk_jbyLhlGwgeoRyo53A-Luiirg'
+    export TEST_APP_PKCE_CODE_CHALLENGE
+    TEST_APP_PKCE_CODE_VERIFIER='iloveapis1234567890'
+    export TEST_APP_PKCE_CODE_VERIFIER
 }
 
+#################################
+### function: generate_az_url ###
+#################################
+generate_az_url() {
+    HOST=$1
+    BASE_PATH="/v1/oauth20"
+    AZ_URI="/authorize"
+    CLIENT_ID="?client_id="$2
+    RESPONSE_TYPE="&response_type=code"
+    SCOPE="&scope=openid email profile"
+    STATE="&state=abcd-1234"
+    REDIRECT_URI="&redirect_uri=https://httpbin.org/get"
+    CODE_CHALLENGE_METHOD="&code_challenge_method=S256"
+    CODE_CHALLENGE="&code_challenge="$3
+    
+    printf "\n"
+    printf "##########################\n"
+    printf "#### Authorization URL ###\n"
+    printf "##########################\n"
+    printf "You can copy/paste the following authorization URL into your Web browser to initiate the OIDC flow:\n"
+    printf "https://"%s%s%s%s%s%s%s%s%s%s \
+                    "$HOST" \
+                    "$BASE_PATH" \
+                    "$AZ_URI" \
+                    "$CLIENT_ID" \
+                    "$RESPONSE_TYPE" \
+                    "$SCOPE" \
+                    "$STATE" \
+                    "$REDIRECT_URI" \
+                    "$CODE_CHALLENGE_METHOD" \
+                    "$CODE_CHALLENGE"
+    printf "\n\n"
+}
 
 # generate a timestamp to make some values unique
 timestamp=$(date '+%s')
@@ -283,8 +321,11 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
         (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
+
+    # generate authorization URL
+    generate_az_url "$APIGEE_ORG-$APIGEE_ENV.apigee.net" "$TEST_APP_CONSUMER_KEY" "$TEST_APP_PKCE_CODE_CHALLENGE"
 fi
 
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
@@ -326,6 +367,9 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
         (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
+
+    # generate authorization URL
+    generate_az_url "$APIGEE_X_HOSTNAME" "$TEST_APP_CONSUMER_KEY" "$TEST_APP_PKCE_CODE_CHALLENGE"
 fi

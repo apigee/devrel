@@ -5,6 +5,11 @@ Identity Provider (IdP).
 The aim of the identity facade is to deal with all the interactions between a
 client app and an IdP and to generate an OAuth 2.0 access token that
 can be used by the client app to access protected resources through Apigee.
+
+The identity facade proxy implements [Proof Key for Code Exchange](https://datatracker.ietf.org/doc/html/rfc7636)
+(PKCE) to mitigate against authorization code interception attack.
+The PKCE code challenge method used in the identity facade reference is set to `S256`.
+
 This reference promotes a clear **separation of concerns** between Apigee and
 the IdP.
 
@@ -64,7 +69,10 @@ the IdP. This cache is scoped at env level.
 
 On the machine and directory from where the script is executed, you can find
 a `edge.json` file, which contains the configuration of all these
-elements
+elements.
+
+Finally, the pipeline script provides the authorization URL that you can
+copy/paste into your favorite web browser to initiate the OIDC flow.
 
 ## Identity Facade Sequence Diagram
 

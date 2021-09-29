@@ -42,6 +42,14 @@
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
                 <Step>
+                    <Condition>( oidc.flow.authorize.code_challenge Is null ) or ( oidc.flow.authorize.code_challenge = "" )</Condition>
+                    <Name>RF-InvalidRequest-Redirect</Name>
+                </Step>
+                <Step>
+                    <Condition>( oidc.flow.authorize.code_challenge_method != "S256" )</Condition>
+                    <Name>RF-InvalidRequest-Redirect</Name>
+                </Step>
+                <Step>
                     <Name>KVM-IdpParameters</Name>
                 </Step>
                 <Step>
@@ -112,14 +120,25 @@
                     <Name>RF-UnsupportedGrantType</Name>
                 </Step>
                 <Step>
-                <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
+                    <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
+                    <Name>RF-InvalidGrant</Name>
+                </Step>
+                <Step>
+                    <Condition>( request.formparam.code_verifier Is null ) or ( request.formparam.code_verifier = "" )</Condition>
+                    <Name>RF-InvalidGrant</Name>
+                </Step>
+                <Step>
+                    <Name>OA2-GetOriginalStateAttributes</Name>
+                </Step>
+                <Step>
+                    <Name>JS-PKCECodeVerification</Name>
+                </Step>
+                <Step>
+                    <Condition>( oidc.flow.isPKCECodeVerified == false )</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
                     <Name>KVM-IdpParameters</Name>
-                </Step>
-                <Step>
-                    <Name>OA2-GetOriginalStateAttributes</Name>
                 </Step>
                 <Step>
                     <Name>AM-SanitizeRequest</Name>
