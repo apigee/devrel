@@ -23,7 +23,6 @@ set_config_params
 
 echo "🗑️ Delete Apigee hybrid cluster"
 
-gcloud container hub memberships unregister "$GKE_CLUSTER_NAME" --gke-cluster="${REGION}/${GKE_CLUSTER_NAME}"
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME" --region "$REGION"
 
 for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
