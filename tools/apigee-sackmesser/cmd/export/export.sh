@@ -58,46 +58,74 @@ sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while re
     rm "$export_folder/proxies/$proxy/bundle.zip"
 done
 
+loginfo "Org Export to: $export_folder/orgConfig/resources/edge/org"
+mkdir -p "$export_folder/orgConfig/resources/edge/org"
+
+mkdir -p "$export_folder/temp/developers"
+mkdir -p "$export_folder/temp/apps"
+
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do
     loginfo "download developer: $email"
-    mkdir -p "$export_folder/developers"
-    sackmesser list "organizations/$organization/developers/$email" > "$export_folder"/developers/"$email".json
+    sackmesser list "organizations/$organization/developers/$email" > "$export_folder/temp/developers/$email".json
+    mkdir -p "$export_folder/temp/developerApps/$email"
     sackmesser list "organizations/$organization/developers/$email/apps" | jq -r -c '.[]|.' | while read -r appId; do
         loginfo "download developer app: $appId for developer: $email"
-        mkdir -p "$export_folder/developerApps/$email"
-        sackmesser list "organizations/$organization/developers/$email/apps/$(urlencode "$appId")" > "$export_folder"/developerApps/"$email"/"$appId".json
+        sackmesser list "organizations/$organization/developers/$email/apps/$(urlencode "$appId")" > "$export_folder/temp/developerApps/$email/$appId".json
     done
+
+    if ls "$export_folder/temp/developerApps/$email"/*.json 1> /dev/null 2>&1; then
+        jq -n "{ \"$email\": [inputs] }" "$export_folder/temp/developerApps/$email"/*.json > "$export_folder/temp/apps/$email.json"
+    else
+        loginfo "No Apps for Developer: $email"
+    fi
 done
 
+
+jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/orgConfig/resources/edge/org/developers.json"
+jq -n '[inputs]' "$export_folder/temp/apps"/*.json > "$export_folder/orgConfig/resources/edge/org/apps.json"
+
+
+mkdir -p "$export_folder/temp/apiproducts"
 sackmesser list "organizations/$organization/apiproducts" | jq -r -c '.[]|.' | while read -r product; do
     loginfo "download API product: $product"
-    mkdir -p "$export_folder/apiproducts"
-    sackmesser list "organizations/$organization/apiproducts/$(urlencode "$product")" > "$export_folder"/apiproducts/"$product".json
+    sackmesser list "organizations/$organization/apiproducts/$(urlencode "$product")" > "$export_folder/temp/apiproducts/$product".json
 done
+jq -n '[inputs]' "$export_folder/temp/apiproducts"/*.json > "$export_folder/orgConfig/resources/edge/org/apiProducts.json"
 
-sackmesser list "organizations/$organization/keyvaluemaps" > "$export_folder"/kvms.json
+
+sackmesser list "organizations/$organization/keyvaluemaps" > "$export_folder"/orgConfig/resources/edge/org/kvms.json
 
 sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | while read -r env; do
-    mkdir -p "$export_folder"/environments/"$env"/flowhooks
+
+    loginfo "Env Export to: $export_folder/orgConfig/resources/edge/env/$env"
+    mkdir -p "$export_folder/orgConfig/resources/edge/env/$env"
+
+    mkdir -p "$export_folder/temp/$env"/flowhooks
     sackmesser list "organizations/$organization/environments/$env/flowhooks" | jq -r -c '.[]|.' | while read -r fh; do
-        sackmesser list "organizations/$organization/environments/$env/flowhooks/$fh" | jq '.' > "$export_folder"/environments/"$env"/flowhooks/"$fh".json
+        sackmesser list "organizations/$organization/environments/$env/flowhooks/$fh" | jq '.' > "$export_folder/temp/$env/flowhooks/$fh".json
     done
+    jq -n '[inputs]' "$export_folder/temp/$env/flowhooks/"/*.json > "$export_folder/orgConfig/resources/edge/env/$env/flowhooks.json"
 
-    sackmesser list "organizations/$organization/environments/$env/keyvaluemaps" > "$export_folder"/environments/"$env"/kvms.json
+    sackmesser list "organizations/$organization/environments/$env/keyvaluemaps" > "$export_folder/orgConfig/resources/edge/env/$env"/kvms.json
 
-    mkdir -p "$export_folder"/environments/"$env"/targetservers
+    mkdir -p "$export_folder/temp/$env"/targetservers
     sackmesser list "organizations/$organization/environments/$env/targetservers" | jq -r -c '.[]|.' | while read -r targetserver; do
-        sackmesser list "organizations/$organization/environments/$env/targetservers/$(urlencode "$targetserver")" | jq '.' > "$export_folder"/environments/"$env"/targetservers/"${targetserver/ /-}".json
+        sackmesser list "organizations/$organization/environments/$env/targetservers/$(urlencode "$targetserver")" | jq '.' > "$export_folder/temp/$env/targetservers/${targetserver/ /-}".json
     done
+    jq -n '[inputs]' "$export_folder/temp/$env/targetservers/"/*.json > "$export_folder/orgConfig/resources/edge/env/$env/targetservers.json"
 
-    mkdir -p "$export_folder"/environments/"$env"/keystores
+
+    mkdir -p "$export_folder/temp/$env"/keystores
+    mkdir -p "$export_folder/temp/$env"/aliases
     sackmesser list "organizations/$organization/environments/$env/keystores" | jq -r -c '.[]|.' | while read -r keystore; do
-        keystore_folder="$export_folder"/environments/"$env"/keystores/"${keystore/ /-}"
-        mkdir -p "$keystore_folder"
         keystore_uri="organizations/$organization/environments/$env/keystores/$(urlencode "$keystore")"
-        sackmesser list "$keystore_uri" | jq '.' > "$keystore_folder"/keystore.json
+        sackmesser list "$keystore_uri" | jq '.' >  "$export_folder/temp/$env/keystores/${keystore/ /-}".json
         sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
-            sackmesser list "$keystore_uri/aliases/$alias" > "$keystore_folder"/"$alias".json
+            sackmesser list "$keystore_uri/aliases/$alias" > "$export_folder/temp/$env/aliases/$alias".json
         done
     done
+    jq -n '[inputs]' "$export_folder/temp/$env/keystores/"/*.json > "$export_folder/orgConfig/resources/edge/env/$env/keystores.json"
+    jq -n '[inputs]' "$export_folder/temp/$env/aliases/"/*.json > "$export_folder/orgConfig/resources/edge/env/$env/aliases.json"
 done
+
+loginfo "Export Done: see $export_folder"

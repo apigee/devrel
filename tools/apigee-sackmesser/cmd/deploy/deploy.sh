@@ -58,7 +58,9 @@ else
     loginfo "using local directory: $source_dir"
     [ -d "$source_dir/apiproxy" ] && cp -r "$source_dir/apiproxy" "$temp_folder/apiproxy"
     [ -d "$source_dir/sharedflowbundle" ] && cp -r "$source_dir/sharedflowbundle" "$temp_folder/sharedflowbundle"
+    [ -d "$source_dir/resources" ] && cp -r "$source_dir/resources" "$temp_folder/resources"
     [ -e "$source_dir/edge.json" ] && cp "$source_dir/edge.json" "$temp_folder/"
+    [ -e "$source_dir/config.json" ] && cp "$source_dir/config.json" "$temp_folder/"
 fi
 
 # Config Deployment
