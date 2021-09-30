@@ -7,8 +7,6 @@
     "test": "test"
   },
   "scripts": {
-    "deployTargetServer": "npm i && npx apigeetool createTargetServer --targetServerName $TARGET_SERVER_NAME -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG -e $APIGEE_ENV --targetHost $TARGET_HOST --targetPort $TARGET_PORT $APIGEETOOL_DEPLOY_TARGETSERVER_SSLOPTION -V",
-    "deployProxy": "npm i && npx apigeetool deployproxy -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG -e $APIGEE_ENV -n $npm_package_name -V",
     "test": "npm i && npx cucumber-js test"
   },
   "dependencies": {

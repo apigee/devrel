@@ -29,7 +29,6 @@ on the proxy template. This flow is used to test the TargetServer
 - [Maven](https://maven.apache.org/)
 - [Common Shared Flows](../common-shared-flows)
 - [NodeJS](https://nodejs.org/en/) LTS version or above
-- Apigee Evaluation [Organization](https://login.apigee.com/sign__up)
 
 ## Quick start
 
