@@ -34,7 +34,7 @@ if [ "$apiversion" = "google" ]; then
         *sharedflows) jq_pattern='[.sharedFlows[]?|.name]';;
         *apps) jq_pattern='[.app[]?|.appId]';;
         *apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
-        *keyvaluemaps/*) echo "{\"name\":\"$(echo $api_path | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+        *keyvaluemaps/*) echo "{\"name\":\"$(echo "$api_path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
     esac
 fi
 
