@@ -66,44 +66,59 @@ fi
 # Config Deployment
 if [ -f "$temp_folder"/edge.json ]; then
     loginfo "Preparing config $temp_folder/edge.json"
+    export config_action='update'
+    export config_file_path="$temp_folder"/edge.json
+    kvms=$(jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json)
+fi
 
-    config_action='update'
+if [ -d "$temp_folder"/resources/edge ]; then
+    loginfo "Preparing config dir $temp_folder/resources/edge"
+    export config_action='update'
+    export config_dir_path="$temp_folder"/resources/edge
 
-    if [ "$apiversion" = "google" ]; then
-
-        jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json | while read -r line; do
-            kvm=$(echo "$line" | jq -c 'del(.entry)')
-            kvmname=$(echo "$kvm" | jq -r '.name')
-            loginfo "X/hybrid patch: adding kvm: $kvmname"
-            curl -X POST --fail "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keyvaluemaps" \
-                -H "Authorization: Bearer $token" \
-                -H "Content-Type: application/json" \
-                --data "$kvm" || logwarn "failed to create KVM. Assuming it already exists"
-
-            KVM_ADMIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/apis/kvm-admin-v1/deployments")
-
-            loginfo "kvm admin status $KVM_ADMIN_STATUS"
-
-            if [ "$KVM_ADMIN_STATUS" != "200" ];then
-                loginfo "creating kvm admin proxy"
-                "$SCRIPT_FOLDER/../../bin/sackmesser" deploy --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
-                    -o "$organization" -e "$environment"
-            fi
-
-            echo "$line" | jq -c  '.entry[]? | .' | while read -r kvmentry; do
-                kvmentry=$(echo "$kvmentry" | jq '.["key"]=.name | del(.name)')
-                loginfo "adding entry: $(echo "$kvmentry" | jq '.key')"
-                curl -s -X POST -k --fail "https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname/entries" \
-                    -H "Authorization: Bearer $token" \
-                    -H "Content-Type: application/json" \
-                    --data "$kvmentry" > /dev/null || ( logfatal "failed to add entry to KVM: https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" && exit 1 )
-            done
-        done
+    if [ -f "$temp_folder/resources/edge/env/$environment"/kvms.json ]; then
+        kvms=$(jq -c '.[] | .' < "$temp_folder/resources/edge/env/$environment"/kvms.json)
     fi
 fi
 
+if [ "$apiversion" = "google" ] && [ -n "$kvms" ]; then
+    echo "$kvms" | while read -r line; do
+        echo ">>>>>>>> $line"
+        kvm=$(echo "$line" | jq -c 'del(.entry)')
+        kvmname=$(echo "$kvm" | jq -r '.name')
+        loginfo "X/hybrid patch: adding kvm: $kvmname"
+        curl -X POST --fail "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keyvaluemaps" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            --data "$kvm" || logwarn "failed to create KVM. Assuming it already exists"
+
+        KVM_ADMIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/apis/kvm-admin-v1/deployments")
+
+        loginfo "kvm admin status $KVM_ADMIN_STATUS"
+
+        if [ "$KVM_ADMIN_STATUS" != "200" ];then
+            loginfo "creating kvm admin proxy"
+            "$SCRIPT_FOLDER/../../bin/sackmesser" deploy --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
+                -o "$organization" -e "$environment"
+        fi
+
+        echo "$line" | jq -c  '.entry[]? | .' | while read -r kvmentry; do
+            kvmentry=$(echo "$kvmentry" | jq '.["key"]=.name | del(.name)')
+            loginfo "adding entry: $(echo "$kvmentry" | jq '.key')"
+            curl -s -X POST -k --fail "https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname/entries" \
+                -H "Authorization: Bearer $token" \
+                -H "Content-Type: application/json" \
+                --data "$kvmentry" > /dev/null || ( logfatal "failed to add entry to KVM: https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" && exit 1 )
+        done
+    done
+fi
+
+skip_deployment=true #skip maven deploy unless bundle contains proxy or shared flow
+
 if [ -d "$temp_folder/apiproxy" ]; then
     loginfo "Configuring API Proxy"
+
+    skip_deployment=false
 
     # Determine Proxy name
     name_in_bundle="$(xmllint --xpath 'string(//APIProxy/@name)' "$temp_folder"/apiproxy/*.xml)"
@@ -125,6 +140,8 @@ if [ -d "$temp_folder/apiproxy" ]; then
     fi
 elif [ -d "$temp_folder/sharedflowbundle" ]; then
     loginfo "Configuring Shared Flow Bundle"
+
+    skip_deployment=false
 
     api_type="sharedflow"
 
@@ -154,7 +171,10 @@ if [ "$apiversion" = "google" ]; then
         -Dhosturi="$baseuri" \
         -Dproxy.name="$bundle_name" \
         -Dtoken="$token" \
+        -Dapigee.deploy.skip="$skip_deployment" \
         -Dapigee.options="${deploy_options:-override}" \
+        -Dapigee.config.file="$config_file_path" \
+        -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}" \
         -Dapigee.depoloyment.sa="${deployment_sa}")
 elif [ "$apiversion" = "apigee" ]; then
@@ -169,6 +189,9 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dproxy.name="$bundle_name" \
         -Dtoken="$token" \
         -Dmfa="$mfa" \
+        -Dapigee.deploy.skip="$skip_deployment" \
         -Dapigee.options="${deploy_options:-override}" \
+        -Dapigee.config.file="$config_file_path" \
+        -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}")
 fi

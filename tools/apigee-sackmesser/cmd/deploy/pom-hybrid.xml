@@ -54,6 +54,7 @@ limitations under the License.
 		<apigee.env>${env}</apigee.env>
 		<apigee.plugin.version>2.1.2</apigee.plugin.version>
 		<apigee.config-plugin.version>2.1.1</apigee.config-plugin.version>
+		<apigee.deploy.skip>false</apigee.deploy.skip>
 		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer>
 		<apigee.apitype>${apitype}</apigee.apitype>
@@ -191,6 +192,9 @@ limitations under the License.
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
 				<version>${apigee.plugin.version}</version>
+				<configuration>
+					<skip>${apigee.deploy.skip}</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<id>configure-bundle-step</id>

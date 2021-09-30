@@ -21,20 +21,21 @@ set -e
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
-path="$1"
+api_path="$1"
 
-logdebug "Sackmesser list $path"
+logdebug "Sackmesser list $api_path"
 
 jq_pattern='.'
 
 if [ "$apiversion" = "google" ]; then
-    case "$path" in
+    case "$api_path" in
         *developers) jq_pattern='[.developer[]?|.email]';;
         *apis) jq_pattern='[.proxies[]?|.name]';;
         *sharedflows) jq_pattern='[.sharedFlows[]?|.name]';;
         *apps) jq_pattern='[.app[]?|.appId]';;
         *apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
+        *keyvaluemaps/*) echo "{\"name\":\"$(echo $api_path | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
     esac
 fi
 
-curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$path" | jq "$jq_pattern"
+curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$api_path" | jq "$jq_pattern"
