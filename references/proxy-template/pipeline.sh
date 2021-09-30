@@ -20,7 +20,9 @@ SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     apiversion="--apigeeapi"
     TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
-elif [ -z "$1" ] || [ "$1" = "--googleapi" ];then
+fi
+
+if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     apiversion="--googleapi"
     TEST_HOST="$APIGEE_X_HOSTNAME"
 fi
