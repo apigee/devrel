@@ -124,7 +124,7 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
     sackmesser list "organizations/$organization/environments/$env/flowhooks" | jq -r -c '.[]|.' | while read -r fh; do
         sackmesser list "organizations/$organization/environments/$env/flowhooks/$fh" > "$export_folder/temp/$env/flowhooks/$fh".json
     done
-    jq -n '[inputs]' "$export_folder/temp/$env/flowhooks"/*.json > "$export_folder/config/resources/edge/env/$env/flowhooks.json"
+    jq -n '[inputs] | . | map(select(.sharedFlow))' "$export_folder/temp/$env/flowhooks"/*.json > "$export_folder/config/resources/edge/env/$env/flowhooks.json"
 
     mkdir -p "$export_folder/temp/$env"/keyvaluemaps
     sackmesser list "organizations/$organization/environments/$env/keyvaluemaps"| jq -r -c '.[]|.' | while read -r kvmname; do
@@ -150,11 +150,19 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
         keystore_uri="organizations/$organization/environments/$env/keystores/$(urlencode "$keystore")"
         sackmesser list "$keystore_uri" | jq '.' >  "$export_folder/temp/$env/keystores/${keystore/ /-}".json
         sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
+            logwarn "Found alias $alias. Aliases need cannot be exported."
+            logwarn "You need to update your alias export manually in $export_folder/config/resources/edge/env/$env/aliases.json"
             sackmesser list "$keystore_uri/aliases/$alias" > "$export_folder/temp/$env/aliases/$alias".json
         done
     done
-    jq -n '[inputs]' "$export_folder/temp/$env/keystores"/*.json > "$export_folder/config/resources/edge/env/$env/keystores.json"
-    jq -n '[inputs]' "$export_folder/temp/$env/aliases"/*.json > "$export_folder/config/resources/edge/env/$env/aliases.json"
+
+    if ls "$export_folder/temp/$env/keystores"/*.json 1> /dev/null 2>&1; then
+        jq -n '[inputs]' "$export_folder/temp/$env/keystores"/*.json > "$export_folder/config/resources/edge/env/$env/keystores.json"
+    fi
+
+    if ls "$export_folder/temp/$env/aliases"/*.json 1> /dev/null 2>&1; then
+        jq -n '[inputs]' "$export_folder/temp/$env/aliases"/*.json > "$export_folder/config/resources/edge/env/$env/aliases.json"
+    fi
 done
 
 loginfo "Export done - see: $export_folder"

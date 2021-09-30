@@ -201,7 +201,7 @@ if [ "$apiversion" = "google" ]; then
     if [ -f "$temp_folder"/resources/edge/org/importKeys.json ];then
         jq -c 'to_entries[]' "$temp_folder"/resources/edge/org/importKeys.json | while read -r devcredentials; do
             developer=$(echo $devcredentials | jq -r '.key')
-            echo $devcredentials | jq -c '.value[]' | while read -r credential; do
+            echo $devcredentials | jq -c '.value[]?' | while read -r credential; do
                 app=$(echo $credential | jq -r '.name')
                 loginfo "Adding Credential for Developer $developer and App $app"
                 creation_request=$(echo $credential | jq 'del(.name) | del(.apiProducts)')
@@ -212,7 +212,7 @@ if [ "$apiversion" = "google" ]; then
 
                 key=$(echo $credential | jq -r '.consumerKey')
                 update_request=$(echo $credential | jq '{apiProducts: [.apiProducts[] | .apiproduct]}')
-                curl -X -s POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
+                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
                     -H "Authorization: Bearer $token" \
                     -H "Content-Type: application/json" \
                     --data "$update_request"
