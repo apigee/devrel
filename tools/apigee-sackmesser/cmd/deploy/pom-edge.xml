@@ -221,6 +221,13 @@ limitations under the License.
                             <goal>flowhooks</goal>
                         </goals>
                     </execution>
+					<execution>
+                        <id>import-keys</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>importKeys</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 

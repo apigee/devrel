@@ -83,7 +83,6 @@ fi
 
 if [ "$apiversion" = "google" ] && [ -n "$kvms" ]; then
     echo "$kvms" | while read -r line; do
-        echo ">>>>>>>> $line"
         kvm=$(echo "$line" | jq -c 'del(.entry)')
         kvmname=$(echo "$kvm" | jq -r '.name')
         loginfo "X/hybrid patch: adding kvm: $kvmname"
@@ -194,4 +193,30 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dapigee.config.file="$config_file_path" \
         -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}")
+fi
+
+# patching mvn plugin features
+if [ "$apiversion" = "google" ]; then
+    # https://github.com/apigee/apigee-config-maven-plugin/issues/134
+    if [ -f "$temp_folder"/resources/edge/org/importKeys.json ];then
+        jq -c 'to_entries[]' "$temp_folder"/resources/edge/org/importKeys.json | while read -r devcredentials; do
+            developer=$(echo $devcredentials | jq -r '.key')
+            echo $devcredentials | jq -c '.value[]' | while read -r credential; do
+                app=$(echo $credential | jq -r '.name')
+                loginfo "Adding Credential for Developer $developer and App $app"
+                creation_request=$(echo $credential | jq 'del(.name) | del(.apiProducts)')
+                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys" \
+                    -H "Authorization: Bearer $token" \
+                    -H "Content-Type: application/json" \
+                    --data "$creation_request"
+
+                key=$(echo $credential | jq -r '.consumerKey')
+                update_request=$(echo $credential | jq '{apiProducts: [.apiProducts[] | .apiproduct]}')
+                curl -X -s POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
+                    -H "Authorization: Bearer $token" \
+                    -H "Content-Type: application/json" \
+                    --data "$update_request"
+            done
+        done
+    fi
 fi

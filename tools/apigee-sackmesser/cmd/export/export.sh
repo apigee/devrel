@@ -63,14 +63,21 @@ mkdir -p "$export_folder/config/resources/edge/org"
 
 mkdir -p "$export_folder/temp/developers"
 mkdir -p "$export_folder/temp/apps"
+mkdir -p "$export_folder/temp/importKeys"
 
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do
     loginfo "download developer: $email"
     sackmesser list "organizations/$organization/developers/$email" > "$export_folder/temp/developers/$email".json
     mkdir -p "$export_folder/temp/developerApps/$email"
+    mkdir -p "$export_folder/temp/importKeys/$email"
     sackmesser list "organizations/$organization/developers/$email/apps" | jq -r -c '.[]|.' | while read -r appId; do
         loginfo "download developer app: $appId for developer: $email"
-        sackmesser list "organizations/$organization/developers/$email/apps/$(urlencode "$appId")" > "$export_folder/temp/developerApps/$email/$appId".json
+        full_app=$(sackmesser list "organizations/$organization/developers/$email/apps/$(urlencode "$appId")")
+        echo "$full_app" | jq 'del(.credentials)' > "$export_folder/temp/developerApps/$email/$appId".json
+        echo "$full_app" | jq -r -c '.credentials[]' | while read -r credential; do
+            appkey=$(echo "$credential" | jq -r '.consumerKey')
+            echo "$credential" | jq  --arg APP_NAME "$appId" '. + { name: $APP_NAME }' > "$export_folder/temp/importKeys/$email/$appkey.json"
+        done
     done
 
     if ls "$export_folder/temp/developerApps/$email"/*.json 1> /dev/null 2>&1; then
@@ -79,10 +86,18 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
         echo "{ \"$email\": [] }" > "$export_folder/temp/apps/$email.json"
         loginfo "No Apps for Developer: $email"
     fi
+
+    if ls "$export_folder/temp/importKeys/$email"/*.json 1> /dev/null 2>&1; then
+        jq -n "{ \"$email\": [inputs] }" "$export_folder/temp/importKeys/$email"/*.json > "$export_folder/temp/importKeys/$email.json"
+    else
+        echo "{ \"$email\": [] }" > "$export_folder/temp/importKeys/$email.json"
+        loginfo "No App Keys for Developer: $email"
+    fi
 done
 
 jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
 jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
+jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
 
 mkdir -p "$export_folder/temp/apiproducts"
 sackmesser list "organizations/$organization/apiproducts" | jq -r -c '.[]|.' | while read -r product; do
