@@ -78,7 +78,7 @@ Feature:
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | redirect_uri| https://httpbin.org/get |
-      | codeVerifier        | `codeVerifier`  |
+      | code_verifier        | `codeVerifier`  |
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be invalid_grant
