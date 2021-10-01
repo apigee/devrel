@@ -17,23 +17,6 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
-    apiversion="--apigeeapi"
-    TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
-fi
-
-if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
-    apiversion="--googleapi"
-    TEST_HOST="$APIGEE_X_HOSTNAME"
-fi
-
-if [ "$apiversion" = "--googleapi" ] || [ "$apiversion" = "--apigeeapi" ]; then
-  echo "[INFO] using API version $apiversion"
-else
-  echo "[FATAL] choose either --googleapi (for Apigee X or hybrid) or --apigeeapi (for Edge)"
-  exit 1
-fi
-
 # default proxy name and version
 PROXY=example 
 VERSION=v1
@@ -47,21 +30,22 @@ VHOST=secure
 # clean up
 rm -rf "$PROXY"-"$VERSION"
 
-# deploy all shared flows
-(cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all $apiversion)
-
 # set target URL that is used to configure a target server
 TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
-# generate the proxy
-echo "[INFO] Creating Proxy template and Target Server configuration"
-PROXY="$PROXY" \
-VERSION="$VERSION" \
-VHOST="$VHOST" \
-TARGET_URL="$TARGET_URL" \
-"$SCRIPTPATH"/generate-proxy.sh $apiversion
+if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
-if [ "$apiversion" = "--apigeeapi" ];then
+    # deploy all common shared flows
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+
+    # generate the proxy configuration
+    echo "[INFO] Creating Proxy template and Target Server configuration"
+
+    PROXY="$PROXY" \
+    VERSION="$VERSION" \
+    VHOST="$VHOST" \
+    TARGET_URL="$TARGET_URL" \
+    "$SCRIPTPATH"/generate-proxy.sh --apigeeapi
 
     echo "[INFO] Deploying Proxy template to Apigee API (For Edge)"
 
@@ -72,9 +56,24 @@ if [ "$apiversion" = "--apigeeapi" ];then
     -u "$APIGEE_USER" \
     -p "$APIGEE_PASS" \
     -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
+
+    # run tests
+    TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test --prefix ./"$PROXY"-"$VERSION"
 fi
 
-if [ "$apiversion" = "--googleapi" ];then
+if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
+
+    # deploy all common shared flows
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi)
+
+    # generate the proxy configuration
+    echo "[INFO] Creating Proxy template and Target Server configuration"
+    
+    PROXY="$PROXY" \
+    VERSION="$VERSION" \
+    VHOST="$VHOST" \
+    TARGET_URL="$TARGET_URL" \
+    "$SCRIPTPATH"/generate-proxy.sh --googleapi
 
     echo "[INFO] Deploying Proxy Template to Google API (For X/hybrid)"
 
@@ -88,7 +87,7 @@ if [ "$apiversion" = "--googleapi" ];then
     -t "$APIGEE_TOKEN" \
     -h "$APIGEE_X_HOSTNAME" \
     -d "$SCRIPTPATH"/"$PROXY"-"$VERSION"
-fi
 
-# run tests
-TEST_HOST="$TEST_HOST" npm test --prefix ./"$PROXY"-"$VERSION"
+    # run tests
+    TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix ./"$PROXY"-"$VERSION"
+fi
