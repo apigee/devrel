@@ -27,9 +27,6 @@ DEFAULT_TARGET_URL=https://httpbin.org/headers
 # default Virtual Host
 VHOST=secure
 
-# clean up
-rm -rf "$PROXY"-"$VERSION"
-
 # set target URL that is used to configure a target server
 TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 
@@ -37,6 +34,9 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # deploy all common shared flows
     (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+
+    # clean up
+    rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 
     # generate the proxy configuration
     echo "[INFO] Creating Proxy template and Target Server configuration"
@@ -65,6 +65,9 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # deploy all common shared flows
     (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi)
+
+    # clean up
+    rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 
     # generate the proxy configuration
     echo "[INFO] Creating Proxy template and Target Server configuration"
