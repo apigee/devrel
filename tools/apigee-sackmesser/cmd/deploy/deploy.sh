@@ -212,7 +212,7 @@ if [ "$apiversion" = "google" ]; then
 
                 loginfo "Adding products for key for Developer $developer and App $app"
                 key=$(echo "$credential" | jq -r '.consumerKey')
-                update_request=$(echo "$credential" | jq '{apiProducts: [.apiProducts[]? | .apiproduct]}')
+                update_request=$(echo "$credential" | jq '{apiProducts: .apiProducts}')
                 curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
                     -H "Authorization: Bearer $token" \
                     -H "Content-Type: application/json" \

@@ -76,7 +76,7 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
         echo "$full_app" | jq 'del(.credentials)' > "$export_folder/temp/developerApps/$email/$appId".json
         echo "$full_app" | jq -r -c '.credentials[]' | while read -r credential; do
             appkey=$(echo "$credential" | jq -r '.consumerKey')
-            echo "$credential" | jq  --arg APP_NAME "$appId" '. + { name: $APP_NAME }' > "$export_folder/temp/importKeys/$email/$appkey.json"
+            echo "$credential" | jq  --arg APP_NAME "$appId" '. + { name: $APP_NAME } | . + { apiProducts: [.apiProducts[]?.apiproduct] }' > "$export_folder/temp/importKeys/$email/$appkey.json"
         done
     done
 

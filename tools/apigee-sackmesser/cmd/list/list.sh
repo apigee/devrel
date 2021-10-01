@@ -29,12 +29,19 @@ jq_pattern='.'
 
 if [ "$apiversion" = "google" ]; then
     case "$api_path" in
-        *developers) jq_pattern='[.developer[]?|.email]';;
-        *apis) jq_pattern='[.proxies[]?|.name]';;
-        *sharedflows) jq_pattern='[.sharedFlows[]?|.name]';;
-        *apps) jq_pattern='[.app[]?|.appId]';;
-        *apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
-        *keyvaluemaps/*) echo "{\"name\":\"$(echo "$api_path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+        */developers) jq_pattern='[.developer[]?|.email]';;
+        */apis) jq_pattern='[.proxies[]?|.name]';;
+        */sharedflows) jq_pattern='[.sharedFlows[]?|.name]';;
+        */apps) jq_pattern='[.app[]?|.appId]';;
+        */apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
+        */keyvaluemaps/*) echo "{\"name\":\"$(echo "$api_path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+    esac
+elif [ "$apiversion" = "apigee" ]; then
+    case "$api_path" in
+        */apps/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
+        */developers/*/apps) jq_pattern='.';;
+        */developers/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
+        */apiproducts/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
     esac
 fi
 

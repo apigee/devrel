@@ -81,12 +81,17 @@ docker run apigee-sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS
 # Test Sackmesser Export
 sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_X_TOKEN"
 if [ ! -d  "$APIGEE_X_ORG/proxies/sackmesser-x-v0" ]; then
-  echo "export failed"
+  echo "export X failed"
   exit 1
 fi
 rm -rf "$APIGEE_X_ORG"
 
-docker run --entrypoint /bin/bash apigee-sackmesser -c "sackmesser export --apigeeapi -u $APIGEE_USER -p $APIGEE_PASS -o $APIGEE_ORG && ls $APIGEE_ORG/proxies/sackmesser-edge-v0"
+
+sackmesser sackmesser export --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG"
+if [ ! -d  "$APIGEE_ORG" ]; then
+  echo "export hybrid failed"
+  exit 1
+fi
 
 # Test Sackmesser Clean
 sackmesser clean proxy sackmesser-edge-v0 --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
@@ -103,3 +108,17 @@ if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-x-v0"))')" !=
   echo "failed to delete proxy"
   exit 1
 fi
+
+# Delete Test App to test Re-Import Edge Export in X
+testappId=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/developers/janedoe@example.com/apps/sackmesser-app" | jq -r '.appId')
+sackmesser clean app "$testappId" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
+
+sackmesser deploy \
+  --googleapi \
+  -d "$SCRIPT_FOLDER/$APIGEE_ORG" \
+  -t "$APIGEE_X_TOKEN" \
+  -o "$APIGEE_X_ORG" \
+  -e "$APIGEE_X_ENV"
+
+sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/developers/janedoe@example.com/apps/sackmesser-app" | jq -r '.name'
+
