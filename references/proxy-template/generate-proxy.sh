@@ -28,19 +28,19 @@ set -e
 
 # Extract domain name from URL using sed
 # extract the protocol
-TARGET_PROTOCOL="$(echo "$TARGET_URL" | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+TARGET_PROTOCOL="$(printf '%s' "$TARGET_URL" | grep :// | sed -e's,^\(.*://\).*,\1,g')"
 # remove the protocol -- updated
-url=$(echo "$TARGET_URL" | sed -e s,"$TARGET_PROTOCOL",,g)
+url=$(printf '%s' "$TARGET_URL" | sed -e s,"$TARGET_PROTOCOL",,g)
 # extract the user (if any)
-user="$(echo "$url" | grep @ | cut -d@ -f1)"
+user="$(printf '%s' "$url" | grep @ | cut -d@ -f1)"
 # extract the host and port -- updated
-hostport=$(echo "$url" | sed -e s,"$user"@,,g | cut -d/ -f1)
+hostport=$(printf '%s' "$url" | sed -e s,"$user"@,,g | cut -d/ -f1)
 # by request host without port
-TARGET_HOST="$(echo "$hostport" | sed -e 's,:.*,,g')"
+TARGET_HOST="$(printf '%s' "$hostport" | sed -e 's,:.*,,g')"
 # by request - try to extract the port
-TARGET_PORT="$(echo "$hostport" | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
+TARGET_PORT="$(printf '%s' "$hostport" | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
 # extract the path (if any) that defines the proxy path
-PROXY_PATH="/$(echo "$url" | grep / | cut -d/ -f2-)"
+PROXY_PATH="/$(printf '%s' "$url" | grep / | cut -d/ -f2-)"
 
 if [ -z "$TARGET_PORT" ] && [ "$TARGET_PROTOCOL" = "https://" ]
 then
@@ -84,6 +84,10 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
         -u "$APIGEE_USER":"$APIGEE_PASS" -H "Accept: application/json" -w "%{http_code}" \
         https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/environments/"$APIGEE_ENV"/targetservers/"$TARGET_SERVER_NAME")
 
+        printf "\n"
+        printf '%s' "Does target server exist?:" "$response"
+        printf "\n"
+
         if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
 
             # Copy the target server's template file and replace variables
@@ -108,6 +112,10 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     response=$(curl -X GET \
         -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -w "%{http_code}" \
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/environments/"$APIGEE_X_ENV"/targetservers/"$TARGET_SERVER_NAME")
+
+        printf "\n"
+        printf '%s' "Does target server exist?:" "$response"
+        printf "\n"
 
         if [ "$( printf '%s' "$response" | grep -c 404 )" -ne 0  ]; then
 
