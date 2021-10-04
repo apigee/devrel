@@ -1,0 +1,19 @@
+{
+    "version": "1.0",
+    "envConfig": {
+      "@ENV_NAME@": {
+        "targetServers": [
+          {
+            "host": "@TargetHost@",
+            "isEnabled": true,
+            "name": "@TargetServerName@",
+            "port": "@TargetPort@",
+            "sSLInfo": {
+              "enabled": "@TargetSSL@",
+              "ignoreValidationErrors": false
+            }
+          }
+        ]
+      }
+    }
+  }

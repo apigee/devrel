@@ -48,9 +48,13 @@
     </Request>
     <Response/>
   </PostFlow>
-
+  
   <HTTPTargetConnection>
-    <URL>@TargetURL@</URL>
+    <LoadBalancer>
+      <Server name="@TargetServerName@" />
+      <MaxFailures>0</MaxFailures>
+    </LoadBalancer>
+    <Path>/</Path>
   </HTTPTargetConnection>
 
 </TargetEndpoint>
