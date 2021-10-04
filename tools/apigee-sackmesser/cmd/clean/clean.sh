@@ -36,7 +36,7 @@ deleteAll() {
     export deleteTargetServer='all'
     export deleteKeystore='all'
     export deleteReference='all'
-    export deleteFlowHooks='all'
+    export deleteFlowHook='all'
 }
 
 while [ "$#" -gt 0 ]; do
@@ -50,7 +50,7 @@ while [ "$#" -gt 0 ]; do
     kvm) export deleteKvm="${2}"; shift 2;;
     cache) export deleteCache="${2}"; shift 2;;
     targetserver) export deleteTargetServer="${2}"; shift 2;;
-    flowhooks) export deleteFlowHooks="${2}"; shift 2;;
+    flowhook) export deleteFlowHook="${2}"; shift 2;;
     keystore) export deleteKeystore="${2}"; shift 2;;
     reference) export deleteReference="${2}"; shift 2;;
     *) logfatal "unknown option: $1" >&2; exit 1;;
@@ -66,7 +66,7 @@ if [ -n "$deleteDeveloper" ]; then loginfo "API Product: $deleteDeveloper"; fi
 if [ -n "$deleteKvm" ]; then loginfo "KVM: $deleteKvm"; fi
 if [ -n "$deleteCache" ]; then loginfo "Cache: $deleteCache"; fi
 if [ -n "$deleteTargetServer" ]; then loginfo "TargetServer: $deleteTargetServer"; fi
-if [ -n "$deleteFlowHooks" ]; then loginfo "FlowHooks: $deleteFlowHooks"; fi
+if [ -n "$deleteFlowHook" ]; then loginfo "FlowHooks: $deleteFlowHook"; fi
 if [ -n "$deleteKeystore" ]; then loginfo "KeyStore: $deleteKeystore"; fi
 if [ -n "$deleteReference" ]; then loginfo "Reference: $deleteReference"; fi
 
@@ -159,8 +159,8 @@ if [ -n "$deleteProxy" ]; then
     done
 fi
 
-if [ -n "$deleteFlowHooks" ]; then
-    deleteEnvResource "$deleteFlowHooks" 'flowhooks'
+if [ -n "$deleteFlowHook" ]; then
+    deleteEnvResource "$deleteFlowHook" 'flowhooks'
 fi
 
 if [ -n "$deleteSharedflow" ]; then

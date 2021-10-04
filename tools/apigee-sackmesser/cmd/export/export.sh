@@ -150,7 +150,7 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
         keystore_uri="organizations/$organization/environments/$env/keystores/$(urlencode "$keystore")"
         sackmesser list "$keystore_uri" | jq '.' >  "$export_folder/temp/$env/keystores/${keystore// /-}".json
         sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
-            logwarn "Found alias $alias. Aliases need cannot be exported."
+            logwarn "Found alias $alias. Aliases need cannot be exported because they contain private keys. See the example in the Maven Config Plugin for how to manually link them from your export: https://github.com/apigee/apigee-config-maven-plugin/tree/hybrid/samples/EdgeConfig/resources/edge/env/test."
             logwarn "You need to update your alias export manually in $export_folder/config/resources/edge/env/$env/aliases.json"
             sackmesser list "$keystore_uri/aliases/$alias" > "$export_folder/temp/$env/aliases/$alias".json
         done
