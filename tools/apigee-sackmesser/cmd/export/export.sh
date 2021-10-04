@@ -137,7 +137,7 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
 
     mkdir -p "$export_folder/temp/$env"/targetservers
     sackmesser list "organizations/$organization/environments/$env/targetservers" | jq -r -c '.[]|.' | while read -r targetserver; do
-        sackmesser list "organizations/$organization/environments/$env/targetservers/$(urlencode "$targetserver")" > "$export_folder/temp/$env/targetservers/${targetserver/ /-}".json
+        sackmesser list "organizations/$organization/environments/$env/targetservers/$(urlencode "$targetserver")" > "$export_folder/temp/$env/targetservers/${targetserver// /-}".json
     done
 
     if ls "$export_folder/temp/$env/targetservers"/*.json 1> /dev/null 2>&1; then
@@ -148,7 +148,7 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
     mkdir -p "$export_folder/temp/$env"/aliases
     sackmesser list "organizations/$organization/environments/$env/keystores" | jq -r -c '.[]|.' | while read -r keystore; do
         keystore_uri="organizations/$organization/environments/$env/keystores/$(urlencode "$keystore")"
-        sackmesser list "$keystore_uri" | jq '.' >  "$export_folder/temp/$env/keystores/${keystore/ /-}".json
+        sackmesser list "$keystore_uri" | jq '.' >  "$export_folder/temp/$env/keystores/${keystore// /-}".json
         sackmesser list "$keystore_uri"/aliases | jq -r -c '.[]|.' | while read -r alias; do
             logwarn "Found alias $alias. Aliases need cannot be exported."
             logwarn "You need to update your alias export manually in $export_folder/config/resources/edge/env/$env/aliases.json"
