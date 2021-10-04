@@ -87,7 +87,7 @@ fi
 rm -rf "$APIGEE_X_ORG"
 
 
-sackmesser sackmesser export --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG"
+sackmesser export --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG"
 if [ ! -d  "$APIGEE_ORG" ]; then
   echo "export hybrid failed"
   exit 1
@@ -115,10 +115,9 @@ sackmesser clean app "$testappId" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X
 
 sackmesser deploy \
   --googleapi \
-  -d "$SCRIPT_FOLDER/$APIGEE_ORG" \
+  -d "$SCRIPT_FOLDER/$APIGEE_ORG/config" \
   -t "$APIGEE_X_TOKEN" \
   -o "$APIGEE_X_ORG" \
   -e "$APIGEE_X_ENV"
 
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/developers/janedoe@example.com/apps/sackmesser-app" | jq -r '.name'
-
