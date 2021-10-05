@@ -80,20 +80,20 @@ docker run apigee-sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS
 
 # Test Sackmesser Export
 sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_X_TOKEN"
-cat "$SCRIPT_PATH/$APIGEE_X_ORG/proxies/sackmesser-x-v0/apiproxy/proxies/default.xml" | grep "$BASE_PATH_X"
-cat "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developerApps.json" | grep "sackmesser-app"
-cat "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developers.json" | grep "janedoe@example.com"
-cat "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json" | grep "SackMesserProduct1"
-cat "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json" | grep "SackMesserProduct2"
+grep "$BASE_PATH_X" "$SCRIPT_PATH/$APIGEE_X_ORG/proxies/sackmesser-x-v0/apiproxy/proxies/default.xml"
+grep "sackmesser-app" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developerApps.json"
+grep "janedoe@example.com" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developers.json"
+grep "SackMesserProduct1" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
+grep "SackMesserProduct2" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
 
-rm -rf "$SCRIPT_PATH/$APIGEE_X_ORG"
+rm -rf "${SCRIPT_PATH:?}/$APIGEE_X_ORG"
 
 sackmesser export --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG"
-cat "$SCRIPT_PATH/$APIGEE_ORG/proxies/sackmesser-edge-v0/apiproxy/proxies/default.xml" | grep "$BASE_PATH_EDGE"
-cat "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developerApps.json" | grep "sackmesser-app"
-cat "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developers.json" | grep "janedoe@example.com"
-cat "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json" | grep "SackMesserProduct1"
-cat "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json" | grep "SackMesserProduct2"
+grep "$BASE_PATH_EDGE" "$SCRIPT_PATH/$APIGEE_ORG/proxies/sackmesser-edge-v0/apiproxy/proxies/default.xml"
+grep "sackmesser-app" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developerApps.json"
+grep "janedoe@example.com" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developers.json"
+grep "SackMesserProduct1" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
+grep "SackMesserProduct2" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
 
 # Test Sackmesser Clean
 sackmesser clean proxy sackmesser-edge-v0 --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
@@ -139,4 +139,4 @@ sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/de
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apiproducts" | grep "SackMesserProduct1"
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apiproducts" | grep "SackMesserProduct2"
 
-rm -rd "$SCRIPT_FOLDER/$APIGEE_ORG"
+rm -rd "${SCRIPT_FOLDER:?}/$APIGEE_ORG"

@@ -109,6 +109,8 @@ jq -n '[inputs]' "$export_folder/temp/apiproducts"/*.json > "$export_folder/conf
 mkdir -p "$export_folder/temp/keyvaluemaps"
 sackmesser list "organizations/$organization/keyvaluemaps" | jq -r -c '.[]|.' | while read -r kvmname; do
     sackmesser list "organizations/$organization/keyvaluemaps/$kvmname" > "$export_folder/temp/keyvaluemaps/$kvmname".json
+    elem_count=$(jq '.entries? | length' "$export_folder/temp/keyvaluemaps/$kvmname".json)
+    if [ "$elem_count" -ge "1000" ]; then logwarn "KVMs in Apigee Edge are limited to 1000 entries."; fi
 done
 
 if ls "$export_folder/temp/keyvaluemaps"/*.json 1> /dev/null 2>&1; then
@@ -129,6 +131,8 @@ sackmesser list "organizations/$organization/environments" | jq -r -c '.[]|.' | 
     mkdir -p "$export_folder/temp/$env"/keyvaluemaps
     sackmesser list "organizations/$organization/environments/$env/keyvaluemaps"| jq -r -c '.[]|.' | while read -r kvmname; do
         sackmesser list "organizations/$organization/environments/$env/keyvaluemaps/$kvmname" > "$export_folder/temp/$env/keyvaluemaps/$kvmname".json
+        elem_count=$(jq '.entries? | length' "$export_folder/temp/$env/keyvaluemaps/$kvmname".json)
+        if [ "$elem_count" -ge "1000" ]; then logwarn "KVMs in Apigee Edge are limited to 1000 entries."; fi
     done
 
     if ls "$export_folder/temp/$env/keyvaluemaps"/*.json 1> /dev/null 2>&1; then
