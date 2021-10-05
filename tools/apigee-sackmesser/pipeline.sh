@@ -27,7 +27,7 @@ unset APIGEE_TOKEN
 
 # Test Sackmesser Deploy
 
-# Sackmesser X Deployment
+echo "Sackmesser X Deployment"
 BASE_PATH_X="/sackmesser-example-x"
 
 sackmesser deploy \
@@ -45,7 +45,7 @@ sackmesser deploy \
   TEST_BASE_PATH="$BASE_PATH_X" \
   npm run test)
 
-# Sackmesser Edge Deployment
+echo "Sackmesser Edge Deployment"
 BASE_PATH_EDGE="/sackmesser-example-edge"
 
 sackmesser deploy \
@@ -64,7 +64,7 @@ sackmesser deploy \
   TEST_BASE_PATH="$BASE_PATH_EDGE" \
   npm run test)
 
-# Test Sackmesser Await
+echo  "Test Sackmesser Await"
 # (Test readiness of the deployed API proxy)
 sackmesser await --googleapi -t "$APIGEE_X_TOKEN" proxy "sackmesser-x-v0"
 
@@ -72,30 +72,31 @@ docker run apigee-sackmesser await --apigeeapi --username "$APIGEE_USER" \
   --password "$APIGEE_PASS" --organization "$APIGEE_ORG" \
   --environment "$APIGEE_ENV" proxy "sackmesser-edge-v0"
 
-# Test Sackmesser List
+echo "Test Sackmesser List"
 # (List all proxies to find the previously deployed API proxy)
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apis" | grep "sackmesser-x-v0"
 
 docker run apigee-sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis" | grep "sackmesser-edge-v0"
 
-# Test Sackmesser Export
+echo "Test Sackmesser Export (X)"
 sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_X_TOKEN"
-grep "$BASE_PATH_X" "$SCRIPT_PATH/$APIGEE_X_ORG/proxies/sackmesser-x-v0/apiproxy/proxies/default.xml"
-grep "sackmesser-app" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developerApps.json"
-grep "janedoe@example.com" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/developers.json"
-grep "SackMesserProduct1" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
-grep "SackMesserProduct2" "$SCRIPT_PATH/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
+grep "$BASE_PATH_X" "$SCRIPT_FOLDER/$APIGEE_X_ORG/proxies/sackmesser-x-v0/apiproxy/proxies/default.xml"
+grep "sackmesser-app" "$SCRIPT_FOLDER/$APIGEE_X_ORG/config/resources/edge/org/developerApps.json"
+grep "janedoe@example.com" "$SCRIPT_FOLDER/$APIGEE_X_ORG/config/resources/edge/org/developers.json"
+grep "SackMesserProduct1" "$SCRIPT_FOLDER/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
+grep "SackMesserProduct2" "$SCRIPT_FOLDER/$APIGEE_X_ORG/config/resources/edge/org/apiProducts.json"
 
-rm -rf "${SCRIPT_PATH:?}/$APIGEE_X_ORG"
+rm -rf "${SCRIPT_FOLDER:?}/$APIGEE_X_ORG"
 
+echo "Test Sackmesser Export (Edge)"
 sackmesser export --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG"
-grep "$BASE_PATH_EDGE" "$SCRIPT_PATH/$APIGEE_ORG/proxies/sackmesser-edge-v0/apiproxy/proxies/default.xml"
-grep "sackmesser-app" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developerApps.json"
-grep "janedoe@example.com" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/developers.json"
-grep "SackMesserProduct1" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
-grep "SackMesserProduct2" "$SCRIPT_PATH/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
+grep "$BASE_PATH_EDGE" "$SCRIPT_FOLDER/$APIGEE_ORG/proxies/sackmesser-edge-v0/apiproxy/proxies/default.xml"
+grep "sackmesser-app" "$SCRIPT_FOLDER/$APIGEE_ORG/config/resources/edge/org/developerApps.json"
+grep "janedoe@example.com" "$SCRIPT_FOLDER/$APIGEE_ORG/config/resources/edge/org/developers.json"
+grep "SackMesserProduct1" "$SCRIPT_FOLDER/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
+grep "SackMesserProduct2" "$SCRIPT_FOLDER/$APIGEE_ORG/config/resources/edge/org/apiProducts.json"
 
-# Test Sackmesser Clean
+echo "Test Sackmesser Clean (Edge)"
 sackmesser clean proxy sackmesser-edge-v0 --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
 proxiesremaining=$(sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" "organizations/$APIGEE_ORG/apis")
 if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-edge-v0"))')" != "[]" ];then
@@ -103,6 +104,7 @@ if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-edge-v0"))')"
   exit 1
 fi
 
+echo "Test Sackmesser Clean (X)"
 docker run apigee-sackmesser clean proxy sackmesser-x-v0 --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 
 proxiesremaining=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apis")
@@ -111,7 +113,7 @@ if [ "$(echo "$proxiesremaining" | jq 'map(select(. == "sackmesser-x-v0"))')" !=
   exit 1
 fi
 
-# Delete Test App to test Re-Import Edge Export in X
+echo "Delete Test App to test Re-Import Edge Export in X"
 testappId=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/developers/janedoe@example.com/apps/sackmesser-app" | jq -r '.appId')
 
 sackmesser clean app "$testappId" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
@@ -119,6 +121,7 @@ sackmesser clean developer "janedoe@example.com" --googleapi -t "$APIGEE_X_TOKEN
 sackmesser clean product "SackMesserProduct1" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 sackmesser clean product "SackMesserProduct2" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 
+echo "Test Re-Import Edge Export in X"
 sackmesser deploy \
   --googleapi \
   -d "$SCRIPT_FOLDER/$APIGEE_ORG/config" \
@@ -139,4 +142,4 @@ sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/de
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apiproducts" | grep "SackMesserProduct1"
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apiproducts" | grep "SackMesserProduct2"
 
-rm -rd "${SCRIPT_FOLDER:?}/$APIGEE_ORG"
+rm -rf "${SCRIPT_FOLDER:?}/$APIGEE_ORG"
