@@ -49,7 +49,7 @@ jobs:
         with:
           pipeline-action: check-codeowners.sh
 
-  superlinter:
+  linter:
     name: Lint Codebase
     runs-on: ubuntu-latest
     steps:
@@ -61,8 +61,8 @@ jobs:
           node-version: '14'
       - name: Install Linter dependencies
         run: npm install
-      - name: Run GitHub Super-Linter
-        uses: docker://github/super-linter:v3.16.1
+      - name: Run Mega Linter
+        uses: nvuillam/mega-linter@v4
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
