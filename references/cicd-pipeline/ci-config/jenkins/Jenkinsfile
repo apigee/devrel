@@ -52,7 +52,7 @@ pipeline {
 
         stage('Static Code Analysis') {
           steps {
-            sh "./node_modules/eslint/bin/eslint.js -c ./.eslintrc-jsc.yml --format html . > eslint-out.html"
+            sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
               allowMissing: false,
