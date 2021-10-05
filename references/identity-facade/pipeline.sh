@@ -283,7 +283,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
         (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
 fi
 
