@@ -69,4 +69,6 @@ jobs:
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_GHERKIN: false
           VALIDATE_JSCPD: false
+          SPELL_MISSPELL_DISABLE_ERRORS: true
+          SPELL_CSPELL_DISABLE_ERRORS: true
           LINTER_RULES_PATH: '.'
