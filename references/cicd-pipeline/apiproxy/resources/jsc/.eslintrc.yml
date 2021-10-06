@@ -15,4 +15,5 @@
 extends:
   - google
   - prettier
-rules: { no-var: 0 }
+rules:
+  no-var: 0

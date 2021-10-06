@@ -1,0 +1,9 @@
+extends: default
+rules:
+  document-start: disable
+  line-length:
+    level: warning
+  new-line-at-end-of-file:
+    level: warning
+ignore: |
+  node_modules
