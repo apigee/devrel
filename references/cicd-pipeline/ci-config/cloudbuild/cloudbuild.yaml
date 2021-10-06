@@ -32,7 +32,7 @@ steps:
       if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi && \
       npm run eslint | tee report.eslint.html && \
       if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
-  # Run unit tests for custom policy impementations
+  # Run unit tests for custom policy implementations
 - name: node
   id: "Unit Test"
   entrypoint: "bash"
@@ -136,9 +136,9 @@ substitutions:
     # (Optional) Apigee Environment overrides
     _APIGEE_TEST_ENV: test
     _APIGEE_PROD_ENV: prod
-    # Managment API version use:
+    # Management API version use:
     # 'apigee' for current Apigee Edge
     # 'google' for Apigee X and hybrid
-    _API_VERSION: apigee #apgiee|google
+    _API_VERSION: apigee #apigee|google
     # Host name for the integration test
     _INT_TEST_HOST: org-env.apigee.net

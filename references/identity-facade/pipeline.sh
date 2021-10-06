@@ -326,6 +326,6 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
         (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
 fi
