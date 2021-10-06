@@ -83,7 +83,7 @@ use your own certificate and key if you override `$RUNTIME_TLS_CERT` and
 The curl command above uses `--resolve` for ip address resolution
 and `--cacert` for trusting the certificate.
 
-To be able to execute requests transparantly at your development machine,
+To be able to execute requests transparently at your development machine,
 you need:
 
 1. Add the `RUNTIME_TLS_CERT` certificate your machine truststore;
@@ -117,7 +117,7 @@ You can override the following locations:
 export REGION=europe-west1
 # Used as the Apigee X runtime location (trial orgs are zonal only)
 export ZONE=europe-west1-b
-# Used as the Apigee alalytics region (see docs for allowed values)
+# Used as the Apigee analytics region (see docs for allowed values)
 export AX_REGION=europe-west1
 ```
 
@@ -139,7 +139,7 @@ the `CERTIFICATES` environment variable:
 
 ### VPC Network Planning
 
-When working with custom networks, the first step we do is to plan a layout of your your network with regards to CIDR allocations. It is important because as a rule, allocated CIDR ranges should not overlap between VPCs and Kubernetes clusters. In oour case, there are three decisions to make:
+When working with custom networks, the first step we do is to plan a layout of your your network with regards to CIDR allocations. It is important because as a rule, allocated CIDR ranges should not overlap between VPCs and Kubernetes clusters. In our case, there are three decisions to make:
 
 | Custom Network | exco-vpc |
 |---|---|
