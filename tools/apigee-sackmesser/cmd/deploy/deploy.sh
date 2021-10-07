@@ -154,7 +154,7 @@ if [ "$apiversion" = "google" ]; then
         -Dtoken="$token" \
         -Dapigee.options="${deploy_options:-override}" \
         -Dapigee.config.options="${config_action:-none}" \
-        -Dapigee.depoloyment.sa="${deployment_sa}")
+        -Dapigee.deployment.sa="${deployment_sa}")
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"

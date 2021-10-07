@@ -128,7 +128,7 @@ npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" 
 ###
 
 GCP_SA_KEY=$(jq '. | tostring' < "./credentials.json")
-curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
+curl -X POST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
   -H 'Content-Type: application/json; charset=utf-8' \
   --data-binary @- > /dev/null << EOF
 {

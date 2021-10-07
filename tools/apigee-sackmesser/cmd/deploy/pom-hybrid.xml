@@ -57,7 +57,7 @@ limitations under the License.
 		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer>
 		<apigee.apitype>${apitype}</apigee.apitype>
-		<apigee.googletoken.email>${apigee.depoloyment.sa}</apigee.googletoken.email>
+		<apigee.googletoken.email>${apigee.deployment.sa}</apigee.googletoken.email>
 	</properties>
 
 	<build>
