@@ -34,7 +34,7 @@ docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 
 ```sh
 PROJECT_ID=<my-project>
-gcloud builds submit --config ./jenkins-web/cloudbuild.yml
+gcloud builds submit --config ./jenkins-web/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
 docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 ```
@@ -106,7 +106,9 @@ gcloud compute instances create-with-container jenkins --tags jenkins \
   --container-image gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest \
   --container-env "$CONTAINER_ENVS" \
   --machine-type e2-standard-2 \
-  --service-account "$JENKINS_SA_EMAIL"  --scopes cloud-platform
+  --service-account "$JENKINS_SA_EMAIL" \
+  --scopes cloud-platform \
+  --project $PROJECT_ID
 
 echo "Starting Jenkins Container. Once Jenkins is ready you can visit: http://$(gcloud compute instances describe jenkins --format json | jq -r ".networkInterfaces[0].accessConfigs[0].natIP"):8080"
 ```
@@ -204,7 +206,7 @@ docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runne
 
 ```sh
 PROJECT_ID=$(gcloud config get-value project)
-gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml
+gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest
 docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
 ```
