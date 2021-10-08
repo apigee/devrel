@@ -13,7 +13,7 @@
 # limitations under the License.
 
 name: "Apigee DevRel Pipeline Linter"
-description: "Runs the"
+description: "Runs the static project linters"
 inputs:
   pipeline-action:
     description: "Script to execute in the pipeline linter image"
