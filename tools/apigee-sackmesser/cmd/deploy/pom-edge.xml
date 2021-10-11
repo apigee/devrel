@@ -88,6 +88,10 @@ limitations under the License.
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
+							<!-- Be sure not to filter JAR files -->
+							<nonFilteredFileExtensions>
+								<nonFilteredFileExtension>jar</nonFilteredFileExtension>
+							</nonFilteredFileExtensions>
 							<overwrite>true</overwrite>
 							<resources>
 								<resource>

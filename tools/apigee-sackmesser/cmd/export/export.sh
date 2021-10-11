@@ -43,7 +43,7 @@ mkdir -p "$export_folder"
 sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|.'| while read -r sharedflow; do
     loginfo "download shared flow: $sharedflow"
     mkdir -p "$export_folder/sharedflows/$sharedflow"
-    latest="$(sackmesser list "organizations/$organization/sharedflows/$sharedflow" | jq '.revision | max | tonumber')"
+    latest="$(sackmesser list "organizations/$organization/sharedflows/$sharedflow" | jq '.revision | map(tonumber) | max')"
     mgmtAPIDownload "organizations/$organization/sharedflows/$sharedflow/revisions/$latest?format=bundle" "$export_folder/sharedflows/$sharedflow/bundle.zip"
     unzip -q "$export_folder/sharedflows/$sharedflow/bundle.zip" -d "$export_folder/sharedflows/$sharedflow"
     rm "$export_folder/sharedflows/$sharedflow/bundle.zip"
@@ -52,7 +52,7 @@ done
 sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while read -r proxy; do
     loginfo "download proxy: $proxy"
     mkdir -p "$export_folder/proxies/$proxy"
-    latest="$(sackmesser list "organizations/$organization/apis/$proxy" | jq '.revision | max | tonumber')"
+    latest="$(sackmesser list "organizations/$organization/apis/$proxy" | jq '.revision | map(tonumber) | max')"
     mgmtAPIDownload "organizations/$organization/apis/$proxy/revisions/$latest?format=bundle" "$export_folder/proxies/$proxy/bundle.zip"
     unzip -q "$export_folder/proxies/$proxy/bundle.zip" -d "$export_folder/proxies/$proxy"
     rm "$export_folder/proxies/$proxy/bundle.zip"
