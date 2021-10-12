@@ -24,7 +24,8 @@
         <Attribute name="redirect_uri" ref="oidc.flow.authorize.redirect_uri" display="false"/>
         <Attribute name="response_type" ref="oidc.flow.authorize.response_type" display="false"/>
         <Attribute name="scope" ref="oidc.flow.authorize.scope" display="false"/>
+        <!-- @PKCE
         <Attribute name="code_challenge" ref="oidc.flow.authorize.code_challenge" display="false"/>
-        <Attribute name="code_challenge_method" ref="oidc.flow.authorize.code_challenge_method" display="false"/>
+        <Attribute name="code_challenge_method" ref="oidc.flow.authorize.code_challenge_method" display="false"/> @PKCE -->
     </Attributes>
 </OAuthV2>

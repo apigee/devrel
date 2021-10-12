@@ -28,6 +28,7 @@ const codeChallenge = process.env.TEST_APP_PKCE_CODE_CHALLENGE
 const username = 'johndoe'
 const password = 'dummy-password'
 const basePath = '/v1/oauth20'
+const pkceQueryParams = '&code_challenge='+codeChallenge+'&code_challenge_method=S256'
 
 Before(function() {
   this.apickli = new apickli.Apickli('https',
@@ -38,6 +39,7 @@ Before(function() {
   this.apickli.scenarioVariables.password = password
   this.apickli.scenarioVariables.codeVerifier = codeVerifier
   this.apickli.scenarioVariables.codeChallenge = codeChallenge
+  this.apickli.scenarioVariables.pkceQueryParams = pkceQueryParams
 })
 
 setDefaultTimeout(60 * 1000)

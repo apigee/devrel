@@ -28,12 +28,13 @@
     <QueryParam name="scope">
         <Pattern ignoreCase="true">{scope}</Pattern>
     </QueryParam>
+    <!-- @PKCE
     <QueryParam name="code_challenge">
         <Pattern ignoreCase="true">{code_challenge}</Pattern>
     </QueryParam>
     <QueryParam name="code_challenge_method">
         <Pattern ignoreCase="true">{code_challenge_method}</Pattern>
-    </QueryParam>
+    </QueryParam> @PKCE -->
     <VariablePrefix>oidc.flow.authorize</VariablePrefix>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
 </ExtractVariables>

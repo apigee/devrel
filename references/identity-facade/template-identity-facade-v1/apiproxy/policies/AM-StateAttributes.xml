@@ -12,6 +12,7 @@
  limitations under the License.
 -->
 <AssignMessage name="AM-StateAttributes">
+    
     <AssignVariable>
         <Name>oidc.flow.callback.state1</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.state1</Ref>
@@ -24,6 +25,7 @@
         <Name>oidc.flow.callback.redirect_uri</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.redirect_uri</Ref>
     </AssignVariable>
+    
     <AssignVariable>
         <Name>oidc.flow.callback.response_type</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.response_type</Ref>
@@ -32,6 +34,7 @@
         <Name>oidc.flow.callback.scope</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.scope</Ref>
     </AssignVariable>
+    <!-- @PKCE
     <AssignVariable>
         <Name>oidc.flow.callback.code_challenge</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.code_challenge</Ref>
@@ -39,7 +42,7 @@
     <AssignVariable>
         <Name>oidc.flow.callback.code_challenge_method</Name>
         <Ref>oauthv2authcode.OA2-AttributesFromAzCode-State2.code_challenge_method</Ref>
-    </AssignVariable>
+    </AssignVariable> @PKCE -->
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <AssignTo createNew="false" type="request"/>
 </AssignMessage>

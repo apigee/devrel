@@ -19,16 +19,16 @@ deactivate nerp
 nerp -> b: status code: 401\n("error": "invalid_grant")
 deactivate nerp
 
-note over u,idp: Initiate Auth Sequence using PKCE
-b -> id: GET /authorize\n(client_id, state(1), redirect_uri, response_type [code|token], scope, code_challenge, code_challenge_method)
+note over u,idp: Initiate Auth Sequence
+b -> id: GET /authorize\n(client_id, state(1), redirect_uri, response_type [code|token], scope, <font color=blue>code_challenge, code_challenge_method</font>)
 activate id
 id -> id: validate client_id,\nredirect_uri
 activate id
 deactivate id
-id -> id: control presence of state, scope and code_challenge
+id -> id: control presence of state, scope <font color=blue>and code_challenge</font>
 activate id
 deactivate id
-id -> id: control value of code_challenge_method (S256) and response_type (code|token)
+id -> id: <font color=blue>control value of code_challenge_method (S256)</font> and response_type (code|token)
 activate id
 deactivate id
 id -> id: retrieve IdP client_id + IdP connection parameters\nfrom KVM (or PropertySet or Secret)
@@ -70,12 +70,12 @@ deactivate id
 id --> b: 302 /callback [using redirect_uri]\n(code, state(1))
 deactivate id
 note over b,idp: response_type=code (i.e. auth code grant type)
-b ->> id: POST /token\n(code,\nclient credentials,\ngrant_type [authorization_code],\nredirect_uri,\ncode_verifier)
+b ->> id: POST /token\n(code,\nclient credentials,\ngrant_type [authorization_code],\nredirect_uri,\n<font color=blue>code_verifier</font>)
 activate id
 id -> id: validate client credentials, redirect_uri, grant_type
 activate id
 deactivate id
-id -> id: verify pkce code_verifier: base64url(sha256(code_verifier)) == code_challenge
+id -> id: <font color=blue>verify pkce code_verifier: base64url(sha256(code_verifier)) == code_challenge</font>
 activate id
 deactivate id
 id -> id: control presence and value of authorization code
