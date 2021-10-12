@@ -249,7 +249,7 @@ set_pkce_config() {
         # pkce comment patterns used in files
         START_PKCE_COMMENT_PATTERN='<!-- @PKCE'
         END_PKCE_COMMENT_PATTERN='@PKCE -->'
-        APICKLI_FPARAM_PKCE_CODE_VERIFIER='\| code_verifier \| `codeVerifier` \|'
+        APICKLI_FPARAM_PKCE_CODE_VERIFIER="\| code_verifier \| \`codeVerifier\` \|"
 
         # replace pkce comment patterns in proxy configuration
         sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/AM-StateAttributes.xml

@@ -14,6 +14,9 @@
   limitations under the License.
 
 */
+
+/* eslint-disable no-invalid-this */
+/* eslint-disable new-cap */
 const apickli = require('apickli')
 const {
   Before,

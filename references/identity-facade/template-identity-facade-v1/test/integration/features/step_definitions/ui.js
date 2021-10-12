@@ -14,6 +14,9 @@
   limitations under the License.
 
 */
+
+/* eslint-disable no-invalid-this */
+/* eslint-disable new-cap */
 const {
   Given,
   When,
@@ -29,7 +32,7 @@ const basePath = '/v1/oauth20'
 const assert = require('assert')
 
 Given('I navigate to the authorize page', async function() {
-  let pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
+  const pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
@@ -42,7 +45,7 @@ Given('I navigate to the authorize page', async function() {
 })
 
 Given('I navigate to the authorize page with query params that must be sanitized', async function() {
-  let pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
+  const pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
@@ -55,7 +58,7 @@ Given('I navigate to the authorize page with query params that must be sanitized
 })
 
 Given('I navigate to the authorize page with an invalid response type', async function() {
-  let pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
+  const pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
@@ -68,7 +71,7 @@ Given('I navigate to the authorize page with an invalid response type', async fu
 })
 
 Given('I navigate to the authorize page without a scope parameter', async function() {
-  let pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
+  const pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
@@ -81,7 +84,7 @@ Given('I navigate to the authorize page without a scope parameter', async functi
 })
 
 Given('I navigate to the authorize page without a state parameter', async function() {
-  let pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
+  const pkceQueryParams = isPkceEnabled?('&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=S256'):''
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
