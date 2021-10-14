@@ -69,6 +69,11 @@ if [ -f "$temp_folder"/edge.json ]; then
     export config_action='update'
     export config_file_path="$temp_folder"/edge.json
     kvms=$(jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json)
+
+    if [ "$(jq '.orgConfig | has("importKeys")' "$temp_folder/edge.json")" = "true" ]; then
+        loginfo "Found key import entry in file: $temp_folder/edge.json"
+        import_keys_phase='install'
+    fi
 fi
 
 if [ -d "$temp_folder"/resources/edge ]; then
@@ -78,6 +83,11 @@ if [ -d "$temp_folder"/resources/edge ]; then
 
     if [ -f "$temp_folder/resources/edge/env/$environment"/kvms.json ]; then
         kvms=$(jq -c '.[] | .' < "$temp_folder/resources/edge/env/$environment"/kvms.json)
+    fi
+
+    if [ -f "$temp_folder"/resources/edge/org/importKeys.json ]; then
+        loginfo "Found key import file: $temp_folder/resources/edge/org/importKeys.json"
+        import_keys_phase='install'
     fi
 fi
 
@@ -192,7 +202,8 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dapigee.options="${deploy_options:-override}" \
         -Dapigee.config.file="$config_file_path" \
         -Dapigee.config.dir="$config_dir_path" \
-        -Dapigee.config.options="${config_action:-none}")
+        -Dapigee.config.options="${config_action:-none}" \
+        -Dapigee.import-keys.phase="${import_keys_phase:-skip}")
 fi
 
 # patching mvn plugin features
