@@ -61,6 +61,7 @@ limitations under the License.
 		<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
 		<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
 		<apigee.apitype>${apitype}</apigee.apitype>
+		<apigee.import-keys.phase>skip</apigee.import-keys.phase>
 	</properties>
 
 	<build>
@@ -88,11 +89,11 @@ limitations under the License.
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
+							<overwrite>true</overwrite>
 							<!-- Be sure not to filter JAR files -->
 							<nonFilteredFileExtensions>
 								<nonFilteredFileExtension>jar</nonFilteredFileExtension>
 							</nonFilteredFileExtensions>
-							<overwrite>true</overwrite>
 							<resources>
 								<resource>
 									<directory>${project.root.dir}</directory>
@@ -227,7 +228,7 @@ limitations under the License.
                     </execution>
 					<execution>
                         <id>import-keys</id>
-                        <phase>install</phase>
+                        <phase>${apigee.import-keys.phase}</phase>
                         <goals>
                             <goal>importKeys</goal>
                         </goals>
