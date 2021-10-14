@@ -87,6 +87,10 @@ limitations under the License.
 						</goals>
 						<configuration>
 							<overwrite>true</overwrite>
+							<!-- Be sure not to filter JAR files -->
+							<nonFilteredFileExtensions>
+								<nonFilteredFileExtension>jar</nonFilteredFileExtension>
+							</nonFilteredFileExtensions>
 							<resources>
 								<resource>
 									<directory>${project.root.dir}</directory>
