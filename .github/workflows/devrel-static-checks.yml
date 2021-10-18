@@ -20,7 +20,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-  - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 jobs:
 
   license:
@@ -49,7 +49,7 @@ jobs:
         with:
           pipeline-action: check-codeowners.sh
 
-  superlinter:
+  linter:
     name: Lint Codebase
     runs-on: ubuntu-latest
     steps:
@@ -61,12 +61,16 @@ jobs:
           node-version: '14'
       - name: Install Linter dependencies
         run: npm install
-      - name: Run GitHub Super-Linter
-        uses: docker://github/super-linter:v3.16.1
+      - name: Run Mega Linter
+        uses: nvuillam/mega-linter@v4
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_GHERKIN: false
           VALIDATE_JSCPD: false
+          SPELL_MISSPELL_DISABLE_ERRORS: true
+          SPELL_CSPELL_DISABLE_ERRORS: true
+          COPYPASTE_JSCPD_DISABLE_ERRORS: true
           LINTER_RULES_PATH: '.'
+          GROOVY_NPM_GROOVY_LINT_FILTER_REGEX_EXCLUDE: 'Jenkinsfile'

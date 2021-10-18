@@ -17,7 +17,7 @@ Apigee API
 [organizations.environments.testIamPermissions](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments/testIamPermissions)
 for authorization. The GET, POST, DELETE operations of this API correspond to
 list, create and delete IAM permissions on keyvaluemaps. The proxy needs access
-to `apigee.googleapis.com` to work correctly. Calling the Apigee Managment APIs
+to `apigee.googleapis.com` to work correctly. Calling the Apigee Management APIs
 is generally considered an anti-pattern and can lead to
 [quota](https://console.cloud.google.com/iam-admin/quotas) exhaustion we
 therefore suggest to review if this is a suitable tradeoff or swap the

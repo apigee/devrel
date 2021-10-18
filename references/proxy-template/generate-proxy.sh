@@ -63,6 +63,7 @@ TARGET_SERVER_NAME="ts-$TARGET_HOST-$TARGET_PORT"
 
 # Copy proxy template and replace variables
 cp -r ./template-v1 ./"$PROXY"-"$VERSION"
+mv ./"$PROXY"-"$VERSION"/package.template.json ./"$PROXY"-"$VERSION"/package.json
 mv ./"$PROXY"-"$VERSION"/apiproxy/apigee-v1.xml ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml
 sed -i.bak "s|@ProxyName@|$PROXY|" ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml
 sed -i.bak "s|@Version@|$VERSION|" ./"$PROXY"-"$VERSION"/apiproxy/"$PROXY"-"$VERSION".xml

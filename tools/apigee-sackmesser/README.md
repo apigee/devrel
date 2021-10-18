@@ -141,4 +141,4 @@ that simplifies Apigee deployments by eliminating the need for you to create and
 maintain pom files. It supports proxy deployments to Apigee Edge, hybrid and X
 products. It also provides a Docker container that removes the need for you to
 install Java and Maven and its dependencies on your build machines with m2 cache
-initialised at the time of docker build.
+initialized at the time of docker build.
