@@ -28,7 +28,7 @@
                   feedback-link="">
     
       <google-codelab-step label="Overview" duration="2">
-        <p>This lab walks through the process of generating, deploying and testing a mock<br>proxy on Apigee.<br>The lab focuses on leveraging useful tools and best practices, with some<br>practical examples. Over the course of the lab you will step through<br>the process shown below. An Open API specification and test suite have already<br>been provided for the lab. You can use these as a reference<br>to leverge this same process in your own API development work.</p>
+        <p>This lab walks through the process of generating, deploying and testing a mock<br>proxy on Apigee.<br>The lab focuses on leveraging useful tools and best practices, with some<br>practical examples. Over the course of the lab you will step through<br>the process shown below. An Open API specification and test suite have already<br>been provided for the lab. You can use these as a reference<br>to leverage this same process in your own API development work.</p>
 <p class="image-container"><img alt="Overview" src="img/173d98dadc3450b8.png"></p>
 <p>We assume basic knowledge of the Apigee platform and you will get the most<br>from this lab if you already possess this knowledge.</p>
 <p>Ideally you will have completed the Apigee courses on<br><a href="https://www.coursera.org/learn/api-design-apigee-gcp" target="_blank">Design</a>,<br><a href="https://www.coursera.org/learn/api-development-apigee-gcp" target="_blank">Development</a> and<br><a href="https://www.coursera.org/learn/api-security-apigee-gcp" target="_blank">Security</a> Courses.<br>These are available through Coursera, Pluralsight or Qwiklabs.</p>
@@ -41,7 +41,7 @@
       <google-codelab-step label="Prerequisites" duration="30">
         <p>An Apigee organisation (X or Hybrid) configured for external exposure is<br>required to complete this lab. See<br><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision" target="_blank">here</a><br>for details on provisioning an Apigee X evaluation organisation.</p>
 <h2 is-upgraded>Tools</h2>
-<p>You will need to have the following dependencies configired in you local<br>enviornment in order to complete the lab tasks:</p>
+<p>You will need to have the following dependencies configured in you local<br>environment in order to complete the lab tasks:</p>
 <ul>
 <li>Bash (Unix shell)</li>
 <li><a href="https://nodejs.org/en/" target="_blank">NodeJS</a> LTS version or above.</li>
@@ -82,8 +82,8 @@ npm install
     &#34;https&#34;,process.env.RUNTIME_HOST_ALIAS
   );
 </code></pre>
-<p>If you followed the<br><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision" target="_blank">Apigee X Trial Provisioning</a><br>script, a hostname will have been stored in the <code>RUNTIME_HOST_ALIAS</code><br>enviornment variable associated with the <code>eval-group</code> environment group.</p>
-<p>You can also retrive environment group information from you Apigee organisation<br>using <code>apigeecli</code>.</p>
+<p>If you followed the<br><a href="https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision" target="_blank">Apigee X Trial Provisioning</a><br>script, a hostname will have been stored in the <code>RUNTIME_HOST_ALIAS</code><br>environment variable associated with the <code>eval-group</code> environment group.</p>
+<p>You can also retrieve environment group information from you Apigee organisation<br>using <code>apigeecli</code>.</p>
 <pre><code>apigeecli envgroups list -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34;
 </code></pre>
 <p>Using <code>jq</code> we can retrieve a hostname of an environment group and store it in the<br><code>RUNTIME_HOST_ALIAS</code> variable.</p>
@@ -119,7 +119,7 @@ echo &#34;RUNTIME_HOST_ALIAS is $RUNTIME_HOST_ALIAS&#34;
       </google-codelab-step>
     
       <google-codelab-step label="Create an  API Product, Developer and App" duration="10">
-        <p>The generated proxy is protected by a Verify API Key policy (as specificied<br>in the Open API Specification used), a valid API Key is needed in order to<br>sucessfully make API calls to the proxy. To obtain an API Key we need to<br>create an API product which includes our proxy and register a developer and<br>application which will use that API Product.</p>
+        <p>The generated proxy is protected by a Verify API Key policy (as specified<br>in the Open API Specification used), a valid API Key is needed in order to<br>successfully make API calls to the proxy. To obtain an API Key we need to<br>create an API product which includes our proxy and register a developer and<br>application which will use that API Product.</p>
 <pre><code>apigeecli products create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --name &#34;web-orders&#34; --proxies &#34;web-orders-proxy-v1&#34; --envs &#34;$APIGEE_ENV&#34; --approval &#34;auto&#34;
 apigeecli devs create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --email &#34;web-orders@example.com&#34; --user &#34;web-orders@example.com&#34; --first &#34;Web&#34; --last &#34;Developer&#34;
 apigeecli apps create -t &#34;$TOKEN&#34; -o &#34;$APIGEE_ORG&#34; --email &#34;web-orders@example.com&#34; --prods &#34;web-orders&#34; --name &#34;web-orders-app&#34; &gt; app.json
