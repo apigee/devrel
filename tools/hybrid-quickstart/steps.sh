@@ -38,13 +38,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.5.3'
+    export APIGEE_CTL_VERSION='1.6.0'
     echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.2.0'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.8'
+    export ASM_VERSION='1.9'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
@@ -100,6 +100,7 @@ function wait_for_ready(){
     local iterations=0
     local actual_out
 
+    echo -e "Waiting for $action to return output $expected_output"
     echo -e "Start: $(date)\n"
 
     while true; do
@@ -330,7 +331,8 @@ create_gke_cluster() {
 
     if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
       gcloud container clusters create "$GKE_CLUSTER_NAME" \
-        --zone "$ZONE" \
+        --region "$REGION" \
+        --node-locations "$ZONE" \
         --network default \
         --subnetwork default \
         --default-max-pods-per-node "110" \
@@ -343,7 +345,7 @@ create_gke_cluster() {
         --enable-stackdriver-kubernetes
     fi
 
-    gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --zone "$ZONE"
+    gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --region "$REGION"
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
@@ -374,9 +376,6 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  # patch ASM installer to work on OSX and Linux
-  # (sacrificing the YAML fix which we don't rely on at the moment)
-  sed -i -e '/handle_multi_yaml_bug$/s/^/#/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
   # patch ASM installer to allow for cloud build SA
   sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
@@ -390,8 +389,6 @@ spec:
       enabled: true
       k8s:
         serviceAnnotations:
-          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
-          cloud.google.com/neg: '{"ingress": true}'
           networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
           type: LoadBalancer
@@ -400,9 +397,6 @@ spec:
           - name: status-port
             port: 15021 # for ASM 1.7.x and above, else 15020
             targetPort: 15021 # for ASM 1.7.x and above, else 15020
-          - name: http2
-            port: 80
-            targetPort: 8080
           - name: https
             port: 443
             targetPort: 8443
@@ -415,7 +409,7 @@ EOF
   "$QUICKSTART_TOOLS"/istio-asm/install_asm \
     --project_id "$PROJECT_ID" \
     --cluster_name "$GKE_CLUSTER_NAME" \
-    --cluster_location "$ZONE" \
+    --cluster_location "$REGION" \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
     --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
     --enable_all \
@@ -464,33 +458,35 @@ create_cert() {
 
   ENV_GROUP_NAME=$1
 
-  if [ "$CERT_TYPE" = "self-signed" ];then
-    echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
-    mkdir  -p "$HYBRID_HOME/certs"
-
-    CA_CERT_NAME="quickstart-ca"
-
-    # create CA cert if not exist
-    if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
-      echo "CA already exists! Reusing that one."
-    else
-      openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
-    fi
-
-    openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
-
-    openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
-
-    cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
-
-    kubectl create secret tls tls-hybrid-ingress \
-      --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
-      --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-      -n istio-system --dry-run -o yaml | kubectl apply -f -
-
-  elif [ "$CERT_TYPE" = "skip" ];then
+  if [ "$CERT_TYPE" = "skip" ];then
     return
+  fi
+
+  echo "🙈 Creating (temporary) self-signed cert - $ENV_GROUP_NAME"
+  mkdir  -p "$HYBRID_HOME/certs"
+
+  CA_CERT_NAME="quickstart-ca"
+
+  # create CA cert if not exist
+  if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
+    echo "CA already exists! Reusing that one."
   else
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+  fi
+
+  openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
+
+  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
+
+  cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
+
+  kubectl create secret tls tls-hybrid-ingress \
+    --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
+    --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
+    -n istio-system --dry-run -o yaml | kubectl apply -f -
+
+
+  if [ "$CERT_TYPE" != "self-signed" ];then
     echo "🔒 Creating let's encrypt cert - $ENV_GROUP_NAME"
     cat <<EOF | kubectl apply -f -
 apiVersion: cert-manager.io/v1
@@ -562,12 +558,15 @@ envs:
     serviceAccountPaths:
       synchronizer: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-synchronizer.json"
       udca: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
-      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-distributed-trace.json"
+      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-runtime.json"
 mart:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
 connectAgent:
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
+
+udca:
+  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
 
 metrics:
   enabled: true
@@ -586,14 +585,17 @@ EOF
 install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
-    "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
+    "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml )
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl init: done."
+    wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
+    echo "waiting for 30s for the webhook certs to propagate" && sleep 30
 
-    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 
+    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml )
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "0" "$APIGEECTL_HOME/apigeectl check-ready -f $HYBRID_HOME/overrides/overrides.yaml > /dev/null  2>&1; echo \$?" "apigeectl apply: done."
+    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Runtime: Running."
 
     popd || return
 
@@ -637,7 +639,7 @@ deploy_example_proxy() {
   if [ "$CERT_TYPE" = "self-signed" ];then
    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   else
-    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
+    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything (use -k while Let's encrypt is issuing your cert)"
   fi
   echo "👋 To reach your API via the FQDN: Make sure you add a DNS record for your FQDN or an NS record for $DNS_NAME: $NAME_SERVER"
   echo "👋 During development you can also use --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP to resolve the hostname for your curl command"

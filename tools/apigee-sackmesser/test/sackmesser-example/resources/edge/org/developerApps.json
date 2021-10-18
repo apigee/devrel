@@ -1,0 +1,17 @@
+{
+  "janedoe@example.com": [
+    {
+      "appId": "f06eadee-51bd-4f74-8021-aa5976029e82",
+      "attributes": [
+        {
+          "name": "DisplayName",
+          "value": "Sackmesser App"
+        }
+      ],
+      "name": "sackmesser-app",
+      "status": "approved",
+      "appFamily": "default",
+      "developerId": "7b964c84-25a5-436d-b401-4226906a46d7"
+    }
+  ]
+}

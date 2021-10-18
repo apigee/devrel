@@ -53,7 +53,8 @@ limitations under the License.
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
 		<apigee.plugin.version>2.1.2</apigee.plugin.version>
-		<apigee.config-plugin.version>2.1.1</apigee.config-plugin.version>
+		<apigee.config-plugin.version>2.1.3</apigee.config-plugin.version>
+		<apigee.deploy.skip>false</apigee.deploy.skip>
 		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
 		<apigee.bearer>${token}</apigee.bearer>
 		<apigee.apitype>${apitype}</apigee.apitype>
@@ -86,6 +87,10 @@ limitations under the License.
 						</goals>
 						<configuration>
 							<overwrite>true</overwrite>
+							<!-- Be sure not to filter JAR files -->
+							<nonFilteredFileExtensions>
+								<nonFilteredFileExtension>jar</nonFilteredFileExtension>
+							</nonFilteredFileExtensions>
 							<resources>
 								<resource>
 									<directory>${project.root.dir}</directory>
@@ -191,6 +196,9 @@ limitations under the License.
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
 				<version>${apigee.plugin.version}</version>
+				<configuration>
+					<skip>${apigee.deploy.skip}</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<id>configure-bundle-step</id>

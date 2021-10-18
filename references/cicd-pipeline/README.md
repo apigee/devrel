@@ -46,7 +46,7 @@ pipeline in an orchestration tool:
   `airports-cicd-feature-ABC/v1`:
 
   ``` sh
-  TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/ airports-cicd-feature-ABC/v1' npm run integration-test
+  TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test
   ```
 
 ## Initialize a Git Repository
@@ -177,8 +177,6 @@ gcloud beta builds triggers create cloud-source-repositories \
 ```
 
 ## Orchestration using Jenkins
-
-*Note:* Currently this Jenkins reference is designed for Apigee Edge only.
 
 ### Requirement: Jenkins Server
 

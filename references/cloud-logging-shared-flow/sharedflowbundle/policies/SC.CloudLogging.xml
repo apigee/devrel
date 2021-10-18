@@ -48,6 +48,8 @@ limitations under the License.
             "targetRequestSent": "{target.sent.end.timestamp}",
             "targetResponseCode": "{message.status.code}",
             "proxyResponseCode": "{response.status.code}",
+            "clientReceived": "{client.received.start.timestamp}",
+            "clientSent": "{client.sent.start.timestamp}",
             "faultName":"{fault.name}"
         }
     }],
