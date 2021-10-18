@@ -56,11 +56,12 @@ steps:
                 --env-var APIKEY=$(cat /workspace/.qa_apikey)
 artifacts:
   objects:
-    location: 'gs://apigee-build/${_API_PROJECT}/${COMMIT_SHA}'
+    location: 'gs://${_APIGEE_BUILD_BUCKET}/${_API_PROJECT}/${COMMIT_SHA}'
     paths: ['target/*.zip', 'edge.json']
 substitutions:
     _API_PROJECT: MockTarget
     _APIGEE_ORG: your_apigee_org
     _APIGEE_ENV: eval
     _APIGEE_RUNTIME_HOST: your_api_runtime_domain
+    _APIGEE_BUILD_BUCKET: your_apigee_build_bucket
 

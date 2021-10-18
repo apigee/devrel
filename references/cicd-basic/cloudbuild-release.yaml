@@ -18,7 +18,7 @@ steps:
   args:
     - -c
     - |
-      gsutil rsync gs://apigee-build/${_API_PROJECT}/${_COMMIT_SHA}/ ./
+      gsutil rsync gs://${_APIGEE_BUILD_BUCKET}/${_API_PROJECT}/${_COMMIT_SHA}/ ./
       mkdir target
       mv *.zip target
 - id: Fetch token for deployment
@@ -31,7 +31,7 @@ steps:
 - id: Package deploy and upload artifact
   name: gcr.io/cloud-builders/mvn
   entrypoint: bash
-  args: 
+  args:
     - -c
     - |
       mvn install -f pom-release.xml \
@@ -46,7 +46,7 @@ steps:
     - -c
     - |-
       gcloud secrets versions access latest \
-           --secret=mocktarget-apikey-prod-qa > /workspace/.qa_apikey
+           --secret=mocktarget-apikey-prod-validate > /workspace/.prod_apikey
 - id: Integration test
   name: node
   entrypoint: bash
@@ -56,13 +56,13 @@ steps:
       npm install --silent -g newman
       newman run test/MockTarget.postman_collection.json \
                 --env-var SERVER=${_APIGEE_RUNTIME_HOST} \
-                --env-var APIKEY=$(cat /workspace/.qa_apikey)
+                --env-var APIKEY=$(cat /workspace/.prod_apikey)
 substitutions:
     _COMMIT_SHA: from_user
     _API_PROJECT: MockTarget
     _APIGEE_ORG: your_apigee_org
     _APIGEE_ENV: eval
     _APIGEE_RUNTIME_HOST: your_api_runtime_domain
+    _APIGEE_BUILD_BUCKET: your_apigee_build_bucket
 options:
     substitution_option: 'ALLOW_LOOSE'
-
