@@ -79,6 +79,10 @@ technical or non-technical topic.
 - [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
   A 200 level lab demonstrating behavior-driven API development by building,
   deploying and testing a mock API, generated from an Open API Specification.
+- [Integrating Apigee into your CI/CD cycle](labs/cicd-artifact-store) [(web)](https://apigee.github.io/devrel/labs/cicd-artifact-store)
+  A Google Cloud Solution following a tutorial format showing how you can
+  configure and automate Continuous Integration (CI) and Continuous 
+  Deployment (CD) for Apigee in your GCP project using GCP products.
 
 ## Contributing
 
