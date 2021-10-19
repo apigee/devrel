@@ -12,6 +12,14 @@
  limitations under the License.
 -->
 <ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>AM-SetPKCEMode</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
     <Flows>
         <Flow name="GET /authorize">
             <Condition>(proxy.pathsuffix MatchesPath "/authorize") and (request.verb = "GET")</Condition>
@@ -24,6 +32,10 @@
                 </Step>
                 <Step>
                     <Name>EV-InputQueryParams</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>EV-InputQueryParams-PKCE</Name>
                 </Step>
                 <Step>
                     <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != oidc.flow.authorize.redirect_uri )</Condition>
@@ -41,23 +53,32 @@
                     <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
-                <!-- @PKCE
                 <Step>
-                    <Condition>( oidc.flow.authorize.code_challenge Is null ) or ( oidc.flow.authorize.code_challenge = "" )</Condition>
+                    <Condition>(( oidc.flow.authorize.code_challenge Is null ) or ( oidc.flow.authorize.code_challenge = "" )) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step> 
                 <Step>
-                    <Condition>( oidc.flow.authorize.code_challenge_method != "S256" )</Condition>
+                    <Condition>( oidc.flow.authorize.code_challenge_method != "S256" ) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
-                </Step> @PKCE -->
+                </Step>
                 <Step>
                     <Name>KVM-IdpParameters</Name>
                 </Step>
                 <Step>
+                    <Condition>( flow.pkce.enabled != "true" )</Condition>
                     <Name>OA2-GenerateAzCode-State2</Name>
                 </Step>
                 <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>OA2-GenerateAzCode-State2-PKCE</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled != "true" )</Condition>
                     <Name>AM-GenerateState2ForIdp</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>AM-GenerateState2ForIdp-PKCE</Name>
                 </Step>
             </Request>
             <Response>
@@ -87,15 +108,29 @@
                     <Name>AM-StateAttributes</Name>
                 </Step>
                 <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>AM-StateAttributes-PKCE</Name>
+                </Step>
+                <Step>
                     <Name>AM-SetExternalAuthorizationStatus</Name>
                 </Step>
                 <Step>
+                    <Condition>( flow.pkce.enabled != "true" )</Condition>
                     <Name>OA2-StoreExternalAuthorizationCode</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>OA2-StoreExternalAuthorizationCode-PKCE</Name>
                 </Step>
             </Request>
             <Response>
                 <Step>
+                    <Condition>( flow.pkce.enabled != "true" )</Condition>
                     <Name>AM-RedirectToApp</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Name>AM-RedirectToApp-PKCE</Name>
                 </Step>
             </Response>
         </Flow>
@@ -124,22 +159,21 @@
                     <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
-                <!-- @PKCE
                 <Step>
-                    <Condition>( request.formparam.code_verifier Is null ) or ( request.formparam.code_verifier = "" )</Condition>
+                    <Condition>(( request.formparam.code_verifier Is null ) or ( request.formparam.code_verifier = "" )) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidGrant</Name>
-                </Step> @PKCE -->
+                </Step>
                 <Step>
                     <Name>OA2-GetOriginalStateAttributes</Name>
                 </Step>
-                <!-- @PKCE
                 <Step>
+                    <Condition>( flow.pkce.enabled = "true" )</Condition>
                     <Name>JS-PKCECodeVerification</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.isPKCECodeVerified == false )</Condition>
+                    <Condition>( oidc.flow.isPKCECodeVerified == false ) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidGrant</Name>
-                </Step> @PKCE -->
+                </Step>
                 <Step>
                     <Name>KVM-IdpParameters</Name>
                 </Step>

@@ -84,8 +84,8 @@ generate_edge_json() {
   ENV_NAME=$1
   SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-  rm -f "$SCRIPTPATH"/identity-facade-v1/edge.json
-  cat <<EOF >> "$SCRIPTPATH/identity-facade-v1/edge.json"
+  rm -f "$SCRIPTPATH"/edge.json
+  cat <<EOF >> "$SCRIPTPATH/edge.json"
 {
     "version": "1.0",
     "envConfig": {
@@ -238,57 +238,14 @@ set_functional_test_env_var() {
 #################################
 set_pkce_config() {
 
-    # pkce comment patterns used in files
-    EMPTY_STRING=''
-    APICKLI_FPARAM_PKCE_CODE_VERIFIER_PATTERN='@PKCECodeVerifier@'
+    # Copy AM policy template
+    cp "$SCRIPTPATH"/AM-SetPKCEMode.template.xml "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml
 
-    if [ "$1" = "true" ];then
+    # replace pkce tag in AM policy
+    sed -i.bak "s|@IsPKCEEnabled@|$1|" "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml
 
-        echo "[INFO] PKCE enabled - creating PKCE configuration for identity facade"
-
-        # pkce comment patterns used in files
-        START_PKCE_COMMENT_PATTERN='<!-- @PKCE'
-        END_PKCE_COMMENT_PATTERN='@PKCE -->'
-        APICKLI_FPARAM_PKCE_CODE_VERIFIER="\| code_verifier \| \`codeVerifier\` \|"
-
-        # replace pkce comment patterns in proxy configuration
-        sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/AM-StateAttributes.xml
-        sed -i.bak "s|$END_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/AM-StateAttributes.xml
-        sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/EV-InputQueryParams.xml
-        sed -i.bak "s|$END_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/EV-InputQueryParams.xml
-        sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-GenerateAzCode-State2.xml
-        sed -i.bak "s|$END_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-GenerateAzCode-State2.xml
-        sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-StoreExternalAuthorizationCode.xml
-        sed -i.bak "s|$END_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-StoreExternalAuthorizationCode.xml
-        sed -i.bak "s|$START_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/proxies/default.xml
-        sed -i.bak "s|$END_PKCE_COMMENT_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/apiproxy/proxies/default.xml
-        # replace pkce patterns in apickli tests
-        sed -i.bak "s|$APICKLI_FPARAM_PKCE_CODE_VERIFIER_PATTERN|$APICKLI_FPARAM_PKCE_CODE_VERIFIER|" "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.end2end.feature
-        sed -i.bak "s|$APICKLI_FPARAM_PKCE_CODE_VERIFIER_PATTERN|$APICKLI_FPARAM_PKCE_CODE_VERIFIER|" "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.token.feature
-
-        # remove .bak files
-        rm "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/AM-StateAttributes.xml.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/EV-InputQueryParams.xml.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-GenerateAzCode-State2.xml.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/apiproxy/policies/OA2-StoreExternalAuthorizationCode.xml.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/apiproxy/proxies/default.xml.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.end2end.feature.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.token.feature.bak
-    else
-        echo "[INFO] PKCE disabled - keep identity facade configuration unchanged"
-
-         # replace pkce patterns in apickli tests
-        sed -i.bak "s|$APICKLI_FPARAM_PKCE_CODE_VERIFIER_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.end2end.feature
-        sed -i.bak "s|$APICKLI_FPARAM_PKCE_CODE_VERIFIER_PATTERN|$EMPTY_STRING|" "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.token.feature
-
-        # remove pkce tests feature files
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.authorize-pkce.feature
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.token-pkce.feature
-
-        # remove .bak files
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.end2end.feature.bak
-        rm "$SCRIPTPATH"/identity-facade-v1/test/integration/features/identity-facade.token.feature.bak
-    fi
+    # remove .bak files
+    rm "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml.bak
 }
 
 ####################################
@@ -339,16 +296,9 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 # default value for pkce enablement
 DEFAULT_IS_PKCE_ENABLED=false
 
-# is okce enabled (=true) or not (=false)
+# is pkce enabled (=true) or not (=false)
 IS_PKCE_ENABLED="${IS_PKCE_ENABLED:-"$DEFAULT_IS_PKCE_ENABLED"}"
 
- # clean up
-rm -rf "$SCRIPTPATH"/identity-facade-v1
-
-# Copy identity facade template and replace variables in configuration files
-cp -r ./template-identity-facade-v1 ./identity-facade-v1
-
-# set pkce config if pkce is enabled
 set_pkce_config "$IS_PKCE_ENABLED"
 
 if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
@@ -371,7 +321,7 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     set_functional_test_env_var "$timestamp"
 
     # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"/identity-facade-v1
+    sackmesser deploy --apigeeapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -u "$APIGEE_USER" -p "$APIGEE_PASS" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
     curl --fail --silent -X POST \
@@ -386,8 +336,10 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
         https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
 
     # execute integration tests only against mock IDP
-    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH"/identity-facade-v1 && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ] && [ "$IS_PKCE_ENABLED" = "true" ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run testPkce)
+    elif [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
@@ -417,7 +369,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     set_functional_test_env_var "$timestamp"
 
     # # deploy Apigee artifacts: proxy, developer, app, product cache, kvm and proxy
-    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"/identity-facade-v1
+    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
 
     # set developer app (apigee_client) credentials
     curl --fail --silent -X POST \
@@ -432,8 +384,10 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
 
     # execute integration tests only against mock IDP
-    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH"/identity-facade-v1 && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ] && [ "$IS_PKCE_ENABLED" = "true" ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run testPkce)
+    elif [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
     else
         echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi

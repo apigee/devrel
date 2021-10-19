@@ -1,4 +1,4 @@
-@End2EndFunctionalTests
+@end2end
 Feature:
   As a Client App 
   I want to access the protected resource of an API
@@ -21,7 +21,6 @@ Feature:
       | redirect_uri| https://httpbin.org/get |
       |	state	    | `state`		      |
       |	scope	    | `scope`		      |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 200
     And I store the value of body path $.access_token as userToken in global scope

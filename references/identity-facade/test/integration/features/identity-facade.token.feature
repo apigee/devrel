@@ -1,4 +1,4 @@
-@TokenEndpoint
+@token
 Feature:
   As a Client App 
   I want to access the protected resource of an API
@@ -19,7 +19,6 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 200
     And I store the value of body path $.access_token as userToken in global scope
@@ -31,7 +30,6 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 401
     And response body should be valid json
@@ -43,7 +41,6 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 401
     And response body path $.error should be invalid_client
@@ -55,7 +52,6 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
       | redirect_uri| https://example.com/invalid |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be invalid_request
@@ -67,7 +63,6 @@ Feature:
       | grant_type  | authorization_code      |
       | code        | invalid-code            |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 404
     And response body should be valid json
@@ -78,7 +73,6 @@ Feature:
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be invalid_grant
@@ -90,7 +84,6 @@ Feature:
       | grant_type  | xxx           |
       | code        | `authCode`              |
       | redirect_uri| https://httpbin.org/get |
-      @PKCECodeVerifier@
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be unsupported_grant_type

@@ -79,9 +79,9 @@ the IdP. This cache is scoped at env level.
 - An API Product only used for functional tests
 - A developer app only used for functional tests
 
-On the machine and on the `identity-facade-v1` directory based on the identity
-facade template, you can find a `edge.json` file, which contains the
-configuration of all these elements.
+On the machine and directory from where the script is executed,
+you can find a `edge.json` file, which contains the configuration
+of all these elements.
 
 Finally, the pipeline script provides the authorization URL that you can
 copy/paste into your favorite web browser to initiate the OIDC flow.

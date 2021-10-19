@@ -1,4 +1,6 @@
 edge.json
 .DS_Store
 lib
-identity-facade-v1
+node_modules
+AM-SetPKCEMode.xml
+target
