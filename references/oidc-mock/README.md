@@ -154,7 +154,7 @@ list of required parameters for each of them:
 If you need to change the value of the endpoint URI, please make the
 modification on the following file:
 [default.xml](./apiproxy/proxies/default.xml),
-as shown on the folowing picture:
+as shown on the following picture:
 
 ![default.xml](./img/02.png "Modifying the authorization endpoint")
 
@@ -273,7 +273,7 @@ List of parameters:
 
 | Name | Type (query/header/form) | Value | Required (yes/no) |
 |:----|:-----:|:----:|:----:|
-| token | form |  a valide token cf. Access Tokens | yes |
+| token | form |  a valid token cf. Access Tokens | yes |
 |authorization|header|Basic auth header value of clientId and clientSecret|yes|
 | Content-Type | header | application/x-www-form-urlencoded | yes |
 | Accept | header | application/json | no |

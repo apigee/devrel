@@ -34,8 +34,8 @@ if (matching) {
 function setNotFoundError() {
   const errorStatus = 404;
   const errorReason = "Not Found";
-  const errrorContent = {
-    errror: {
+  const errorContent = {
+    error: {
       errors: [
         {
           message: errorReason,
@@ -49,5 +49,5 @@ function setNotFoundError() {
   context.setVariable("response.status.code", errorStatus);
   context.setVariable("response.reason.phrase", errorReason);
   context.setVariable("response.header.Content-Type", "application/json");
-  context.setVariable("response.content", JSON.stringify(errrorContent));
+  context.setVariable("response.content", JSON.stringify(errorContent));
 }
