@@ -37,7 +37,7 @@ if [ -z "$OPENLEGACY_APIKEY"   ] || \
    [ -z "$APIGEE_ORG"          ] || \
    [ -z "$APIGEE_ENV"          ] || \
    [ -z "$GCP_PROJECT"         ]; then
-  echo "A required variable is missing"; 
+  echo "A required variable is missing";
   exit 1
 fi
 
@@ -128,7 +128,7 @@ npx apigeetool createcache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" 
 ###
 
 GCP_SA_KEY=$(jq '. | tostring' < "./credentials.json")
-curl -XPOST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
+curl -X POST -s -u "$APIGEE_USER:$APIGEE_PASS" "https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/e/$APIGEE_ENV/keyvaluemaps" \
   -H 'Content-Type: application/json; charset=utf-8' \
   --data-binary @- > /dev/null << EOF
 {
@@ -177,7 +177,7 @@ echo "APIKEY is $APIKEY"
 sed -i.bak "s|@APIKEY@|$APIKEY|" ./aok-v1/test/features/step_definitions/init.js
 rm ./aok-v1/test/features/step_definitions/init.js.bak
 
-sleep 60 # service account can take up to 60 seconds to propogate
+sleep 60 # service account can take up to 60 seconds to propagate
 
 ###
 # run some smoke tests

@@ -76,11 +76,11 @@ using the following command:
 
     ./generate_docs.sh
 
-Here is the orginal sequence diagram:
+Here is the original sequence diagram:
 
 ![Identity Facade](./diagram/sequence-identity-facade-v1.png "Seq. Diagram")
 
-### Indentity Facade Endpoints
+### Identity Facade Endpoints
 
 Available endpoints are the following ones:
 
