@@ -8,7 +8,7 @@
     "unit-test": "nyc --reporter=html mocha --recursive \"./test/unit/*.js\"",
     "integration-test": "cucumber-js ./test/integration",
     "lint": "npm run eslint && npm run apigeelint",
-    "eslint": "eslint -c ./.eslintrc-jsc.yml --format html",
+    "eslint": "eslint --format html .",
     "apigeelint": "apigeelint -s ./apiproxy -f html.js -e PO025,PO013"
   },
   "devDependencies": {

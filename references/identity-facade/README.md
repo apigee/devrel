@@ -96,14 +96,14 @@ using the following command:
 
     ./generate_docs.sh
 
-Here is the orginal sequence diagram:
+Here is the original sequence diagram:
 
 ![Identity Facade](./diagram/sequence-identity-facade-v1.png "Seq. Diagram")
 
 Query and form parameters as well as proxy processing specific to PKCE are
 indicated in blue on the sequence diagram.
 
-### Indentity Facade Endpoints
+### Identity Facade Endpoints
 
 Available endpoints are the following ones:
 

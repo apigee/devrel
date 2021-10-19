@@ -54,12 +54,14 @@ limitations under the License.
 		<apigee.org>${org}</apigee.org>
 		<apigee.env>${env}</apigee.env>
 		<apigee.hosturl>https://${baseuri}</apigee.hosturl>
+		<apigee.deploy.skip>false</apigee.deploy.skip>
 		<apigee.authtype>oauth</apigee.authtype>
 		<apigee.username>${username}</apigee.username>
 		<apigee.password>${password}</apigee.password>
 		<apigee.bearer>${token}</apigee.bearer> <!-- optional: mfa -->
 		<apigee.mfatoken>${mfa}</apigee.mfatoken> <!-- optional: mfa -->
 		<apigee.apitype>${apitype}</apigee.apitype>
+		<apigee.import-keys.phase>skip</apigee.import-keys.phase>
 	</properties>
 
 	<build>
@@ -87,11 +89,11 @@ limitations under the License.
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
+							<overwrite>true</overwrite>
 							<!-- Be sure not to filter JAR files -->
 							<nonFilteredFileExtensions>
 								<nonFilteredFileExtension>jar</nonFilteredFileExtension>
 							</nonFilteredFileExtensions>
-							<overwrite>true</overwrite>
 							<resources>
 								<resource>
 									<directory>${project.root.dir}</directory>
@@ -112,6 +114,9 @@ limitations under the License.
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
 				<version>${apigee.plugin.version}</version>
+				<configuration>
+					<skip>${apigee.deploy.skip}</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<id>configure-bundle</id>
@@ -219,6 +224,13 @@ limitations under the License.
                         <phase>install</phase>
                         <goals>
                             <goal>flowhooks</goal>
+                        </goals>
+                    </execution>
+					<execution>
+                        <id>import-keys</id>
+                        <phase>${apigee.import-keys.phase}</phase>
+                        <goals>
+                            <goal>importKeys</goal>
                         </goals>
                     </execution>
                 </executions>

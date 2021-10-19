@@ -104,7 +104,7 @@ paths:
       operationId: Send request and view request headers and body
       description: "Send a request and view the resulting request headers and body in JSON
         format.
-The request payload can be specified using one of the
+        The request payload can be specified using one of the
         following formats: application/json, application/x-www-form-urlencoded,
         or application/xml."
       requestBody:

@@ -89,7 +89,7 @@ export ENV_GROUP_NAME='test'
 ### Ingress config
 
 By default a subdomain will be created for every environment group
-e.g. test.1-2-3-4.nip.io (where 1.2.3.4 is the IP of the isto ingress)
+e.g. test.1-2-3-4.nip.io (where 1.2.3.4 is the IP of the istio ingress)
 
 `INGRESS_TYPE` can be `external` (default) or `internal`
 
@@ -114,7 +114,7 @@ Apigee hybrid ingress:
 - `export CERT_TYPE=''` (default) Automatically obtain trusted certificates (through
   Let's encrypt). For details see [this](https://community.apigee.com/articles/86322/free-trusted-ssl-certificates-for-apigee-hybrid-in.html)
   blog post in the Apigee community.
-- `export CERT_TYPE='self-signed'` creates self-signed certifificates
+- `export CERT_TYPE='self-signed'` creates self-signed certificates
 - `export CERT_TYPE='skip'` skips the certificate creation and relies on you
   creating a `tls-hybrid-ingress` certificate in the `istio-system` namespace.
 
