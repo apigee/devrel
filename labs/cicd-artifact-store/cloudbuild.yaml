@@ -12,56 +12,55 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 steps:
-- id: Lint Apigee API bundle
-  name: node
-  entrypoint: bash
-  args:
-    - -c
-    - |-
-      npm install --silent -g --no-fund apigeelint@2.6.x
-      apigeelint -s ./apiproxy --profile apigeex -f table.js
-- id: Fetch token for deployment
-  name: gcr.io/cloud-builders/gcloud
-  entrypoint: bash
-  args:
-    - -c
-    - gcloud auth print-access-token > /workspace/.build_token
-- id: Package deploy to nonprod
-  name: gcr.io/cloud-builders/mvn
-  entrypoint: bash
-  args:
-    - -c
-    - |
-      mvn install -Pdev \
-                  -Dapigee.config.options=update \
-                  -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
-                  -Dbearer=$(cat /workspace/.build_token)
-- id: Fetch API key for test
-  name: gcr.io/cloud-builders/gcloud
-  entrypoint: bash
-  args:
-    - -c
-    - |-
-      gcloud secrets versions access latest \
-           --secret=mocktarget-apikey-nonprod-qa > /workspace/.qa_apikey
-- id: Integration test
-  name: node
-  entrypoint: bash
-  args:
-    - -c
-    - |-
-      npm install --silent -g newman
-      newman run test/MockTarget.postman_collection.json \
-                --env-var SERVER=${_APIGEE_RUNTIME_HOST} \
-                --env-var APIKEY=$(cat /workspace/.qa_apikey)
+  - id: Lint Apigee API bundle
+    name: node
+    entrypoint: bash
+    args:
+      - -c
+      - |-
+        npm install --silent -g --no-fund apigeelint@2.6.x
+        apigeelint -s ./apiproxy --profile apigeex -f table.js
+  - id: Fetch token for deployment
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - gcloud auth print-access-token > /workspace/.build_token
+  - id: Package deploy to nonprod
+    name: gcr.io/cloud-builders/mvn
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        mvn install -Pdev \
+                    -Dapigee.config.options=update \
+                    -Dorg=${_APIGEE_ORG} -Denv=${_APIGEE_ENV} \
+                    -Dbearer=$(cat /workspace/.build_token)
+  - id: Fetch API key for test
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |-
+        gcloud secrets versions access latest \
+            --secret=mocktarget-apikey-nonprod-qa > /workspace/.qa_apikey
+  - id: Integration test
+    name: node
+    entrypoint: bash
+    args:
+      - -c
+      - |-
+        npm install --silent -g newman
+        newman run test/MockTarget.postman_collection.json \
+                  --env-var SERVER=${_APIGEE_RUNTIME_HOST} \
+                  --env-var APIKEY=$(cat /workspace/.qa_apikey)
 artifacts:
   objects:
     location: 'gs://${_APIGEE_BUILD_BUCKET}/${_API_PROJECT}/${COMMIT_SHA}'
     paths: ['target/*.zip', 'edge.json']
 substitutions:
-    _API_PROJECT: MockTarget
-    _APIGEE_ORG: your_apigee_org
-    _APIGEE_ENV: eval
-    _APIGEE_RUNTIME_HOST: your_api_runtime_domain
-    _APIGEE_BUILD_BUCKET: your_apigee_build_bucket
-
+  _API_PROJECT: MockTarget
+  _APIGEE_ORG: your_apigee_org
+  _APIGEE_ENV: eval
+  _APIGEE_RUNTIME_HOST: your_api_runtime_domain
+  _APIGEE_BUILD_BUCKET: your_apigee_build_bucket
