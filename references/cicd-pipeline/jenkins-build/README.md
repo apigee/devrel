@@ -199,7 +199,7 @@ docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest apigee/devrel-je
 #### Option B: Local Build
 
 ```sh
-docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runner:latest
+docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runner:latest .
 ```
 
 #### Option C: Cloud Build on GCP
