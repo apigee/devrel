@@ -43,7 +43,7 @@ Set `Access-Control-*` headers for Preflight and Standard API Requests
 
 ### Error Handling
 
-Seperate the throwing of errors, description and formatting of errors for
+Separate the throwing of errors, description and formatting of errors for
 consistency across API Proxies.
 
 ### Get Config

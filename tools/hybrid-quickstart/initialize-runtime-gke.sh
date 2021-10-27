@@ -24,7 +24,7 @@ ENV_GROUP_NAME=${ENV_GROUP_NAME:="test"}
 
 source "$QUICKSTART_ROOT/steps.sh"
 
-# enables all reqired GCP APIs
+# enables all required GCP APIs
 enable_all_apis
 
 # configure installation

@@ -160,7 +160,7 @@ docker run \
 
 ##### Apigee X/hybrid in local Docker
 
-*Note:* for long running jenkins deployments condider mounting the gcloud
+*Note:* for long running jenkins deployments consider mounting the gcloud
 service account credentials from the host filesystem instead of passing
 the access token via environment variables.
 
@@ -185,7 +185,7 @@ before.
 ## Jenkinsfile-Runner
 
 Follow these instructions to build and run an ephemeral Jenkinsfile runtime.
-This is maninly inteded for CICD of the pipeline itself.
+This is mainly intended for CI/CD of the pipeline itself.
 
 ### Build
 

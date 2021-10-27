@@ -20,11 +20,11 @@ info:
     url: https://github.com/apigee/devrel
   description: Mock API Specification for a Currency Converter
 servers:
-- url: /mock/v1
+  - url: /mock/v1
 tags:
-- name: mock
-- name: currency
-- name: fintech
+  - name: mock
+  - name: currency
+  - name: fintech
 paths:
   /currency/latest:
     get:
@@ -32,7 +32,7 @@ paths:
       operationId: get-latest-exchange-rates
       description: Get latest exchange rates
       tags:
-      - currency
+        - currency
       responses:
         "200":
           description: OK
@@ -59,7 +59,7 @@ paths:
       operationId: convert-currency
       description: Convert amount from base to target currency
       tags:
-      - currency
+        - currency
       parameters:
         - name: from
           in: query
