@@ -1,6 +1,6 @@
 edge.json
 .DS_Store
-node_modules
-target
 lib
-
+node_modules
+AM-SetPKCEMode.xml
+target
