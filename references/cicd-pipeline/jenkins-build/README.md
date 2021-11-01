@@ -192,14 +192,14 @@ This is mainly intended for CI/CD of the pipeline itself.
 #### Option A: Use a pre-built image
 
 ```sh
-docker pull ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
-docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
+docker pull ghcr.io/apigee/devrel-jenkinsfile:latest
+docker tag ghcr.io/apigee/devrel-jenkinsfile:latest apigee/devrel-jenkinsfile:latest
 ```
 
 #### Option B: Local Build
 
 ```sh
-docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runner:latest .
+docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile:latest .
 ```
 
 #### Option C: Cloud Build on GCP
@@ -207,8 +207,8 @@ docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runne
 ```sh
 PROJECT_ID=$(gcloud config get-value project)
 gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
-docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest
-docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
+docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile:latest
+docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile:latest apigee/devrel-jenkinsfile:latest
 ```
 
 ### Example Run

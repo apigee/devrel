@@ -40,11 +40,11 @@ echo "[INFO] CICD Pipeline for Apigee Edge (Jenkins)"
 
 # because volume mounts don't work inside docker in docker without reference to the host file system
 cat << EOF >> ./Dockerfile-jenkins-cicd
-FROM ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
+FROM ghcr.io/apigee/devrel-jenkinsfile:latest
 COPY . /workspace
 RUN cp /workspace/ci-config/jenkins/Jenkinsfile /workspace/Jenkinsfile
 EOF
-docker build -f ./Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-runner-airports:latest .
+docker build -f ./Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-airports:latest .
 rm ./Dockerfile-jenkins-cicd
 
 docker run \
@@ -58,7 +58,7 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -i apigee/devrel-jenkinsfile-runner-airports:latest
+  -i apigee/devrel-jenkinsfile-airports:latest
 
 
 echo "[INFO] CICD Pipeline for Apigee X (Jenkins)"
@@ -77,4 +77,4 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -i apigee/devrel-jenkinsfile-runner-airports:latest
+  -i apigee/devrel-jenkinsfile-airports:latest
