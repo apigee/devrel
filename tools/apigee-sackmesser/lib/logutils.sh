@@ -13,25 +13,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+NOCOL='\033[0m'
 
 logdebug() {
     if [ "$debug" = "T" ]; then
-        log "DEBUG" "$@"
+        log "DEBUG" "$@" "$BLUE"
     fi
 }
 loginfo() {
-    log "INFO" "$@"
+    log "INFO" "$@" "$NOCOL"
 }
 logwarn() {
-    log "WARN" "$@"
+    log "WARN" "$@" "$ORANGE"
 }
 logerror() {
-    log "ERROR" "$@"
+    log "ERROR" "$@" "$RED"
 }
 logfatal() {
-    log "FATAL" "$@"
+    log "FATAL" "$@" "$RED"
 }
 
 log() {
-    echo "[$1] $2" 1>&2;
+    echo -e "${3}[$1] $2${NOCOL}" 1>&2;
 }

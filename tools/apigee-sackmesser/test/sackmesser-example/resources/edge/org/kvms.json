@@ -1,0 +1,10 @@
+[
+  {
+    "name": "kvmtestmap",
+    "encrypted": "true"
+  },
+  {
+    "name": "org-kvm",
+    "encrypted": "true"
+  }
+]

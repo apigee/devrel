@@ -14,7 +14,7 @@
 
 FROM google/cloud-sdk:alpine as cloud-sdk
 
-FROM jenkins/jenkins:2.302-alpine
+FROM jenkins/jenkins:2.315-alpine
 
 USER root
 RUN apk update && apk add --no-cache git maven nodejs npm python3

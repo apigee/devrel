@@ -4,7 +4,7 @@ id: bdd-proxy-development
 
 A 200 level lab demonstrating behavior-driven API development by building,
 deploying and testing a mock API, generated from an Open API Specification.
-  
+
 ## Overview
 
 Duration: 0:02:00
@@ -15,7 +15,7 @@ The lab focuses on leveraging useful tools and best practices, with some
 practical examples. Over the course of the lab you will step through
 the process shown below. An Open API specification and test suite have already
 been provided for the lab. You can use these as a reference
-to leverge this same process in your own API development work.
+to leverage this same process in your own API development work.
 
 ![Overview](assets/overview.png)
 
@@ -45,8 +45,8 @@ for details on provisioning an Apigee X evaluation organisation.
 
 ### Tools
 
-You will need to have the following dependencies configired in you local
-enviornment in order to complete the lab tasks:
+You will need to have the following dependencies configured in you local
+environment in order to complete the lab tasks:
 
 - Bash (Unix shell)
 - [NodeJS](https://nodejs.org/en/) LTS version or above.
@@ -110,9 +110,9 @@ before(function () {
 If you followed the
 [Apigee X Trial Provisioning](https://github.com/apigee/devrel/tree/main/tools/apigee-x-trial-provision)
 script, a hostname will have been stored in the `RUNTIME_HOST_ALIAS`
-enviornment variable associated with the `eval-group` environment group.
+environment variable associated with the `eval-group` environment group.
 
-You can also retrive environment group information from you Apigee organisation
+You can also retrieve environment group information from you Apigee organisation
 using `apigeecli`.
 
 ``` bash
@@ -174,9 +174,9 @@ debug tool to investigate the cause.
 
 Duration: 0:10:00
 
-The generated proxy is protected by a Verify API Key policy (as specificied
+The generated proxy is protected by a Verify API Key policy (as specified
 in the Open API Specification used), a valid API Key is needed in order to
-sucessfully make API calls to the proxy. To obtain an API Key we need to
+successfully make API calls to the proxy. To obtain an API Key we need to
 create an API product which includes our proxy and register a developer and
 application which will use that API Product.
 

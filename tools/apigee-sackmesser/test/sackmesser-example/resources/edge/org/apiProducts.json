@@ -1,0 +1,28 @@
+[
+  {
+    "name": "SackMesserProduct1",
+    "displayName": "SackMesserProduct1",
+    "approvalType": "auto",
+    "attributes": [
+      {
+        "name": "access",
+        "value": "public"
+      }
+    ],
+    "environments": [
+    ]
+  },
+  {
+    "name": "SackMesserProduct2",
+    "displayName": "SackMesserProduct2",
+    "approvalType": "auto",
+    "attributes": [
+      {
+        "name": "access",
+        "value": "public"
+      }
+    ],
+    "environments": [
+    ]
+  }
+]

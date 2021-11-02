@@ -1,4 +1,4 @@
-@AuthorizeEndpoint
+@authorize
 Feature:
   As a Client App 
   I want to access the protected resource of an API

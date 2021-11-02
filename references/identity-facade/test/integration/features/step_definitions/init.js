@@ -14,6 +14,9 @@
   limitations under the License.
 
 */
+
+/* eslint-disable no-invalid-this */
+/* eslint-disable new-cap */
 const apickli = require('apickli')
 const {
   Before,
@@ -22,9 +25,13 @@ const {
 
 const clientId = process.env.TEST_APP_CONSUMER_KEY
 const clientSecret = process.env.TEST_APP_CONSUMER_SECRET
+// PKCE code challenge method is set to 'S256'
+const codeVerifier = process.env.TEST_APP_PKCE_CODE_VERIFIER
+const codeChallenge = process.env.TEST_APP_PKCE_CODE_CHALLENGE
 const username = 'johndoe'
 const password = 'dummy-password'
 const basePath = '/v1/oauth20'
+const pkceQueryParams = '&code_challenge='+codeChallenge+'&code_challenge_method=S256'
 
 Before(function() {
   this.apickli = new apickli.Apickli('https',
@@ -33,6 +40,9 @@ Before(function() {
   this.apickli.scenarioVariables.clientSecret = clientSecret
   this.apickli.scenarioVariables.username = username
   this.apickli.scenarioVariables.password = password
+  this.apickli.scenarioVariables.codeVerifier = codeVerifier
+  this.apickli.scenarioVariables.codeChallenge = codeChallenge
+  this.apickli.scenarioVariables.pkceQueryParams = pkceQueryParams
 })
 
 setDefaultTimeout(60 * 1000)

@@ -46,7 +46,7 @@ pipeline in an orchestration tool:
   `airports-cicd-feature-ABC/v1`:
 
   ``` sh
-  TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/ airports-cicd-feature-ABC/v1' npm run integration-test
+  TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test
   ```
 
 ## Initialize a Git Repository
@@ -178,8 +178,6 @@ gcloud beta builds triggers create cloud-source-repositories \
 
 ## Orchestration using Jenkins
 
-*Note:* Currently this Jenkins reference is designed for Apigee Edge only.
-
 ### Requirement: Jenkins Server
 
 You can either use the included instructions to configure a new Jenkins server
@@ -198,8 +196,8 @@ use that one.
 
 You are responsible to ensure you have the following plugins enabled:
 
-- [Multibranch Pipeline](https://plugins.jenkins.io/workflow-multibranch/)
-- [HTML Pubisher](https://plugins.jenkins.io/htmlpublisher/)
+- [Multi-Branch Pipeline](https://plugins.jenkins.io/workflow-multibranch/)
+- [HTML Publisher](https://plugins.jenkins.io/htmlpublisher/)
 - [Cucumber Reports](https://plugins.jenkins.io/cucumber-reports/)
 
 ### CI/CD Configuration Instructions
@@ -208,9 +206,9 @@ You are responsible to ensure you have the following plugins enabled:
 
 Start or configure your Jenkins server as described above.
 
-### Create a multibranch Jenkins job
+### Create a multi-branch Jenkins job
 
-Use the UI to configure the Jenkins Job for multibranch pipelines:
+Use the UI to configure the Jenkins Job for multi-branch pipelines:
 
 1. Set the Git repo e.g. `https://github.com/my-user/my-api-proxy-repo`
 2. Path to the Jenkinsfile e.g. `ci-config/jenkins/Jenkinsfile`
@@ -221,7 +219,7 @@ Use the UI to configure the Jenkins Job for multibranch pipelines:
 ### Run the pipeline
 
 1. Open the multi-branch pipeline you just created.
-2. Click `Scan Multibranch Pipeline Now` to detect branches with a
+2. Click `Scan Multi-branch Pipeline Now` to detect branches with a
     Jenkinsfile.
 3. Explore the build(s) that get triggered.
 4. Explore the final build success.

@@ -216,19 +216,7 @@ generate_edge_json() {
 EOF
 }
 
-####################################################
-### function: generate_post_data_app_credentials ###
-####################################################
-generate_post_data_app_credentials() {
-cat <<EOF
-{
-  "consumerKey": "$TEST_APP_CONSUMER_KEY",
-  "consumerSecret": "xsecret"
-}
-EOF
-}
-
-################################
+#################################
 ### function: set_idp_env_var ###
 #################################
 set_functional_test_env_var() {
@@ -238,12 +226,80 @@ set_functional_test_env_var() {
     export TEST_APP_CONSUMER_KEY
     TEST_APP_CONSUMER_SECRET='xsecret'
     export TEST_APP_CONSUMER_SECRET
+    # pkce test variables. Challenge method is set to 'S256' (sha256)
+    TEST_APP_PKCE_CODE_CHALLENGE='hoLP4vNbBccHkhNAbk_jbyLhlGwgeoRyo53A-Luiirg'
+    export TEST_APP_PKCE_CODE_CHALLENGE
+    TEST_APP_PKCE_CODE_VERIFIER='iloveapis1234567890'
+    export TEST_APP_PKCE_CODE_VERIFIER
 }
 
+#################################
+### function: set_pkce_config ###
+#################################
+set_pkce_config() {
+
+    # Copy AM policy template
+    cp "$SCRIPTPATH"/AM-SetPKCEMode.template.xml "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml
+
+    # replace pkce tag in AM policy
+    sed -i.bak "s|@IsPKCEEnabled@|$1|" "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml
+
+    # remove .bak files
+    rm "$SCRIPTPATH"/apiproxy/policies/AM-SetPKCEMode.xml.bak
+}
+
+####################################
+### function: generate_authz_url ###
+####################################
+generate_authz_url() {
+    HOST=$1
+    BASE_PATH="/v1/oauth20"
+    AZ_URI="/authorize"
+    CLIENT_ID="?client_id="$2
+    RESPONSE_TYPE="&response_type=code"
+    SCOPE="&scope=openid email profile"
+    STATE="&state=abcd-1234"
+    REDIRECT_URI="&redirect_uri=https://httpbin.org/get"
+
+    # is pkce enabled (=true) or not
+    if [ "$4" = "true" ];then
+        CODE_CHALLENGE_METHOD="&code_challenge_method=S256"
+        CODE_CHALLENGE="&code_challenge="$3
+    else
+        CODE_CHALLENGE_METHOD=""
+        CODE_CHALLENGE=""
+    fi
+    
+    printf "\n"
+    printf "##########################\n"
+    printf "#### Authorization URL ###\n"
+    printf "##########################\n"
+    printf "You can copy/paste the following authorization URL into your Web browser to initiate the OIDC flow:\n"
+    printf "https://"%s%s%s%s%s%s%s%s%s%s \
+                    "$HOST" \
+                    "$BASE_PATH" \
+                    "$AZ_URI" \
+                    "$CLIENT_ID" \
+                    "$RESPONSE_TYPE" \
+                    "$SCOPE" \
+                    "$STATE" \
+                    "$REDIRECT_URI" \
+                    "$CODE_CHALLENGE_METHOD" \
+                    "$CODE_CHALLENGE"
+    printf "\n\n"
+}
 
 # generate a timestamp to make some values unique
 timestamp=$(date '+%s')
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
+
+# default value for pkce enablement
+DEFAULT_IS_PKCE_ENABLED=false
+
+# is pkce enabled (=true) or not (=false)
+IS_PKCE_ENABLED="${IS_PKCE_ENABLED:-"$DEFAULT_IS_PKCE_ENABLED"}"
+
+set_pkce_config "$IS_PKCE_ENABLED"
 
 if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
     echo "[INFO] Deploying Identitiy facade to Apigee API (For Edge)"
@@ -280,11 +336,16 @@ if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
         https://api.enterprise.apigee.com/v1/organizations/"$APIGEE_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
 
     # execute integration tests only against mock IDP
-    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run test)
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ] && [ "$IS_PKCE_ENABLED" = "true" ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run testPkce)
+    elif [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
+
+    # generate authorization URL
+    generate_authz_url "$APIGEE_ORG-$APIGEE_ENV.apigee.net" "$TEST_APP_CONSUMER_KEY" "$TEST_APP_PKCE_CODE_CHALLENGE" "$IS_PKCE_ENABLED"
 fi
 
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
@@ -323,9 +384,14 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/identityApp/keys/"$TEST_APP_CONSUMER_KEY"
 
     # execute integration tests only against mock IDP
-    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
-        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test)
+    if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ] && [ "$IS_PKCE_ENABLED" = "true" ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run testPkce)
+    elif [ -z ${IDP_DISCOVERY_DOCUMENT+x} ]; then
+        (cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" IS_PKCE_ENABLED="$IS_PKCE_ENABLED" npm run test)
     else
-        echo "no tests run for custom OIDC Idp: $DP_DISCOVERY_DOCUMENT"
+        echo "no tests run for custom OIDC Idp: $IDP_DISCOVERY_DOCUMENT"
     fi
+
+    # generate authorization URL
+    generate_authz_url "$APIGEE_X_HOSTNAME" "$TEST_APP_CONSUMER_KEY" "$TEST_APP_PKCE_CODE_CHALLENGE" "$IS_PKCE_ENABLED"
 fi
