@@ -21,28 +21,31 @@ set -e
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
-api_path="$1"
+partial_uri="$1"
+path="${partial_uri%%\?*}"
 
-logdebug "Sackmesser list $api_path"
+logdebug "Sackmesser list $partial_uri"
 
 jq_pattern='.'
 
 if [ "$apiversion" = "google" ]; then
-    case "$api_path" in
+    case "$path" in
         */developers) jq_pattern='[.developer[]?|.email]';;
         */apis) jq_pattern='[.proxies[]?|.name]';;
         */sharedflows) jq_pattern='[.sharedFlows[]?|.name]';;
         */apps) jq_pattern='[.app[]?|.appId]';;
         */apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
-        */keyvaluemaps/*) echo "{\"name\":\"$(echo "$api_path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+        */keyvaluemaps/*) echo "{\"name\":\"$(echo "$path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+        */environments/*/deployments) jq_pattern='[.deployments[] | { name: .apiProxy, revision: .revision | tonumber } ]';;
     esac
 elif [ "$apiversion" = "apigee" ]; then
-    case "$api_path" in
+    case "$path" in
         */apps/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
         */developers/*/apps) jq_pattern='.';;
         */developers/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
         */apiproducts/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
+        */environments/*/deployments) jq_pattern='[.aPIProxy[] | { name: .name, revision: .revision[0].name | tonumber } ]';;
     esac
 fi
 
-curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$api_path" | jq "$jq_pattern"
+curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$partial_uri" | jq "$jq_pattern"
