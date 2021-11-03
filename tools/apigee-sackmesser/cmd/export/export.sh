@@ -37,6 +37,7 @@ if [ -d "$export_folder" ]; then
     exit 1
 fi
 
+
 loginfo "exporting to $export_folder"
 mkdir -p "$export_folder"
 
@@ -57,6 +58,11 @@ sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while re
     unzip -q "$export_folder/proxies/$proxy/bundle.zip" -d "$export_folder/proxies/$proxy"
     rm "$export_folder/proxies/$proxy/bundle.zip"
 done
+
+if [ "$skip_config" == "T" ];then
+    loginfo "Skipping config export because --skip-config was set."
+    exit 0;
+fi
 
 loginfo "Org Export to: $export_folder/config/resources/edge/org"
 mkdir -p "$export_folder/config/resources/edge/org"

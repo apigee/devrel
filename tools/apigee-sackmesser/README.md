@@ -32,11 +32,12 @@ usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | 
 Apigee Sackmesser utility.
 
 Commands:
+clean
 deploy
-list
 export
 help
-clean
+list
+report
 
 Options:
 Options:
@@ -58,6 +59,7 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
+--skip-config, Skip configuration in org export
 ```
 
 ## CLI Examples
