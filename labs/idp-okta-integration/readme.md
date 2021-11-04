@@ -93,10 +93,15 @@ Use Apigee GUI
 
 1. In a command line, clone the [devrel repo](https://github.com/apigee/devrel)
 
-     * $ git clone https://github.com/apigee/devrel.git
+```
+git clone https://github.com/apigee/devrel.git
+```
+
 2. Navigate to the identity facade directory
      
-     * $ cd devrel/references/identity-facade
+```
+cd devrel/references/identity-facade
+```
 3. Run the following commands to set the environment variables required for the setup
 
 ```export IDP_DISCOVERY_DOCUMENT=https://dev-63386416.okta.com/.well-known/openid-configuration
@@ -146,16 +151,19 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
      
      * In a real-world scenario, the client application would build the authorization URL and invoke the flow
-![Okta Auth](assets/okta-auth-code.png)
+![Okta Auth](assets/okta-auth-code-login.png)
 3. The authorization URL has Okta redirect to httpbin.org which is a 3rd party service that will show payload from Okta. Specifically, we need the authorization code.
 
      * In a real-world scenario, the redirection would be back to the client application and it would parse Okta's response to capture the authorizatio code
+
+
 ![Okta auth code](assets/okta-auth-code-response.png)
+
 4. Pass the authorization code, client id, and base64 encoded string to generate a Bearer token
 ```
 export AUTH_CODE={authorization code returned above}
 export AUTH_CODE=M66GwJBI9lBPkfjQViIPHKhnT63tg3GobF4dth987og
-export APIGEE_RESPONSE=$(curl --location --request POST 'https://34.149.2.239.nip.io/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID' \
+export APIGEE_RESPONSE=$(curl --location --request POST "https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID" \
 --header "Authorization: Basic $BASE64_ENCODED" \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'redirect_uri=https://httpbin.org/get' \
@@ -169,6 +177,6 @@ echo $ACCESS_TOKEN
 6. Finally, call an endpoint protected by OAuth. The identity facade has one configured.
 
 ```
-curl --location --request GET 'https://34.149.2.239.nip.io/v1/oauth20/protected' \
+curl --location --request GET 'https://$APIGEE_X_HOSTNAME/v1/oauth20/protected' \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
