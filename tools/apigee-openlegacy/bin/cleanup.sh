@@ -40,7 +40,7 @@ npx apigeetool deletecache -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" 
 npx apigeetool deletekvmmap -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" --mapName "aok-service-accounts"
 
 # Delete pipeline-workspace directory
-cd "$SCRIPTPATH" && rm -r ./pipeline-workspace
+rm -r "$SCRIPTPATH"/../pipeline-workspace
 
 # Cleanup  GCP Assets
 gcloud run services delete aok-service --region "$GCP_REGION" -q
