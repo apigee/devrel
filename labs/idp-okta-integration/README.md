@@ -1,6 +1,6 @@
 id: idp-okta-integration
 
-# Apigee IDP integraiton with Okta
+# Apigee IDP integration with Okta
 
 ## Introduction
 
@@ -27,9 +27,8 @@ Lets get started!
 ## Flow
 
 - Application developers use the Apigee Developer Portal to register and retrieve API keys
-- Application developers use Okta Developer Portal to create A
-- Client applications accessing public API hosted on Apigee will use HTTPS and
-  API keys, and OAuth 2.0 access tokens from Okta
+- Application developers use Okta Developer Portal to create client App 
+- Client applications accessing public API hosted on Apigee will use HTTPS, API keys, and OAuth 2.0 tokens from Okta and Apigee
 - Apigee communicates with target applications over TLS
 
 ## Prerequisites
@@ -51,7 +50,7 @@ Here are the tools needed to complete the tasks:
 ## Okta setup
 
 ### Retrieve Apigee URL
-The URL configured in the Apigee Environment group is needed so Okta can be configured with the correct redirection settig.
+The URL configured in the Apigee Environment group is needed so Okta can be configured with the correct redirection setting.
 
 Use Apigee UI
 1. Open the [Apigee Portal](https://apigee.google.com)
@@ -88,11 +87,11 @@ Use Apigee UI
 5. Click **Save** to be taken to the properties of the Okta app just created
 
 ![App Properties](assets/okta-app-properties.png)
-6. Save the Client ID, Client secret, and Okta domain as environment variables
+6. Save the client ID, client secret, and Okta domain as environment variables
 ```
-export TEST_IDP_APIGEE_CLIENT_ID=0oa2hu6lb5HPR37fY5d7
-export TEST_IDP_APIGEE_CLIENT_SECRET=veERjgCwQ9KUGLidVevKjAwywxX2JBhmg1iQ88gd
-export IPD_HOSTNAME=dev-63386416.okta.com
+export TEST_IDP_APIGEE_CLIENT_ID={Client ID above}]
+export TEST_IDP_APIGEE_CLIENT_SECRET={Client Secret above}
+export IPD_HOSTNAME={Okta domain above}
 ```
 
 
@@ -113,9 +112,9 @@ cd devrel/references/identity-facade
 
 ```
 export IDP_DISCOVERY_DOCUMENT="https://$IPD_HOSTNAME/.well-known/openid-configuration"
-export APIGEE_X_ORG=teodlh-apigeex
-export APIGEE_X_ENV=eval
-export APIGEE_X_HOSTNAME=34.149.2.239.nip.io
+export APIGEE_X_ORG={your org name}
+export APIGEE_X_ENV={Apigee environment name. Default is eval}
+export APIGEE_X_HOSTNAME={your Apigee hostname ex:34.149.2.239.nip.io)
 ```
 4. Verify the variables have been set correctly
 
@@ -132,7 +131,7 @@ echo $APIGEE_X_HOSTNAME
 
 ```./pipeline.sh --googleapi```
 
-- The output is show below. The values for consumerKey and consumerSecret are from the Apigee identityApp that was created as part of the Identity Facade deployment. 
+- The output is shown below. The values for consumerKey and consumerSecret are from the Apigee identityApp that was created as part of the Identity Facade deployment. 
      ![idp facade output](assets/idp-facade-output.png)
 6. Copy and save the following values:
 
@@ -144,8 +143,8 @@ echo $APIGEE_X_HOSTNAME
 
 - Base64 encoding of client id and secret for use during Basic Auth in tests
 ```
-export APIGEE_CLIENT_ID=xkey-1636042329
-export APIGEE_SECRET=xsecret
+export APIGEE_CLIENT_ID={consumerKey above}
+export APIGEE_SECRET={consumerSecret above}
 export BASE64_ENCODED=$(echo -n $APIGEE_CLIENT_ID:$APIGEE_SECRET | base64)
 ```
 
@@ -165,7 +164,7 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
     
 ![Okta Auth](assets/okta-auth-code-login.png)
-3. The authorization URL has Okta redirect to httpbin.org which is a 3rd party service that will show payload from Okta. Specifically, we need the authorization code.
+3. After successful authentication, Okta redirects to the Apigee callback URL (/v1/oauth20/callback), which controls the incoming query parameters, generate an authorization code (using the same value as the one provided by Okta) and performs a redirection on the client app redirect_uri (here https://httpbin.org/get) providing the authorization_code and initial state parameters.
 - In a real-world scenario, the redirection would be back to the client application and it would parse Okta's response to capture the authorization code
 
 ![Okta auth code](assets/okta-auth-code-response.png)
@@ -173,7 +172,6 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 4. Pass the authorization code, client id, and base64 encoded string to Apigee Identity Facade to generate a Bearer token that will be used for API calls.
 ```
 export AUTH_CODE={authorization code returned above}
-export AUTH_CODE=Eln3eawlSIOiPBjNX2kzA7WMjd7fIYxXRudvbmQiF9Y
 export APIGEE_RESPONSE=$(curl -s --location --request POST "https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID" \
 --header "Authorization: Basic $BASE64_ENCODED" \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -187,7 +185,7 @@ echo $ACCESS_TOKEN
 5. Apigee will respond with a Bearer token (access_token) which is saved to an environment variable
 
 
-6. Finally, call an endpoint protected by OAuth. The identity facade has one configured.
+6. Finally, call an endpoint protected by OAuth. The identity facade has /protected one configured to validate OAuth tokens.
 
 ```
 curl --location --request GET "https://$APIGEE_X_HOSTNAME/v1/oauth20/protected" \
@@ -252,7 +250,6 @@ echo "$AUTH_URL"
 9. Run through the remaning authentication and API call steps
 ```
 export AUTH_CODE={authorization code returned above}
-export AUTH_CODE=9_KUjy0fntEvhopMAL9OCz2SNNZPSXqDZGYAzmfYus0
 export APIGEE_RESPONSE=$(curl -s --location --request POST "https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID" \--header "Authorization: Basic $BASE64_ENCODED" \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'redirect_uri=https://httpbin.org/get' \
