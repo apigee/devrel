@@ -28,7 +28,7 @@ cd "$SCRIPTPATH"/pipeline-workspace
 
 # Install OpenLegacy cli
 if ! [ -f "$SCRIPTPATH"/pipeline-workspace/openlegacy-cli.zip ]; then
-  curl -O https://ol-public-artifacts.s3.amazonaws.com/openlegacy-cli/1.35.0/linux-macos/openlegacy-cli.zip
+  curl -O https://ol-public-artifacts.s3.amazonaws.com/openlegacy-cli/1.41.1/linux-macos/openlegacy-cli.zip
   unzip openlegacy-cli.zip
 fi
 
