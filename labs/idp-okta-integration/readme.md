@@ -7,7 +7,7 @@ id: idp-okta-integration
 Welcome to the lab on  **Apigee Integration with Okta**!
 
 
-The goal of this lab is to walk you through configuring and using the [Apigee Identity Facade](https://github.com/Teodelas/devrel/tree/main/references/identity-facade) to integrate with [Okta](www.okta.com) and authenticate users.
+The goal of this lab is to walk you through configuring and using the [Apigee Identity Facade](https://github.com/apigee/devrel/tree/main/references/identity-facade) to integrate with [Okta](www.okta.com) and authenticate users.
 
 
 We assume the basic knowledge of Apigee platform and you will get the most from
@@ -42,7 +42,8 @@ Here are the tools needed to complete the tasks:
 
 - Web Browser (recent version of [Chrome](https://www.google.com/chrome/) or
   [Firefox](https://www.mozilla.org/en-GB/firefox/new/))
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Maven](https://maven.apache.org/install.html)
 - A REST Client - [Postman](https://www.postman.com/) or
   [Curl](https://curl.haxx.se/)
 
@@ -126,16 +127,17 @@ echo $APIGEE_X_HOSTNAME
 
 ```./pipeline.sh --googleapi```
 
-6. The output is show below. Copy and save the following values:
-
-     * consumerKey
-     * consumerSecret
-     * authorization URL
-
+- The output is show below. The values for consumerKey and consumerSecret are from the Apigee identityApp that was created as part of the Identity Facade deployment. 
      ![idp facade output](assets/idp-facade-output.png)
-7. Finally, generated environment variables for use later.
+6. Copy and save the following values:
 
-     * Base64 encoding of client id and secret for use during Basic Auth in tests
+- consumerKey
+- consumerSecret
+- authorization URL
+
+7. Finally, generate environment variables for use later.
+
+- Base64 encoding of client id and secret for use during Basic Auth in tests
 ```
 export APIGEE_CLIENT_ID=xkey-1636042329
 export APIGEE_SECRET=xsecret
@@ -147,7 +149,14 @@ export BASE64_ENCODED=$(echo -n $APIGEE_CLIENT_ID:$APIGEE_SECRET | base64)
 
 This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apigee/docs/api-platform/security/oauth/oauth-introduction) flow / authorization grant
 
-1. Open an incognito tab in a browser and visit the authorization URL captured above
+1. Open an incognito tab in a browser and visit the **authorization URL** captured above
+     
+     * You can generate the authorization url using the command below.
+     ```
+     export AUTH_URL="https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&response_type=code&scope=openid email profile&state=abcd-1234&redirect_uri=https://httpbin.org/get"
+     echo $AUTH_URL
+     ```
+
 2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
      
      * In a real-world scenario, the client application would build the authorization URL and invoke the flow
@@ -162,7 +171,7 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 4. Pass the authorization code, client id, and base64 encoded string to generate a Bearer token
 ```
 export AUTH_CODE={authorization code returned above}
-export AUTH_CODE=M66GwJBI9lBPkfjQViIPHKhnT63tg3GobF4dth987og
+export AUTH_CODE=B9Z-V8i_ORsf_rpdnMxPbf0TMOGsSSNI6h6KId3BT8g
 export APIGEE_RESPONSE=$(curl --location --request POST "https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID" \
 --header "Authorization: Basic $BASE64_ENCODED" \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -180,3 +189,66 @@ echo $ACCESS_TOKEN
 curl --location --request GET 'https://$APIGEE_X_HOSTNAME/v1/oauth20/protected' \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
+## Use Identity Facade with API Proxy
+
+The default Apigee install includes a /hello-world proxy. In this section we will add an OAuthv2 policy that verifies the access token and create an application that has access to the identity facade (generate tokens) and the Hellow-World proxies.
+
+1. In the Apigee portal, expand Publish and click on API Products.
+2. Choose + CREATE
+3. Fill in the following
+
+- Name: Hellow World
+- Display Name: Hello World
+- Environment: eval
+- Access: Public
+- Operations (ADD AN OPERATION)
+     - API Proxy: hello-world
+     - Path: /
+     - Save
+- Scroll up and click Save
+
+![API Product1](assets/api-product1.png)
+![API Product2](assets/api-product2.png)    
+
+3. Under Public, click on Apps
+- Notice there is an app created called identity app. The client id and secret used above are from this application. 
+4. Click on +App and configure it as follows:
+- Name: Hello World App
+- Developer: Jane Doe (this user was also created during the identity facade deployment)
+- Productt:
+     - Hello World
+     - Identity Facade
+
+
+![Add Product](assets/apigee-app.png)
+
+5. Click Create
+6. Copy the values for Key (client ID) and Secret
+
+![App Keys](assets/app-keys.png)
+
+7. Update the environment variables
+```
+export APIGEE_CLIENT_ID=F3gGHZGtPPg6FcZqo0JwXFbV2NVkW0ILOXKte9HMFWJsOgR8
+export APIGEE_SECRET=3m5VFXhQIcMO45dhK8YZ85Svw97iTIdiuBnIQMSPJQrZHQQrkQ1aPsYJ3gWVec41
+export BASE64_ENCODED=$(echo -n $APIGEE_CLIENT_ID:$APIGEE_SECRET | base64)
+export AUTH_URL="https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&response_type=code&scope=openid email profile&state=abcd-1234&redirect_uri=https://httpbin.org/get"
+echo $AUTH_URL
+```
+8. Visit the $AUTH_URL in a browser and copy the 
+9. Run through the remaning authentication and API call steps
+```
+export AUTH_CODE={authorization code returned above}
+
+export APIGEE_RESPONSE=$(curl --location --request POST "https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID" \--header "Authorization: Basic $BASE64_ENCODED" \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'redirect_uri=https://httpbin.org/get' \
+--data-urlencode 'grant_type=authorization_code' \
+--data-urlencode "code=$AUTH_CODE")
+
+export ACCESS_TOKEN=$(echo $APIGEE_RESPONSE | jq -r .access_token)
+
+curl --location --request GET "https://$APIGEE_X_HOSTNAME/hello-world" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```\
+
