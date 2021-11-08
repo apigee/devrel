@@ -5,6 +5,7 @@ Identity Provider (IdP).
 The aim of the identity facade is to deal with all the interactions between a
 client app and an IdP and to generate an OAuth 2.0 access token that
 can be used by the client app to access protected resources through Apigee.
+
 This reference promotes a clear **separation of concerns** between Apigee and
 the IdP.
 
@@ -21,6 +22,22 @@ discovery document of your IdP solution.
  the IdP
 - `TEST_IDP_APIGEE_CLIENT_SECRET`: the client_secret Apigee can use to
 connect to the IdP
+
+## PKCE: Proof Key for Code Exchange
+
+The identity facade can be configured to implement [PKCE](https://datatracker.ietf.org/doc/html/rfc7636).
+
+PKCE is used to mitigate against authorization code interception attack.
+The PKCE code challenge method used in the identity facade reference is
+set to `S256`.
+
+If you want the identity facade to implement PKCE then it is necessary to set
+the environment variable `IS_PKCE_ENABLED` to the value `true`.
+
+    export IS_PKCE_ENABLED=true
+
+In the other cases the value of this variable is considered to be `false`.
+The default value of the variable `IS_PKCE_ENABLED` is also set to `false`.
 
 ## Dependencies
 
@@ -62,9 +79,12 @@ the IdP. This cache is scoped at env level.
 - An API Product only used for functional tests
 - A developer app only used for functional tests
 
-On the machine and directory from where the script is executed, you can find
-a `edge.json` file, which contains the configuration of all these
-elements
+On the machine and directory from where the script is executed,
+you can find a `edge.json` file, which contains the configuration
+of all these elements.
+
+Finally, the pipeline script provides the authorization URL that you can
+copy/paste into your favorite web browser to initiate the OIDC flow.
 
 ## Identity Facade Sequence Diagram
 
@@ -79,6 +99,9 @@ using the following command:
 Here is the original sequence diagram:
 
 ![Identity Facade](./diagram/sequence-identity-facade-v1.png "Seq. Diagram")
+
+Query and form parameters as well as proxy processing specific to PKCE are
+indicated in blue on the sequence diagram.
 
 ### Identity Facade Endpoints
 
