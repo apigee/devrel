@@ -124,15 +124,15 @@ loginfo "Listing Deployed Revisions"
 sackmesser list "organizations/$organization/environments/$environment/deployments" > "$proxydeployments"
 sackmesser list "organizations/$organization/environments/$environment/deployments?sharedFlows=true" > "$sfdeployments"
 
-echo "<div class=\"mdc-data-table\"><div class=\"mdc-data-table__table-container\"><table class=\"mdc-data-table__table\">" >> "$report_html"
-echo "<thead><tr class=\"mdc-data-table__header-row\">" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Proxy</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Rev. $environment</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Errors</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Warnings</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Report</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Numer of Policies</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Numer of Flows</th>" >> "$report_html"
+echo "<div><table id=\"proxy-lint\" data-toggle=\"table\">" >> "$report_html"
+echo "<thead><tr>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"proxy-name\">Proxy</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"env\">Rev. $environment</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"errors\">Apigeelint Errors</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"lint-warn\">Apigeelint Warnings</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"lint-error\">Apigeelint Report</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"policies\">Numer of Policies</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"flows\">Numer of Flows</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
@@ -181,36 +181,36 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
         flowcount=0
     fi
 
-    echo "<tr class=\"mdc-data-table__row $highlightclass\">"  >> "$report_html"
-    echo "<th class=\"mdc-data-table__cell\" scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$deployedrevision $versionlagicon</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$errorCount</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$warningCount</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell\"><a href=\"./apigeelint/proxies/$proxyname.html\" target="_blank">link</a></td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$policycount</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$flowcount</td>" >> "$report_html"
+    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+    echo "<th><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
+    echo "<td>$errorCount</td>" >> "$report_html"
+    echo "<td>$warningCount</td>" >> "$report_html"
+    echo "<td><a href=\"./apigeelint/proxies/$proxyname.html\" target="_blank">link</a></td>" >> "$report_html"
+    echo "<td>$policycount</td>" >> "$report_html"
+    echo "<td>$flowcount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h3>Proxy Policies</h3>" >> "$report_html"
 
-echo "<div class=\"mdc-data-table\"><div class=\"mdc-data-table__table-container\"><table class=\"mdc-data-table__table\">" >> "$report_html"
-echo "<thead><tr class=\"mdc-data-table__header-row\">" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Proxy</th>" >> "$report_html"
+echo "<div><table id=\"proxy-policies\" data-toggle=\"table\">" >> "$report_html"
+echo "<thead><tr>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"proxy-name\">Proxy</th>" >> "$report_html"
 
 while read policytype; do
-  echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">$policytype</th>" >> "$report_html"
+  echo "<th data-sortable=\"true\" data-field=\"$policytype\">$policytype</th>" >> "$report_html"
 done <"$export_folder/uniquepolicies.txt"
 
 echo "</tr></thead>" >> "$report_html"
-echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
+echo "<tbody>" >> "$report_html"
 
 for policyusage in "$export_folder/scratch/policyusage/"*-indexed.json; do
     proxyname=$(basename "${policyusage%%-indexed.*}")
     linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
-    echo "<tr class=\"mdc-data-table__row\">"  >> "$report_html"
-    echo "<th class=\"mdc-data-table__cell\" scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<tr>"  >> "$report_html"
+    echo "<th scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
 
     while read policytype; do
         usages=$(jq --arg TYPE "$policytype" '.[$TYPE] | length' "$policyusage")
@@ -220,26 +220,26 @@ for policyusage in "$export_folder/scratch/policyusage/"*-indexed.json; do
            usagedisplay=''
         fi
 
-        echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$usagedisplay</td>"  >> "$report_html"
+        echo "<td>$usagedisplay</td>"  >> "$report_html"
     done <"$export_folder/uniquepolicies.txt"
 
     echo "</tr>"  >> "$report_html"
 done
 
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 loginfo "Exporting Proxy Performance"
 
 echo "<h3>Proxy Performance (last 24h)</h3>" >> "$report_html"
 
-echo "<div class=\"mdc-data-table\"><div class=\"mdc-data-table__table-container\"><table class=\"mdc-data-table__table\">" >> "$report_html"
-echo "<thead><tr class=\"mdc-data-table__header-row\">" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Proxy</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Avg. TPS</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Avg. Total Response Time</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Avg. Target Response Time</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Avg. Proxy Response Time</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Errors</th>" >> "$report_html"
+echo "<div><table id=\"proxy-perf\" data-toggle=\"table\">" >> "$report_html"
+echo "<thead><tr>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"id\">Proxy</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"tps\">Avg. TPS</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"rt\">Avg. Total Response Time</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"trt\">Avg. Target Response Time</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"prt\">Avg. Proxy Response Time</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"errors\">Errors</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
@@ -253,16 +253,16 @@ cat "$export_folder/performance-$environment.json" | jq -r -c '.environments[0].
     avg_tps=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="sum(message_count)/3600.0").values[0].value')
     errors=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="sum(is_error)").values[0].value')
 
-    echo "<tr class=\"mdc-data-table__row\">"  >> "$report_html"
-    echo "<th class=\"mdc-data-table__cell\" scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$avg_tps</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$avg_total_response_time</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$avg_target_response_time</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$avg_proxy_response_time</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$errors</td>"  >> "$report_html"
+    echo "<tr>"  >> "$report_html"
+    echo "<th scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<td>$avg_tps</td>"  >> "$report_html"
+    echo "<td>$avg_total_response_time</td>"  >> "$report_html"
+    echo "<td>$avg_target_response_time</td>"  >> "$report_html"
+    echo "<td>$avg_proxy_response_time</td>"  >> "$report_html"
+    echo "<td>$errors</td>"  >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h2>SharedFlows</h2>" >> "$report_html"
 
@@ -276,16 +276,16 @@ for sfexportpath in "$export_folder/$organization/sharedflows/"*/ ; do
     apigeelint -s "$sfexportpath/sharedflowbundle" -f json.js > "$export_folder/apigeelint/sharedflows/$sfname.json" || true #
 done
 
-echo "<div class=\"mdc-data-table\"><div class=\"mdc-data-table__table-container\"><table class=\"mdc-data-table__table\">" >> "$report_html"
-echo "<thead><tr class=\"mdc-data-table__header-row\">" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">SharedFlow</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Rev. $environment</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Errors</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Warnings</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Apigeelint Report</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Numer of Policies</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Proxy References</th>" >> "$report_html"
-echo "<th class=\"mdc-data-table__header-cell\" role=\"columnheader\" scope=\"col\">Flowhook References</th>" >> "$report_html"
+echo "<div><table id=\"sf-lint\" data-toggle=\"table\">" >> "$report_html"
+echo "<thead><tr>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"id\">SharedFlow</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"rev\">Rev. $environment</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"errors\">Apigeelint Errors</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"warn\">Apigeelint Warnings</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"lint\">Apigeelint Report</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"policies\">Numer of Policies</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"references\">Proxy References</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"fh\">Flowhook References</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
@@ -334,15 +334,17 @@ for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
         usedinflowhook=no
     fi
 
-    echo "<tr class=\"mdc-data-table__row $highlightclass\">"  >> "$report_html"
-    echo "<th class=\"mdc-data-table__cell\" scope="row"><a href="$(resource_link sharedflows/$sfname $linkrevision)" target="_blank">$sfname<a></th>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$deployedrevision $versionlagicon</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$errorCount</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\">$warningCount</td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell\"><a href=\"./apigeelint/sharedflows/$sfname.html\"  target="_blank">link</a></td>"  >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$policycount</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell mdc-data-table__cell--numeric\" scope="row">$proxyreferences</td>" >> "$report_html"
-    echo "<td class=\"mdc-data-table__cell\" scope="row">$usedinflowhook</th>" >> "$report_html"
+    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+    echo "<th scope="row"><a href="$(resource_link sharedflows/$sfname $linkrevision)" target="_blank">$sfname<a></th>" >> "$report_html"
+    echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
+    echo "<td>$errorCount</td>"  >> "$report_html"
+    echo "<td>$warningCount</td>"  >> "$report_html"
+    echo "<td><a href=\"./apigeelint/sharedflows/$sfname.html\"  target="_blank">link</a></td>"  >> "$report_html"
+    echo "<td>$policycount</td>" >> "$report_html"
+    echo "<td>$proxyreferences</td>" >> "$report_html"
+    echo "<td>$usedinflowhook</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
 echo "</tbody></table></div></div>" >> "$report_html"
+
+cat "$SCRIPT_FOLDER/static/footer.html" >> "$report_html"
