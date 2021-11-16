@@ -7,7 +7,7 @@ id: idp-okta-integration
 Welcome to the lab on  **Apigee Integration with Okta**!
 
 
-The goal of this lab is to walk you through configuring and using the [Apigee Identity Facade](https://github.com/apigee/devrel/tree/main/references/identity-facade) to integrate with [Okta](www.okta.com) and authenticate users.
+The goal of this lab is to walk you through configuring and using the [Apigee Identity Facade](https://github.com/apigee/devrel/tree/main/references/identity-facade) to integrate with [Okta](https://okta.com) and authenticate users.
 
 
 We assume the basic knowledge of Apigee platform and you will get the most from
@@ -77,8 +77,10 @@ Use Apigee UI
 ![Create App](assets/okta-app-integration.png)
 4. In the next screen, configure the following
 - App integration name: Apigee App
-- Sign-in redirect URIs: https://{env group hostname}/v1/oauth20/callback 
-     - example: https://34.149.2.239.nip.io/v1/oauth20/callback
+- Sign-in redirect URIs: 
+     `https://{env group hostname}/v1/oauth20/callback`
+     - example: 
+     `https://34.149.2.239.nip.io/v1/oauth20/callback`
      - This url points to the idp facade that will be deployed to Apigee
      - Controlled access: Allow everyone...
 ![App Name](assets/okta-app-name.png)
@@ -164,7 +166,8 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
     
 ![Okta Auth](assets/okta-auth-code-login.png)
-3. After successful authentication, Okta redirects to the Apigee callback URL (/v1/oauth20/callback), which controls the incoming query parameters, generate an authorization code (using the same value as the one provided by Okta) and performs a redirection on the client app redirect_uri (here https://httpbin.org/get) providing the authorization_code and initial state parameters.
+
+3. After successful authentication, Okta redirects to the Apigee callback URL (/v1/oauth20/callback), which controls the incoming query parameters, generate an authorization code (using the same value as the one provided by Okta) and performs a redirection on the client app redirect_uri `https://httpbin.org/get` providing the authorization_code and initial state parameters.
 - In a real-world scenario, the redirection would be back to the client application and it would parse Okta's response to capture the authorization code
 
 ![Okta auth code](assets/okta-auth-code-response.png)
