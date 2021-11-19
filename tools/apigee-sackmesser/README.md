@@ -136,6 +136,16 @@ sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy all
 sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all
 ```
 
+### Scenario: Create a Report of Deployments in an Environment
+
+```sh
+# Apigee X/hybrid
+sackmesser report --googleapi -t "$TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
+
+# Apigee Edge
+sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV"
+```
+
 ## How does this compare to the Apigee Maven Plugin and other Apigee tooling
 
 The Apigee Sackmesser is implemented as a wrapper for the Apigee Maven

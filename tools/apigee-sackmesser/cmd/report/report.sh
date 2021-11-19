@@ -1,6 +1,9 @@
 #!/bin/bash
+
 # shellcheck disable=SC2154
 # SC2154: Variables are sent in ../../bin/sackmesser
+# shellcheck disable=SC2129
+# SC2129: Cleaner redirect to html output
 
 # Copyright 2021 Google LLC
 #
@@ -33,13 +36,18 @@ function resource_link() {
     fi
 }
 
-if [ -z $organization ]; then
+if [ -z "$organization" ]; then
     logfatal "No Apigee Organization Specified. Use -o ORGANIZATION to set the Apigee Organization you want to analyze"
     exit 1
 fi
 
-if [ -z $environment ]; then
+if [ -z "$environment" ]; then
     logfatal "No Apigee Environment Specified. Use -e ENVIRONMENT to set the Apigee Environment you want to analyze"
+    exit 1
+fi
+
+if ! grep -q "$environment" <<< "$(sackmesser list "organizations/$organization/environments/$environment")"; then
+    logfatal "No Apigee Environment named: $environment found in Org: $organization"
     exit 1
 fi
 
@@ -52,15 +60,12 @@ export export_folder="$PWD/report-$organization-$environment"
 export report_html="$export_folder/index.html"
 mkdir -p "$export_folder/scratch/proxyrevisions"
 cat "$SCRIPT_FOLDER/static/header.html" > "$report_html"
-echo "<h1>Sackmesser Report</h1>" >> "$report_html"
 
-echo "<div class=\"mdc-card mdc-card--outlined\">" >> "$report_html"
-echo "<div class=\"mdc-card__content\">" >> "$report_html"
+echo "<div class=\"card\"><div class=\"card-body\">" >> "$report_html"
 echo "<p><b>Organization:</b> $organization</p>" >> "$report_html"
 echo "<p><b>Environment:</b> $environment</p>" >> "$report_html"
 echo "<p><b>Timestamp:</b> $(date -n)</p>" >> "$report_html"
-echo "</div>" >> "$report_html"
-echo "</div>">> "$report_html" >> "$report_html"
+echo "</div></div>" >> "$report_html"
 
 
 loginfo "Exporting organization to $export_folder"
@@ -73,7 +78,7 @@ loginfo "Running Apigeelint on Proxies"
 mkdir -p "$export_folder/apigeelint/proxies"
 
 for proxyexportpath in "$export_folder/$organization/proxies/"*/ ; do
-    proxyname=$(basename $proxyexportpath)
+    proxyname=$(basename "$proxyexportpath")
     logdebug "Running Apigeelint on: $proxyexportpath"
     apigeelint -s "$proxyexportpath/apiproxy" -f html.js > "$export_folder/apigeelint/proxies/$proxyname.html" || true # apigeelint exits on error but we want to continue
     apigeelint -s "$proxyexportpath/apiproxy" -f json.js > "$export_folder/apigeelint/proxies/$proxyname.json" || true #
@@ -90,7 +95,7 @@ loginfo "Generating Policy Usage Report"
 
 mkdir -p "$export_folder/scratch/policyusage"
 for proxyexportpath in "$export_folder/$organization/proxies/"*/ ; do
-    proxyname=$(basename $proxyexportpath)
+    proxyname=$(basename "$proxyexportpath")
     logdebug "Running Proxy Usage Analysis on: $proxyexportpath"
     if [ -d "$proxyexportpath"/apiproxy/policies ];then
         mkdir -p "$export_folder/scratch/policyusage/$proxyname"
@@ -124,8 +129,8 @@ loginfo "Listing Deployed Revisions"
 sackmesser list "organizations/$organization/environments/$environment/deployments" > "$proxydeployments"
 sackmesser list "organizations/$organization/environments/$environment/deployments?sharedFlows=true" > "$sfdeployments"
 
-echo "<div><table id=\"proxy-lint\" data-toggle=\"table\">" >> "$report_html"
-echo "<thead><tr>" >> "$report_html"
+echo "<div><table id=\"proxy-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
+echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"proxy-name\">Proxy</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"env\">Rev. $environment</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"errors\">Apigeelint Errors</th>" >> "$report_html"
@@ -139,8 +144,8 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
     proxyname=$(basename "${proxylint%%.*}")
     proxyexportpath="$export_folder/$organization/proxies/$proxyname"
-    errorCount=$(jq "[.[].errorCount] | add" $proxylint)
-    warningCount=$(jq "[.[].warningCount] | add" $proxylint)
+    errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
+    warningCount=$(jq '[.[].warningCount] | add' "$proxylint")
 
      if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
@@ -150,12 +155,12 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
         highlightclass=""
     fi
 
-    deployedrevision=$(jq --arg PROXY_NAME "$proxyname" '.[]|select(.name==$PROXY_NAME).revision' $proxydeployments)
+    deployedrevision=$(jq --arg PROXY_NAME "$proxyname" '.[]|select(.name==$PROXY_NAME).revision' "$proxydeployments")
     latestrevision=$(xmllint --xpath 'string(/APIProxy/@revision)' "/$proxyexportpath/apiproxy/$proxyname.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
-        versionlag="$(($deployedrevision-$latestrevision))"
+        versionlag="$((deployedrevision-latestrevision))"
         if [ "$versionlag" -eq "0" ];then
             versionlagicon="✅"
         else
@@ -170,7 +175,7 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
 
 
     if [ -d "$proxyexportpath/apiproxy/policies" ];then
-        policycount=$(ls "$proxyexportpath"/apiproxy/policies/*.xml | wc -l)
+        policycount=$(find "$proxyexportpath"/apiproxy/policies/*.xml | wc -l)
     else
         policycount=0
     fi
@@ -182,24 +187,25 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<th><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<th><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
     echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
     echo "<td>$errorCount</td>" >> "$report_html"
     echo "<td>$warningCount</td>" >> "$report_html"
-    echo "<td><a href=\"./apigeelint/proxies/$proxyname.html\" target="_blank">link</a></td>" >> "$report_html"
+    echo "<td><a href=\"./apigeelint/proxies/$proxyname.html\" target=\"_blank\">link</a></td>" >> "$report_html"
     echo "<td>$policycount</td>" >> "$report_html"
     echo "<td>$flowcount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
+
 echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h3>Proxy Policies</h3>" >> "$report_html"
 
-echo "<div><table id=\"proxy-policies\" data-toggle=\"table\">" >> "$report_html"
-echo "<thead><tr>" >> "$report_html"
+echo "<div><table id=\"proxy-policies\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
+echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"proxy-name\">Proxy</th>" >> "$report_html"
 
-while read policytype; do
+while read -r policytype; do
   echo "<th data-sortable=\"true\" data-field=\"$policytype\">$policytype</th>" >> "$report_html"
 done <"$export_folder/uniquepolicies.txt"
 
@@ -210,9 +216,9 @@ for policyusage in "$export_folder/scratch/policyusage/"*-indexed.json; do
     proxyname=$(basename "${policyusage%%-indexed.*}")
     linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
     echo "<tr>"  >> "$report_html"
-    echo "<th scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
 
-    while read policytype; do
+    while read -r policytype; do
         usages=$(jq --arg TYPE "$policytype" '.[$TYPE] | length' "$policyusage")
         if [ "$usages" -gt "0" ];then
             usagedisplay=$usages
@@ -232,8 +238,8 @@ loginfo "Exporting Proxy Performance"
 
 echo "<h3>Proxy Performance (last 24h)</h3>" >> "$report_html"
 
-echo "<div><table id=\"proxy-perf\" data-toggle=\"table\">" >> "$report_html"
-echo "<thead><tr>" >> "$report_html"
+echo "<div><table id=\"proxy-perf\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
+echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"id\">Proxy</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"tps\">Avg. TPS</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"rt\">Avg. Total Response Time</th>" >> "$report_html"
@@ -244,17 +250,17 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-cat "$export_folder/performance-$environment.json" | jq -r -c '.environments[0].dimensions[]?' | while read -r dimension; do
+jq -r -c '.environments[0].dimensions[]?' < "$export_folder/performance-$environment.json" | while read -r dimension; do
     proxyname=$(echo "$dimension" | jq -r ".name")
     linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname" || echo "unknown")
     avg_total_response_time=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="avg(total_response_time)").values[0].value|tonumber|floor')
     avg_target_response_time=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="avg(target_response_time)").values[0].value|tonumber|floor')
-    avg_proxy_response_time="$(($avg_total_response_time - $avg_target_response_time))"
+    avg_proxy_response_time="$((avg_total_response_time - avg_target_response_time))"
     avg_tps=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="sum(message_count)/3600.0").values[0].value')
     errors=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="sum(is_error)").values[0].value')
 
     echo "<tr>"  >> "$report_html"
-    echo "<th scope=\"row\"><a href="$(resource_link proxies/$proxyname $linkrevision)" target="_blank">$proxyname</a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
     echo "<td>$avg_tps</td>"  >> "$report_html"
     echo "<td>$avg_total_response_time</td>"  >> "$report_html"
     echo "<td>$avg_target_response_time</td>"  >> "$report_html"
@@ -262,6 +268,7 @@ cat "$export_folder/performance-$environment.json" | jq -r -c '.environments[0].
     echo "<td>$errors</td>"  >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
+
 echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h2>SharedFlows</h2>" >> "$report_html"
@@ -270,14 +277,14 @@ echo "<h3>SharedFlows Implementation</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/apigeelint/sharedflows"
 for sfexportpath in "$export_folder/$organization/sharedflows/"*/ ; do
-    sfname=$(basename $sfexportpath)
+    sfname=$(basename "$sfexportpath")
     logdebug "Running Apigeelint on: $sfexportpath"
     apigeelint -s "$sfexportpath/sharedflowbundle" -f html.js > "$export_folder/apigeelint/sharedflows/$sfname.html" || true # apigeelint exits on error but we want to continue
     apigeelint -s "$sfexportpath/sharedflowbundle" -f json.js > "$export_folder/apigeelint/sharedflows/$sfname.json" || true #
 done
 
-echo "<div><table id=\"sf-lint\" data-toggle=\"table\">" >> "$report_html"
-echo "<thead><tr>" >> "$report_html"
+echo "<div><table id=\"sf-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
+echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"id\">SharedFlow</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"rev\">Rev. $environment</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"errors\">Apigeelint Errors</th>" >> "$report_html"
@@ -292,8 +299,8 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
     sfname=$(basename "${sflint%%.*}")
     sfexportpath="$export_folder/$organization/sharedflows/$sfname"
-    errorCount=$(jq "[.[].errorCount] | add" $sflint)
-    warningCount=$(jq "[.[].warningCount] | add" $sflint)
+    errorCount=$(jq '[.[].errorCount] | add' "$sflint")
+    warningCount=$(jq '[.[].warningCount] | add' "$sflint")
 
     if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
@@ -303,12 +310,12 @@ for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
         highlightclass=""
     fi
 
-    deployedrevision=$(jq --arg SF_NAME "$sfname" '.[]|select(.name==$SF_NAME).revision' $sfdeployments)
+    deployedrevision=$(jq --arg SF_NAME "$sfname" '.[]|select(.name==$SF_NAME).revision' "$sfdeployments")
     latestrevision=$(xmllint --xpath 'string(/SharedFlowBundle/@revision)' "/$sfexportpath/sharedflowbundle/$sfname.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
-        versionlag="$(($deployedrevision-$latestrevision))"
+        versionlag="$((deployedrevision-latestrevision))"
         if [ "$versionlag" -eq "0" ];then
             versionlagicon="✅"
         else
@@ -320,7 +327,7 @@ for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
     fi
 
     if [ -d "$sfexportpath/sharedflowbundle/policies" ];then
-        policycount=$(ls "$sfexportpath"/sharedflowbundle/policies/*.xml | wc -l)
+        policycount=$(find "$sfexportpath"/sharedflowbundle/policies/*.xml | wc -l)
     else
         policycount=0
     fi
@@ -328,18 +335,18 @@ for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
     proxyreferences=$(grep -r "$export_folder/$organization/proxies" -e "$sfname" | wc -l)
 
     flowhookexport="$export_folder/$organization/config/resources/edge/env/$environment/flowhooks.json"
-    if [ -f "$flowhookexport" ] && [ -n "$(grep "$flowhookexport" -e "$sfname")" ];then
+    if [ -f "$flowhookexport" ] && ! grep -q "$sfname" <<< "$flowhookexport";then
         usedinflowhook=yes
     else
         usedinflowhook=no
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<th scope="row"><a href="$(resource_link sharedflows/$sfname $linkrevision)" target="_blank">$sfname<a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname $linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
     echo "<td>$errorCount</td>"  >> "$report_html"
     echo "<td>$warningCount</td>"  >> "$report_html"
-    echo "<td><a href=\"./apigeelint/sharedflows/$sfname.html\"  target="_blank">link</a></td>"  >> "$report_html"
+    echo "<td><a href=\"./apigeelint/sharedflows/$sfname.html\"  target=\"_blank\">link</a></td>"  >> "$report_html"
     echo "<td>$policycount</td>" >> "$report_html"
     echo "<td>$proxyreferences</td>" >> "$report_html"
     echo "<td>$usedinflowhook</td>" >> "$report_html"
@@ -348,3 +355,5 @@ done
 echo "</tbody></table></div></div>" >> "$report_html"
 
 cat "$SCRIPT_FOLDER/static/footer.html" >> "$report_html"
+
+loginfo "Sackmesser report is ready in: $report_html"
