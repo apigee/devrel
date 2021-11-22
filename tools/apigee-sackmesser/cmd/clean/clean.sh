@@ -144,14 +144,8 @@ if [ -n "$deleteProxy" ]; then
         deleteProxy=$(sackmesser list "organizations/$organization/apis" | jq -r '.[]|.')
     fi
     for env in $allEnvironments; do
-        deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments")
         for proxy in $deleteProxy; do
-            if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[]? | select(.apiProxy==\"$proxy\") | .revision"
-            else
-                revisionJqPattern=".aPIProxy[]? | select(.name==\"$proxy\") | .revision[] | .name"
-            fi
-            echo "$deployments" | jq -r -c "$revisionJqPattern" | while read -r revision; do
+            sackmesser list "organizations/$organization/environments/$env/deployments" | jq -r -c ".[]? | select(.name==\"$proxy\") | .revision" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/apis/$proxy/revisions/$revision/deployments"
             done
             mgmtAPIDelete "organizations/$organization/apis/$proxy" || logwarn "Proxy $proxy not deleted. It might not exist"
@@ -168,14 +162,8 @@ if [ -n "$deleteSharedflow" ]; then
         deleteSharedflow=$(sackmesser list "organizations/$organization/sharedflows" | jq -r '.[]|.')
     fi
     for env in $allEnvironments; do
-        deployments=$(sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true")
         for sharedflow in $deleteSharedflow; do
-            if [ "$apiversion" = "google" ]; then
-                revisionJqPattern=".deployments[]? | select(.apiProxy==\"$sharedflow\") | .revision"
-            else
-                revisionJqPattern=".aPIProxy[]? | select(.name==\"$sharedflow\") | .revision[] | .name"
-            fi
-            echo "$deployments" | jq -r -c --arg API_PROXY "$sharedflow" "$revisionJqPattern" | while read -r revision; do
+            sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true" | jq -r -c ".[]? | select(.name==\"$proxy\") | .revision" | while read -r revision; do
                 mgmtAPIDelete "organizations/$organization/environments/$env/sharedflows/$sharedflow/revisions/$revision/deployments"
             done
             mgmtAPIDelete "organizations/$organization/sharedflows/$sharedflow" || logwarn "Sharedflow $sharedflow not deleted. It might not exist"
