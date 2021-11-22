@@ -36,6 +36,7 @@ if [ "$apiversion" = "google" ]; then
         */apps) jq_pattern='[.app[]?|.appId]';;
         */apiproducts) jq_pattern='[.apiProduct[]?|.name]';;
         */keyvaluemaps/*) echo "{\"name\":\"$(echo "$path" | sed -n -e 's/^.*keyvaluemaps\///p')\", \"encrypted\": \"true\"}" && exit 0;;
+        */environments/*/revisions/*/deployments) jq_pattern='.';;
         */environments/*/deployments) jq_pattern='[.deployments[] | { name: .apiProxy, revision: .revision | tonumber } ]';;
     esac
 elif [ "$apiversion" = "apigee" ]; then
@@ -44,6 +45,7 @@ elif [ "$apiversion" = "apigee" ]; then
         */developers/*/apps) jq_pattern='.';;
         */developers/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
         */apiproducts/*) jq_pattern='del(.createdBy) | del(.lastModifiedBy)';;
+        */environments/*/revisions/*/deployments) jq_pattern='.';;
         */environments/*/deployments) jq_pattern='[.aPIProxy[] | { name: .name, revision: .revision[0].name | tonumber } ]';;
     esac
 fi
