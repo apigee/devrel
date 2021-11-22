@@ -147,7 +147,7 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
     errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
     warningCount=$(jq '[.[].warningCount] | add' "$proxylint")
 
-     if [ "$errorCount" -gt "0" ];then
+    if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
     elif [ "$warningCount" -gt "0" ];then
         highlightclass="highlight-warn"
