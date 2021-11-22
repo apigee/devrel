@@ -77,12 +77,13 @@ popd
 loginfo "Running Apigeelint on Proxies"
 mkdir -p "$export_folder/apigeelint/proxies"
 
-for proxyexportpath in "$export_folder/$organization/proxies/"*/ ; do
+while IFS= read -r -d '' proxyexportpath
+do
     proxyname=$(basename "$proxyexportpath")
     logdebug "Running Apigeelint on: $proxyexportpath"
     apigeelint -s "$proxyexportpath/apiproxy" -f html.js > "$export_folder/apigeelint/proxies/$proxyname.html" || true # apigeelint exits on error but we want to continue
     apigeelint -s "$proxyexportpath/apiproxy" -f json.js > "$export_folder/apigeelint/proxies/$proxyname.json" || true #
-done
+done <   <(find "$export_folder/$organization/proxies" -type d -mindepth 1 -maxdepth 1 -print0)
 
 performancequery="organizations/$organization/environments/$environment/stats/apiproxy"
 performancequery+="?limit=14400&offset=0"
@@ -94,7 +95,8 @@ sackmesser list "$performancequery" > "$export_folder/performance-$environment.j
 loginfo "Generating Policy Usage Report"
 
 mkdir -p "$export_folder/scratch/policyusage"
-for proxyexportpath in "$export_folder/$organization/proxies/"*/ ; do
+while IFS= read -r -d '' proxyexportpath
+do
     proxyname=$(basename "$proxyexportpath")
     logdebug "Running Proxy Usage Analysis on: $proxyexportpath"
     if [ -d "$proxyexportpath"/apiproxy/policies ];then
@@ -113,7 +115,7 @@ for proxyexportpath in "$export_folder/$organization/proxies/"*/ ; do
         echo "[]" > "$export_folder/scratch/policyusage/$proxyname.json"
         echo "{}" > "$export_folder/scratch/policyusage/$proxyname-indexed.json"
     fi
-done
+done <   <(find "$export_folder/$organization/proxies" -type d -mindepth 1 -maxdepth 1 -print0)
 
 sort "$export_folder/allpolicies.txt" | uniq > "$export_folder/uniquepolicies.txt"
 
@@ -141,7 +143,9 @@ echo "<th data-sortable=\"true\" data-field=\"flows\">Numer of Flows</th>" >> "$
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
-for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
+
+while IFS= read -r -d '' proxylint
+do
     proxyname=$(basename "${proxylint%%.*}")
     proxyexportpath="$export_folder/$organization/proxies/$proxyname"
     errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
@@ -195,7 +199,7 @@ for proxylint in "$export_folder/apigeelint/proxies/"*.json ; do
     echo "<td>$policycount</td>" >> "$report_html"
     echo "<td>$flowcount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
-done
+done <   <(find "$export_folder/apigeelint/proxies/"*.json -print0)
 
 echo "</tbody></table></div>" >> "$report_html"
 
@@ -212,7 +216,8 @@ done <"$export_folder/uniquepolicies.txt"
 echo "</tr></thead>" >> "$report_html"
 echo "<tbody>" >> "$report_html"
 
-for policyusage in "$export_folder/scratch/policyusage/"*-indexed.json; do
+while IFS= read -r -d '' policyusage
+do
     proxyname=$(basename "${policyusage%%-indexed.*}")
     linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
     echo "<tr>"  >> "$report_html"
@@ -230,7 +235,7 @@ for policyusage in "$export_folder/scratch/policyusage/"*-indexed.json; do
     done <"$export_folder/uniquepolicies.txt"
 
     echo "</tr>"  >> "$report_html"
-done
+done <   <(find "$export_folder/scratch/policyusage/"*-indexed.json -print0)
 
 echo "</tbody></table></div>" >> "$report_html"
 
@@ -273,15 +278,19 @@ echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h2>SharedFlows</h2>" >> "$report_html"
 
+loginfo "Exporting SF Implementation"
+
 echo "<h3>SharedFlows Implementation</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/apigeelint/sharedflows"
-for sfexportpath in "$export_folder/$organization/sharedflows/"*/ ; do
+
+while IFS= read -r -d '' sfexportpath
+do
     sfname=$(basename "$sfexportpath")
     logdebug "Running Apigeelint on: $sfexportpath"
     apigeelint -s "$sfexportpath/sharedflowbundle" -f html.js > "$export_folder/apigeelint/sharedflows/$sfname.html" || true # apigeelint exits on error but we want to continue
     apigeelint -s "$sfexportpath/sharedflowbundle" -f json.js > "$export_folder/apigeelint/sharedflows/$sfname.json" || true #
-done
+done <   <(find "$export_folder/$organization/sharedflows" -type d -mindepth 1 -maxdepth 1 -print0)
 
 echo "<div><table id=\"sf-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
 echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
@@ -296,7 +305,8 @@ echo "<th data-sortable=\"true\" data-field=\"fh\">Flowhook References</th>" >> 
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
-for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
+while IFS= read -r -d '' sflint
+do
     sfname=$(basename "${sflint%%.*}")
     sfexportpath="$export_folder/$organization/sharedflows/$sfname"
     errorCount=$(jq '[.[].errorCount] | add' "$sflint")
@@ -351,7 +361,8 @@ for sflint in "$export_folder/apigeelint/sharedflows/"*.json ; do
     echo "<td>$proxyreferences</td>" >> "$report_html"
     echo "<td>$usedinflowhook</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
-done
+done <   <(find "$export_folder/apigeelint/sharedflows/"*.json -print0)
+
 echo "</tbody></table></div></div>" >> "$report_html"
 
 cat "$SCRIPT_FOLDER/static/footer.html" >> "$report_html"
