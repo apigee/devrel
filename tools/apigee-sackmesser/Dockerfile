@@ -15,9 +15,10 @@
 FROM maven:3.6.3-slim
 
 RUN apt-get update && \
-  apt-get install git=* libxml2-utils=* jq=* unzip=* --no-install-recommends -y \
+  apt-get install git=* libxml2-utils=* jq=* unzip=* nodejs=* npm=* --no-install-recommends -y \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global apigeelint@2.10.0
 
 COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
 COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
