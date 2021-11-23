@@ -333,6 +333,7 @@ create_gke_cluster() {
       gcloud container clusters create "$GKE_CLUSTER_NAME" \
         --region "$REGION" \
         --node-locations "$ZONE" \
+        --release-channel stable \
         --network default \
         --subnetwork default \
         --default-max-pods-per-node "110" \
