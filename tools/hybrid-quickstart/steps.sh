@@ -38,7 +38,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.6.0'
+    export APIGEE_CTL_VERSION='1.6.2'
     echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
@@ -339,10 +339,13 @@ create_gke_cluster() {
         --enable-ip-alias \
         --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
         --num-nodes "3" \
-        --enable-autoscaling --min-nodes "3" --max-nodes "6" \
+        --enable-autoscaling \
+        --min-nodes "3" \
+        --max-nodes "6" \
         --labels mesh_id="$MESH_ID" \
         --workload-pool "$WORKLOAD_POOL" \
-        --enable-stackdriver-kubernetes
+        --logging SYSTEM,WORKLOAD \
+        --monitoring SYSTEM
     fi
 
     gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --region "$REGION"
@@ -579,6 +582,10 @@ logger:
   enabled: false
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
 
+runtime:
+  image:
+    url: "gcr.io/apigee-release/hybrid/apigee-runtime"
+    tag: "1.6.2-hotfix.1"  # TODO remove hotfix image tag with 1.6.3
 EOF
 }
 
@@ -603,6 +610,11 @@ install_runtime() {
 enable_trace() {
   ENV_NAME=$1
   echo -n "🕵️‍♀️ Turn on trace logs"
+
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+      --member "serviceAccount:apigee-runtime@${PROJECT_ID}.iam.gserviceaccount.com" \
+      --role=roles/cloudtrace.agent --project "$PROJECT_ID"
+
     curl --fail -X PATCH -H "Authorization: Bearer $(token)" \
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${PROJECT_ID}/environments/$ENV_NAME/traceConfig" \
