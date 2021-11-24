@@ -61,7 +61,7 @@ steps:
         then
           ./destroy-runtime-gke.sh
         fi
-timeout: 1800s #30min
+timeout: 2700s #45min
 substitutions:
   _QUICKSTART_ENV_NAME: test1
   _QUICKSTART_ENV_GROUP_NAME: test
