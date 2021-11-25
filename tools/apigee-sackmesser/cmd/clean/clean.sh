@@ -163,7 +163,9 @@ if [ -n "$deleteSharedflow" ]; then
     fi
     for env in $allEnvironments; do
         for sharedflow in $deleteSharedflow; do
-            sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true" | jq -r -c ".[]? | select(.name==\"$proxy\") | .revision" | while read -r revision; do
+            logdebug "Undeploying and deleting $sharedflow in $env"
+            sackmesser list "organizations/$organization/environments/$env/deployments?sharedFlows=true" | jq -r -c ".[]? | select(.name==\"$sharedflow\") | .revision" | while read -r revision; do
+                logdebug "Undeploying and deleting revision $revision of $sharedflow in $env"
                 mgmtAPIDelete "organizations/$organization/environments/$env/sharedflows/$sharedflow/revisions/$revision/deployments"
             done
             mgmtAPIDelete "organizations/$organization/sharedflows/$sharedflow" || logwarn "Sharedflow $sharedflow not deleted. It might not exist"

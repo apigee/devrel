@@ -67,12 +67,16 @@ echo "<p><b>Environment:</b> $environment</p>" >> "$report_html"
 echo "<p><b>Timestamp:</b> $(date -n)</p>" >> "$report_html"
 echo "</div></div>" >> "$report_html"
 
-
 loginfo "Exporting organization to $export_folder"
 mkdir -p "$export_folder"
 pushd "$export_folder"
 sackmesser export -o "$organization" --skip-config
 popd
+
+if [ ! -d "$export_folder/$organization/proxies" ]; then
+    mkdir -p "$export_folder/$organization/proxies"
+    echo "<p><i>No API proxies found in organization $organization</i></p>" >> "$report_html"
+fi
 
 loginfo "Running Apigeelint on Proxies"
 mkdir -p "$export_folder/apigeelint/proxies"
@@ -191,7 +195,7 @@ do
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<th><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
+    echo "<th><a href=\"$(resource_link "proxies/$proxyname" "$linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
     echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
     echo "<td>$errorCount</td>" >> "$report_html"
     echo "<td>$warningCount</td>" >> "$report_html"
@@ -221,7 +225,7 @@ do
     proxyname=$(basename "${policyusage%%-indexed.*}")
     linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
     echo "<tr>"  >> "$report_html"
-    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname" "$linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
 
     while read -r policytype; do
         usages=$(jq --arg TYPE "$policytype" '.[$TYPE] | length' "$policyusage")
@@ -257,7 +261,11 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -r -c '.environments[0].dimensions[]?' < "$export_folder/performance-$environment.json" | while read -r dimension; do
     proxyname=$(echo "$dimension" | jq -r ".name")
-    linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname" || echo "unknown")
+    if [ -f "$export_folder/scratch/proxyrevisions/$proxyname" ]; then
+        linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
+    else
+        linkrevision="unknown"
+    fi
     avg_total_response_time=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="avg(total_response_time)").values[0].value|tonumber|floor')
     avg_target_response_time=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="avg(target_response_time)").values[0].value|tonumber|floor')
     avg_proxy_response_time="$((avg_total_response_time - avg_target_response_time))"
@@ -265,7 +273,7 @@ jq -r -c '.environments[0].dimensions[]?' < "$export_folder/performance-$environ
     errors=$(echo "$dimension" | jq -r '.metrics[]|select(.name=="sum(is_error)").values[0].value')
 
     echo "<tr>"  >> "$report_html"
-    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname $linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname" "$linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
     echo "<td>$avg_tps</td>"  >> "$report_html"
     echo "<td>$avg_total_response_time</td>"  >> "$report_html"
     echo "<td>$avg_target_response_time</td>"  >> "$report_html"
@@ -279,6 +287,11 @@ echo "</tbody></table></div>" >> "$report_html"
 echo "<h2>SharedFlows</h2>" >> "$report_html"
 
 loginfo "Exporting SF Implementation"
+
+if [ ! -d "$export_folder/$organization/sharedflows" ]; then
+    mkdir -p "$export_folder/$organization/sharedflows"
+    echo "<p><i>No SharedFlows found in organization $organization</i></p>" >> "$report_html"
+fi
 
 echo "<h3>SharedFlows Implementation</h3>" >> "$report_html"
 
@@ -352,7 +365,7 @@ do
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname $linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
+    echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$deployedrevision $versionlagicon</td>" >> "$report_html"
     echo "<td>$errorCount</td>"  >> "$report_html"
     echo "<td>$warningCount</td>"  >> "$report_html"
