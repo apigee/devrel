@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,23 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jenkins4eval/jenkinsfile-runner:1.0-beta-29
+FROM jenkins4eval/jenkinsfile-runner:1.0-beta-29 as filerunner
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-  maven=3.6.* \
-  nodejs=14.* \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+FROM jenkins/jenkins:2.315-alpine
+
+USER root
+RUN apk update && apk add --no-cache git maven nodejs npm
+USER jenkins
+
+COPY --from=filerunner --chown=jenkins /app /app
 WORKDIR /app/jenkins
-RUN jar -cvf jenkins.war ./*
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN java -jar /app/bin/jenkins-plugin-manager.jar --war /app/jenkins/jenkins.war --plugin-file /usr/share/jenkins/ref/plugins.txt
-RUN rm /app/jenkins/jenkins.war
+COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 ENV CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/jenkins.yaml
 COPY jenkins.yml $CASC_JENKINS_CONFIG
 
 ENV APIGEE_HOSTURL=https://api.enterprise.apigee.com
+
+ENTRYPOINT ["/app/bin/jenkinsfile-runner", "-w", "/usr/share/jenkins/", "-p", "/usr/share/jenkins/ref/plugins", "-f"]
+
+CMD ["/workspace/Jenkinsfile"]
