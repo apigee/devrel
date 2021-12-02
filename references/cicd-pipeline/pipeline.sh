@@ -38,10 +38,13 @@ gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
 
 echo "[INFO] CICD Pipeline for Apigee Edge (Jenkins)"
 
+(cd jenkins-build && docker build -f Dockerfile -t apigee/devrel-jenkins-base:latest .)
+(cd jenkins-build && docker build -f jenkinsfile-runner/Dockerfile --build-arg baseImage=apigee/devrel-jenkins-base --build-arg baseImageTag=latest -t apigee/devrel-jenkinsfile:latest .)
+
 # because volume mounts don't work inside docker in docker without reference to the host file system
-cat << EOF >> ./Dockerfile-jenkins-cicd
-FROM ghcr.io/apigee/devrel-jenkinsfile:latest
-COPY . /workspace
+cat << EOF > ./Dockerfile-jenkins-cicd
+FROM apigee/devrel-jenkinsfile:latest
+COPY --chown=jenkins  . /workspace
 RUN cp /workspace/ci-config/jenkins/Jenkinsfile /workspace/Jenkinsfile
 EOF
 docker build -f ./Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-airports:latest .
@@ -58,7 +61,7 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -i apigee/devrel-jenkinsfile-airports:latest
+  apigee/devrel-jenkinsfile-airports:latest
 
 
 echo "[INFO] CICD Pipeline for Apigee X (Jenkins)"
@@ -77,4 +80,4 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
-  -i apigee/devrel-jenkinsfile-airports:latest
+  apigee/devrel-jenkinsfile-airports:latest

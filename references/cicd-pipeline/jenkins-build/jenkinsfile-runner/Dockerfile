@@ -12,23 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ARG baseImage=apigee/devrel-jenkins-base
+ARG baseImageTag=latest
+
 FROM jenkins4eval/jenkinsfile-runner:1.0-beta-29 as filerunner
 
-FROM jenkins/jenkins:2.315-alpine
+FROM ${baseImage}:${baseImageTag}
 
 USER root
-RUN apk update && apk add --no-cache git maven nodejs npm
+WORKDIR /usr/share/jenkins
+RUN jar -xvf jenkins.war
 USER jenkins
 
 COPY --from=filerunner --chown=jenkins /app /app
 WORKDIR /app/jenkins
-COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
-
-ENV CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/jenkins.yaml
-COPY jenkins.yml $CASC_JENKINS_CONFIG
-
-ENV APIGEE_HOSTURL=https://api.enterprise.apigee.com
 
 ENTRYPOINT ["/app/bin/jenkinsfile-runner", "-w", "/usr/share/jenkins/", "-p", "/usr/share/jenkins/ref/plugins", "-f"]
 

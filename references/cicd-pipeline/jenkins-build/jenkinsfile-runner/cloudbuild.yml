@@ -18,6 +18,8 @@ steps:
       - build
       - "--tag=gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest"
       - "--file=./jenkinsfile-runner/Dockerfile"
+      - "--build-arg=baseImage=gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base"
+      - "--build-arg=baseImageTag=gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base"
       - .
 images:
   - "gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest"

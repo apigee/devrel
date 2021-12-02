@@ -1,3 +1,4 @@
+configuration-as-code:1.54
 cucumber-reports:5.6.0
 git:4.9.0
 htmlpublisher:1.27
@@ -5,4 +6,6 @@ junit:1.53
 matrix-project:1.19
 script-security:1.78
 token-macro:267.vcdaea6462991
+workflow-aggregator:2.6
+workflow-multibranch:2.26
 workflow-step-api:2.24
