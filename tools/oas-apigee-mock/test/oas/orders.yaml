@@ -15,7 +15,7 @@
 openapi: 3.0.0
 info:
   title: "Orders"
-  version: "1.0"
+  version: "1.1"
 paths:
   /orders:
     get:
@@ -48,6 +48,8 @@ paths:
                     shippingAddress: 3560 Larry Park
                     totalPrice: $8.71
                     userId: mrawlence1
+        "400":
+          $ref: "#/components/responses/badRequest"
   /orders/{orderId}:
     get:
       summary: Get a specific order
@@ -76,6 +78,10 @@ paths:
                 shippingAddress: 874 Graceland Court
                 totalPrice: $110.57
                 userId: gfrayne9
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "404":
+          $ref: "#/components/responses/notFound"
     post:
       summary: Create a new order
       operationId: Create order
@@ -108,6 +114,8 @@ paths:
                 shippingAddress: 874 Graceland Court
                 totalPrice: $110.57
                 userId: gfrayne9
+        "400":
+          $ref: "#/components/responses/badRequest"
     put:
       summary: Update a specific order
       operationId: Update an order
@@ -126,7 +134,24 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "404":
+          $ref: "#/components/responses/notFound"
 components:
+  responses:
+    badRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    notFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
   schemas:
     order:
       type: object
@@ -170,3 +195,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/order"
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
