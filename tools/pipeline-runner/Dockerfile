@@ -45,6 +45,9 @@ RUN npm install --global puppeteer@5.2.1
 # add our tooling scripts
 COPY *.sh /usr/bin/
 
+# install apgieelint
+RUN npm install --global apigeelint@2.10.0
+
 # Run script
 WORKDIR /home
 CMD ["run-pipelines.sh"]
