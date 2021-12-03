@@ -32,6 +32,7 @@ usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | 
 Apigee Sackmesser utility.
 
 Commands:
+await
 clean
 deploy
 export
