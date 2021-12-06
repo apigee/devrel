@@ -6,23 +6,23 @@
                 <Name>CORS</Name>
             </Step>
             <Step>
-                <Name>VA-header</Name>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
+                <Name>VA-header</Name>
             </Step>
             <Step>
-                <Name>AM-process-request-params</Name>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
+                <Name>AM-process-request-params</Name>
             </Step>
             <Step>
                 <Name>SA-10pm</Name>
             </Step>
             <Step>
-                <Name>QU-check</Name>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
+                <Name>QU-check</Name>
             </Step>
             <Step>
-                <Name>RC-uri</Name>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
+                <Name>RC-uri</Name>
             </Step>
         </Request>
         <Response/>
@@ -53,20 +53,20 @@
                     <Name>LC-spanner-session</Name>
                 </Step>
                 <Step>
+                    <Condition>Spanner.session = null</Condition>
                     <Name>SC-spanner-session</Name>
-                    <Condition>Spanner.session = null</Condition>
                 </Step>
                 <Step>
+                    <Condition>Spanner.session = null</Condition>
                     <Name>EV-spanner-session</Name>
-                    <Condition>Spanner.session = null</Condition>
                 </Step>
                 <Step>
+                    <Condition>Spanner.newSession != null</Condition>
                     <Name>PC-spanner-session</Name>
-                    <Condition>Spanner.newSession != null</Condition>
                 </Step>
                 <Step>
-                    <Name>AM-spanner-session</Name>
                     <Condition>Spanner.newSession != null</Condition>
+                    <Name>AM-spanner-session</Name>
                 </Step>
                 <Step>
                     <Name>SC-product-catalog-lookup</Name>
@@ -75,6 +75,7 @@
                     <Name>JS-format-product-data</Name>
                 </Step>
             </Response>
+            <!-- Request verb was changed to POST, so look for that in response flow -->
             <Condition>(proxy.pathsuffix MatchesPath "/products") AND ((request.verb = "GET") OR (request.verb = "POST"))</Condition>
         </Flow>
         <Flow name="openapi">
