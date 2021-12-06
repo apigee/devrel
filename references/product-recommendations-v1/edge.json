@@ -1,0 +1,66 @@
+{
+    "version": "1.0",
+    "apiConfig": {},
+    "envConfig": {},
+    "orgConfig": {
+        "apiProducts": [
+            {
+              "name": "product-recommendations-v1-APIGEE_ENVIRONMENT",
+              "displayName": "product-recommendations-v1-APIGEE_ENVIRONMENT",
+              "approvalType": "auto",
+              "attributes": [
+                {
+                  "name": "access",
+                  "value": "public"
+                }
+              ],
+              "description": "Produuct for the product-recommendations-v1 API and App product-recommendations-v1-app-APIGEE_ENVIRONMENT, also used by AppSheet.",
+              "environments": [
+                "APIGEE_ENVIRONMENT"
+              ],
+              "quota": "5",
+              "quotaInterval": "1",
+              "quotaTimeUnit": "minute",
+              "operationGroup": {
+                "operationConfigs": [
+                  {
+                    "apiSource": "product-recommendations-v1",
+                    "operations": [
+                      {
+                        "resource": "/products",
+                        "methods": [
+                          "GET"
+                        ]
+                      }
+                    ],
+                    "quota": {
+                      "limit": "5",
+                      "interval": "1",
+                      "timeUnit": "minute"
+                    }
+                  }
+                ],
+                "operationConfigType": "proxy"
+              }
+            }
+        ],
+        "developers": [
+            {
+              "email": "demo@any.com",
+              "firstName": "Demo",
+              "lastName": "Developer",
+              "userName": "demo-developer"
+            }
+        ],
+        "developerApps": {
+            "demo@any.com": [
+                {
+                  "name": "product-recommendations-v1-app-APIGEE_ENVIRONMENT",
+                  "apiProducts": [
+                        "product-recommendations-v1-APIGEE_ENVIRONMENT"
+                   ]
+                }
+            ]
+        }
+    }
+}

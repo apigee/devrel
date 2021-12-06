@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-spanner-session">
+    <DisplayName>EV-spanner-session</DisplayName>
+    <Properties/>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <JSONPayload>
+        <Variable name="Spanner.newSession">
+            <JSONPath>$.name</JSONPath>
+        </Variable>
+    </JSONPayload>
+    <Source clearPayload="false">sessionResponse</Source>
+</ExtractVariables>

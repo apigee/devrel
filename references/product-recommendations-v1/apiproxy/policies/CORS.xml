@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CORS continueOnError="false" enabled="true" name="CORS">
+    <DisplayName>CORS</DisplayName>
+    <AllowOrigins>{request.header.origin}</AllowOrigins>
+    <AllowCredentials>true</AllowCredentials>
+    <AllowMethods>GET</AllowMethods>
+    <!-- Allow anything, for use in interactive docs -->
+    <AllowHeaders>*</AllowHeaders>
+    <ExposeHeaders>*</ExposeHeaders>
+    <MaxAge>3628800</MaxAge>
+    <AllowCredentials>false</AllowCredentials>
+    <GeneratePreflightResponse>true</GeneratePreflightResponse>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</CORS>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-oas-json">
+    <DisplayName>AM-oas-json</DisplayName>
+    <Properties/>
+    <Set>
+        <Payload contentType="application/json">
+{
+   "openapi": "3.0.3",
+   "info": {
+      "version": "0.0.1",
+      "title": "Product Recommendations",
+      "description": "API that gives product recommendations based on user activities on the ecommerce site.\n"
+   },
+   "servers": [
+      {
+         "url": "https://xapi-test.kurtkanaskie.net/v1/recommendations"
+      }
+   ],
+   "paths": {
+      "/products": {
+         "get": {
+            "summary": "List `Product` objects.",
+            "description": "Retrieve a List of products recommended for an user",
+            "responses": {
+               "200": {
+                  "description": "Successful response",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "object",
+                           "properties": {
+                              "products": {
+                                 "type": "array",
+                                 "items": {
+                                    "$ref": "#/components/schemas/ListOfProducts"
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "components": {
+      "schemas": {
+         "ListOfProducts": {
+            "title": "List of Products",
+            "type": "array",
+            "items": {
+               "$ref": "#/components/schemas/Product"
+            }
+         },
+         "Product": {
+            "title": "Product",
+            "type": "object",
+            "properties": {
+               "productid": {
+                  "description": "Product ID",
+                  "type": "string"
+               },
+               "name": {
+                  "description": "Product Name",
+                  "type": "string"
+               },
+               "description": {
+                  "description": "Product Description",
+                  "type": "string"
+               },
+               "price": {
+                  "description": "Product Price",
+                  "type": "number"
+               },
+               "image": {
+                  "description": "Product image URL",
+                  "type": "string"
+               }
+            }
+         }
+      }
+   }
+}
+</Payload>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

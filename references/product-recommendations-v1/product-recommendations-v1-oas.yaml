@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: Product Recommendations
+  description: |
+    API that gives product recommendations based on user activities on the ecommerce site.
+servers:
+  - url: 'https://ENVGROUP_HOSTNAME/v1/recommendations'
+security:
+  - ApiKeyAuth: []
+paths:
+  /products:
+    get:
+      summary: List `Product` objects.
+      description: Retrieve a List of products recommended for an user
+      operationId: getPersons
+      parameters:
+        - $ref: '#/components/parameters/x-userid'
+        - $ref: '#/components/parameters/cache-control'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ListOfProducts'
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: header
+      name: X-APIKey
+  parameters:
+    x-userid:
+      in: header
+      name: x-userid
+      description: The user identifier (defaults to 000170187170673177-6)
+      required: false
+      default: 000170187170673177-6
+      schema:
+        type: string
+    cache-control:
+      in: header
+      name: cache-control
+      description: Control caching (default is to allow).
+      required: false
+      default: allow-cache
+      schema:
+        type: string
+        enum: [allow-cache, no-cache]
+  schemas:
+    ListOfProducts:
+      title: List of Products
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+    Product:
+      title: Product
+      type: object
+      properties:
+        productid:
+          description: Product ID
+          type: string
+        name:
+          description: Product Name
+          type: string
+        description:
+          description: Product Description
+          type: string
+        price:
+          description: Product Price
+          type: number
+        image:
+          description: Product image URL
+          type: string

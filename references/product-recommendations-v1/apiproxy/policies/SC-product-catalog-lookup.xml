@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-product-catalog-lookup">
+    <DisplayName>SC-product-catalog-lookup</DisplayName>
+    <Request>
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Verb>POST</Verb>
+            <Payload contentType="application/json">
+            {
+      
+                "sql": "select productid,name,description,price,image{selectCaseStr} from products where productid in ({productIdList}) order by sortid asc" ,
+                "queryMode": "NORMAL"
+    
+            }
+            </Payload>
+        </Set>
+    </Request>
+    <Response>productResponse</Response>
+    <HTTPTargetConnection>
+        <Authentication>
+            <GoogleAccessToken>
+                <Scopes>
+                    <Scope>https://www.googleapis.com/auth/spanner.data</Scope>
+                </Scopes>
+            </GoogleAccessToken>
+        </Authentication>
+        <URL>https://spanner.googleapis.com/v1/{Spanner.session}:executeSql</URL>
+    </HTTPTargetConnection>
+</ServiceCallout>

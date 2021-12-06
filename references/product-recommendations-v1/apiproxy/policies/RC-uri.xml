@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponseCache async="false" continueOnError="false" enabled="true" name="RC-uri">
+    <DisplayName>RC-uri</DisplayName>
+    <Properties/>
+    <CacheKey>
+        <Prefix/>
+        <KeyFragment ref="request.uri" type="string"/>
+    </CacheKey>
+    <Scope>Exclusive</Scope>
+    <ExpirySettings>
+        <ExpiryDate/>
+        <TimeOfDay/>
+        <TimeoutInSec ref="">300</TimeoutInSec>
+    </ExpirySettings>
+    <ExcludeErrorResponse>true</ExcludeErrorResponse>
+    <SkipCacheLookup>request.header.cache-control = "no-cache"</SkipCacheLookup>
+    <SkipCachePopulation/>
+</ResponseCache>

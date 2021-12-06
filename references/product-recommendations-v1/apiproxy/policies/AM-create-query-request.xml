@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-create-query-request">
+    <DisplayName>AM-create-query-request</DisplayName>
+    <Set>
+        <Verb>POST</Verb>
+        <Payload contentType="application/json">
+        {
+          "kind": "bigquery#queryRequest",
+          "query": "SELECT itemid,predicted_session_duration_confidence FROM prod_recommendations AS A where A.userid = '{userid}' ORDER BY A.predicted_session_duration_confidence DESC",
+          "defaultDataset": {
+            "datasetId": "bqml",
+            "projectId": "PROJECT_ID"
+          },
+          "useQueryCache": true,
+          "useLegacySql": false
+        }
+        </Payload>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

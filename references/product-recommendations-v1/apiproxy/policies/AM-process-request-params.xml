@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-process-request-params">
+    <DisplayName>AM-process-request-params</DisplayName>
+    <AssignVariable>
+        <Name>userid</Name>
+        <Value>6929470170340317899-1</Value>
+        <Ref>request.header.x-userid</Ref>
+    </AssignVariable>
+    <Remove>
+        <Headers>
+            <Header name="x-user"/>
+            <Header name="x-apikey"/>
+        </Headers>
+    </Remove>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Quota async="false" continueOnError="false" enabled="true" name="QU-check" type="flexi">
+    <DisplayName>QU-check</DisplayName>
+    <Allow count="10" countRef="verifyapikey.Verify-API-Key.apiproduct.developer.quota.limit"/>
+    <Interval ref="verifyapikey.Verify-API-Key.apiproduct.developer.quota.interval">1</Interval>
+    <TimeUnit ref="verifyapikey.Verify-API-Key.apiproduct.developer.quota.timeunit">minute</TimeUnit>
+    <Identifier ref="verifyapikey.Verify-API-Key.client_id"/>
+    <Distributed>true</Distributed>
+    <Synchronous>true</Synchronous>
+    <StartTime>2021-4-8 12:00:00</StartTime>
+</Quota>

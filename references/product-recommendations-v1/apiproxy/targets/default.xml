@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TargetEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>AM-copy-false</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <Flows/>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response>
+            <Step>
+                <Name>RC-uri</Name>
+            </Step>
+        </Response>
+    </PostFlow>
+    <HTTPTargetConnection>
+        <!-- SA: datareader@bigquery-310116.iam.gserviceaccount.com -->
+        <!-- SA: datareader@apigeex-mint-kurt.iam.gserviceaccount.com -->
+        <Authentication>
+            <GoogleAccessToken>
+                <Scopes>
+                    <Scope>https://www.googleapis.com/auth/bigquery</Scope>
+                    <!--<Scope>https://www.googleapis.com/auth/spanner.data</Scope>-->
+                </Scopes>
+            </GoogleAccessToken>
+        </Authentication>
+        <URL>https://www.googleapis.com/bigquery/v2/projects/PROJECT_ID/queries</URL>
+    </HTTPTargetConnection>
+</TargetEndpoint>

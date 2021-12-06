@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-spanner-session">
+    <DisplayName>SC-spanner-session</DisplayName>
+    <Properties/>
+    <Request clearPayload="true" variable="myRequest">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Verb>POST</Verb>
+            <Payload contentType="application/json">{}
+        </Payload>
+        </Set>
+    </Request>
+    <Response>sessionResponse</Response>
+    <HTTPTargetConnection>
+        <Authentication>
+            <GoogleAccessToken>
+                <Scopes>
+                    <Scope>https://www.googleapis.com/auth/spanner.data</Scope>
+                </Scopes>
+            </GoogleAccessToken>
+        </Authentication>
+        <URL>https://content-spanner.googleapis.com/v1/projects/PROJECT_ID/instances/product-catalog/databases/product-catalog-v1/sessions</URL>
+    </HTTPTargetConnection>
+</ServiceCallout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript async="false" continueOnError="false" enabled="true" timeLimit="200" name="JS-create-product-id-list">
+    <DisplayName>JS-create-product-id-list</DisplayName>
+    <Properties/>
+    <ResourceURL>jsc://createproductidlist.js</ResourceURL>
+</Javascript>

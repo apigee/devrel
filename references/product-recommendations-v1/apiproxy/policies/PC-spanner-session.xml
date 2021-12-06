@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PopulateCache async="false" continueOnError="false" enabled="true" name="PC-spanner-session">
+    <DisplayName>PC-spanner-session</DisplayName>
+    <CacheResource>spanner</CacheResource>
+    <Scope>Application</Scope>
+    <Source>Spanner.newSession</Source>
+    <CacheKey>
+        <KeyFragment>Spanner.session</KeyFragment>
+    </CacheKey>
+    <ExpirySettings>
+        <!--
+        <TimeoutInSec ref="GCP.expires_in">3540</TimeoutInSec>
+        <TimeoutInSec ref="GCP.expires_in"/>
+        -->
+        <!-- Sessions response does not include a TTL, but it expires after an hour if no use.
+        Docs: https://cloud.google.com/spanner/docs/reference/rest/v1/projects.instances.databases.sessions/create
+        -->
+        <TimeoutInSec>3540</TimeoutInSec>
+    </ExpirySettings>
+</PopulateCache>
