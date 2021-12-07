@@ -52,7 +52,7 @@ IDS_ARR=($IDS)
 for ((i = 0; i < ${#IDS_ARR[@]};  i++))
 do
   echo -n "${IDS_ARR[$i]} - "
-  echo gcloud spanner rows insert --database="$SPANNER_DATABASE" --table=products --data="productid=${IDS_ARR[$i]},${DATAS[$i]}"
+  gcloud spanner rows insert --database="$SPANNER_DATABASE" --table=products --data="productid=${IDS_ARR[$i]},${DATAS[$i]}"
 done
 gcloud spanner databases execute-sql "$SPANNER_DATABASE" --sql='SELECT * FROM products'
 
