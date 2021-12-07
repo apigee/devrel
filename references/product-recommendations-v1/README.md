@@ -35,7 +35,7 @@ ___
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
 
 The API proxy uses a Service Account (e.g. datareader) for GCP authentication to access Big Query and Spanner.
-We'll use the project owner to get a GCP accesss token using "gcloud auth print-access-token" to deploy the proxy.
+We'll use the project owner to get a GCP access token using "gcloud auth print-access-token" to deploy the proxy.
 
 
 The high level steps are:
@@ -270,7 +270,7 @@ Example response:
 
 ```
 
-**KEY TAKEAWAY**: the order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's becasue the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
+**KEY TAKEAWAY**: the order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's because the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
 
 
 ## Cleanup

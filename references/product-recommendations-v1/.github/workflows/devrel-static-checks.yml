@@ -23,32 +23,6 @@ on:
     - cron: "0 0 * * *"
 jobs:
 
-  license:
-    name: License Headers
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Check File License Headers
-        uses: ./tools/pipeline-linter
-        with:
-          pipeline-action: check-license.sh
-
-  structure:
-    name: Repo Structure
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Check README
-        uses: ./tools/pipeline-linter
-        with:
-          pipeline-action: check-readme.sh
-      - name: Check CODEOWNERS
-        uses: ./tools/pipeline-linter
-        with:
-          pipeline-action: check-codeowners.sh
-
   linter:
     name: Lint Codebase
     runs-on: ubuntu-latest

@@ -1,11 +1,12 @@
+---
 openapi: 3.0.3
 info:
   version: 0.0.1
   title: Product Recommendations
   description: |
-    API that gives product recommendations based on user activities on the ecommerce site.
+    Provides product recommendations based on user activities on ecommerce site.
 servers:
-  - url: 'https://ENVGROUP_HOSTNAME/v1/recommendations'
+  - url: 'https://xapi-test.kurtkanaskie.net/v1/recommendations'
 security:
   - ApiKeyAuth: []
 paths:
@@ -41,15 +42,13 @@ components:
       name: x-userid
       description: The user identifier (defaults to 000170187170673177-6)
       required: false
-      default: 000170187170673177-6
       schema:
         type: string
     cache-control:
       in: header
       name: cache-control
-      description: Control caching (default is to allow).
+      description: Control caching (default to allow-cache).
       required: false
-      default: allow-cache
       schema:
         type: string
         enum: [allow-cache, no-cache]
