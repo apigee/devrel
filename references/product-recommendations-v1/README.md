@@ -58,17 +58,21 @@ cd product-recommendations-v1
 ### Set Environment Variables
 Set your environment variables (TIP: create a [set_env_values.sh](set_env_values.sh) file with these for easy replay):
 ```
+# For Apigee X
 export PROJECT_ID=your_apigeex_project_name
 export ORG=$PROJECT_ID
 export ENV=eval
-export ENVGROUP_HOSTNAME=api.yourdomain.net
+export ENVGROUP_HOSTNAME=your_api_domain_name
+export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+
+# For Spanner
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export REGION=regional-us-east1
 ```
 Other environment variables that are set below
 ```
-SA 
+# For Apigee X proxy deployment and API calls
 CUSTOMER_USERID
 APIKEY
 ```
@@ -81,25 +85,17 @@ gcloud services enable spanner.googleapis.com
 ```
 
 ### Create datareader Service Account
-Create a "datareader" service account and assign Spanner and BigQuery roles. 
+Create a "datareader" service account and assign Spanner and BigQuery roles. This is used when deploying the API Proxy to allow access to BigQuery and Spanner APIs.
+___
+**NOTE:** These commands requires the `Project IAM Admin` role.
+___
 ```
-gcloud iam service-accounts create datareader --display-name="Data reader for BQ and Spanner Demo"
-gcloud iam service-accounts list | grep datareader 
-
-# For Cloud Shell
-export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f2)
-# From Mac the response includes the description
-# export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f12)
-
-# e.g. datareader@your-apigeex-project-name.iam.gserviceaccount.com
+gcloud iam service-accounts create datareader --display-name="Data reader for Apigee, BQ and Spanner Demo"
 
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
-
-echo Service Account is: $SA
-
 ```
 
 ## Train BigQuery to Predict Customer Propensity
