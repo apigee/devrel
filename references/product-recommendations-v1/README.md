@@ -26,10 +26,20 @@ Step Descriptions:
 
 ## Prerequisites 
 
-This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
+This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). \
+It's easiest if the user has the GCP Project "Owner" role, otherwise you will need to have the following roles for the user:
+- Apigee Organization Admin
+- BigQueryUser
+- BigQuery Data Viewer
+- CloudSpanner Admin
+- CloudSpanner Database Admin
+- Project IAM Admin
+- Service Usage Consumer
 
 ___
-**NOTE:** If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+**NOTE:** \
+If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account. Provisioning can take up to an hour.\
+In either case your Apigee X org should be configured to have external access.
 ___
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
@@ -102,10 +112,18 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 Duration: 0:30:00
 
 ___
-**NOTE:** Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
+**NOTES:** \
+**Internal Google Users:** the tutorial requires purchasing BigQuery flex slots which may need an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.\
+**Avoid Recurring Charges:** Be sure to delete your assignments and reservations once you've trained the model, to avoid incurring ongoing charges.\
+**Tutorial Tips:** The UI has evolved since the writing.
+- Use the "US: region when you are creating the Dataset, not a region nearest to you.
+- Reservations are under Capacity Management in side navigator.
+- Create Assignments is in the ... menu for the model row.
+- Skip the seciont titled "Use the predicted recommendations in production", its not necessary for this demo.
 ___
 
-Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml), then return here to setup Spanner and Apigee. 
+Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml) then return here to setup Spanner and Apigee. 
+
 Once the tutorial is complete, go to the BigQuery console and 
 * select the `prod_recommendations` table, 
 * then click PREVIEW to view the results. 
@@ -166,7 +184,7 @@ Duration: 0:10:00
 The Apigee proxy will be deployed using Maven. 
 The Maven command will create and deploy a proxy (product-recommendations-v1), create an API Product (product-recommendations-v1-$ENV), create an App Developer (demo@any.com) and App (product-recommendations-v1-app-$ENV).
 
-Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, `googletoken.email` and `api.userid`. These values will be set via the command line.
+Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, `googletoken.email` and `api.userid`. These values vary by project and will be set via the command line.
 ```
 <profile>
 	<id>eval</id>
@@ -265,13 +283,23 @@ Example response:
 }
 
 ```
-
-**KEY TAKEAWAY**: the order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's because the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
+## Key Takeaway
+The order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's because the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
 
 
 ## Cleanup
 Duration: 0:10:00
-### Cleanup Apigee
+
+### Cleanup Flex Slot Reservations (required)
+If you want to keep the demo, be sure to delete the BigQuery Flex Slot reservations to avoid recurring costs.
+- Navigage to BigQuery Console
+- Select Capacity management
+- Select RESERVATIONS tab
+- Open the "model" entry
+- Use the ... menu to delete the reservation
+- Then use the ... menu to delete the "model" entry
+
+### Cleanup Apigee (optional)
 
 Run Maven to undeploy and delete proxy and it's associated artifacts, all in one command.
 ```
@@ -281,11 +309,13 @@ mvn -P eval process-resources -Dbearer=$(gcloud auth print-access-token) \
     apigee-enterprise:deploy -Dapigee.options=clean
 ```
 
-### Cleanup Spanner
+### Cleanup Spanner (optional)
 Remove the Spanner resources by running the [cleanup_spanner.sh](#cleanup_spanner.sh) shell script.
 
-### Cleanup BigQuery
+### Cleanup BigQuery (optional)
 Cleanup BigQuery using the [Cleanup components](https://cloud.google.com/architecture/predicting-customer-propensity-to-buy#delete_the_components) from the tutorial rather than deleting the project as you may want to continue to use Apigee X.
+
+
 
 ### Delete Service Account
 ```
