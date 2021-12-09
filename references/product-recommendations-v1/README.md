@@ -27,7 +27,7 @@ Step Descriptions:
 ## Prerequisites 
 
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). \
-It's easiest if the user has the GCP Project "Owner" role, otherwise you will need to have the following roles for the user:
+It's easiest if the user has the GCP Project "Owner" role, otherwise the following roles will be needed for the user:
 - Apigee Organization Admin
 - BigQueryUser
 - BigQuery Data Viewer
@@ -96,9 +96,6 @@ gcloud services enable spanner.googleapis.com
 
 ### Create datareader Service Account
 Create a "datareader" service account and assign Spanner and BigQuery roles. This is used when deploying the API Proxy to allow access to BigQuery and Spanner APIs.
-___
-**NOTE:** These commands requires the `Project IAM Admin` role.
-___
 ```
 gcloud iam service-accounts create datareader --display-name="Data reader for Apigee, BQ and Spanner Demo"
 
@@ -114,12 +111,12 @@ Duration: 0:30:00
 ___
 **NOTES:** \
 **Internal Google Users:** the tutorial requires purchasing BigQuery flex slots which may need an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.\
-**Avoid Recurring Charges:** Be sure to delete your assignments and reservations once you've trained the model, to avoid incurring ongoing charges.\
+**Avoid Recurring Charges:** Be sure to delete your assignments and reservations once you've trained the model.\
 **Tutorial Tips:** The UI has evolved since the writing.
 - Use the "US: region when you are creating the Dataset, not a region nearest to you.
 - Reservations are under Capacity Management in side navigator.
 - Create Assignments is in the ... menu for the model row.
-- Skip the seciont titled "Use the predicted recommendations in production", its not necessary for this demo.
+- Skip the section titled "Use the predicted recommendations in production", its not necessary for this demo.
 ___
 
 Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml) then return here to setup Spanner and Apigee. 
@@ -317,7 +314,7 @@ Cleanup BigQuery using the [Cleanup components](https://cloud.google.com/archite
 
 
 
-### Delete Service Account
+### Delete Service Account (optional)
 ```
 gcloud iam service-accounts delete $SA
 ```
