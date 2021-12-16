@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-var mockUrl = context.getVariable("proxy.url").replace("/healthcare/v1", "/healthcare-mock/v1").replace(/https?/i, "https")
-context.setVariable('target.url', mockUrl);
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send(`Hello from Apigee`);
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`helloworld: listening on port ${port}`);
+});
