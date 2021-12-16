@@ -40,11 +40,6 @@ if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   exit 0
 fi
 
-echo "[INFO] cleaning up organizations"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
-sackmesser clean all --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet
-sackmesser clean all --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
-
 if [ -z "$DIRS" ]; then
   for TYPE in references labs tools; do
     for D in "$DEVREL_ROOT"/"$TYPE"/*; do
