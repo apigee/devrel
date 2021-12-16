@@ -14,10 +14,6 @@
 # limitations under the License.
 
 echo
-echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\"
+echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
-# Delete database 
-gcloud spanner databases delete "$SPANNER_DATABASE" --quiet
-
-# Delete  instance
-gcloud spanner instances delete "$SPANNER_INSTANCE" --quiet
+gcloud alpha bq datasets delete bqml --remove-tables --quiet

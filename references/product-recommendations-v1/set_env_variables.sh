@@ -13,11 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo
-echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\"
+# Example script to set environmenet variables.
 
-# Delete database 
-gcloud spanner databases delete "$SPANNER_DATABASE" --quiet
+# Change to your values
+export PROJECT_ID=your_org_name
+gcloud config set project "$PROJECT_ID"
+export ORG=$PROJECT_ID
+export ENV=your_env
+export ENVGROUP_HOSTNAME=your_api_domain_name
+export CUSTOMER_USERID="6929470170340317899-1"
 
-# Delete  instance
-gcloud spanner instances delete "$SPANNER_INSTANCE" --quiet
+# No need to change these
+export SPANNER_INSTANCE=product-catalog
+export SPANNER_DATABASE=product-catalog-v1
+export SPANNER_REGION=regional-us-east1
+export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+export SA_INSTALLER=demo-installer@$PROJECT_ID.iam.gserviceaccount.com

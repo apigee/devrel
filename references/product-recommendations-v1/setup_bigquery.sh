@@ -1,4 +1,5 @@
 #! /bin/bash
+# shellcheck disable=SC2206
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +15,11 @@
 # limitations under the License.
 
 echo
-echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\"
+echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
-# Delete database 
-gcloud spanner databases delete "$SPANNER_DATABASE" --quiet
-
-# Delete  instance
-gcloud spanner instances delete "$SPANNER_INSTANCE" --quiet
+bq --location=us mk --dataset "$PROJECT_ID":bqml
+bq mk --table "$PROJECT_ID":bqml.prod_recommendations userId:STRING,itemId:STRING,predicted_session_duration_confidence:FLOAT
+bq load --autodetect --replace --source_format=NEWLINE_DELIMITED_JSON "$PROJECT_ID":bqml.prod_recommendations ./prod_recommendations_json.txt
+bq query --nouse_legacy_sql \
+    "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A" \
+    ORDER BY A.userId ASC, predicted_session_duration_confidence DESC

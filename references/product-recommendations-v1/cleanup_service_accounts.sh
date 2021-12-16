@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo
-echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\"
+echo "[INFO] Pipeline for product-recommendations-api - delete service account datareader"
+gcloud iam service-accounts delete "$SA" --quiet
 
-# Delete database 
-gcloud spanner databases delete "$SPANNER_DATABASE" --quiet
+echo "[INFO] Pipeline for product-recommendations-api - delete service account demo-installer"
+gcloud iam service-accounts delete "$SA_INSTALLER" --quiet
 
-# Delete  instance
-gcloud spanner instances delete "$SPANNER_INSTANCE" --quiet
+rm demo-installer-key.json

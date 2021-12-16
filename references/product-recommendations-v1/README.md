@@ -5,11 +5,11 @@ id: product-recommendations-v1
 
 This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X proxy, BigQuery ML and Cloud Spanner.
 
-BigQuery contains a sample dataset for the complete Product Catalog Ids and a number of simulated users. 
-It uses Machine Learning to predict their propensity to buy based on the time the user spends viewing an item, termed the "predicted session duration confidence", which is a numerical value ordered descending (higher is more likely to buy).
+BigQuery contains a sample dataset for the all Product Catalog Ids and a number of simulated users. 
+It uses Machine Learning to add their propensity to buy based on the time the user spends viewing an item, termed the "predicted session duration confidence", which is a numerical value ordered descending (higher is more likely to buy).
 
-Cloud Spanner simulates a Product Catalog with rich content, such as descriptions and image references. The demo only contains entries for a specific customer Id.
-The items are created and ordered differently than the BigQuery result (e.g ascending by the last few digits of each product Id).
+Cloud Spanner contains a Product Catalog with rich content, such as descriptions and image references. The demo only contains entries for a specific customer Id.
+The items in Spanner are created and ordered differently than the BigQuery result (e.g ascending by name).
 
 Apigee exposes an API that proxies to BigQuery to get the product Ids and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the additional product content.
 The proxy then uses both responses to create the priority sorted result that is sent in the response.
@@ -27,14 +27,6 @@ Step Descriptions:
 ## Prerequisites 
 
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). \
-It's easiest if the user has the GCP Project "Owner" role, otherwise the following roles will be needed for the user:
-- Apigee Organization Admin
-- BigQueryUser
-- BigQuery Data Viewer
-- CloudSpanner Admin
-- CloudSpanner Database Admin
-- Project IAM Admin
-- Service Usage Consumer
 
 ___
 **NOTE:** \
@@ -42,43 +34,48 @@ If you don't have an Apigee X organization you can [provision an evaluation orga
 In either case your Apigee X org should be configured to have external access.
 ___
 
-It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
+The demo uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
 
-The API proxy uses a Service Account (e.g. datareader) for GCP authentication to access Big Query and Spanner.
-We'll use the project owner to get a GCP access token using "gcloud auth print-access-token" to deploy the proxy.
+The API proxy uses a Service Account (e.g. datareader) for GCP authentication to access Big Query and Spanner.\
+We'll use a separate Service Account (e.g. demo-installer) to setup BigQuery, Spanner and Apigee.\
+It will have the following roles:
+- Apigee Organization Admin
+- BigQuery Admin
+- Cloud Spanner Admin
+- Service Account User
 
+### Overview of Steps:
+As Project Owner
+1. Then [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
+2. Using an existing GCP Project or after creating a GCP Project, [create Service Accounts for proxy deployment and installer](#create-service-accounts).
 
-The high level steps are:
-1. First [clone this repository](#clone-repository).
-2. Then [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
-3. Using an existing GCP Project or after creating a GCP Project, [ceate Service Account for proxy deployment](#create-datareader-service-account).
-4. Use a sample dataset to [train BigQuery to predict customer propensity](#train-bigquery-to-predict-customer-propensity).
-5. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
-6. Install Apigee X proxy using [Maven](#setup-apigee-x-proxy)
+As "demo-installer" Service Account
+1. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
+2. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
+3. Install Apigee X proxy using the [Maven command](#setup-apigee-x-proxy).
+4. [Test the API proxy](#test-the-api-proxy).
+5. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
 
 ## Setup
-Duration: 0:30:00 (if you don't already have Apigee X) 0:10:00 (otherwise)
-
-### Clone Repository
-```
-git clone https://github.com/kurtkanaskie/product-recommendations-v1
-cd product-recommendations-v1
-```
+Duration: 0:10:00 (if you already have Apigee X, otherwise 0:30:00)
 
 ### Set Environment Variables
-Set your environment variables (TIP: create a [set_env_values.sh](set_env_values.sh) file with these for easy replay):
+Create a copy of the [set_env_variables.sh](set_env_variables.sh) file with your values for easy replay via "source set_env_variables_my_apigeex.sh":
 ```
-# For Apigee X
-export PROJECT_ID=your_apigeex_project_name
+# Change to your values
+export PROJECT_ID=your_org_name
+gcloud config set project "$PROJECT_ID"
 export ORG=$PROJECT_ID
-export ENV=eval
+export ENV=your_env
 export ENVGROUP_HOSTNAME=your_api_domain_name
-export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+export CUSTOMER_USERID="6929470170340317899-1"
 
-# For Spanner
+# No need to change these
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
-export REGION=regional-us-east1
+export SPANNER_REGION=regional-us-east1
+export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+export SA_INSTALLER=demo-installer@$PROJECT_ID.iam.gserviceaccount.com
 ```
 Other environment variables that are set below
 ```
@@ -90,45 +87,53 @@ APIKEY
 ### Enable APIs
 Enable APIs for BigQuery and Spanner.
 ```
+gcloud services enable apigee.googleapis.com
 gcloud services enable bigquery.googleapis.com 
 gcloud services enable spanner.googleapis.com
 ```
 
-### Create datareader Service Account
-Create a "datareader" service account and assign Spanner and BigQuery roles. This is used when deploying the API Proxy to allow access to BigQuery and Spanner APIs.
+## Create Service Accounts
+Create the "datareader" and "demo-installer" service accounts by running the [setup_service_accounts.sh](setup_service_accounts.sh) shell script.
+
+## Setup BigQuery Recommendations Dataset
+Duration: 0:05:00
+
+BigQuery contains an example dataset and table that shows a subset of results from a BigQuery Machine Learning training computation.
+
+Run the [setup_bigquery.sh](setup_bigquery.sh) shell script to create the Dataset and table.
+It outputs the entries from the table which contains multiple `userId`s.\
+Output:
 ```
-gcloud iam service-accounts create datareader --display-name="Data reader for Apigee, BQ and Spanner Demo"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
++-----------------------+----------------+---------------------------------------+
+|        userId         |     itemId     | predicted_session_duration_confidence |
++-----------------------+----------------+---------------------------------------+
+| 3199127724637190357-1 | GGOEGAAX0037   |                    38558.716565696246 |
+| 3199127724637190357-1 | GGOEYDHJ056099 |                     33550.24722825712 |
+| 3199127724637190357-1 | GGOEGAAX0318   |                     26528.89888944023 |
+| 3199127724637190357-1 | GGOEGAAX0351   |                    26482.668847416397 |
+| 3199127724637190357-1 | GGOEGAAX0568   |                     24279.21602975858 |
+| 6929470170340317899-1 | GGOEGAAX0037   |                     40161.10446942589 |
+| 6929470170340317899-1 | GGOEYDHJ056099 |                     27642.28480729123 |
+| 6929470170340317899-1 | GGOEGAAX0351   |                    27204.111219270915 |
+| 6929470170340317899-1 | GGOEGDWC020199 |                    25863.861349754334 |
+| 6929470170340317899-1 | GGOEGAAX0318   |                    24585.509088154067 |
+| 8147666854244452077-2 | GGOEGAAX0037   |                     40305.68799444366 |
+| 8147666854244452077-2 | GGOEYDHJ056099 |                    32990.653160073765 |
+| 8147666854244452077-2 | GGOEGBRA037499 |                    29955.508214236765 |
+| 8147666854244452077-2 | GGOEGAAX0568   |                     27424.47289919785 |
+| 8147666854244452077-2 | GGOEGAAX0351   |                     27303.99191214219 |
+| 9405044354008242178-1 | GGOEGDWC020199 |                    32839.463106886644 |
+| 9405044354008242178-1 | GGOEGAAX0351   |                    29849.140860385953 |
+| 9405044354008242178-1 | GGOEGBRA037499 |                    26122.819361915943 |
+| 9405044354008242178-1 | GGOEGAAX0037   |                    25299.639807373154 |
+| 9405044354008242178-1 | GGOEGEVR014999 |                    25213.664943515258 |
++-----------------------+----------------+---------------------------------------+
 ```
 
-## Train BigQuery to Predict Customer Propensity
-Duration: 0:30:00
+Choose one of the `userId` values and set the CUSTOMER_USERID environment variable, we'll use that in the API proxy and API calls later.
 
-___
-**NOTES:** \
-**Internal Google Users:** the tutorial requires purchasing BigQuery flex slots which may need an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.\
-**Avoid Recurring Charges:** Be sure to delete your assignments and reservations once you've trained the model.\
-**Tutorial Tips:** The UI has evolved since the writing.
-- Use the "US: region when you are creating the Dataset, not a region nearest to you.
-- Reservations are under Capacity Management in side navigator.
-- Create Assignments is in the ... menu for the model row.
-- Skip the section titled "Use the predicted recommendations in production", its not necessary for this demo.
-___
+Now run a BigQuery query command to show the "prediction" ordered results for a specific user.
 
-Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml) then return here to setup Spanner and Apigee. 
-
-Once the tutorial is complete, go to the BigQuery console and 
-* select the `prod_recommendations` table, 
-* then click PREVIEW to view the results. 
-
-Note the `userId` values, the API Proxy uses those in the request to get results (see below).
-Select any of the `userId` values, set an environment variable and run a query against BigQuery to see the product recomendations. We'll use the `itemId` values when we set up the Spanner Product Catalog in the next step.
-
-Next run the BigQuery query command to show the "prediction" ordered results.
 For example:
 
 ```
@@ -158,7 +163,7 @@ The Spanner Product Catalog will only contain the items that where used in the B
 
 NOTE: The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
-Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog.
+Run the [setup_spanner.sh](setup_spanner.sh) shell script to set up Spanner Product Catalog.
 It uses the `CUSTOMER_USERID` and outputs the entries that where created. 
 
 You can also run a gcloud command to view, for example:
@@ -283,18 +288,10 @@ Example response:
 ## Key Takeaway
 The order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's because the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
 
-
 ## Cleanup
 Duration: 0:10:00
 
-### Cleanup Flex Slot Reservations (required)
-If you want to keep the demo, be sure to delete the BigQuery Flex Slot reservations to avoid recurring costs.
-- Navigage to BigQuery Console
-- Select Capacity management
-- Select RESERVATIONS tab
-- Open the "model" entry
-- Use the ... menu to delete the reservation
-- Then use the ... menu to delete the "model" entry
+You can cleanup your project rather than deleting the entire project as you may want to continue to use Apigee X.
 
 ### Cleanup Apigee (optional)
 
@@ -307,16 +304,10 @@ mvn -P eval process-resources -Dbearer=$(gcloud auth print-access-token) \
 ```
 
 ### Cleanup Spanner (optional)
-Remove the Spanner resources by running the [cleanup_spanner.sh](#cleanup_spanner.sh) shell script.
+Remove the Spanner resources by running the [cleanup_spanner.sh](cleanup_spanner.sh) shell script.
 
 ### Cleanup BigQuery (optional)
-Cleanup BigQuery using the [Cleanup components](https://cloud.google.com/architecture/predicting-customer-propensity-to-buy#delete_the_components) from the tutorial rather than deleting the project as you may want to continue to use Apigee X.
-
-
+Remove BigQuery resouces by running the [cleanup_bigquery.sh](cleanup_bigquery.sh)
 
 ### Delete Service Account (optional)
-```
-gcloud iam service-accounts delete $SA
-```
-
-
+Remove the service accounts by running the [cleanup_service_accounts.sh](cleanup_service_accounts.sh)

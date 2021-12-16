@@ -14,23 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo; echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\" in region \""$SPANNER_REGION"\" for CUSTOMER_USERID \""$CUSTOMER_USERID"\"
-read -r -p "OK to proceed (Y/n)? " i
-if [ "$i" != "Y" ]
-then
-  echo aborted
-  exit 1
-fi
-echo Proceeding...
+echo
+echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\" in region \""$SPANNER_REGION"\" for CUSTOMER_USERID \""$CUSTOMER_USERID"\"
 
-# Set project for gcloud commands 
-gcloud config set project "$PROJECT_ID"
-
-# Enable API
-# Console: https://pantheon.corp.google.com/apis/library/spanner.googleapis.com
-gcloud services enable spanner.googleapis.com
-
-# Using gcloud: https://cloud.google.com/spanner/docs/getting-started/gcloud
 # Create instance
 gcloud spanner instances create "$SPANNER_INSTANCE" --config="$SPANNER_REGION" --description="Product Catalog Instance" --nodes=1
 
@@ -41,7 +27,7 @@ gcloud spanner databases create "$SPANNER_DATABASE" --instance "$SPANNER_INSTANC
 
 # Create database
 gcloud spanner databases ddl update "$SPANNER_DATABASE" \
---ddl='CREATE TABLE products (productid STRING(20) NOT NULL, name STRING(100), description STRING(1024), price FLOAT64, discount FLOAT64, image STRING(1024)) PRIMARY KEY(productid);'
+  --ddl='CREATE TABLE products (productid STRING(20) NOT NULL, name STRING(100), description STRING(1024), price FLOAT64, discount FLOAT64, image STRING(1024)) PRIMARY KEY(productid);'
 
 # Add product data to Spanner
 # Array of product Id data to be combined with Ids
