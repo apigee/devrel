@@ -17,7 +17,6 @@
 
 # Change to your values
 export PROJECT_ID=apigeex-multi-kurt
-gcloud config set project "$PROJECT_ID"
 export ORG=$PROJECT_ID
 export ENV=eval
 export ENVGROUP_HOSTNAME=34.117.12.139.nip.io

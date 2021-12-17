@@ -16,4 +16,4 @@
 echo
 echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
-gcloud alpha bq datasets delete bqml --remove-tables --quiet
+gcloud alpha bq datasets delete bqml --remove-tables --project="$PROJECT_ID" --quiet

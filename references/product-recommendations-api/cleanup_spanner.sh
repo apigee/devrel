@@ -17,7 +17,7 @@ echo
 echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\"
 
 # Delete database 
-gcloud spanner databases delete "$SPANNER_DATABASE" --quiet
+gcloud spanner databases delete "$SPANNER_DATABASE" --project="$PROJECT_ID" --quiet
 
 # Delete  instance
-gcloud spanner instances delete "$SPANNER_INSTANCE" --quiet
+gcloud spanner instances delete "$SPANNER_INSTANCE" --project="$PROJECT_ID" --quiet

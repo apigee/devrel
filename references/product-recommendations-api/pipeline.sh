@@ -17,12 +17,12 @@ set -e
 
 echo [INFO] Pipeline for product-recommendations-api in project: "$PROJECT_ID"
 
-# Set project for gcloud commands 
-gcloud config set project "$PROJECT_ID"
+# Set environment variables and default project for gcloud commands 
+source set_env_variables_my_apigeex.sh
 
 echo "[INFO] Pipeline for product-recommendations-api enable APIs"
-gcloud services enable bigquery.googleapis.com 
-gcloud services enable spanner.googleapis.com
+gcloud services enable bigquery.googleapis.com --project="$PROJECT_ID"
+gcloud services enable spanner.googleapis.com --project="$PROJECT_ID"
 
 echo "[INFO] Pipeline for product-recommendations-api - create service accounts"
 CURRENT_ACCOUNT=$(gcloud config get-value account)
@@ -73,5 +73,5 @@ echo "[INFO] Pipeline for product-recommendations-api - cleanup service accounts
 gcloud config set account "$CURRENT_ACCOUNT"
 cleanup_service_accounts.sh
 
-
+echo "[INFO] Pipeline for product-recommendations-api - all done
 

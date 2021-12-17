@@ -17,9 +17,9 @@
 echo
 echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
-bq --location=us mk --dataset "$PROJECT_ID":bqml
-bq mk --table "$PROJECT_ID":bqml.prod_recommendations userId:STRING,itemId:STRING,predicted_session_duration_confidence:FLOAT
-bq load --autodetect --replace --source_format=NEWLINE_DELIMITED_JSON "$PROJECT_ID":bqml.prod_recommendations ./prod_recommendations_json.txt
-bq query --nouse_legacy_sql \
+bq --project_id="$PROJECT_ID" --location=us mk --dataset "$PROJECT_ID":bqml
+bq --project_id="$PROJECT_ID" mk --table "$PROJECT_ID":bqml.prod_recommendations userId:STRING,itemId:STRING,predicted_session_duration_confidence:FLOAT
+bq --project_id="$PROJECT_ID" load --autodetect --replace --source_format=NEWLINE_DELIMITED_JSON "$PROJECT_ID":bqml.prod_recommendations ./prod_recommendations_json.txt
+bq --project_id="$PROJECT_ID" query --nouse_legacy_sql \
     "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A" \
     ORDER BY A.userId ASC, predicted_session_duration_confidence DESC

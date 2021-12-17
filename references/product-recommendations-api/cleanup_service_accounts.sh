@@ -14,9 +14,9 @@
 # limitations under the License.
 
 echo "[INFO] Pipeline for product-recommendations-api - delete service account datareader"
-gcloud iam service-accounts delete "$SA" --quiet
+gcloud iam service-accounts delete "$SA" --project="$PROJECT_ID" --quiet
 
 echo "[INFO] Pipeline for product-recommendations-api - delete service account demo-installer"
-gcloud iam service-accounts delete "$SA_INSTALLER" --quiet
+gcloud iam service-accounts delete "$SA_INSTALLER" --project="$PROJECT_ID" --quiet
 
 rm demo-installer-key.json
