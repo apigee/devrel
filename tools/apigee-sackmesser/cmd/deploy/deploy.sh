@@ -21,11 +21,6 @@ set -e
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
-if ! which xmllint > /dev/null; then
-    logfatal "please install xmllint command"
-    exit 1
-fi
-
 # Make temp 'deploy' directory to keep things clean
 temp_folder="$PWD/deploy-$(date +%s)-$RANDOM"
 rm -rf "$temp_folder" && mkdir -p "$temp_folder"
@@ -173,7 +168,7 @@ fi
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
-    (cd "$temp_folder" && mvn install -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install $DEFAULT_MVN_ARGS -B ${maven_debug:-} \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -185,12 +180,13 @@ if [ "$apiversion" = "google" ]; then
         -Dapigee.config.file="$config_file_path" \
         -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}" \
+        -Dapigee.import-keys.phase="${import_keys_phase:-skip}" \
         -Dapigee.deployment.sa="${deployment_sa}")
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install $DEFAULT_MVN_ARGS -B ${maven_debug:-} \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -204,31 +200,4 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}" \
         -Dapigee.import-keys.phase="${import_keys_phase:-skip}")
-fi
-
-# patching mvn plugin features
-if [ "$apiversion" = "google" ]; then
-    # https://github.com/apigee/apigee-config-maven-plugin/issues/134
-    if [ -f "$temp_folder"/resources/edge/org/importKeys.json ];then
-        jq -c 'to_entries[]' "$temp_folder"/resources/edge/org/importKeys.json | while read -r devcredentials; do
-            developer=$(echo "$devcredentials" | jq -r '.key')
-            echo "$devcredentials" | jq -c '.value[]?' | while read -r credential; do
-                app=$(echo "$credential" | jq -r '.name')
-                loginfo "Adding Credential for Developer $developer and App $app"
-                creation_request=$(echo "$credential" | jq 'del(.name) | del(.apiProducts)')
-                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys" \
-                    -H "Authorization: Bearer $token" \
-                    -H "Content-Type: application/json" \
-                    --data "$creation_request"
-
-                loginfo "Adding products for key for Developer $developer and App $app"
-                key=$(echo "$credential" | jq -r '.consumerKey')
-                update_request=$(echo "$credential" | jq '{apiProducts: .apiProducts}')
-                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
-                    -H "Authorization: Bearer $token" \
-                    -H "Content-Type: application/json" \
-                    --data "$update_request"
-            done
-        done
-    fi
 fi

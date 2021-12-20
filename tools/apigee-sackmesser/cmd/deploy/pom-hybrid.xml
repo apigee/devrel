@@ -190,6 +190,13 @@ limitations under the License.
                             <goal>flowhooks</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>import-app-keys</id>
+                        <phase>${apigee.import-keys.phase}</phase>
+                        <goals>
+                            <goal>importKeys</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 			<plugin>

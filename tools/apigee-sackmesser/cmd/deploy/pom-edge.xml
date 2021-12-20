@@ -227,7 +227,7 @@ limitations under the License.
                         </goals>
                     </execution>
 					<execution>
-                        <id>import-keys</id>
+                        <id>import-app-keys</id>
                         <phase>${apigee.import-keys.phase}</phase>
                         <goals>
                             <goal>importKeys</goal>
