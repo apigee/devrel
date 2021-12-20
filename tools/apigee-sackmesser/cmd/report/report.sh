@@ -93,7 +93,7 @@ performancequery="organizations/$organization/environments/$environment/stats/ap
 performancequery+="?limit=14400&offset=0"
 performancequery+="&select=sum(message_count)/3600.0,sum(is_error),avg(target_response_time),avg(total_response_time)"
 performancequery+="&timeUnit=day"
-PERFORMANCE_Q_START=$(date -u -v1d '+%m/%d/%Y%%2000:00:00' 2&>/dev/null || date -u -d "1 day ago" '+%m/%d/%Y%%2000:00:00')
+PERFORMANCE_Q_START=$(date -u -v1d '+%m/%d/%Y%%2000:00:00' 2&>/dev/null || date -u -d "1 day ago" '+%m/%d/%Y%%2000:00:00' || date -u -d "@$(( $(date +%s ) - 86400 ))" '+%m/%d/%Y%%2000:00:00')
 performancequery+="&timeRange=$PERFORMANCE_Q_START~$(date -u '+%m/%d/%Y%%2000:00:00')"
 sackmesser list "$performancequery" > "$export_folder/performance-$environment.json"
 
