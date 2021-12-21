@@ -168,7 +168,7 @@ fi
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
-    (cd "$temp_folder" && mvn install $DEFAULT_MVN_ARGS -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install "$DEFAULT_MVN_ARGS" -B ${maven_debug:-} \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -186,7 +186,7 @@ elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install $DEFAULT_MVN_ARGS -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install "$DEFAULT_MVN_ARGS" -B ${maven_debug:-} \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
