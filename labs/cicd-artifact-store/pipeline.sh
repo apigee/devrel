@@ -1,4 +1,4 @@
-!/bin/sh
+#!/bin/sh
 
 # Copyright 2021 Google LLC
 #
@@ -13,6 +13,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
+###############################################################################
+# Script to ensure health of instructions through nightly builds
+# Safe to ignore for the purposes of the intended solution/lab
+###############################################################################
 
 set -e
 

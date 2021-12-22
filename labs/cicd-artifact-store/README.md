@@ -1,7 +1,7 @@
 # CICD-artifact-store
 
-An easy to follow tutorial on Integrating Apigee into you Continuous Integration
- and Continuous Deployment pipeline in GCP.
+An easy to follow tutorial on Integrating Apigee into your
+Continuous Integration and Continuous Deployment pipeline in GCP.
 
 **Note** This is a sample Apigee API project for use with GCP Cloud Solution
  *Integrating Apigee into your CI/CD cycle*. The instructions below are a
@@ -11,8 +11,10 @@ An easy to follow tutorial on Integrating Apigee into you Continuous Integration
 
  1. Select an existing Apigee X or hybrid org. Signup for an Apigee trial
   otherwise.
- 2. In GCS, create a bucket in the same region as your Apigee org
- 3. In IAM, grant following roles to default Cloud Build service account
+ 2. In Google Cloud Storage(GCS), create a bucket in the same region as your
+  Apigee org
+ 3. In Identity and Access Management(IAM), grant following roles to default
+  Cloud Build service account
   *[project_number]@cloudbuild.gserviceaccount.com*
        * Apigee API Admin
        * Apigee Environment Admin
@@ -77,4 +79,11 @@ An easy to follow tutorial on Integrating Apigee into you Continuous Integration
 
 ## Cleanup
 
-Delete GCP project to cleanup the CI, CD setup.
+Delete GCP project to cleanup the CI, CD setup. If this is not feasible, 
+ the following steps can remove the entities created during this labs:
+ 1. In Apigee Console, delete developer app named MockTargetAppQA
+ 2. In Apigee Console, delete the developer with id mocktargetqa@example.com
+ 3. In Apigee Console, delete the API product MockProductDev
+ 4. In Apigee Console, delete API proxy named MockTarget
+ 5. In Apigee Console, delete target server named MockTarget
+ 6. In GCS, delete the contents of the bucket or the entire bucket
