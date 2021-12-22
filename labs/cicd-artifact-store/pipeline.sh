@@ -33,20 +33,20 @@ gcloud builds submit --config=./cloudbuild.yaml \
 echo ""
 echo ""
 echo "Test: Artifact generated and persisted in GCS"
-if ! gsutil ls -r gs://${PROJECT_ID}_cloudbuild/MockTarget/* | grep MockTarget-1.0
+if ! gsutil ls -r gs://"${PROJECT_ID}"_cloudbuild/MockTarget/* | grep MockTarget-1.0
 then
   exit 1
 fi
 
 echo ""
 echo "Test: nonprod API created"
-if ! gcloud apigee apis list --organization=$APIGEE_X_ORG | grep MockTarget 
+if ! gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
 then
   exit 1
 fi
 
 echo "Test: nonprod API deployed to eval"
-if ! gcloud apigee deployments list  --organization=$APIGEE_X_ORG --api=MockTarget | grep eval 
+if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep eval 
 then
     exit 1
 fi
@@ -59,13 +59,13 @@ gcloud builds submit --config=./cloudbuild-release.yaml \
 
 echo ""
 echo "Test: release API created"
-if ! gcloud apigee apis list --organization=$APIGEE_X_ORG | grep MockTarget 
+if ! gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
 then
   exit 1
 fi
 
 echo "Test: release API deployed to eval"
-if ! gcloud apigee deployments list  --organization=$APIGEE_X_ORG --api=MockTarget | grep eval 
+if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep eval 
 then
     exit 1
 fi
