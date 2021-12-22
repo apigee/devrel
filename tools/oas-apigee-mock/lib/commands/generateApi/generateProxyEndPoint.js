@@ -41,28 +41,28 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
   requestPipe = preFlow.ele('Request')
 
   // If an API Security Scheme using API Key is defined in the OAS spec, generate and attach the relevant policies
-  if(api.security && api.components.securitySchemes) {
+  if (api.security && api.components.securitySchemes) {
     for (const apiSecurity of api.security) {
-        if(Object.keys(apiSecurity) == 'ApiKeyAuth' && api.components.securitySchemes.ApiKeyAuth) {
+      if (Object.keys(apiSecurity) == 'ApiKeyAuth' && api.components.securitySchemes.ApiKeyAuth) {
 
-          step = requestPipe.ele('Step', {})
-          step.ele('Name', {}, 'va-verifyapikey')
-          const flowCondition = 'request.verb != "OPTIONS"'
-          step.ele('Condition').raw(flowCondition)
+        step = requestPipe.ele('Step', {})
+        step.ele('Name', {}, 'va-verifyapikey')
+        const flowCondition = 'request.verb != "OPTIONS"'
+        step.ele('Condition').raw(flowCondition)
 
-          // Create Policy
-          const options = {};
-          options.apiKeyName = api.components.securitySchemes.ApiKeyAuth.name
-          options.keyRef = api.components.securitySchemes.ApiKeyAuth.in
+        // Create Policy
+        const options = {};
+        options.apiKeyName = api.components.securitySchemes.ApiKeyAuth.name
+        options.keyRef = api.components.securitySchemes.ApiKeyAuth.in
 
-          const xmlString = verifyApiKey.apiKeyGenTemplate(options)
-          await fs.writeFile(rootDirectory + '/policies/' + 'va-verifyapikey' + '.xml', xmlString)
-        }
+        const xmlString = verifyApiKey.apiKeyGenTemplate(options)
+        await fs.writeFile(rootDirectory + '/policies/' + 'va-verifyapikey' + '.xml', xmlString)
+      }
     }
   }
 
   // If the OAS Validation option is true generate and attach the relevant policies
-  if(options.oasValidation) {
+  if (options.oasValidation) {
 
     // Create OAS Validation policy
     let options = {};
@@ -116,32 +116,33 @@ module.exports = async function generateProxyEndPoint(apiProxy, options, api) {
           // Adding AM Policies to response
           responsePipe = flow.ele('Response')
 
-          if (resourceItem['responses']) {
+          // Only create a mock response policy for the first example response provided for each path
+          let responseCreated = false;
 
-            for (const service in resourceItem['responses']) {
-              if (Object.prototype.hasOwnProperty.call(resourceItem['responses'], service)) {
+          Object.keys(resourceItem['responses']).forEach((key) => {
+            if (!responseCreated) {
 
-                step = responsePipe.ele('Step', {})
-                const stepName = ('AM-' + resourceItem.operationId + '-' + service).replace(/\s+/g, '-').toLowerCase()
-                step.ele('Name', {}, stepName)
+              step = responsePipe.ele('Step', {})
+              const stepName = ('AM-' + resourceItem.operationId + '-' + key).replace(/\s+/g, '-').toLowerCase()
+              step.ele('Name', {}, stepName)
 
-                // Create Policy
-                const options = {};
-                options.name = stepName
-                options.statusCode = service
+              // Create Policy
+              const options = {};
+              options.name = stepName
+              options.statusCode = key
 
-                if (resourceItem['responses'][service].content != null) {
-                  options.payload = JSON.stringify(resourceItem['responses'][service].content["application/json"].example)
-                } else {
-                  options.payload = '';
-                }
-
-                const xmlString = assignMessage.assignMessageTemplate(options)
-                await fs.writeFile(rootDirectory + '/policies/' + stepName + '.xml', xmlString)
-
+              if (resourceItem['responses'][key].content != null) {
+                options.payload = JSON.stringify(resourceItem['responses'][key].content["application/json"].example)
+              } else {
+                options.payload = '';
               }
+
+              const xmlString = assignMessage.assignMessageTemplate(options)
+              fs.writeFile(rootDirectory + '/policies/' + stepName + '.xml', xmlString)
+
+              responseCreated = true;
             }
-          }
+          });
         }
       } // for loop for resources ends here
     }

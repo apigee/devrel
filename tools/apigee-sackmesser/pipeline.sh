@@ -143,3 +143,29 @@ sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/ap
 sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apiproducts" | grep "SackMesserProduct2"
 
 rm -rf "${SCRIPT_FOLDER:?}/$APIGEE_ORG"
+
+echo "Run Sackmesser X report"
+
+sackmesser report --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
+
+if [ -f "./report-$APIGEE_X_ORG-$APIGEE_X_ENV/index.html" ]; then
+  echo "report generated successfully"
+else
+  echo "Sackmesser report for $APIGEE_X_ORG-$APIGEE_X_ENV was not created"
+  exit 1
+fi
+
+rm -rf "./report-$APIGEE_X_ORG-$APIGEE_X_ENV"
+
+echo "Run Sackmesser Edge report"
+
+sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV"
+
+if [ -f "./report-$APIGEE_ORG-$APIGEE_ENV/index.html" ]; then
+  echo "report generated successfully"
+else
+  echo "Sackmesser report for $APIGEE_ORG-$APIGEE_ENV was not created"
+  exit 1
+fi
+
+rm -rf "./report-$APIGEE_ORG-$APIGEE_ENV"

@@ -3,6 +3,7 @@
 /references/cicd-pipeline               @danistrebel
 /references/cicd-sharedflow-pipeline    @ssvaidyanathan
 /references/cloud-logging-shared-flow   @danistrebel
+/references/cloud-runner                @danistrebel
 /references/common-shared-flows         @seymen @danistrebel @OmidTahouri
 /references/data-converters-shared-flow @tyayers
 /references/dutch-healthcare            @seymen

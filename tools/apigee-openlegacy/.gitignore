@@ -1,1 +1,8 @@
 pipeline-workspace/
+edge.json
+Dockerfile
+aok-module
+app.json
+credentials.json
+openapi.yaml
+aok-v1

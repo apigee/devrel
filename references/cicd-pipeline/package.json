@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "apickli": "^3.0.1",
-    "apigeelint": "^2.2.0",
+    "apigeelint": "^2.13.0",
     "@cucumber/cucumber": "^7.3.0",
     "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0",

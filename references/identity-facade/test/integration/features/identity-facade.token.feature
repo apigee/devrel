@@ -1,4 +1,4 @@
-@TokenEndpoint
+@token
 Feature:
   As a Client App 
   I want to access the protected resource of an API
@@ -87,3 +87,4 @@ Feature:
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be unsupported_grant_type
+

@@ -12,19 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM maven:3.6.3-slim
+FROM maven:3.6-alpine
 
-RUN apt-get update && \
-  apt-get install git=* libxml2-utils=* jq=* unzip=* --no-install-recommends -y \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+  git \
+  jq \
+  libxml2-utils \
+  nodejs \
+  npm \
+  unzip
+
+RUN npm install --global apigeelint@2.10.0
 
 COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
 COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
 
 RUN mkdir /opt/apigee
 
-RUN groupadd -r apigee && useradd --no-log-init -m -r -g apigee apigee && \
+RUN addgroup -S apigee && adduser -S apigee -G apigee && \
   chown -R apigee /opt/devrel && chown -R apigee /opt/apigee
 
 USER apigee

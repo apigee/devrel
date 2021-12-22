@@ -5,9 +5,12 @@ title "Identity facade with Apigee"
 actor User as u
 boundary "User Agent" as ua
 entity "Client App" as b
-entity "Identity Facade (Apigee)" as id
+box "Apigee API Platform" #LightBlue
+entity "Identity Facade" as id
+entity "Data Proxy" as nerp
+end box
 entity IdP as idp
-entity "Data Proxy (Apigee)" as nerp
+participant "Backend" as backend
 
 u -> b: User interaction
 b -> b: App activity
@@ -20,12 +23,15 @@ nerp -> b: status code: 401\n("error": "invalid_grant")
 deactivate nerp
 
 note over u,idp: Initiate Auth Sequence
-b -> id: GET /authorize\n(client_id, state(1), redirect_uri, response_type [code|token], scope)
+b -> id: GET /authorize\n(client_id, state(1), redirect_uri, response_type [code|token], scope, <font color=blue>code_challenge, code_challenge_method</font>)
 activate id
 id -> id: validate client_id,\nredirect_uri
 activate id
 deactivate id
-id -> id: control presence of state and scope
+id -> id: control presence of state, scope <font color=blue>and code_challenge</font>
+activate id
+deactivate id
+id -> id: <font color=blue>control value of code_challenge_method (S256)</font> and response_type (code|token)
 activate id
 deactivate id
 id -> id: retrieve IdP client_id + IdP connection parameters\nfrom KVM (or PropertySet or Secret)
@@ -67,12 +73,15 @@ deactivate id
 id --> b: 302 /callback [using redirect_uri]\n(code, state(1))
 deactivate id
 note over b,idp: response_type=code (i.e. auth code grant type)
-b ->> id: POST /token\n(code,\nclient credentials,\ngrant_type [authorization_code],\nredirect_uri)
+b ->> id: POST /token\n(code,\nclient credentials,\ngrant_type [authorization_code],\nredirect_uri,\n<font color=blue>code_verifier</font>)
 activate id
 id -> id: validate client credentials, redirect_uri, grant_type
 activate id
 deactivate id
-id -> id: control presence of code (and code)
+id -> id: <font color=blue>verify pkce code_verifier: base64url(sha256(code_verifier)) == code_challenge</font>
+activate id
+deactivate id
+id -> id: control presence and value of authorization code
 activate id
 deactivate id
 id -> id: retrieve IdP client\ncredentials + IdP connection parameters from KVM (or PropertySet or Secret)
