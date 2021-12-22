@@ -46,8 +46,8 @@ then
   exit 1
 fi
 
-echo "Test: nonprod API deployed to eval"
-if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep eval 
+echo "Test: nonprod API deployed to env"
+if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep "${APIGEE_X_ENV}"
 then
     exit 1
 fi
@@ -65,8 +65,8 @@ then
   exit 1
 fi
 
-echo "Test: release API deployed to eval"
-if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep eval 
+echo "Test: release API deployed to env"
+if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep "${APIGEE_X_ENV}"
 then
     exit 1
 fi
