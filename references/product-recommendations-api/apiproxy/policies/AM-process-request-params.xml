@@ -23,7 +23,7 @@
     </AssignVariable>
     <AssignVariable>
         <Name>userid</Name>
-        <Value>6929470170340317899-1</Value>
+        <Value>CUSTOMER_USERID</Value>
         <Ref>request.header.x-userid</Ref>
     </AssignVariable>
     <Remove>

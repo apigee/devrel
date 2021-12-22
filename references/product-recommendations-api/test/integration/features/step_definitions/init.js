@@ -11,39 +11,39 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+/* eslint-disable no-invalid-this */ // See usage in apickli Documentation
+"use strict";
 
-'use strict';
+const apickli = require("apickli");
+const config = require("../../test-config.json");
+const apps = require("../../devAppKeys.json");
+const keys = {};
 
-var apickli = require('apickli');
-var config = require('../../test-config.json');
-var apps = require('../../devAppKeys.json');
-var keys = {};
-
-console.log('CURL TO: [https://' + config.apiconfig.domain + config.apiconfig.basepath + ']');
+console.log("CURL TO: [https://" + config.apiconfig.domain + config.apiconfig.basepath + "]");
 getCredsFromExport(config.apiconfig.app, config.apiconfig.product);
 console.log( "KEYS: " + keys.clientId + " " + keys.clientSecret);
 
-module.exports = function() {
-    // cleanup before every scenario
-    this.Before(function(scenario, callback) {
-        this.apickli = new apickli.Apickli('https', config.apiconfig.domain + config.apiconfig.basepath);
-        
-        this.apickli.storeValueInScenarioScope("apiproxy", config.apiconfig.apiproxy);
-        this.apickli.storeValueInScenarioScope("basepath", config.apiconfig.basepath);
-        this.apickli.storeValueInScenarioScope("clientId", keys.clientId);
-        this.apickli.storeValueInScenarioScope("clientSecret", keys.clientSecret);
-        callback();
-    });
-};
+const { Before: before } = require("@cucumber/cucumber");
+before(function () {
+  this.apickli = new apickli.Apickli('https', config.apiconfig.domain + config.apiconfig.basepath);
+  this.apickli.storeValueInScenarioScope("apiproxy", config.apiconfig.apiproxy);
+  this.apickli.storeValueInScenarioScope("basepath", config.apiconfig.basepath);
+  this.apickli.storeValueInScenarioScope("clientId", keys.clientId);
+  this.apickli.storeValueInScenarioScope("clientSecret", keys.clientSecret);
+});
 
-// Just take the first match, no expiry or status available
+/**
+ * Just take the first match, no expiry or status available.
+ * @param {string} appName App name.
+ * @param {string} productName API product name.
+ */
 function getCredsFromExport(appName, productName){
-  for(var app in apps){
+  for(let app=0; app<apps.length; app++){
     if(apps[app].name === appName){
-      var credentials = apps[app].credentials;
-      for(var credential in credentials){
-        var products = credentials[credential].apiProducts;
-        for(var product in products){
+      const credentials = apps[app].credentials;
+      for(let credential=0; credential<credentials.length; credential++){
+        const products = credentials[credential].apiProducts;
+        for(let product=0; product<products.length; product++){
           if(products[product].apiproduct === productName){
             keys.clientId = credentials[credential].consumerKey;
             keys.clientSecret = credentials[credential].consumerSecret;

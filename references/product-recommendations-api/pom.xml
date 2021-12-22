@@ -68,6 +68,7 @@
 				<apigee.authtype>oauth</apigee.authtype>
 				<apigee.bearer>${bearer}</apigee.bearer>
 				<apigee.options>override</apigee.options>
+				<apigee.app.ignoreAPIProducts>true</apigee.app.ignoreAPIProducts>
 			</properties>
 		</profile>
 	</profiles>
@@ -151,7 +152,7 @@
 						</replacement>
 						<replacement>
 							<!-- CUSTOMER_USERID 6929470170340317899-1 in AM-process-request-params.xml replace with command line option -->
-							<token>6929470170340317899-1</token>
+							<token>CUSTOMER_USERID</token>
 							<value>${api.userid}</value>
 						</replacement>
 					</replacements>

@@ -17,10 +17,8 @@ set -e
 
 echo Pipeline for product-recommendations-api in project: "$PROJECT_ID"
 
-# Set environment variables and default project for gcloud commands 
-export APIGEE_X_ORG=apigeex-cmd-kurt
-export APIGEE_X_ENV=eval
-export APIGEE_X_HOSTNAME=34.117.65.119.nip.io
+# Environment variables
+echo APIGEE_X_ORG="$APIGEE_X_ORG" APIGEE_X_ENV="$APIGEE_X_ENV" APIGEE_X_HOSTNAME="$APIGEE_X_HOSTNAME"
 
 # Project hosting BigQuery and Spanner, usually same as APIGEE_X_ORG
 export PROJECT_ID=$APIGEE_X_ORG
