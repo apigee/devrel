@@ -11,18 +11,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-product-catalog-lookup">
-    <DisplayName>SC-product-catalog-lookup</DisplayName>
+<ServiceCallout name="SC-product-catalog-lookup">
     <Request>
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
         <Set>
             <Verb>POST</Verb>
             <Payload contentType="application/json">
             {
-      
                 "sql": "select productid,name,description,price,image{selectCaseStr} from products where productid in ({productIdList}) order by sortid asc" ,
                 "queryMode": "NORMAL"
-    
             }
             </Payload>
         </Set>

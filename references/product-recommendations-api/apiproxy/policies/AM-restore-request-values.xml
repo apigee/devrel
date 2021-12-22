@@ -11,7 +11,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<SpikeArrest async="false" continueOnError="false" enabled="true" name="SA-10pm">
-    <DisplayName>SA-10pm</DisplayName>
-    <Rate>10pm</Rate>
-</SpikeArrest>
+<AssignMessage name="AM-restore-request-values">
+    <AssignVariable>
+        <Name>request.verb</Name>
+        <Ref>original_request_verb</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>response.header.cache-control</Name>
+        <Ref>original_cache_control_header</Ref>
+    </AssignVariable>
+</AssignMessage>

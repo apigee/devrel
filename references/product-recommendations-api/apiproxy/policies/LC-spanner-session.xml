@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<LookupCache async="false" continueOnError="false" enabled="true" name="LC-spanner-session">
-    <DisplayName>LC-spanner-session</DisplayName>
-    <Properties/>
+<LookupCache name="LC-spanner-session">
     <CacheKey>
         <KeyFragment>Spanner.session</KeyFragment>
     </CacheKey>

@@ -26,9 +26,6 @@
                 <Name>AM-process-request-params</Name>
             </Step>
             <Step>
-                <Name>SA-10pm</Name>
-            </Step>
-            <Step>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
                 <Name>QU-check</Name>
             </Step>
@@ -41,7 +38,6 @@
     </PreFlow>
     <Flows>
         <Flow name="products">
-            <Description/>
             <Request>
                 <Step>
                     <Name>AM-create-query-request</Name>
@@ -87,11 +83,9 @@
                     <Name>JS-format-product-data</Name>
                 </Step>
             </Response>
-            <!-- Request verb was changed to POST, so look for that in response flow -->
-            <Condition>(proxy.pathsuffix MatchesPath "/products") AND ((request.verb = "GET") OR (request.verb = "POST"))</Condition>
+            <Condition>(proxy.pathsuffix MatchesPath "/products") AND (request.verb = "GET")</Condition>
         </Flow>
         <Flow name="openapi">
-            <Description/>
             <Request/>
             <Response>
                 <Step>
@@ -99,6 +93,15 @@
                 </Step>
             </Response>
             <Condition>(proxy.pathsuffix MatchesPath "/openapi") AND (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="notFound">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>RF-not-found</Name>
+                </Step>
+            </Request>
+            <Response/>
         </Flow>
     </Flows>
     <PostFlow name="PostFlow">

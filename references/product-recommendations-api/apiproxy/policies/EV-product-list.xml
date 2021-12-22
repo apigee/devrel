@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-product-list">
-    <DisplayName>EV-product-list</DisplayName>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+<ExtractVariables name="EV-product-list">
     <JSONPayload>
         <Variable name="productIdList">
             <JSONPath>$.products[*].productid</JSONPath>

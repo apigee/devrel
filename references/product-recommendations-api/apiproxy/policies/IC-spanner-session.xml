@@ -11,13 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<InvalidateCache continueOnError="false" enabled="true" name="IC-spanner-session">
-    <DisplayName>IC-spanner-session</DisplayName>
-    <!--
-    <CacheContext>
-        <ProxyName>product-recommendations-v1</ProxyName>
-    </CacheContext>
-    -->
+<InvalidateCache name="IC-spanner-session">
     <CacheKey>
         <KeyFragment>Spanner.session</KeyFragment>
     </CacheKey>

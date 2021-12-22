@@ -11,10 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-spanner-session">
-    <DisplayName>AM-spanner-session</DisplayName>
-    <Properties/>
-    <Properties/>
+<AssignMessage name="AM-spanner-session">
     <AssignVariable>
         <Name>Spanner.session</Name>
         <Ref>Spanner.newSession</Ref>

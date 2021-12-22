@@ -11,8 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Quota async="false" continueOnError="false" enabled="true" name="QU-check" type="flexi">
-    <DisplayName>QU-check</DisplayName>
+<Quota name="QU-check" type="flexi">
     <Allow count="10" countRef="verifyapikey.Verify-API-Key.apiproduct.developer.quota.limit"/>
     <Interval ref="verifyapikey.Verify-API-Key.apiproduct.developer.quota.interval">1</Interval>
     <TimeUnit ref="verifyapikey.Verify-API-Key.apiproduct.developer.quota.timeunit">minute</TimeUnit>

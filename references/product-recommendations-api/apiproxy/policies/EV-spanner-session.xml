@@ -11,10 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-spanner-session">
-    <DisplayName>EV-spanner-session</DisplayName>
-    <Properties/>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+<ExtractVariables name="EV-spanner-session">
     <JSONPayload>
         <Variable name="Spanner.newSession">
             <JSONPath>$.name</JSONPath>

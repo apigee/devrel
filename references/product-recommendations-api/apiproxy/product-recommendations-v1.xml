@@ -11,43 +11,5 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="14" name="product-recommendations-v1">
-    <DisplayName>product-recommendations-v1</DisplayName>
-    <Description>Added PROJECT_ID to policies and target for replacement. DESCRIPTION</Description>
-    <CreatedAt>1637000821536</CreatedAt>
-    <LastModifiedAt>1637000821536</LastModifiedAt>
-    <BasePaths>/v1/recommendations</BasePaths>
-    <Policies>
-        <Policy>VA-header</Policy>
-        <Policy>CL-spanner-session</Policy>
-        <Policy>SC-spanner-session</Policy>
-        <Policy>EV-product-list</Policy>
-        <Policy>SA-10pm</Policy>
-        <Policy>JS-format-data</Policy>
-        <Policy>AM-oas-json</Policy>
-        <Policy>JS-format-product-data</Policy>
-        <Policy>AM-create-query-request</Policy>
-        <Policy>RC-uri</Policy>
-        <Policy>CP-spanner-session</Policy>
-        <Policy>JS-create-product-id-list</Policy>
-        <Policy>AM-process-request-params</Policy>
-        <Policy>AM-spanner-session</Policy>
-        <Policy>EV-spanner-session</Policy>
-        <Policy>AM-copy-false</Policy>
-        <Policy>SC-product-catalog-lookup</Policy>
-        <Policy>CORS</Policy>
-        <Policy>QU-check</Policy>
-        <Policy>CI-spanner-session</Policy>
-    </Policies>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources>
-        <Resource>jsc://formatdata.js</Resource>
-        <Resource>jsc://createproductidlist.js</Resource>
-        <Resource>jsc://formatproductdata.js</Resource>
-    </Resources>
-    <TargetEndpoints>
-        <TargetEndpoint>default</TargetEndpoint>
-    </TargetEndpoints>
+<APIProxy revision="1" name="product-recommendations-v1">
 </APIProxy>

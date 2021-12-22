@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RaiseFault name="RF-not-found">
+    <FaultResponse>
+        <Set>
+            <Headers/>
+            <Payload contentType="application/json">
+{
+    "error":"Resource not found",
+    "description":"Resource not found for {request.verb} at {client.scheme}://{request.header.host}/{request.uri}"
+}
+</Payload>
+            <StatusCode>404</StatusCode>
+            <ReasonPhrase>Not Found</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+    <ShortFaultReason>false</ShortFaultReason>
+</RaiseFault>

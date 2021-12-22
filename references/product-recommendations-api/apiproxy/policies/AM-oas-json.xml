@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-oas-json">
-    <DisplayName>AM-oas-json</DisplayName>
-    <Properties/>
+<AssignMessage name="AM-oas-json">
     <Set>
         <Payload contentType="application/json">
 {
@@ -96,5 +94,4 @@
 }
 </Payload>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </AssignMessage>

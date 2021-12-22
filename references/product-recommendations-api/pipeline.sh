@@ -15,63 +15,62 @@
 
 set -e
 
-echo [INFO] Pipeline for product-recommendations-api in project: "$PROJECT_ID"
+echo Pipeline for product-recommendations-api in project: "$PROJECT_ID"
 
 # Set environment variables and default project for gcloud commands 
-source set_env_variables_my_apigeex.sh
+export APIGEE_X_ORG=apigeex-cmd-kurt
+export APIGEE_X_ENV=eval
+export APIGEE_X_HOSTNAME=34.117.65.119.nip.io
 
-echo "[INFO] Pipeline for product-recommendations-api enable APIs"
+# Project hosting BigQuery and Spanner, usually same as APIGEE_X_ORG
+export PROJECT_ID=$APIGEE_X_ORG
+export CUSTOMER_USERID="6929470170340317899-1"
+# No need to change these
+export SPANNER_INSTANCE=product-catalog
+export SPANNER_DATABASE=product-catalog-v1
+export SPANNER_REGION=regional-us-east1
+export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+export SA_INSTALLER=demo-installer@$PROJECT_ID.iam.gserviceaccount.com
+
+echo "Pipeline for product-recommendations-api enable APIs"
 gcloud services enable bigquery.googleapis.com --project="$PROJECT_ID"
 gcloud services enable spanner.googleapis.com --project="$PROJECT_ID"
 
-echo "[INFO] Pipeline for product-recommendations-api - create service accounts"
+echo "Pipeline for product-recommendations-api - create service accounts"
 CURRENT_ACCOUNT=$(gcloud config get-value account)
 setup_service_accounts.sh
 
-echo "[INFO] Pipeline for product-recommendations-api - setup bigquery"
+echo "Pipeline for product-recommendations-api - setup bigquery"
 setup_bigquery.sh
 
-echo "[INFO] Pipeline for product-recommendations-api - setup spanner"
+echo "Pipeline for product-recommendations-api - setup spanner"
 setup_spanner.sh
 
-echo "[INFO] Pipeline for product-recommendations-api - maven apigee install"
+echo "Pipeline for product-recommendations-api - maven apigee install"
 # This performs end-to-end install, configuration and testing API.
 mvn -P eval clean install -Dbearer="$(gcloud auth print-access-token)" \
-    -DapigeeOrg="$ORG" \
-    -DapigeeEnv="$ENV" \
-    -DenvGroupHostname="$ENVGROUP_HOSTNAME" \
+    -DapigeeOrg="$APIGEE_X_ORG" \
+    -DapigeeEnv="$APIGEE_X_ENV" \
+    -DenvGroupHostname="$APIGEE_X_HOSTNAME" \
     -DgcpProjectId="$PROJECT_ID" \
     -DgoogleTokenEmail="$SA" \
-    -DcustomerUserId="$CUSTOMER_USERID"
+    -DintegrationTestUserId="$CUSTOMER_USERID"
 
-echo "[INFO] Pipeline for product-recommendations-api - get APIKEY"
-# Apigee API call to get API key for use in API calls.
-APIKEY=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    https://apigee.googleapis.com/v1/organizations/"$ORG"/developers/demo@any.com/apps/product-recommendations-v1-app-"$ENV" \
-    | jq -r .credentials[0].consumerKey)
-
-echo "[INFO] Pipeline for product-recommendations-api - test api"
-# API call to show results
-curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
--H "x-apikey:$APIKEY" \
--H "x-userid:$CUSTOMER_USERID" \
--H "Cache-Control:no-cache" | jq
-
-echo "[INFO] Pipeline for product-recommendations-api - maven apigee clean"
+echo "Pipeline for product-recommendations-api - maven apigee clean"
 mvn -P eval process-resources -Dbearer="$(gcloud auth print-access-token)" \
-    -DapigeeOrg="$ORG" -DapigeeEnv="$ENV" -Dskip.integration=true \
+    -DapigeeOrg="$APIGEE_X_ORG" -DapigeeEnv="$APIGEE_X_ENV" -Dskip.integration=true \
     apigee-config:apps apigee-config:apiproducts apigee-config:developers -Dapigee.config.options=delete \
     apigee-enterprise:deploy -Dapigee.options=clean
 
-echo "[INFO] Pipeline for product-recommendations-api - cleanup bigquery"
+echo "Pipeline for product-recommendations-api - cleanup bigquery"
 cleanup_bigquery.sh			
 
-echo "[INFO] Pipeline for product-recommendations-api - cleanup spanner"
+echo "Pipeline for product-recommendations-api - cleanup spanner"
 cleanup_spanner.sh
 
-echo "[INFO] Pipeline for product-recommendations-api - cleanup service accounts"
+echo "Pipeline for product-recommendations-api - cleanup service accounts"
 gcloud config set account "$CURRENT_ACCOUNT"
 cleanup_service_accounts.sh
 
-echo "[INFO] Pipeline for product-recommendations-api - all done
+echo "Pipeline for product-recommendations-api - all done"
 

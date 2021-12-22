@@ -11,8 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-create-query-request">
-    <DisplayName>AM-create-query-request</DisplayName>
+<AssignMessage name="AM-create-query-request">
     <Set>
         <Verb>POST</Verb>
         <Payload contentType="application/json">
@@ -28,5 +27,4 @@
         }
         </Payload>
     </Set>
-    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </AssignMessage>

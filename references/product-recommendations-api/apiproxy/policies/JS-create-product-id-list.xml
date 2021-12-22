@@ -11,8 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript async="false" continueOnError="false" enabled="true" timeLimit="200" name="JS-create-product-id-list">
-    <DisplayName>JS-create-product-id-list</DisplayName>
-    <Properties/>
+<Javascript timeLimit="200" name="JS-create-product-id-list">
     <ResourceURL>jsc://createproductidlist.js</ResourceURL>
 </Javascript>

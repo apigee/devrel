@@ -29,6 +29,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$S
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/bigquery.admin" --quiet
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/spanner.admin" --quiet
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/iam.serviceAccountUser" --quiet
-gcloud iam service-accounts keys create demo-installer-key.json --project="$PROJECT_ID" --iam-account="$SA_INSTALLER"
-gcloud auth activate-service-account "$SA_INSTALLER" --project="$PROJECT_ID" --key-file=demo-installer-key.json
+# This seems to be an issue on my eval orgs
+# gcloud iam service-accounts keys create demo-installer-key.json --project="$PROJECT_ID" --iam-account="$SA_INSTALLER"
+# gcloud auth activate-service-account "$SA_INSTALLER" --project="$PROJECT_ID" --key-file=demo-installer-key.json
 # gcloud config set account "$SA_INSTALLER"

@@ -11,8 +11,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-process-request-params">
-    <DisplayName>AM-process-request-params</DisplayName>
+<AssignMessage name="AM-process-request-params">
+    <AssignVariable>
+        <Name>original_request_verb</Name>
+        <Ref>request.verb</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>original_cache_control_header</Name>
+        <Value>private</Value>
+        <Ref>request.header.cache-control</Ref>
+    </AssignVariable>
     <AssignVariable>
         <Name>userid</Name>
         <Value>6929470170340317899-1</Value>

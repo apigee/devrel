@@ -14,7 +14,7 @@
                   "value": "public"
                 }
               ],
-              "description": "Produuct for the product-recommendations-v1 API and App product-recommendations-v1-app-APIGEE_ENVIRONMENT, also used by AppSheet.",
+              "description": "Product for the product-recommendations-v1 API and App product-recommendations-v1-app-APIGEE_ENVIRONMENT, also used by AppSheet.",
               "environments": [
                 "APIGEE_ENVIRONMENT"
               ],

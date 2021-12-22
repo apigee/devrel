@@ -11,8 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<PopulateCache async="false" continueOnError="false" enabled="true" name="PC-spanner-session">
-    <DisplayName>PC-spanner-session</DisplayName>
+<PopulateCache name="PC-spanner-session">
     <CacheResource>spanner</CacheResource>
     <Scope>Application</Scope>
     <Source>Spanner.newSession</Source>
@@ -20,13 +19,9 @@
         <KeyFragment>Spanner.session</KeyFragment>
     </CacheKey>
     <ExpirySettings>
-        <!--
-        <TimeoutInSec ref="GCP.expires_in">3540</TimeoutInSec>
-        <TimeoutInSec ref="GCP.expires_in"/>
-        -->
         <!-- Sessions response does not include a TTL, but it expires after an hour if no use.
         Docs: https://cloud.google.com/spanner/docs/reference/rest/v1/projects.instances.databases.sessions/create
         -->
-        <TimeoutInSec>3540</TimeoutInSec>
+        <TimeoutInSeconds>3540</TimeoutInSeconds>
     </ExpirySettings>
 </PopulateCache>

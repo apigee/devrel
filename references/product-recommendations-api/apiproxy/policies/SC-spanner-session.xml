@@ -11,9 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-spanner-session">
-    <DisplayName>SC-spanner-session</DisplayName>
-    <Properties/>
+<ServiceCallout name="SC-spanner-session">
     <Request clearPayload="true" variable="myRequest">
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
         <Set>

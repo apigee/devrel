@@ -11,20 +11,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ResponseCache async="false" continueOnError="false" enabled="true" name="RC-uri">
-    <DisplayName>RC-uri</DisplayName>
-    <Properties/>
+<ResponseCache name="RC-uri">
     <CacheKey>
-        <Prefix/>
         <KeyFragment ref="request.uri" type="string"/>
     </CacheKey>
     <Scope>Exclusive</Scope>
     <ExpirySettings>
-        <ExpiryDate/>
-        <TimeOfDay/>
-        <TimeoutInSec ref="">300</TimeoutInSec>
+        <TimeoutInSeconds>300</TimeoutInSeconds>
     </ExpirySettings>
     <ExcludeErrorResponse>true</ExcludeErrorResponse>
     <SkipCacheLookup>request.header.cache-control = "no-cache"</SkipCacheLookup>
-    <SkipCachePopulation/>
 </ResponseCache>

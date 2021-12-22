@@ -27,16 +27,16 @@
             <Step>
                 <Name>RC-uri</Name>
             </Step>
+            <Step>
+                <Name>AM-restore-request-values</Name>
+            </Step>
         </Response>
     </PostFlow>
     <HTTPTargetConnection>
-        <!-- SA: datareader@bigquery-310116.iam.gserviceaccount.com -->
-        <!-- SA: datareader@apigeex-mint-kurt.iam.gserviceaccount.com -->
         <Authentication>
             <GoogleAccessToken>
                 <Scopes>
                     <Scope>https://www.googleapis.com/auth/bigquery</Scope>
-                    <!--<Scope>https://www.googleapis.com/auth/spanner.data</Scope>-->
                 </Scopes>
             </GoogleAccessToken>
         </Authentication>
