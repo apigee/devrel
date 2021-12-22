@@ -20,8 +20,6 @@
 # Safe to ignore for the purposes of the intended solution/lab
 ###############################################################################
 
-set -e
-
 PROJECT_ID="$(gcloud config get-value project)"
 
 echo "[INFO] CI and artifact storage using Cloud Build"
@@ -41,13 +39,32 @@ then
 fi
 
 echo ""
-echo "Test: API created"
+echo "Test: nonprod API created"
 if ! gcloud apigee apis list --organization=$APIGEE_X_ORG | grep MockTarget 
 then
   exit 1
 fi
 
-echo "Test: API deployed to eval"
+echo "Test: nonprod API deployed to eval"
+if ! gcloud apigee deployments list  --organization=$APIGEE_X_ORG --api=MockTarget | grep eval 
+then
+    exit 1
+fi
+
+# In nonprod, GCB doesn't populate COMMIT_SHA for cli builds 
+# setting COMMIT_SHA to null so release build picks the built artifact
+SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_COMMIT_SHA="
+gcloud builds submit --config=./cloudbuild-release.yaml \
+  --substitutions="$SUBSTITUTIONS_X"
+
+echo ""
+echo "Test: release API created"
+if ! gcloud apigee apis list --organization=$APIGEE_X_ORG | grep MockTarget 
+then
+  exit 1
+fi
+
+echo "Test: release API deployed to eval"
 if ! gcloud apigee deployments list  --organization=$APIGEE_X_ORG --api=MockTarget | grep eval 
 then
     exit 1
