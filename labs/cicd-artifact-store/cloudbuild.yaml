@@ -18,7 +18,7 @@ steps:
     args:
       - -c
       - |-
-        npm install --silent -g --no-fund apigeelint@2.6.x
+        npm install --silent -g --no-fund apigeelint@2.x.x
         apigeelint -s ./apiproxy --profile apigeex -f table.js
   - id: Fetch token for deployment
     name: gcr.io/cloud-builders/gcloud

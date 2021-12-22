@@ -31,3 +31,24 @@ SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_RUNTIME_HOST=$APIGEE_X_HOSTNAME"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_BUILD_BUCKET=${PROJECT_ID}_cloudbuild"
 gcloud builds submit --config=./cloudbuild.yaml \
   --substitutions="$SUBSTITUTIONS_X"
+
+echo ""
+echo ""
+echo "Test: Artifact generated and persisted in GCS"
+if ! gsutil ls -r gs://${PROJECT_ID}_cloudbuild/MockTarget/* | grep MockTarget-1.0
+then
+  exit 1
+fi
+
+echo ""
+echo "Test: API created"
+if ! gcloud apigee apis list --organization=$APIGEE_X_ORG | grep MockTarget 
+then
+  exit 1
+fi
+
+echo "Test: API deployed to eval"
+if ! gcloud apigee deployments list  --organization=$APIGEE_X_ORG --api=MockTarget | grep eval 
+then
+    exit 1
+fi

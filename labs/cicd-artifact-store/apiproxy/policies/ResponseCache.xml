@@ -16,16 +16,11 @@
 -->
 <ResponseCache continueOnError="false" enabled="true" name="ResponseCache">
     <CacheKey>
-        <Prefix/>
         <KeyFragment ref="request.uri" type="string"/>
     </CacheKey>
     <Scope>Exclusive</Scope>
     <ExcludeErrorResponse>true</ExcludeErrorResponse>
     <ExpirySettings>
-        <ExpiryDate/>
-        <TimeOfDay/>
-        <TimeoutInSec ref="">3600</TimeoutInSec>
+        <TimeoutInSeconds ref="">3600</TimeoutInSeconds>
     </ExpirySettings>
-    <SkipCacheLookup/>
-    <SkipCachePopulation/>
 </ResponseCache>
