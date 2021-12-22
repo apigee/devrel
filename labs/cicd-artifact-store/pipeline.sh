@@ -21,6 +21,7 @@
 ###############################################################################
 
 PROJECT_ID="$(gcloud config get-value project)"
+sed -i.org "s/eval/$APIGEE_X_ENV/g" edge.json
 
 echo "[INFO] CI and artifact storage using Cloud Build"
 SUBSTITUTIONS_X="_APIGEE_ORG=$APIGEE_X_ORG"

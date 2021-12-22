@@ -79,8 +79,9 @@ Continuous Integration and Continuous Deployment pipeline in GCP.
 
 ## Cleanup
 
-Delete GCP project to cleanup the CI, CD setup. If this is not feasible, 
+Delete GCP project to cleanup the CI, CD setup. If this is not feasible,
  the following steps can remove the entities created during this labs:
+
  1. In Apigee Console, delete developer app named MockTargetAppQA
  2. In Apigee Console, delete the developer with id mocktargetqa@example.com
  3. In Apigee Console, delete the API product MockProductDev
