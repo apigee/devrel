@@ -1,4 +1,5 @@
 # Smart API to Predict Customer Propensity to buy using Apigee, BigQuery ML and Cloud Spanner
+
 ## Overview
 This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X or Hybrid proxy, BigQuery ML and Cloud Spanner.
 
@@ -44,11 +45,11 @@ It will have the following roles:
 ### Overview of Steps
 As Project Owner
 1. First [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
-2. Using an existing GCP Project or after creating a GCP Project, [create Service Accounts for proxy deployment and installer](#create-service-accounts).
+2. Using an existing GCP Project or after creating a GCP Project, [create Service Account for proxy deployment](#create-service-account).
 3. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
 4. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
-5. Install Apigee proxy using the [Maven command](#setup-apigee-x-proxy).
-6. [Test the API proxy](#test-the-api-proxy).
+5. Install Apigee proxy using the [Maven command](#setup-apigee-proxy).
+6. [Testing the API proxy](#testing-the-api-proxy).
 7. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
 
 ## Setup
@@ -79,7 +80,7 @@ APIKEY
 ### Enable APIs
 Enable APIs for BigQuery and Spanner.
 ```lang-shell
-gcloud services enable bigquery.googleapis.com 
+gcloud services enable bigquery.googleapis.com
 gcloud services enable spanner.googleapis.com
 ```
 
@@ -92,7 +93,6 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$S
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
 ```
-
 
 ## Setup BigQuery Recommendations Dataset
 BigQuery contains an example dataset and table that shows a subset of results from a BigQuery Machine Learning training computation.

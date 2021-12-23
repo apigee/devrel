@@ -29,7 +29,7 @@ further to fit a particular use case.
   Reference implementation for using Apigee to expose a Cloud Run Service
 - [Data Converters Shared Flow](references/data-converters-shared-flow) -
   A reference shared flow for doing common response data JSON conversions
-- [Product Recommendations](references/product-recommendations-api) - 
+- [Product Recommendations](references/product-recommendations) - 
   Smart API to Predict Customer Propensity to buy using Apigee, BigQuery ML and Cloud Spanner
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,

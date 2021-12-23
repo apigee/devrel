@@ -21,14 +21,14 @@ echo Pipeline for product-recommendations-api in project: "$PROJECT_ID"
 echo APIGEE_X_ORG="$APIGEE_X_ORG" APIGEE_X_ENV="$APIGEE_X_ENV" APIGEE_X_HOSTNAME="$APIGEE_X_HOSTNAME"
 
 # Project hosting BigQuery and Spanner, usually same as APIGEE_X_ORG
-export PROJECT_ID=$APIGEE_X_ORG
+export PROJECT_ID="$APIGEE_X_ORG"
 export CUSTOMER_USERID="6929470170340317899-1"
 
 # No need to change these
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export SPANNER_REGION=regional-us-east1
-export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
+export SA=datareader@"$PROJECT_ID".iam.gserviceaccount.com
 
 echo "Pipeline for product-recommendations-api - setup bigquery"
 ./setup_bigquery.sh

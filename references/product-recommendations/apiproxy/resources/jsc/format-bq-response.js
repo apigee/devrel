@@ -18,7 +18,7 @@ var recommendations = [];
 // parse JSON from BigQuery response
 var dataSet = JSON.parse(context.proxyResponse.content);
 
-// add product id to recommentations
+// add product id to recommendations
 for(var i=0; i < dataSet.totalRows; i++) {
 	recommendations.push({"productid": dataSet.rows[i].f[0].v
 	});		
