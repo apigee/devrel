@@ -16,9 +16,11 @@
 
 
 ###############################################################################
-# Script to ensure health of instructions through nightly builds
-# Safe to ignore for the purposes of the intended solution/lab
+# Nightly build script to ensure health of lab instructions 
+# Safe to ignore for the purposes of the lab/solution
 ###############################################################################
+
+set -e
 
 PROJECT_ID="$(gcloud config get-value project)"
 sed -i.org "s/eval/$APIGEE_X_ENV/g" edge.json
@@ -29,44 +31,36 @@ SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_ENV=$APIGEE_X_ENV"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_RUNTIME_HOST=$APIGEE_X_HOSTNAME"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_BUILD_BUCKET=${PROJECT_ID}_cloudbuild"
 gcloud builds submit --config=./cloudbuild.yaml \
-  --substitutions="$SUBSTITUTIONS_X"
+  --substitutions="$SUBSTITUTIONS_X" || true # ignore failures
 
 echo ""
 echo ""
 echo "Test: Artifact generated and persisted in GCS"
-if ! gsutil ls -r gs://"${PROJECT_ID}"_cloudbuild/MockTarget/* | grep MockTarget-1.0
-then
-  exit 1
-fi
+echo "---------------------------------------------"
+gsutil ls -r gs://"${PROJECT_ID}"_cloudbuild/MockTarget/* | grep MockTarget-1.0
 
 echo ""
 echo "Test: nonprod API created"
-if ! gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
-then
-  exit 1
-fi
+echo "-------------------------"
+gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
 
 echo "Test: nonprod API deployed to env"
-if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep "${APIGEE_X_ENV}"
-then
-    exit 1
-fi
+echo "---------------------------------"
+eval gcloud apigee deployments list --organization="$APIGEE_X_ORG" \
+  --api=MockTarget | grep "${APIGEE_X_ENV}"
 
 # In nonprod, GCB doesn't populate COMMIT_SHA for cli builds 
 # setting COMMIT_SHA to null so release build picks the built artifact
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_COMMIT_SHA="
 gcloud builds submit --config=./cloudbuild-release.yaml \
-  --substitutions="$SUBSTITUTIONS_X"
+  --substitutions="$SUBSTITUTIONS_X" || true # ignore failures
 
 echo ""
 echo "Test: release API created"
-if ! gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
-then
-  exit 1
-fi
+echo "-------------------------"
+gcloud apigee apis list --organization="$APIGEE_X_ORG" | grep MockTarget 
 
 echo "Test: release API deployed to env"
-if ! gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget | grep "${APIGEE_X_ENV}"
-then
-    exit 1
-fi
+echo "---------------------------------"
+gcloud apigee deployments list  --organization="$APIGEE_X_ORG" --api=MockTarget \
+  | grep "${APIGEE_X_ENV}"
