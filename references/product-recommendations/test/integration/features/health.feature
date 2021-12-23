@@ -15,7 +15,7 @@ Feature: API proxy health
         And response body path $.info.title should be Product Recommendations
 
     @get-products-no-cache
-    Scenario: Verify the backend service is responding
+    Scenario: Verify a no-cache response
         Given I set X-APIKey header to `clientId`
         And I set Cache-Control header to no-cache
         When I GET /products
@@ -25,7 +25,7 @@ Feature: API proxy health
         And response body path $.products should be of type array
 
     @get-products-cache
-    Scenario: Verify the backend service is responding
+    Scenario: Verify a cacheable response
         Given I set X-APIKey header to `clientId`
         When I GET /products
         Then response code should be 200

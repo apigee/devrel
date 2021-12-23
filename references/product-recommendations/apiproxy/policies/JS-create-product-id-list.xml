@@ -12,5 +12,5 @@
  limitations under the License.
 -->
 <Javascript timeLimit="200" name="JS-create-product-id-list">
-    <ResourceURL>jsc://createproductidlist.js</ResourceURL>
+    <ResourceURL>jsc://create-product-id-list.js</ResourceURL>
 </Javascript>

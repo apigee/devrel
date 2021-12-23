@@ -24,7 +24,7 @@
 		<pluginRepository>
 			<id>central</id>
 			<name>Maven Plugin Repository</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
@@ -163,7 +163,7 @@
 			<plugin>
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
-				<version>2.2.0</version>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
 						<id>configure-bundle-step</id>
@@ -187,7 +187,7 @@
 			<plugin>
 				<groupId>com.apigee.edge.config</groupId>
 				<artifactId>apigee-config-maven-plugin</artifactId>
-				<version>2.2.0</version>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
 						<id>create-config-apiproduct</id>

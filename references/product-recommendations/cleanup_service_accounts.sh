@@ -17,5 +17,5 @@ echo "[INFO] Pipeline for product-recommendations-api - delete service account d
 gcloud iam service-accounts delete "$SA" --project="$PROJECT_ID" --quiet
 
 # echo "[INFO] Pipeline for product-recommendations-api - delete service account demo-installer"
-# gcloud iam service-accounts delete "$SA_INSTALLER" --project="$PROJECT_ID" --quiet
-# rm demo-installer-key.json
+gcloud iam service-accounts delete "$SA_INSTALLER" --project="$PROJECT_ID" --quiet
+rm demo-installer-key.json

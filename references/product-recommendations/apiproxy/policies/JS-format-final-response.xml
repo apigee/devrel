@@ -11,6 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="200" name="JS-format-data">
-    <ResourceURL>jsc://formatdata.js</ResourceURL>
+<Javascript timeLimit="200" name="JS-format-final-response">
+    <ResourceURL>jsc://format-final-response.js</ResourceURL>
 </Javascript>

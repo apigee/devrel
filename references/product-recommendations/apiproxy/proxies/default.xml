@@ -45,7 +45,7 @@
             </Request>
             <Response>
                 <Step>
-                    <Name>JS-format-data</Name>
+                    <Name>JS-format-bq-response</Name>
                 </Step>
                 <Step>
                     <Name>EV-product-list</Name>
@@ -80,7 +80,7 @@
                     <Name>SC-product-catalog-lookup</Name>
                 </Step>
                 <Step>
-                    <Name>JS-format-product-data</Name>
+                    <Name>JS-format-final-response</Name>
                 </Step>
             </Response>
             <Condition>(proxy.pathsuffix MatchesPath "/products") AND (request.verb = "GET")</Condition>

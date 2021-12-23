@@ -26,7 +26,7 @@ Passing the user Id as a header value is done for the purposes of the demo.
 In a real-world solution, it would be provided via a separate authentication flow and passed as token in the Authorization header.
 
 ## Prerequisites
-This demo relies on the use of a GCP Project for [Apigee](https://cloud.google.com/apigee), [Big Query](https://cloud.google.com/bigquery) and [Cloud Spanner](https://cloud.google.com/spanner). \
+This demo relies on the use of a GCP Project for [Apigee](https://cloud.google.com/apigee), [Big Query](https://cloud.google.com/bigquery) and [Cloud Spanner](https://cloud.google.com/spanner).
 
 **NOTE:**
 If you don't have an Apigee organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro).
@@ -45,13 +45,11 @@ It will have the following roles:
 As Project Owner
 1. First [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
 2. Using an existing GCP Project or after creating a GCP Project, [create Service Accounts for proxy deployment and installer](#create-service-accounts).
-
-As "demo-installer" Service Account
-1. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
-2. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
-3. Install Apigee proxy using the [Maven command](#setup-apigee-x-proxy).
-4. [Test the API proxy](#test-the-api-proxy).
-5. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
+3. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
+4. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
+5. Install Apigee proxy using the [Maven command](#setup-apigee-x-proxy).
+6. [Test the API proxy](#test-the-api-proxy).
+7. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
 
 ## Setup
 
@@ -70,9 +68,8 @@ export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export SPANNER_REGION=regional-us-east1
 export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
-export SA_INSTALLER=demo-installer@$PROJECT_ID.iam.gserviceaccount.com
 ```
-Other environment variables that are set below
+Other environment variables that are set below:
 ```lang-shell
 # For Apigee proxy deployment and API calls
 CUSTOMER_USERID
@@ -86,8 +83,16 @@ gcloud services enable bigquery.googleapis.com
 gcloud services enable spanner.googleapis.com
 ```
 
-## Create Service Accounts
-Create the "datareader" and "demo-installer" service accounts by running the [setup_service_accounts.sh](setup_service_accounts.sh) shell script.
+## Create Service Account
+Create the "datareader" service account that is used during proxy deployment.
+```lang-shell
+gcloud iam service-accounts create datareader --project="$PROJECT_ID" --display-name="Data reader in Apigee proxy for BQ and Spanner Demo"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
+```
+
 
 ## Setup BigQuery Recommendations Dataset
 BigQuery contains an example dataset and table that shows a subset of results from a BigQuery Machine Learning training computation.
@@ -292,4 +297,6 @@ Remove the Spanner resources by running the [cleanup_spanner.sh](cleanup_spanner
 Remove BigQuery resouces by running the [cleanup_bigquery.sh](cleanup_bigquery.sh)
 
 ### Delete Service Account (optional)
-Remove the service accounts by running the [cleanup_service_accounts.sh](cleanup_service_accounts.sh)
+```lang-shell
+gcloud iam service-accounts delete "$SA" --project="$PROJECT_ID" --quiet
+```

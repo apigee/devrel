@@ -30,7 +30,11 @@ Creates SQL query
     WHERE productid in ('GGOEGAAX0568','GGOEGFKQ020399','GGOEGAAX0690','GGOEGDHB072199','GGOEGHPB003410') 
     ORDER BY sortid asc
 */
-
+/* Convert JSON array to single quoted string of values for SQL query later
+    productIdArray: ["GGOEGAAX0037","GGOEYDHJ056099","GGOEGAAX0351","GGOEGDWC020199","GGOEGAAX0318"]
+    productIdList: "GGOEGAAX0037,GGOEYDHJ056099,GGOEGAAX0351,GGOEGDWC020199,GGOEGAAX0318"
+    result: "'GGOEGAAX0037','GGOEYDHJ056099','GGOEGAAX0351','GGOEGDWC020199','GGOEGAAX0318'"
+*/
 var productIdArray = JSON.parse(context.getVariable("productIdList"));
 var productIdList = productIdArray.join(",");
 var result = '\'' + productIdList.split(',').join('\',\'') + '\'';

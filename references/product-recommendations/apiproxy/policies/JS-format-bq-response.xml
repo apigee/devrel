@@ -11,6 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="200" name="JS-format-product-data">
-    <ResourceURL>jsc://formatproductdata.js</ResourceURL>
+<Javascript timeLimit="200" name="JS-format-bq-response">
+    <ResourceURL>jsc://format-bq-response.js</ResourceURL>
 </Javascript>
