@@ -32,11 +32,13 @@ usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | 
 Apigee Sackmesser utility.
 
 Commands:
+await
+clean
 deploy
-list
 export
 help
-clean
+list
+report
 
 Options:
 Options:
@@ -58,6 +60,7 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
+--skip-config, Skip configuration in org export
 ```
 
 ## CLI Examples
@@ -132,6 +135,16 @@ sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy all
 
 # Apigee Edge
 sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all
+```
+
+### Scenario: Create a Report of Deployments in an Environment
+
+```sh
+# Apigee X/hybrid
+sackmesser report --googleapi -t "$TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
+
+# Apigee Edge
+sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV"
 ```
 
 ## How does this compare to the Apigee Maven Plugin and other Apigee tooling

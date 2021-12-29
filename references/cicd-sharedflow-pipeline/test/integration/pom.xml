@@ -56,8 +56,8 @@ limitations under the License.
 			<!-- Apigee Edge -->
 			<id>apigeeapi</id>
 			<properties>
-				<apigee.deploy.plugin.version>1.2.3</apigee.deploy.plugin.version>
-				<apigee.config.plugin.version>1.4.7</apigee.config.plugin.version>
+				<apigee.deploy.plugin.version>1.3.1</apigee.deploy.plugin.version>
+				<apigee.config.plugin.version>1.5.1</apigee.config.plugin.version>
 				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
 				<apigee.authtype>oauth</apigee.authtype>
 				<apigee.tokenurl>https://login.apigee.com/oauth/token</apigee.tokenurl>
@@ -72,8 +72,8 @@ limitations under the License.
 			<!-- Apigee X and hybrid -->
 			<id>googleapi</id>
 			<properties>
-				<apigee.deploy.plugin.version>2.1.1</apigee.deploy.plugin.version>
-				<apigee.config.plugin.version>2.1.1</apigee.config.plugin.version>
+				<apigee.deploy.plugin.version>2.2.1</apigee.deploy.plugin.version>
+				<apigee.config.plugin.version>2.2.1</apigee.config.plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 				<apigee.bearer>${token}</apigee.bearer>
 				<apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
@@ -193,34 +193,34 @@ limitations under the License.
 			    <executions>
 			        <execution>
 			            <id>create-config-apiproducts</id>
-			            <phase>install</phase>                        
+			            <phase>install</phase>
 			            <goals>
 			                <goal>apiproducts</goal>
 			            </goals>
 			        </execution>
 			        <execution>
 			            <id>create-config-developers</id>
-			            <phase>install</phase>                        
+			            <phase>install</phase>
 			            <goals>
 			                <goal>developers</goal>
 			            </goals>
 			        </execution>
 			        <execution>
 			            <id>create-config-apps</id>
-			            <phase>install</phase>                        
+			            <phase>install</phase>
 			            <goals>
 			                <goal>apps</goal>
 			            </goals>
 			        </execution>
 			        <execution>
 			            <id>export-apps-keys</id>
-			            <phase>install</phase>                        
+			            <phase>install</phase>
 			            <goals>
 			                <goal>exportAppKeys</goal>
 			            </goals>
 			        </execution>
 			    </executions>
-			</plugin> 
+			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
