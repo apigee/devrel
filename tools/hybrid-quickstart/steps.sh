@@ -38,7 +38,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.6.2'
+    export APIGEE_CTL_VERSION='1.6.3'
     echo "- Apigeectl version $APIGEE_CTL_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
@@ -582,11 +582,6 @@ watcher:
 logger:
   enabled: false
   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
-
-runtime:
-  image:
-    url: "gcr.io/apigee-release/hybrid/apigee-runtime"
-    tag: "1.6.2-hotfix.1"  # TODO remove hotfix image tag with 1.6.3
 EOF
 }
 
