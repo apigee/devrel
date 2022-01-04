@@ -81,7 +81,7 @@ technical or non-technical topic.
 - [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
   A 200 level lab demonstrating behavior-driven API development by building,
   deploying and testing a mock API, generated from an Open API Specification.
-- [Identity facade with Okta](labs/idp-okta-integration) [(web)](https://apigee.github.io/devrel/labs/idp-okta-integration)
+- [Identity facade with Okta](labs/idp-okta-integration)
   A 300 level lab that shows how to configure the Apigee Identity Facade with Okta IDP.
 
 ## Contributing
