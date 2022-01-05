@@ -383,6 +383,9 @@ install_asm() {
   # patch ASM installer to allow for cloud build SA
   sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
+  # patch ASM installer to use the new kubectl --dry-run syntax
+  sed -i -e 's/--dry-run/--dry-run=client/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
+
   cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
@@ -487,7 +490,7 @@ create_cert() {
   kubectl create secret tls tls-hybrid-ingress \
     --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
     --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-    -n istio-system --dry-run -o yaml | kubectl apply -f -
+    -n istio-system --dry-run=client -o yaml | kubectl apply -f -
 
 
   if [ "$CERT_TYPE" != "self-signed" ];then
