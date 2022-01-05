@@ -8,8 +8,9 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "eslint": "eslint --format json",
+    "node-versions": "npm -v && node -v",
     "apigeelint": "node ./node_modules/apigeelint/cli.js -e PO003,PO007,TD002 -s ./apiproxy --profile apigeex -f table",
-    "integration": "node ./node_modules/@cucumber/cucumber/bin/cucumber-js target/test/integration"
+    "integration": "node ./node_modules/@cucumber/cucumber/bin/cucumber-js target/test/integration --publish-quiet"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",

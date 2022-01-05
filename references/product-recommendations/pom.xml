@@ -226,56 +226,66 @@
 				</executions>
 			</plugin>
 			
-			<!-- install node, npm install, run apigeelint, run unit, run integration -->
+			<!-- testing: eslint, apigeelint and integration -->
 			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.8.0</version>
-				<!-- NOTE: put executable in targetnode, otherwise uses node and deploy plugin thinks its a node.js proxy -->
-				<configuration>
-					<installDirectory>targetnode</installDirectory>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.3.2</version>
 				<executions>
+					<!-- npm install -->
 					<execution>
-						<id>install node and npm</id>
+						<id>npm-install</id>
 						<phase>validate</phase>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v12.22.0</nodeVersion>
-							<npmVersion>8.3.0</npmVersion>
+							<executable>npm</executable>
+							<commandlineArgs>
+								install --silent --no-fund
+							</commandlineArgs>
 						</configuration>
 					</execution>
+					<!-- eslint -->
 					<execution>
-						<id>npm install</id>
+						<id>eslint</id>
 						<phase>validate</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<arguments>install</arguments>
+							<executable>npm</executable>
+							<commandlineArgs>
+								run eslint
+							</commandlineArgs>
 						</configuration>
 					</execution>
+					<!-- apigeelint -->
 					<execution>
 						<id>apigeelint</id>
 						<phase>validate</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<arguments>run apigeelint</arguments>
+							<executable>npm</executable>
+							<commandlineArgs>
+								run apigeelint
+							</commandlineArgs>
 						</configuration>
 					</execution>
+					<!-- integration -->
 					<execution>
 						<id>integration</id>
 						<phase>install</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<skip>${skip.integration}</skip>
-							<arguments>run integration</arguments>
+							<executable>npm</executable>
+							<commandlineArgs>
+								run integration
+							</commandlineArgs>
 						</configuration>
 					</execution>
 				</executions>
@@ -300,6 +310,13 @@
 					<execution>
 						<id>auto-clean-install</id>
 						<phase>install</phase>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>targetnode</directory>
+								</fileset>
+							</filesets>
+						</configuration>
 						<goals>
 							<goal>clean</goal>
 						</goals>
