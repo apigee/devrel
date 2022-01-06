@@ -25,6 +25,10 @@ steps:
           exit -1;
         fi
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'Pull Image Cache'
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/devrel-pipeline:latest -l warn || exit 0']
+  - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Image'
     args:
       - 'build'
@@ -32,35 +36,41 @@ steps:
       - './tools/pipeline-runner/Dockerfile'
       - '-t'
       - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
       - './tools/pipeline-runner'
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
-    id: 'Load Secrets'
-    entrypoint: "sh"
+    id: 'Cleanup Org'
+    entrypoint: "bash"
     args:
       - "-c"
       - |-
-        echo "export APIGEE_PASS=\"$(gcloud secrets versions access latest \
-          --secret=devrel_apigee_pass --format="get(payload.data)" | \
-          base64 -d)\"" >> env.txt
-
-        echo "export APIGEE_USER=\"$(gcloud secrets versions access latest \
-          --secret=devrel_apigee_user --format="get(payload.data)" | \
-          base64 -d)\"" >> env.txt
-
-        echo "export GITHUB_TOKEN=\"$(gcloud secrets versions access latest \
-          --secret=devrel_github_token --format="get(payload.data)" | \
-          base64 -d )\"" >> env.txt
+        if [ "$_CLEAN_ORG" = "true" ]; then
+          APIGEE_TOKEN=$(gcloud auth print-access-token)
+          PATH=$$PATH:"$$PWD/tools/apigee-sackmesser/bin"
+          sackmesser clean all --googleapi -t "$$APIGEE_TOKEN" -o "$_APIGEE_X_ORG" --quiet
+          sackmesser clean all --apigeeapi -u "$$APIGEE_USER" -p "$$APIGEE_PASS" -o "$_APIGEE_ORG" --quiet
+        fi
+    env:
+      - 'APIGEE_ORG=$_APIGEE_ORG'
+      - 'APIGEE_X_ORG=$_APIGEE_X_ORG'
+    secretEnv:
+      - 'APIGEE_USER'
+      - 'APIGEE_PASS'
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
     id: 'Run Pipeline'
     entrypoint: "bash"
     args:
       - "-c"
       - |-
-        max_duration=7080 # cloud build timeout minus 2m
-        source env.txt && \
+        max_duration=6960 # cloud build timeout minus 4m
         if [ -n "$_PR_NUMBER" ]; then
+          FULL_PIPELINE_REQUIRED=$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER" | jq '.body | contains("[X] PR requires full pipeline run")' )
           PROJECTS=$(list-repo-changes.sh)
-          if [ -z "$$PROJECTS" ]; then
+          if [ "$$FULL_PIPELINE_REQUIRED" = "true" ]; then
+            echo "Running Full Pipeline as required in the PR"
+            timeout "$$max_duration" run-pipelines.sh || true
+          elif [ -z "$$PROJECTS"]; then
             echo "TOTAL PIPELINE (no change);pass;0" > ./pipeline-result.txt
           else
             echo "PR includes changes in $$PROJECTS"
@@ -72,14 +82,17 @@ steps:
           timeout "$$max_duration" run-pipelines.sh "$_CI_PROJECT" || true
         fi
     env:
-      - 'APIGEE_ORG=$_APIGEE_ORG'
       - 'APIGEE_ENV=$_APIGEE_ENV'
-      - 'APIGEE_X_ORG=$_APIGEE_X_ORG'
+      - 'APIGEE_ORG=$_APIGEE_ORG'
       - 'APIGEE_X_ENV=$_APIGEE_X_ENV'
       - 'APIGEE_X_HOSTNAME=$_APIGEE_X_HOSTNAME'
+      - 'APIGEE_X_ORG=$_APIGEE_X_ORG'
+      - 'ASYNC_PIPELINE=$_ASYNC_PIPELINE'
       - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
       - 'X_TRIAL_GCP_PROJECT=$_X_TRIAL_GCP_PROJECT'
-      - 'ASYNC_PIPELINE=$_ASYNC_PIPELINE'
+    secretEnv:
+      - 'APIGEE_USER'
+      - 'APIGEE_PASS'
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
     id: 'Create GH Comment or Issue'
     entrypoint: "bash"
@@ -91,7 +104,7 @@ steps:
         elif ! grep -qF "TOTAL PIPELINE" ./pipeline-result.txt;then
           echo "Pipeline Timeout;fail;[max duration]" >> ./pipeline-result.txt;
         fi
-        source env.txt && cat ./pipeline-result.txt | github-api.sh
+        cat ./pipeline-result.txt | github-api.sh
     env:
       - 'BUILD_ID=$BUILD_ID'
       - 'PROJECT_ID=$PROJECT_ID'
@@ -100,6 +113,8 @@ steps:
       - 'REPO_GH_ISSUE=$_REPO_GH_ISSUE'
       - 'CREATE_GH_ISSUE=$_CREATE_GH_ISSUE'
       - 'GH_BOT_NAME=$_GH_BOT_NAME'
+    secretEnv:
+      - 'GITHUB_TOKEN'
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
     id: 'Explicitly Fail'
     entrypoint: "bash"
@@ -107,7 +122,16 @@ steps:
       - "-c"
       - |-
         ! grep -q "fail" ./pipeline-result.txt
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/devrel_apigee_pass/versions/latest
+      env: APIGEE_PASS
+    - versionName: projects/$PROJECT_ID/secrets/devrel_apigee_user/versions/latest
+      env: APIGEE_USER
+    - versionName: projects/$PROJECT_ID/secrets/devrel_github_token/versions/latest
+      env: GITHUB_TOKEN
 timeout: 7200s # 120min (needs to be updated with max_duration of pipeline)
+images: ['gcr.io/$PROJECT_ID/devrel-pipeline:latest']
 substitutions:
   _APIGEE_ORG: my-org
   _APIGEE_ENV: my-env
@@ -117,8 +141,9 @@ substitutions:
   _HYBRID_GCP_PROJECT: my-gcp-project
   _X_TRIAL_GCP_PROJECT: my-gcp-project
   _CI_PROJECT: "all" # all|[path]
+  _CLEAN_ORG: "true" # true|false
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
   _GH_BOT_NAME: "apigee-devrel-bot"
   _ASYNC_PIPELINE: "false" # true|false
-  # _PR_NUMBER: # automatically set for PRs
+  #_PR_NUMBER: "" # automatically set for PRs
