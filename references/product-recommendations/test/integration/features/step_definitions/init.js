@@ -12,6 +12,7 @@
   limitations under the License.
 */
 /* eslint-disable no-invalid-this */ // See usage in apickli Documentation
+/* eslint-disable new-cap */
 "use strict";
 
 const apickli = require("apickli");
