@@ -23,8 +23,11 @@ console.log("CURL TO: [https://" + config.apiconfig.domain + config.apiconfig.ba
 getCredsFromExport(config.apiconfig.app, config.apiconfig.product);
 console.log( "KEYS: " + keys.clientId + " " + keys.clientSecret);
 
-const { Before: before } = require("@cucumber/cucumber");
-before(function () {
+const { Before, setDefaultTimeout } = require("@cucumber/cucumber");
+
+setDefaultTimeout(10 * 1000); // this is in ms
+
+Before(function () {
   this.apickli = new apickli.Apickli('https', config.apiconfig.domain + config.apiconfig.basepath);
   this.apickli.storeValueInScenarioScope("apiproxy", config.apiconfig.apiproxy);
   this.apickli.storeValueInScenarioScope("basepath", config.apiconfig.basepath);
