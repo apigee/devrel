@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG baseImage=apigee/devrel-jenkins-base:latest
 
-FROM google/cloud-sdk:alpine as cloud-sdk
-
-FROM ${baseImage}:${baseImageTag}
+FROM jenkins/jenkins:2.315-alpine
 
 USER root
-RUN apk update && apk add --no-cache python3
+RUN apk update && apk add --no-cache git maven nodejs npm
 USER jenkins
 
-COPY --from=cloud-sdk /google-cloud-sdk /var/jenkins_home/google-cloud-sdk
-ENV PATH="/var/jenkins_home/google-cloud-sdk/bin:${PATH}"
+COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false ${JAVA_OPTS}"
+COPY --chown=jenkins jenkins.yml /var/jenkins_home/casc_configs/jenkins.yaml
+ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
+
+ENV JENKINS_ADMIN_PASS=admin
+ENV APIGEE_HOSTURL=https://api.enterprise.apigee.com
