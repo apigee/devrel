@@ -67,6 +67,15 @@ elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE"
     exit 1
 fi
 
+for dependency in jq xmllint mvn
+do
+  if ! [ -x "$(command -v $dependency)" ]; then
+    >&2 logfatal "Required command is not on your PATH: $dependency."
+    >&2 logfatal "Please install it before you continue."
+    exit 2
+  fi
+done
+
 shift 1
 posArgs=()
 
@@ -107,7 +116,7 @@ while [ "$#" -gt 0 ]; do
     --apigeeapi) export apiversion="apigee"; shift 1;;
     --googleapi) export apiversion="google"; shift 1;;
 
-    -*) echo "[FATAL] unknown option: $1" >&2; exit 1;;
+    -*) logfatal "unknown option: $1" >&2; exit 1;;
     *) posArgs+=("$1"); shift 1;;
   esac
 done
@@ -133,7 +142,7 @@ else
 fi
 
 if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
-    echo "[FATAL] required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
+    logfatal "required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
     exit 1
 fi
 
