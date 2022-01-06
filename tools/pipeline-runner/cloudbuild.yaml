@@ -146,4 +146,4 @@ substitutions:
   _REPO_GH_ISSUE: "apigee/devrel"
   _GH_BOT_NAME: "apigee-devrel-bot"
   _ASYNC_PIPELINE: "false" # true|false
-  _PR_NUMBER: "" # automatically set for PRs
+  #_PR_NUMBER: "" # automatically set for PRs
