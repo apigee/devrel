@@ -10,6 +10,9 @@ You can choose between two different setups:
   Jenkinsfile without having to configure the full UI. We use this version for
   our continuous testing in Apigee DevRel.
 
+To have a common base for the two setups, we have a common base image that
+is extended to suit both of the two setups above.
+
 ## Jenkins Web
 
 Follow these instructions to build and run a fully configured Jenkins UI
@@ -27,6 +30,7 @@ docker tag ghcr.io/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 #### Option B: Local Build
 
 ```sh
+docker build -t apigee/devrel-jenkins-base:latest .
 docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 ```
 
@@ -34,6 +38,7 @@ docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 
 ```sh
 PROJECT_ID=<my-project>
+gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
 docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
@@ -192,23 +197,25 @@ This is mainly intended for CI/CD of the pipeline itself.
 #### Option A: Use a pre-built image
 
 ```sh
-docker pull ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest
-docker tag ghcr.io/danistrebel/devrel/jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
+docker pull ghcr.io/apigee/devrel-jenkinsfile:latest
+docker tag ghcr.io/apigee/devrel-jenkinsfile:latest apigee/devrel-jenkinsfile:latest
 ```
 
 #### Option B: Local Build
 
 ```sh
-docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile-runner:latest .
+docker build -t apigee/devrel-jenkins-base:latest .
+docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile:latest .
 ```
 
 #### Option C: Cloud Build on GCP
 
 ```sh
-PROJECT_ID=$(gcloud config get-value project)
+PROJECT_ID=$(gcloud config get-value project)\
+gcloud builds submit --config ./cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest
-docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile-runner:latest
+docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile:latest
 ```
 
 ### Example Run

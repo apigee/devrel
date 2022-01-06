@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG baseImage=apigee/devrel-jenkins-base:latest
-
-FROM google/cloud-sdk:alpine as cloud-sdk
-
-FROM ${baseImage}:${baseImageTag}
-
-USER root
-RUN apk update && apk add --no-cache python3
-USER jenkins
-
-COPY --from=cloud-sdk /google-cloud-sdk /var/jenkins_home/google-cloud-sdk
-ENV PATH="/var/jenkins_home/google-cloud-sdk/bin:${PATH}"
-
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false ${JAVA_OPTS}"
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - "--tag=gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base:latest"
+      - "--file=./Dockerfile"
+      - .
+images:
+  - "gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base:latest"
