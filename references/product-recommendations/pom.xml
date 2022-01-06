@@ -246,6 +246,20 @@
 							</commandlineArgs>
 						</configuration>
 					</execution>
+					<!-- npm and node versions -->
+					<execution>
+						<id>npm-versions</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>npm</executable>
+							<commandlineArgs>
+								run npm-versions
+							</commandlineArgs>
+						</configuration>
+					</execution>
 					<!-- eslint -->
 					<execution>
 						<id>eslint</id>

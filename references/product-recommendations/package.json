@@ -7,14 +7,15 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "eslint": "eslint --format json",
-    "node-versions": "npm -v && node -v",
+    "npm-versions": "npm -v && node -v",
+    "eslint": "node ./node_modules/eslint/bin/eslint.js  --format json",
     "apigeelint": "node ./node_modules/apigeelint/cli.js -e PO003,PO007,TD002 -s ./apiproxy --profile apigeex -f table",
     "integration": "node ./node_modules/@cucumber/cucumber/bin/cucumber-js target/test/integration --publish-quiet"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1",
-    "apigeelint": "^2.15.0"
+    "apigeelint": "^2.15.0",
+    "eslint": "^8.6.0"
   }
 }
