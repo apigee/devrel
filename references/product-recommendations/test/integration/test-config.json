@@ -1,0 +1,9 @@
+{
+    "apiconfig": {
+        "domain": "API_NORTHBOUND_DOMAIN",
+        "basepath": "/v1/recommendations",
+        "apiproxy": "product-recommendations-v1",
+		"product":"product-recommendations-v1-APIGEE_ENVIRONMENT",
+        "app":"product-recommendations-v1-app-APIGEE_ENVIRONMENT"
+    }
+}
