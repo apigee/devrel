@@ -76,7 +76,7 @@ set_config_params() {
     echo "- Mesh ID $MESH_ID"
 
     # these will be set if the steps are run in order
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)" || echo "")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --regions="$REGION" --format="get(address)" || echo "")
     export INGRESS_IP
     echo "- Ingress IP ${INGRESS_IP:-N/A}"
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
@@ -285,7 +285,7 @@ configure_network() {
 
     ENV_GROUP_NAME="$1"
 
-    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
+    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --regions=$REGION --format='get(address)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "google-managed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --global
       elif [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "self-signed" ]]; then
@@ -294,7 +294,7 @@ configure_network() {
         gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet default --purpose SHARED_LOADBALANCER_VIP
       fi
     fi
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --regions=$REGION --format="get(address)")
     export INGRESS_IP
 
     export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
