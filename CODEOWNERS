@@ -27,3 +27,4 @@
 /tools/oas-apigee-mock                  @markjkelly
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel
+/labs/idp-okta-integration              @teodlh
