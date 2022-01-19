@@ -121,6 +121,12 @@ sackmesser clean developer "janedoe@example.com" --googleapi -t "$APIGEE_X_TOKEN
 sackmesser clean product "SackMesserProduct1" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 sackmesser clean product "SackMesserProduct2" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
 
+# filter exported keys to prevent re-import conflict on other apps
+KEYS_EXPORT="$SCRIPT_FOLDER/$APIGEE_ORG/config/resources/edge/org/importKeys.json"
+mv "$KEYS_EXPORT" "$KEYS_EXPORT.bak"
+jq '{"janedoe@example.com": .["janedoe@example.com"] | map(select(.name=="sackmesser-app"))}' "$KEYS_EXPORT.bak" > "$KEYS_EXPORT"
+rm "$KEYS_EXPORT.bak"
+
 echo "Test Re-Import Edge Export in X"
 sackmesser deploy \
   --googleapi \

@@ -33,7 +33,8 @@ set_config_params() {
     printf "\n🔧 Apigee hybrid Configuration:\n"
     export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
     echo "- Ingress type $INGRESS_TYPE"
-    echo "- TLS Certificate ${CERT_TYPE:-let\'s encrypt}"
+    export CERT_TYPE=${CERT_TYPE:-google-managed}
+    echo "- TLS Certificate $CERT_TYPE"
 
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
@@ -285,7 +286,9 @@ configure_network() {
     ENV_GROUP_NAME="$1"
 
     if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
-      if [[ "$INGRESS_TYPE" == "external" ]]; then
+      if [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "google-managed" ]]; then
+        gcloud compute addresses create apigee-ingress-ip --global
+      elif [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "self-signed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --region "$REGION"
       else
         gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet default --purpose SHARED_LOADBALANCER_VIP
@@ -386,7 +389,32 @@ install_asm() {
   # patch ASM installer to use the new kubectl --dry-run syntax
   sed -i -e 's/--dry-run/--dry-run=client/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
+  if [ "$CERT_TYPE" = "google-managed" ];then
+    cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        serviceAnnotations:
+          cloud.google.com/neg: '{"ingress": true}'
+          cloud.google.com/backend-config: '{"default": "ingress-backendconfig"}'
+          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+        service:
+          type: ClusterIP
+          ports:
+          - name: status-port
+            port: 15021 # for ASM 1.7.x and above, else 15020
+            targetPort: 15021 # for ASM 1.7.x and above, else 15020
+          - name: https
+            port: 443
+            targetPort: 8443
+EOF
+  else
+    cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
@@ -408,6 +436,7 @@ spec:
             port: 443
             targetPort: 8443
 EOF
+  fi
 
   rm -rf "$QUICKSTART_TOOLS"/istio-asm/install-out
   mkdir -p "$QUICKSTART_TOOLS"/istio-asm/install-out
@@ -469,7 +498,7 @@ create_cert() {
     return
   fi
 
-  echo "🙈 Creating (temporary) self-signed cert - $ENV_GROUP_NAME"
+  echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
   mkdir  -p "$HYBRID_HOME/certs"
 
   CA_CERT_NAME="quickstart-ca"
@@ -492,39 +521,101 @@ create_cert() {
     --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
     -n istio-system --dry-run=client -o yaml | kubectl apply -f -
 
+  if [ "$CERT_TYPE" = "google-managed" ];then
+    echo "🏢 Letting Google manage the cert - $ENV_GROUP_NAME"
 
-  if [ "$CERT_TYPE" != "self-signed" ];then
-    echo "🔒 Creating let's encrypt cert - $ENV_GROUP_NAME"
-    cat <<EOF | kubectl apply -f -
-apiVersion: cert-manager.io/v1
-kind: Issuer
+     cat <<EOF | kubectl apply -f -
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
 metadata:
-  name: letsencrypt
+  name: apigee-xlb-cert
   namespace: istio-system
 spec:
-  acme:
-    email: admin@$DNS_NAME
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-issuer-account-key
-    solvers:
-    - http01:
-       ingress:
-         class: istio
+  domains:
+    - "$ENV_GROUP_NAME.$DNS_NAME"
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
 metadata:
-  name: tls-hybrid-ingress
+  name: ingress-backendconfig
   namespace: istio-system
 spec:
-  secretName: tls-hybrid-ingress
-  issuerRef:
-    name: letsencrypt
-  commonName: $ENV_GROUP_NAME.$DNS_NAME
-  dnsNames:
-  - $ENV_GROUP_NAME.$DNS_NAME
+  healthCheck:
+    requestPath: /healthz/ready
+    port: 15021
+    type: HTTP
+  logging:
+    enable: false
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    networking.gke.io/managed-certificates: "apigee-xlb-cert"
+    kubernetes.io/ingress.global-static-ip-name: apigee-ingress-ip
+    kubernetes.io/ingress.allow-http: "false"
+  name: xlb-apigee-ingress
+  namespace: istio-system
+spec:
+  defaultBackend:
+    service:
+      name: istio-ingressgateway
+      port:
+        number: 443
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apigee
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: apigee-wildcard
+  namespace: apigee
+spec:
+  selector:
+    app: istio-ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: https-apigee-443
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: tls-hybrid-ingress
+      mode: SIMPLE
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: health
+  namespace: apigee
+spec:
+  gateways:
+  - apigee-wildcard
+  hosts:
+  - '*'
+  http:
+  - match:
+    - headers:
+        user-agent:
+          prefix: GoogleHC
+      method:
+        exact: GET
+      uri:
+        exact: /
+    rewrite:
+      authority: istio-ingressgateway.istio-system.svc.cluster.local:15021
+      uri: /healthz/ready
+    route:
+    - destination:
+        host: istio-ingressgateway.istio-system.svc.cluster.local
+        port:
+          number: 15021 # for ASM 1.7.x and above, else 15020
 EOF
+
   fi
 }
 
@@ -557,6 +648,7 @@ k8sCluster:
 virtualhosts:
   - name: $ENV_GROUP_NAME
     sslSecret: tls-hybrid-ingress
+    additionalGateways: ["apigee-wildcard"]
 
 instanceID: "$PROJECT_ID-$(date +%s)"
 
@@ -648,7 +740,7 @@ deploy_example_proxy() {
   if [ "$CERT_TYPE" = "self-signed" ];then
    echo "curl --cacert $QUICKSTART_ROOT/hybrid-files/certs/quickstart-ca.crt https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   else
-    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything (use -k while Let's encrypt is issuing your cert)"
+    echo "curl https://$ENV_GROUP_NAME.$DNS_NAME/httpbin/v0/anything"
   fi
   echo "👋 To reach your API via the FQDN: Make sure you add a DNS record for your FQDN or an NS record for $DNS_NAME: $NAME_SERVER"
   echo "👋 During development you can also use --resolve $ENV_GROUP_NAME.$DNS_NAME:443:$INGRESS_IP to resolve the hostname for your curl command"
