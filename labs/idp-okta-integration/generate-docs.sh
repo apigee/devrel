@@ -19,4 +19,4 @@ claat export ./README.md
 # move to generated
 rm -rf ./generated
 mkdir -p ./generated
-mv ./bdd-proxy-development ./generated/docs
+mv ./idp-okta-integration ./generated/docs
