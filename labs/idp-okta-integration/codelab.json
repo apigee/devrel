@@ -4,14 +4,14 @@
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
   "updated": "2022-01-20T16:39:41Z",
-  "id": "bdd-proxy-development",
-  "duration": 62,
-  "title": "Behaviour-Driven Proxy Development with Apigee",
+  "id": "idp-okta-integration",
+  "duration": 0,
+  "title": "Apigee IDP integration with Okta",
   "summary": "",
-  "source": "./lab.md",
+  "source": "./README.md",
   "theme": "",
   "status": null,
   "category": null,
   "tags": [],
-  "url": "bdd-proxy-development"
+  "url": "idp-okta-integration"
 }
