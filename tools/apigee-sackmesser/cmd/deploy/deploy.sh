@@ -122,6 +122,14 @@ skip_deployment=true #skip maven deploy unless bundle contains proxy or shared f
 if [ -d "$temp_folder/apiproxy" ]; then
     loginfo "Configuring API Proxy"
 
+    if [ ! -f "$temp_folder/apiproxy/*.xml" ]; then
+        if [ -z "$bundle_name" ]; then
+            bundle_name=$(basename "$source_dir")
+        fi
+        logwarn "Root XML file missing for $bundle_name (as required by the mvn plugin). Creating a temp file."
+        echo "<APIProxy revision=\"1\" name=\"$bundle_name\"/>" > "$temp_folder/apiproxy/$bundle_name.xml"
+    fi
+
     skip_deployment=false
 
     # Determine Proxy name
@@ -147,6 +155,14 @@ elif [ -d "$temp_folder/sharedflowbundle" ]; then
 
     skip_deployment=false
 
+    if [ ! -f "$temp_folder/sharedflowbundle/*.xml" ]; then
+        if [ -z "$bundle_name" ]; then
+            bundle_name=$(basename "$source_dir")
+        fi
+        logwarn "Root XML file missing for $bundle_name (as required by the mvn plugin). Creating a temp file."
+        echo "<SharedFlowBundle revision=\"1\" name=\"$bundle_name\"/>" > "$temp_folder/sharedflowbundle/$bundle_name.xml"
+    fi
+
     api_type="sharedflow"
 
     shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$temp_folder"/sharedflowbundle/*.xml)"
@@ -161,14 +177,20 @@ elif [ -d "$temp_folder/sharedflowbundle" ]; then
     fi
 fi
 
+
 if [ "$debug" = "T" ]; then
-    maven_debug='-X'
+    MVN_DEBUG="-X"
+fi
+
+if [ "$MVN_REDUCE_LOGS" = "T" ]; then
+    MVN_NTP="-ntp"
 fi
 
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
-    (cd "$temp_folder" && mvn install "$DEFAULT_MVN_ARGS" -B ${maven_debug:-} \
+    logdebug "Deploy to apigee.googleapis.com"
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -185,8 +207,9 @@ if [ "$apiversion" = "google" ]; then
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
+    logdebug "Deploy to Edge API"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install "$DEFAULT_MVN_ARGS" -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
