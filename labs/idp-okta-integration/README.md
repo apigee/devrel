@@ -30,7 +30,7 @@ Lets get started!
 
 ## Prerequisites
 
-- [Signup](https://developer.okta.com/signup/) for an Okta developer account
+- [Sign up](https://developer.okta.com/signup/) for an Okta developer account
 - Create an [Apigee Eval](https://cloud.google.com/apigee/docs/api-platform/get-started/eval-orgs) organization
 
 ### Tools
@@ -62,7 +62,7 @@ Use Apigee UI
 ### Create Okta User
 
 1. Sign into your Okta developer portal
-2. In the left hand side  navigate to Directoy - People
+2. In the left hand side navigate to the directory - People
 3. Click on **Add person**
      - A valid email is not needed if the Password is set by Admin
 
@@ -73,7 +73,7 @@ Use Apigee UI
 
 1. In the left hand side navigate to Applications - Applications
 2. Click on **Create App Integration**
-3. In the window that opens, selecte OIDC - OpenID Connect and Web Application and click **Next** to create the App
+3. In the window that opens, select OIDC - OpenID Connect and Web Application and click **Next** to create the App
 
      ![Create App](assets/okta-app-integration.png)
 
@@ -83,7 +83,7 @@ Use Apigee UI
      - Sign-in redirect URIs:
 
           ```text
-          https://{env group hostname}/v1/oauth20/callback 
+          https://{env group hostname}/v1/oauth20/callback
           ```
 
      - example:
@@ -222,13 +222,13 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
 
 ## Use Identity Facade with API Proxy
 
-The default Apigee install includes a /hello-world proxy. In this section we will add an OAuthv2 policy that verifies the access token and create an application that has access to the identity facade (generate tokens) and the Hellow-World proxies.
+The default Apigee install includes a /hello-world proxy. In this section we will add an OAuthV2 policy that verifies the access token and create an application that has access to the identity facade (generate tokens) and the Hello-World proxies.
 
 1. In the Apigee portal, expand Publish and click on API Products.
 2. Choose + CREATE
 3. Fill in the following
 
-     - Name: Hellow World
+     - Name: Hello World
      - Display Name: Hello World
      - Environment: eval
      - Access: Public
@@ -249,7 +249,7 @@ The default Apigee install includes a /hello-world proxy. In this section we wil
 
      - Name: Hello World App
      - Developer: Jane Doe (this user was also created during the identity facade deployment)
-     - Productt:
+     - Product:
      - Hello World
      - Identity Facade
 
@@ -279,7 +279,7 @@ The default Apigee install includes a /hello-world proxy. In this section we wil
 
      ![Auth code](assets/apigee-proxy-auth-code.png)
 
-10. Run through the remaning authentication and API call steps
+10. Run through the remaining authentication and API call steps
 
      ```bash
      export AUTH_CODE={authorization code returned above}
@@ -299,4 +299,4 @@ The default Apigee install includes a /hello-world proxy. In this section we wil
 
 ## Summary
 
-Congratulations! You've now successfully integrated your Apigee environment with a 3rd party IDP, Okta, and secured your API using OAuthv2 tokens.
+Congratulations! You've now successfully integrated your Apigee environment with a 3rd party IDP, Okta, and secured your API using OAuthV2 tokens.
