@@ -1,0 +1,12 @@
+{
+  "name": "auth-schemes-v0",
+  "version": "1.0.0",
+  "description": "API proxy demonstrating different auth schemes",
+  "scripts": {
+    "test": "npx cucumber-js test/"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.1"
+  }
+}
