@@ -17,6 +17,7 @@
 <AssignMessage continueOnError="false" enabled="true" name="AssignMessage.SetPrivateKey">
     <AssignVariable>
         <Name>private.key</Name>
+        <!-- this private key is not and must not be used elsewhere -->
         <Value>
 -----BEGIN PRIVATE KEY-----
 MIIEwAIBADANBgkqhkiG9w0BAQEFAASCBKowggSmAgEAAoIBAQDpLtqxS7OrlD/d
