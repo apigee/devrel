@@ -182,8 +182,8 @@ if [ "$debug" = "T" ]; then
     MVN_DEBUG="-X"
 fi
 
-if [ "$MVN_NTP" = "T" ]; then
-    MVN_NTP="-T"
+if [ "$MVN_REDUCE_LOGS" = "T" ]; then
+    MVN_NTP="-ntp"
 fi
 
 if [ "$apiversion" = "google" ]; then
