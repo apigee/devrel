@@ -17,6 +17,7 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
+proxyName="auth-schemes-v0"
 developerEmail="alien@far-away.space"
 appName="AuthApp"
 productName="APIAuthExamples"
@@ -44,7 +45,7 @@ cat <<EOF >> "$SCRIPTPATH/edge.json"
                         "value": "public"
                     }
                 ],
-                "description": "Used by apigee/devrel/references/auth-schemes",
+                "description": "Used by apigee/devrel/references/$proxyName",
                 "displayName": "API Auth Examples",
                 "environments": [
                     "$APIGEE_X_ENV"
@@ -52,7 +53,7 @@ cat <<EOF >> "$SCRIPTPATH/edge.json"
                 "operationGroup": {
                     "operationConfigs": [
                         {
-                            "apiSource": "auth-schemes-v0",
+                            "apiSource": "$proxyName",
                             "operations": [
                             {
                                 "resource": "/**",
@@ -94,20 +95,20 @@ cat <<EOF >> "$SCRIPTPATH/edge.json"
 }
 EOF
 
-export APIGEE_X_TOKEN=$(gcloud auth print-access-token);
+googleToken=$(gcloud auth print-access-token);
 
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 # deploy Apigee artifacts: proxy, developer, app, product
-sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_X_TOKEN" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
+sackmesser deploy --googleapi -n "$proxyName" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$googleToken" -h "$APIGEE_X_HOSTNAME" -d "$SCRIPTPATH"
 
 # fetch newly created app
-appId=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/developers/$developerEmail/apps/$appName" | jq -r '.appId')
-appJson=$(sackmesser list --googleapi -t "$APIGEE_X_TOKEN" "organizations/$APIGEE_X_ORG/apps/$appId" | jq '.credentials[0]')
+appId=$(sackmesser list --googleapi -t "$googleToken" "organizations/$APIGEE_X_ORG/developers/$developerEmail/apps/$appName" | jq -r '.appId')
+appJson=$(sackmesser list --googleapi -t "$googleToken" "organizations/$APIGEE_X_ORG/apps/$appId" | jq '.credentials[0]')
 
 # extract client id and secret from newly created app
-export APP_CLIENT_ID="$(echo $appJson | jq -r  '.consumerKey')"
-export APP_CLIENT_SECRET="$(echo $appJson | jq -r  '.consumerSecret')"
+export APP_CLIENT_ID="$(jq -r  '.consumerKey' <<< $appJson)"
+export APP_CLIENT_SECRET="$(jq -r  '.consumerSecret' <<< $appJson)"
 
 # var is expected by integration test (apickli)
 export PROXY_URL="$APIGEE_X_HOSTNAME/auth-schemes/v0"
@@ -119,11 +120,11 @@ npm run test
 # clean up
 if [ "$APIGEE_AUTH_SCHEMES_CLEAN_UP" = "true" ]; then
   echo "Cleaning up KMS records..."
-  sackmesser clean app "$appId" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
-  sackmesser clean developer "$developerEmail" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
-  sackmesser clean product "$productName" --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
+  sackmesser clean app "$appId" --googleapi -t "$googleToken" -o "$APIGEE_X_ORG" --quiet
+  sackmesser clean developer "$developerEmail" --googleapi -t "$googleToken" -o "$APIGEE_X_ORG" --quiet
+  sackmesser clean product "$productName" --googleapi -t "$googleToken" -o "$APIGEE_X_ORG" --quiet
   rm -f "$SCRIPTPATH"/edge.json
 
   echo "Deleting API proxy..."
-  sackmesser clean proxy auth-schemes-v0 --googleapi -t "$APIGEE_X_TOKEN" -o "$APIGEE_X_ORG" --quiet
+  sackmesser clean proxy "$proxyName" --googleapi -t "$googleToken" -o "$APIGEE_X_ORG" --quiet
 fi
