@@ -180,7 +180,7 @@ generate_edge_json() {
                     "$ENV_NAME"
                 ],
                 "proxies": [
-                    "identity-facade-v1"
+                    "identity-facade"
                 ]
             }
         ],
