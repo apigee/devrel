@@ -94,6 +94,8 @@ cat <<EOF >> "$SCRIPTPATH/edge.json"
 }
 EOF
 
+export APIGEE_X_TOKEN=$(gcloud auth print-access-token);
+
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 # deploy Apigee artifacts: proxy, developer, app, product
