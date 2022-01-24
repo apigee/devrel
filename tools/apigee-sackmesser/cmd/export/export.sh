@@ -41,7 +41,7 @@ fi
 loginfo "exporting to $export_folder"
 mkdir -p "$export_folder"
 
-sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|.'| while read -r sharedflow; do
+sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|. | select((. | length) > 1)' | while read -r sharedflow; do
     loginfo "download shared flow: $sharedflow"
     mkdir -p "$export_folder/sharedflows/$sharedflow"
     latest="$(sackmesser list "organizations/$organization/sharedflows/$sharedflow" | jq '.revision | map(tonumber) | max')"

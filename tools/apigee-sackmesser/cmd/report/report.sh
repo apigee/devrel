@@ -93,7 +93,7 @@ performancequery="organizations/$organization/environments/$environment/stats/ap
 performancequery+="?limit=14400&offset=0"
 performancequery+="&select=sum(message_count)/3600.0,sum(is_error),avg(target_response_time),avg(total_response_time)"
 performancequery+="&timeUnit=day"
-PERFORMANCE_Q_START=$(date -u -v1d '+%m/%d/%Y%%2000:00:00' 2&>/dev/null || date -u -d "1 day ago" '+%m/%d/%Y%%2000:00:00' || date -u -d "@$(( $(date +%s ) - 86400 ))" '+%m/%d/%Y%%2000:00:00')
+PERFORMANCE_Q_START=$(date -u -v1d '+%m/%d/%Y%%2000:00:00' 2&>/dev/null || date -u -d "1 day ago" '+%m/%d/%Y%%2000:00:00' || date -u -d "@$(( $(date +%s ) - 86400 ))" '+%m/%d/%Y%%2000:00:00' || echo '')
 performancequery+="&timeRange=$PERFORMANCE_Q_START~$(date -u '+%m/%d/%Y%%2000:00:00')"
 sackmesser list "$performancequery" > "$export_folder/performance-$environment.json"
 
@@ -182,7 +182,6 @@ do
 
     echo "$linkrevision" > "$export_folder/scratch/proxyrevisions/$proxyname"
 
-
     if [ -d "$proxyexportpath/apiproxy/policies" ];then
         policycount=$(find "$proxyexportpath"/apiproxy/policies/*.xml | wc -l)
     else
@@ -204,7 +203,7 @@ do
     echo "<td>$policycount</td>" >> "$report_html"
     echo "<td>$flowcount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
-done <   <("$export_folder/apigeelint/proxies/"*.json -print0)
+done <   <(find "$export_folder/apigeelint/proxies/"*.json -print0)
 
 echo "</tbody></table></div>" >> "$report_html"
 
@@ -224,7 +223,11 @@ echo "<tbody>" >> "$report_html"
 while IFS= read -r -d '' policyusage
 do
     proxyname=$(basename "${policyusage%%-indexed.*}")
-    linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
+    if [ -f "$export_folder/scratch/proxyrevisions/$proxyname" ]; then
+        linkrevision=$(cat "$export_folder/scratch/proxyrevisions/$proxyname")
+    else
+        linkrevision="unknown"
+    fi
     echo "<tr>"  >> "$report_html"
     echo "<th scope=\"row\"><a href=\"$(resource_link "proxies/$proxyname" "$linkrevision")\" target=\"_blank\">$proxyname</a></th>" >> "$report_html"
 
