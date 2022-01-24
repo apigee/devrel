@@ -204,7 +204,7 @@ do
     echo "<td>$policycount</td>" >> "$report_html"
     echo "<td>$flowcount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
-done <   <(find "$export_folder/apigeelint/proxies/"*.json -print0)
+done <   <("$export_folder/apigeelint/proxies/"*.json -print0)
 
 echo "</tbody></table></div>" >> "$report_html"
 

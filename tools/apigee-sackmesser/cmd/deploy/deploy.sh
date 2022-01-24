@@ -122,7 +122,7 @@ skip_deployment=true #skip maven deploy unless bundle contains proxy or shared f
 if [ -d "$temp_folder/apiproxy" ]; then
     loginfo "Configuring API Proxy"
 
-    if [ -z "$(find "$temp_folder/apiproxy" -type f -name "*.xml" -d 1)" ]; then
+    if [ -z "$(find "$temp_folder/apiproxy" -type f -name "*.xml" -maxdepth 1 -mindepth 1)" ]; then
         if [ -z "$bundle_name" ]; then
             bundle_name=$(basename "$source_dir")
         fi
@@ -155,7 +155,7 @@ elif [ -d "$temp_folder/sharedflowbundle" ]; then
 
     skip_deployment=false
 
-    if [ -z "$(find "$temp_folder/sharedflowbundle" -type f -name "*.xml" -d 1)" ]; then
+    if [ -z "$(find "$temp_folder/sharedflowbundle" -type f -name "*.xml" -maxdepth 1 -mindepth 1)" ]; then
         if [ -z "$bundle_name" ]; then
             bundle_name=$(basename "$source_dir")
         fi
