@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
- Copyright 2021 Google LLC
+ Copyright 2022 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,10 +14,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage continueOnError="false" enabled="true" name="AssignMessage.SetPrivateKey">
+<AssignMessage name="AssignMessage.SetPrivateKey">
     <AssignVariable>
         <Name>private.key</Name>
-        <!-- this private key is not and must not be used elsewhere -->
+        <!--
+         This private key is not and must not be used elsewhere.
+         The key is only for the purposes of this reference
+         implementation. An appropriate approach would be to
+         persist this key in an Apigee Key Value Map and retrieve
+         the key at runtime.
+        -->
         <Value>
 -----BEGIN PRIVATE KEY-----
 MIIEwAIBADANBgkqhkiG9w0BAQEFAASCBKowggSmAgEAAoIBAQDpLtqxS7OrlD/d
