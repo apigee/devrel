@@ -31,8 +31,6 @@ if [ "$EXISTING_EMAIL" != "$SA_EMAIL" ]; then
     --role="roles/logging.logWriter"
 fi
 
-
-
 sackmesser deploy --googleapi -d "$SCRIPTPATH" -t "$APIGEE_TOKEN" --deployment-sa "$SA_EMAIL"
 sackmesser deploy --googleapi -d "$SCRIPTPATH/test/logging-example" -t "$APIGEE_TOKEN"
 
