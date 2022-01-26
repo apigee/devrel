@@ -1,6 +1,7 @@
 **/node_modules/**
 **/generated/**
 
+.idea
 .settings
 .project
 .classpath

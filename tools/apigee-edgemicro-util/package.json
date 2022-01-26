@@ -1,0 +1,35 @@
+{
+  "name": "apigee-edgemicro-util",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "apigee-edgemicro-util": "src/apigee-edgemicro-util.js"
+  },
+  "scripts": {
+    "build:Linux": "pkg -o dist/Linux/emg-util --targets node14-linux-x64 . && chmod a+x dist/Linux/*",
+    "build:Darwin": "pkg -o dist/Darwin/emg-util  --targets node14-macos-x64 . && chmod a+x dist/Darwin/*",
+    "build": "pkg -o dist/Darwin/emg-util --targets node12-macos-x64 . && chmod a+x dist/Linux/* && pkg -o dist/Linux/emg-util --targets node12-linux-x64 . && chmod a+x dist/Linux/* "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "pkg": {
+    "scripts": [
+      "src/*.js",
+      "node_modules/envsub/js/*.*"
+    ],
+    "assets": [
+      "assets/**/*.*"
+    ]
+  },
+  "dependencies": {
+    "apigee-edge-js": "^0.4.28",
+    "envsub": "^4.0.7",
+    "log4js": "^6.3.0",
+    "pkg": "^5.5.1",
+    "recursive-copy": "^2.0.13",
+    "yargs": "^17.3.0",
+    "zip-dir": "^2.0.0"
+  }
+}
