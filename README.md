@@ -72,6 +72,9 @@ Apigee products.
   A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
+- [Edge Micro Gateway Util](tools/apigee-edgemicro-util) -
+    A tool for creating EMG proxies, and updating API products
+
 
 ## Labs
 
