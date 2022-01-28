@@ -1,0 +1,57 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+edge_config:
+  bootstrap: >-
+    https://edgemicroservices.apigee.net/edgemicro/bootstrap/organization/${EDGEMICRO_ORG}/environment/${EDGEMICRO_ENV}
+  jwt_public_key: 'https://${EDGEMICRO_ORG}-${EDGEMICRO_ENV}.apigee.net/edgemicro-auth/publicKey'
+  managementUri: 'https://api.enterprise.apigee.com'
+  vaultName: microgateway
+  authUri: 'https://%s-%s.apigee.net/edgemicro-auth'
+  baseUri: >-
+    https://edgemicroservices.apigee.net/edgemicro/%s/organization/%s/environment/%s
+  bootstrapMessage: Please copy the following property to the edge micro agent config
+  keySecretMessage: The following credentials are required to start edge micro
+  products: 'https://${EDGEMICRO_ORG}-${EDGEMICRO_ENV}.apigee.net/edgemicro-auth/products'
+edgemicro:
+  port: 8000
+  max_connections: 1000
+  config_change_poll_interval: 600
+  logging:
+    level: error
+    dir: /var/tmp
+    stats_log_interval: 60
+    rotate_interval: 24
+    stack_trace: false
+  plugins:
+    sequence:
+      - oauth
+headers:
+  x-forwarded-for: true
+  x-forwarded-host: true
+  x-request-id: true
+  x-response-time: true
+  via: true
+oauth:
+  allowNoAuthorization: true
+  allowInvalidAuthorization: false
+  gracePeriod: 10
+  verify_api_key_url: 'https://${EDGEMICRO_ORG}-${EDGEMICRO_ENV}.apigee.net/edgemicro-auth/verifyApiKey'
+analytics:
+  uri: >-
+    https://edgemicroservices.apigee.net/edgemicro/axpublisher/organization/${EDGEMICRO_ORG}/environment/${EDGEMICRO_ENV}
+  bufferSize: 10000
+  batchSize: 500
+  flushInterval: 5000

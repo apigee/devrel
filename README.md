@@ -50,7 +50,8 @@ further to fit a particular use case.
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
   A reference for protecting API proxies against XML and JSON threats
-
+- [GCP Kf + EMG](references/kf-edgemicro) -
+  A simple reference architecture for using the Apigee Edge MicroGateway with GCP Kf
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
