@@ -118,10 +118,10 @@ appId=$(sackmesser list --googleapi -t "$googleToken" "organizations/$APIGEE_X_O
 appJson=$(sackmesser list --googleapi -t "$googleToken" "organizations/$APIGEE_X_ORG/apps/$appId" | jq '.credentials[0]')
 
 # extract client id and secret from newly created app
-APP_CLIENT_ID=$(jq -r  '.consumerKey' <<< "$appJson")
+APP_CLIENT_ID=$(echo $appJson | jq -r  '.consumerKey')
 export APP_CLIENT_ID
 
-APP_CLIENT_SECRET=$(jq -r  '.consumerSecret' <<< "$appJson")
+APP_CLIENT_SECRET=$(echo $appJson | jq -r  '.consumerSecret')
 export APP_CLIENT_SECRET
 
 # var is expected by integration test (apickli)
