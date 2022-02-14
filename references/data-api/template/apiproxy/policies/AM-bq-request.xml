@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-bq-request">
+<AssignMessage name="AM-bq-request">
     <Set>
         <Verb>POST</Verb>
         <Payload contentType="application/json">

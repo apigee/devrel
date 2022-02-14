@@ -16,13 +16,6 @@
 -->
 
 <ProxyEndpoint name="default">
-  <PreFlow name="PreFlow">
-       <Request>
-           <Step>
-              <Name>AM-bq-request</Name>
-           </Step>
-       </Request>
-  </PreFlow>
   <HTTPProxyConnection>
     <BasePath>$BASE_PATH</BasePath>
   </HTTPProxyConnection>
