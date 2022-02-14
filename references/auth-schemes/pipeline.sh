@@ -22,6 +22,17 @@ developerEmail="alien@far-away.space"
 appName="AuthApp"
 productName="APIAuthExamples"
 
+rm -f "$SCRIPTPATH"/jwt.key.pem "$SCRIPTPATH"/jwt.key.pub.pem
+#ssh-keygen -t RSA -b 2048 -f "$SCRIPTPATH"/jwt.key -q -N "" -m pem
+openssl genrsa -out "$SCRIPTPATH"/jwt.key.pem 2048
+openssl rsa -in "$SCRIPTPATH"/jwt.key.pem -pubout -out "$SCRIPTPATH"/jwt.key.pub.pem
+
+rm -f "$SCRIPTPATH"/apiproxy/policies/AssignMessage.SetPrivateKey.xml "$SCRIPTPATH"/apiproxy/policies/JWT.Verify.xml
+export _JWT_PRIVATE_KEY=`cat "$SCRIPTPATH"/jwt.key.pem`
+export _JWT_PUBLIC_KEY=`cat "$SCRIPTPATH"/jwt.key.pub.pem`
+envsubst < "$SCRIPTPATH"/templates/AssignMessage.SetPrivateKey.xml.tmpl > "$SCRIPTPATH"/apiproxy/policies/AssignMessage.SetPrivateKey.xml
+envsubst < "$SCRIPTPATH"/templates//JWT.Verify.xml.tmpl > "$SCRIPTPATH"/apiproxy/policies/JWT.Verify.xml
+
 rm -f "$SCRIPTPATH"/edge.json
 cat <<EOF >> "$SCRIPTPATH/edge.json"
 {

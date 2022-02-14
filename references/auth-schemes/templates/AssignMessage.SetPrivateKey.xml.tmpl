@@ -14,14 +14,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<GenerateJWT name="JWT.Generate">
-    <Algorithm>RS256</Algorithm>
-    <PrivateKey>
-        <Value ref="private.jwt.key"/>
-    </PrivateKey>
-    <ExpiresIn>3m</ExpiresIn>
-    <Subject>1234567890</Subject>
-    <Issuer>apigee-api-proxy</Issuer>
-    <Audience>everyone</Audience>
-    <OutputVariable>message.header.Generated-JWT</OutputVariable>
-</GenerateJWT>
+<AssignMessage name="AssignMessage.SetPrivateKey">
+    <AssignVariable>
+        <Name>private.jwt.key</Name>
+        <!--
+         This private key is not and must not be used elsewhere.
+         The key is only for the purposes of this reference
+         implementation. An appropriate approach would be to
+         persist this key in an Apigee Key Value Map and retrieve
+         the key at runtime.
+        -->
+        <Value>
+$_JWT_PRIVATE_KEY
+        </Value>
+    </AssignVariable>
+</AssignMessage>

@@ -14,14 +14,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<GenerateJWT name="JWT.Generate">
+<VerifyJWT name="JWT.Verify">
     <Algorithm>RS256</Algorithm>
-    <PrivateKey>
-        <Value ref="private.jwt.key"/>
-    </PrivateKey>
-    <ExpiresIn>3m</ExpiresIn>
+    <Source>request.header.JWT</Source>
+    <PublicKey>
+        <Value>
+$_JWT_PUBLIC_KEY
+        </Value>
+    </PublicKey>
     <Subject>1234567890</Subject>
-    <Issuer>apigee-api-proxy</Issuer>
-    <Audience>everyone</Audience>
-    <OutputVariable>message.header.Generated-JWT</OutputVariable>
-</GenerateJWT>
+</VerifyJWT>
