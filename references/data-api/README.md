@@ -15,6 +15,8 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$S
 ```
 PROJECT_ID='my-project'
 export BASE_PATH='/london/bikes/v1'
+export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
+
 export PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})"
 
 mkdir "./$PROXY_NAME/"

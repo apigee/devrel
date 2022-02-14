@@ -14,18 +14,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
-<AssignMessage name="AM-bq-request">
-    <Set>
-        <Verb>POST</Verb>
-        <Payload contentType="application/json" variablePrefix="@" variableSuffix="+">
-        {
-          "kind": "bigquery#queryRequest",
-          "query": "SELECT @data.request.fields+ FROM $DATA_SET LIMIT @data.request.limit+ OFFSET @data.request.offset+",
-          "useQueryCache": true,
-          "useLegacySql": false
-        }
-        </Payload>
-    </Set>
-    <AssignTo createNew="true" transport="http" type="request"/>
-</AssignMessage>
+<RegularExpressionProtection name="RE-injection-protection">
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <QueryParam name="limit">
+        <Pattern>[^0-9]</Pattern>
+    </QueryParam>
+    <QueryParam name="offset">
+        <Pattern>[^0-9]</Pattern>
+    </QueryParam>
+    <QueryParam name="fields">
+        <Pattern>[\s]*((delete)|(exec)|(drop\s*table)|(insert)|(shutdown)|(update)|(\bor\b))</Pattern>
+    </QueryParam>
+</RegularExpressionProtection>

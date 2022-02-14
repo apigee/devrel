@@ -16,6 +16,24 @@
 -->
 
 <ProxyEndpoint name="default">
+  <PreFlow name="PreFlow">
+    <Request>
+      <Step>
+        <Condition>request.queryparam.apikey IsNot null</Condition>
+        <Name>VA-verify-apikey</Name>
+      </Step>
+      <Step>
+        <Name>RE-injection-protection</Name>
+      </Step>
+      <Step>
+        <Name>AM-configure-defaults</Name>
+      </Step>
+      <Step>
+        <Condition>data.request.limit > 100</Condition>
+        <Name>RF-invalid-request</Name>
+      </Step>
+    </Request>
+  </PreFlow>
   <PostFlow>
     <Request>
       <Step>
