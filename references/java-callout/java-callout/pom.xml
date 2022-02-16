@@ -28,7 +28,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
   <url>https://maven.apache.org</url>
   <properties>
     <jdk.version>1.8</jdk.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.1</junit.version>
   </properties>
   <dependencies>
     <dependency>
