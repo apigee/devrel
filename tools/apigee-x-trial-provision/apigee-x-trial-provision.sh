@@ -53,6 +53,10 @@ case "$1" in
     PEERING_CIDR="$2"
     shift 2;;
 
+  --peering-cidr-support)
+    PEERING_CIDR_SUPPORT="$2"
+    shift 2;;
+
   *)
     pps="$pps $1"
     shift;;
@@ -136,6 +140,12 @@ else
   PEERING_CIDR_DISPLAY="$PEERING_CIDR"
 fi
 
+if [ -z "$PEERING_CIDR_SUPPORT" ]; then
+  PEERING_CIDR_SUPPORT_DISPLAY="[automatic /28 block]"
+else
+  PEERING_CIDR_SUPPORT_DISPLAY="$PEERING_CIDR"
+fi
+
 if [ "$CERTIFICATES" = "managed" ]; then
   export RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME.[external-ip].nip.io"
 else
@@ -148,6 +158,7 @@ echo "  PROJECT=$PROJECT"
 echo "  NETWORK=$NETWORK"
 echo "  SUBNET=$SUBNET"
 echo "  PEERING_CIDR=$PEERING_CIDR_DISPLAY"
+echo "  PEERING_CIDR_SUPPORT=$PEERING_CIDR_SUPPORT_DISPLAY"
 if [ "$SHARED_HOST_ONLY" = "Y" ]; then
   echo "provisioning shared VPC host project only"
 else
@@ -192,20 +203,32 @@ if [[ "$NETWORK" =~ ^projects/.*/networks.*$ ]]; then
 else
   echo "Step 4.1: Define a range of reserved IP addresses for your network. "
   if [ -z "$PEERING_CIDR" ]; then
-    gcloud compute addresses create google-managed-services-default --global --prefix-length=22 \
+    gcloud compute addresses create google-managed-apigee --global --prefix-length=22 \
       --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
       --purpose=VPC_PEERING --project="$PROJECT" --quiet || echo "Failed to create - ignoring assuming it already exists"
   else
     RANGE_START="$(echo "$PEERING_CIDR" | cut -d/ -f1)"
     RANGE_PREFIX_LENGTH="$(echo "$PEERING_CIDR" | cut -d/ -f2)"
-    gcloud compute addresses create google-managed-services-default --global  --addresses="$RANGE_START" --prefix-length="$RANGE_PREFIX_LENGTH" \
+    gcloud compute addresses create google-managed-apigee --global  --addresses="$RANGE_START" --prefix-length="$RANGE_PREFIX_LENGTH" \
       --description="Peering range for Google Apigee X Tenant" --network="$NETWORK" \
+      --purpose=VPC_PEERING --project="$PROJECT" --quiet || echo "Failed to create - ignoring assuming it already exists"
+  fi
+
+  if [ -z "$PEERING_CIDR_SUPPORT" ]; then
+    gcloud compute addresses create google-managed-apigee-support --global --prefix-length=28 \
+      --description="Peering range for supporting Apigee services" --network="$NETWORK" \
+      --purpose=VPC_PEERING --project="$PROJECT" --quiet || echo "Failed to create - ignoring assuming it already exists"
+  else
+    RANGE_START="$(echo "$PEERING_CIDR_SUPPORT" | cut -d/ -f1)"
+    RANGE_PREFIX_LENGTH="$(echo "$PEERING_CIDR_SUPPORT" | cut -d/ -f2)"
+    gcloud compute addresses create google-managed-apigee-support --global  --addresses="$RANGE_START" --prefix-length="$RANGE_PREFIX_LENGTH" \
+      --description="Peering range for supporting Apigee services" --network="$NETWORK" \
       --purpose=VPC_PEERING --project="$PROJECT" --quiet || echo "Failed to create - ignoring assuming it already exists"
   fi
 
   echo "Step 4.2: Connect your project's network to the Service Networking API via VPC peering"
   gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com \
-    --network="$NETWORK" --ranges=google-managed-services-default --project="$PROJECT"  --quiet ||
+    --network="$NETWORK" --ranges=google-managed-apigee,google-managed-apigee-support --project="$PROJECT"  --quiet ||
     echo "Failed to create - ignoring assuming it already exists"
 
   echo "Step 7d.3: Create a firewall rule that lets the Load Balancer access Proxy VM"
