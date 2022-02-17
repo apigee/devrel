@@ -47,6 +47,26 @@
       </Step>
     </Request>
   </PostFlow>
+  <FaultRules>
+    <FaultRule name="Invalid Request">
+        <Condition>(fault.name = "ThreatDetected")</Condition>
+        <Step>
+            <Name>RF-invalid-request</Name>
+        </Step>
+    </FaultRule>
+    <FaultRule name="Unauthorized">
+      <Condition>(fault.name = "FailedToResolveAPIKey")</Condition>
+      <Step>
+          <Name>RF-unauthorized</Name>
+      </Step>
+  </FaultRule>
+</FaultRules>
+<DefaultFaultRule name="fault-rule">
+    <Step>
+        <Name>RF-internal-error</Name>
+        <Condition>fault.name != "RaiseFault"</Condition>
+    </Step>
+</DefaultFaultRule>
   <HTTPProxyConnection>
     <BasePath>$BASE_PATH</BasePath>
   </HTTPProxyConnection>
