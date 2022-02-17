@@ -4,10 +4,11 @@ This reference provides a basic proxy generator that allows you to build an
 API product facade on a data platform. This provides API consumers with
 
 The API proxy provides the following functionality:
-* Return Limit
+* Response Cache
+* Quota (Default or API Product)
+* Return Size Limit (with enforced max)
 * Pagination
 * Fields Selection
-* Max Return Limit Enforcement
 * Injection Protection (Using Regex Matching)
 * CORS headers
 
@@ -70,4 +71,18 @@ Using query params
 
 ```sh
 curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?limit=3&fields=start_station_name,end_station_name" | jq
+```
+
+Triggering the quota limit for unauthenticated users:
+
+```sh
+curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?try=[1-10]" -I
+```
+
+(Optional) Create an API product with a higher quota and an app for it. Use the app's
+key in an `apikey` query parameter in your request:
+
+```sh
+APIKEY='key-goes-here'
+curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?apikey=$APIKEY&try=[1-10]" -I
 ```

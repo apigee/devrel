@@ -22,6 +22,9 @@
       <Step>
         <Name>JS-bq-response</Name>
       </Step>
+      <Step>
+        <Name>RC-response-cache</Name>
+      </Step>
     </Response>
   </PreFlow>
   <HTTPTargetConnection>

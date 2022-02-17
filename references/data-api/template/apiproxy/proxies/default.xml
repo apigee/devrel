@@ -23,6 +23,9 @@
         <Name>VA-verify-apikey</Name>
       </Step>
       <Step>
+         <Name>QU-enforce-quota</Name>
+      </Step>
+      <Step>
         <Name>RE-injection-protection</Name>
       </Step>
       <Step>
@@ -31,6 +34,9 @@
       <Step>
         <Condition>data.request.limit > 100</Condition>
         <Name>RF-invalid-request</Name>
+      </Step>
+      <Step>
+         <Name>RC-response-cache</Name>
       </Step>
     </Request>
   </PreFlow>
