@@ -37,7 +37,7 @@ PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})" && export PROXY_NAME
 PROXY_DIR="$SCRIPTPATH/$PROXY_NAME"
 rm -rf "$PROXY_DIR"
 mkdir "$PROXY_DIR"
-cp -r template/ "$PROXY_DIR/"
+cp -r template/* "$PROXY_DIR"
 
 
 find "$PROXY_DIR"/* -name '*.xml' -print0 |
