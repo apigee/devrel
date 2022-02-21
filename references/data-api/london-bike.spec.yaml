@@ -1,0 +1,88 @@
+openapi: 3.0.2
+info:
+  description: 'Apigee Data API demonstration.'
+  version: 1.0.0
+  title: Apigee Data API
+servers:
+- url: https://$APIGEE_X_HOSTNAME/london/bikes/v1
+paths:
+  /:
+    get:
+      summary: View Bike Rentals
+      description: Let's you access data from the public BigQuery dataset on bike rentals in London.
+      parameters:
+        - name: limit
+          in: query
+          description: Max number of returned results.
+          required: false
+          schema:
+            type: number
+        - name: offset
+          in: query
+          description: Pagination Offset.
+          required: false
+          schema:
+            type: number
+        - name: fields
+          in: query
+          description: List of fields separated by comma.
+          required: false
+          schema:
+            type: string
+        - name: apikey
+          in: query
+          description: API key for identifying the request.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BikeRental'
+components:
+  schemas:
+    BikeRental:
+      type: object
+      properties:
+        rental_id:
+          type: string
+          example: "12345"
+        duration:
+          type: string
+          description: "rental duration in seconds"
+          example: "600"
+        bike_id:
+          type: string
+          example: "7000"
+        end_station_id:
+          type: string
+          example: "42"
+        end_date:
+          type: string
+          example: "1.4412843E9"
+        end_station_name:
+          type: string
+          example: "Station Name X"
+        end_station_logical_terminal:
+          type: string
+          example: "1111"
+        end_station_priority_id:
+          type: string
+          example: "456"
+        start_station_id:
+          type: string
+          example: "43"
+        start_date:
+          type: string
+          example: "1.4412843E9"
+        start_station_name:
+          type: string
+          example: "Station Name Y"
+        start_station_logical_terminal:
+          type: string
+          example: "1111"

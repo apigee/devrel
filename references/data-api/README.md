@@ -38,6 +38,7 @@ export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
 
 export PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})"
 
+rm -rf "./$PROXY_NAME/"
 mkdir "./$PROXY_NAME/"
 cp -r template/ "./$PROXY_NAME/"
 
@@ -66,13 +67,13 @@ sackmesser deploy -o $APIGEE_X_ORG -e $APIGEE_X_ENV -d "./$PROXY_NAME" -t "$APIG
 APIGEE_X_HOSTNAME='my-proxy-hostname'
 ```
 
-Basic API request
+Basic API request:
 
 ```sh
 curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1" -v
 ```
 
-Using query params
+Using query params:
 
 ```sh
 curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?limit=3&fields=start_station_name,end_station_name" | jq
@@ -84,10 +85,66 @@ Triggering the quota limit for unauthenticated users:
 curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?try=[1-10]" -I
 ```
 
-(Optional) Create an API product with a higher quota and an app for it. Use the app's
-key in an `apikey` query parameter in your request:
+Create an API product with a higher quota and an app for it.
 
 ```sh
-APIKEY='key-goes-here'
+# Create a Developer Resource
+curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers" \
+-H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{ "email": "testdatauser@example.com", "firstName": "test", "lastName": "user", "userName": "testdatauser" }' \
+
+# Create an API Product with a Quota higher than the default 8 requests per minute
+curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/apiproducts" \
+-H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Content-Type: application/json" \
+--data @<(cat <<EOF
+{
+  "name": "premium-data",
+  "quota": "30",
+  "quotaTimeUnit": "minute",
+  "quotaInterval": "1",
+  "proxies": [
+    "$PROXY_NAME"
+  ],
+  "environments": [
+    "$APIGEE_X_ENV"
+  ],
+  "displayName": "Premium Data Product",
+  "approvalType": "auto"
+}
+EOF
+)
+
+# Create an App
+curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/testdatauser@example.com/apps" \
+-H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Content-Type: application/json" \
+--data @<(cat <<EOF
+{
+  "name": "premium-data-app",
+  "apiProducts": [
+    "premium-data"
+  ]
+}
+EOF
+)
+```
+
+Use the app's key in an `apikey` query parameter
+in your request:
+
+```sh
+APIKEY="$(curl "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/testdatauser@example.com/apps/premium-data-app" \
+-H "Authorization: Bearer $APIGEE_TOKEN" | jq -r '.credentials[0].consumerKey')"
 curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?apikey=$APIKEY&try=[1-10]" -I
 ```
+
+Create an API Product in the Developer Portal:
+
+```sh
+envsubst '$APIGEE_X_HOSTNAME' < ./london-bike.spec.yaml > ./london-bikes-v1/spec.yaml
+```
+
+And use the templated spec file together with an appropriate picture to create
+a product in the Apigee Developer Portal.

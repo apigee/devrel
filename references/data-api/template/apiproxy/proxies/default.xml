@@ -36,17 +36,13 @@
         <Name>RF-invalid-request</Name>
       </Step>
       <Step>
+         <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
          <Name>RC-response-cache</Name>
       </Step>
     </Request>
   </PreFlow>
-  <PostFlow>
-    <Request>
-      <Step>
-         <Name>CO-cors-headers</Name>
-      </Step>
-    </Request>
-  </PostFlow>
   <FaultRules>
     <FaultRule name="Invalid Request">
         <Condition>(fault.name = "ThreatDetected")</Condition>
