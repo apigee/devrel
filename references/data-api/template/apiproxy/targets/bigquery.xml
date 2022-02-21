@@ -35,6 +35,6 @@
         </Scopes>
       </GoogleAccessToken>
     </Authentication>
-    <URL>https://www.googleapis.com/bigquery/v2/projects/$PROJECT_ID/queries</URL>
+    <URL>https://www.googleapis.com/bigquery/v2/projects/$BQ_PROJECT_ID/queries</URL>
   </HTTPTargetConnection>
 </TargetEndpoint>

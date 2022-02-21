@@ -1,9 +1,12 @@
 # Apigee on top of Data APIs
 
 This reference provides a basic proxy generator that allows you to build an
-API product facade on a data platform. This provides API consumers with
+API facade on a data platform. (In this example we are using BigQuery as the
+data platform but the same principles could be applied to other products.)
 
-The API proxy provides the following functionality:
+The API proxy provides the following functionality to facilitate and govern
+data consumption via APIs:
+
 * Response Cache
 * Quota (Default or API Product)
 * Return Size Limit (with enforced max)
@@ -18,16 +21,18 @@ The API proxy provides the following functionality:
 
 ```sh
 SA=bq-reader
-SA_EMAIL="$SA@$PROJECT_ID.iam.gserviceaccount.com"
-gcloud iam service-accounts create "$A" --project="$PROJECT_ID" --display-name="BQ data reader"
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/bigquery.dataViewer" --quiet
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/bigquery.user" --quiet
+SA_EMAIL="$SA@$APIGEE_X_ORG.iam.gserviceaccount.com"
+BQ_PROJECT_ID='my-bq-project'
+
+gcloud iam service-accounts create "$SA" --project="$APIGEE_X_ORG" --display-name="BQ data reader"
+gcloud projects add-iam-policy-binding "$BQ_PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/bigquery.dataViewer" --quiet
+gcloud projects add-iam-policy-binding "$BQ_PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/bigquery.user" --quiet
 ```
 
 ### Template the proxy
 
 ```sh
-PROJECT_ID='my-project'
+export BQ_PROJECT_ID='my-bq-project'
 export BASE_PATH='/london/bikes/v1'
 export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
 
