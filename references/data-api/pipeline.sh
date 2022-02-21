@@ -35,7 +35,7 @@ export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
 PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})" && export PROXY_NAME
 
 PROXY_DIR="$SCRIPTPATH/$PROXY_NAME"
-rm -rdf "$PROXY_DIR"
+rm -rf "$PROXY_DIR"
 mkdir "$PROXY_DIR"
 cp -r template/ "$PROXY_DIR/"
 
