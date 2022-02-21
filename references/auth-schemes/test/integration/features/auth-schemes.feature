@@ -58,12 +58,12 @@ Feature:
     And I store the value of response header Generated-JWT as jwt in global scope
 
   Scenario: Using a valid JWT
-    Given I set JWT header to `jwt`
+    Given I set Authorization header to "Bearer `jwt`"
     When I GET /jwt
     Then response code should be 200
 
   Scenario: Using an invalid JWT
-    Given I set JWT header to foobar
+    Given I set Authorization header to "Bearer foobar"
     When I GET /jwt
     Then response code should be 401
     And response body should be valid json
