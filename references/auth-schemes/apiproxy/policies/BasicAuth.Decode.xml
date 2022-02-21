@@ -19,5 +19,5 @@
     <Operation>Decode</Operation>
     <User ref="flow.basicauth.username" />
     <Password ref="private.flow.basicauth.password" />
-    <Source>request.header.Authorization</Source>
+    <Source>request.header.authorization</Source>
 </BasicAuthentication>

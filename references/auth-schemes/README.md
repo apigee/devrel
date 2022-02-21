@@ -50,7 +50,9 @@ For additional examples, including negative test cases,
 see the [auth-schemes.feature](./test/integration/features/auth-schemes.feature) file.
 
 ### Verify API Key
-Copy the AuthApp's Client ID from Apigee and include it in the following request:
+Include a valid Client ID in the following request. Instructions for how to find the Client ID (also known as consumer key or API key) can be found [here](https://cloud.google.com/apigee/docs/api-platform/publish/creating-apps-surface-your-api#view-api-key).
+If the pipeline has been successfully executed, you will see the AuthApp created for testing purposes.
+
 ```
 curl -v https://$APIGEE_X_HOSTNAME/auth-schemes/v0/api-key -H "API-Key: $CLIENT_ID"
 ```
@@ -69,19 +71,21 @@ First obtain a short-lived signed JWT using the helper endpoint:
 ```
 curl -v -XPOST https://$APIGEE_X_HOSTNAME/auth-schemes/v0/helpers/jwt
 ```
-Copy the value of the `Generated-JWT` response header from the previous request and include it in the following request:
+Copy the value of the `generated-jwt` response header from the previous request and include it in the following request:
 ```
-curl -v https://$APIGEE_X_HOSTNAME/auth-schemes/v0/jwt -H "JWT: $JWT"
+curl -v https://$APIGEE_X_HOSTNAME/auth-schemes/v0/jwt -H "Authorization: Bearer $JWT"
 ```
 
 ### OAuth Bearer Token (RFC 6749)
-First obtain a short-lived opaque access token using the helper endpoint:
+First obtain a short-lived opaque access token using the helper endpoint. Instructions for how to find
+application credentials can be found [here](https://cloud.google.com/apigee/docs/api-platform/publish/creating-apps-surface-your-api#view-api-key).
+If the pipeline has been successfully executed, you will see the AuthApp created for testing purposes.
 ```
 curl -v -XPOST https://$APIGEE_X_HOSTNAME/auth-schemes/v0/helpers/oauth -u $CLIENT_ID:$CLIENT_SECRET -d "grant_type=client_credentials"
 ```
 > _Note: Under normal circumstances, avoid providing secrets on the command itself using `-u`_
 
-Copy the value of the `Generated-JWT` response header from the previous request and include it in the following request:
+Copy the value of the `access_token` property from the response body of the previous request and include it in the following request:
 ```
 curl -v https://$APIGEE_X_HOSTNAME/auth-schemes/v0/oauth-token -H "Authorization: Bearer $TOKEN"
 ```
@@ -95,7 +99,7 @@ which utilises Apigee's [ExternalCallout policy](https://cloud.google.com/apigee
 
 ### Mutual TLS (mTLS)
 Also known as client certificate authentication or mutual authentication, mTLS can be utilised to achieve transport
-layer authentication of clients. For implementation details relating to Apigee X, see this [two](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Network-and-Envoy-Proxy-Configuration-to-manage-mTLS-on-Apigee-X/ta-p/175146)-[part](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Network-and-Envoy-Proxy-Configuration-to-manage-mTLS-on-Apigee-X/ta-p/175152)
-community article which comprehensively explains the necessary configuration. For implementation details relating to Apigee hybrid,
-refer to the [official product documentation](https://cloud.google.com/apigee/docs/hybrid/latest/ingress-tls). In both cases,
+layer authentication of API clients. For implementation details relating to Apigee X, see this [two](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Network-and-Envoy-Proxy-Configuration-to-manage-mTLS-on-Apigee-X/ta-p/175146)-[part](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Network-and-Envoy-Proxy-Configuration-to-manage-mTLS-on-Apigee-X/ta-p/175152)
+community article which comprehensively explains the necessary configuration for enforcing client certificate verification at the API ingress point.
+For implementation details relating to Apigee hybrid, refer to the [official product documentation](https://cloud.google.com/apigee/docs/hybrid/latest/ingress-tls). In both cases,
 the API Proxy will have access to the client certificate and a set of certificate attributes available as runtime variables.

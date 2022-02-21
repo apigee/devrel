@@ -23,5 +23,5 @@
     <Subject>1234567890</Subject>
     <Issuer>apigee-api-proxy</Issuer>
     <Audience>everyone</Audience>
-    <OutputVariable>message.header.Generated-JWT</OutputVariable>
+    <OutputVariable>message.header.generated-jwt</OutputVariable>
 </GenerateJWT>

@@ -15,5 +15,5 @@
  limitations under the License.
 -->
 <VerifyAPIKey name="APIKey.Verify">
-    <APIKey ref="request.header.API-Key"/>
+    <APIKey ref="request.header.api-key"/>
 </VerifyAPIKey>

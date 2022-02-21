@@ -18,12 +18,12 @@ Feature:
   So that I can understand how they can be implemented
 
   Scenario: Using a valid API Key
-    Given I set API-Key header to `clientId`
+    Given I set api-key header to `clientId`
     When I GET /api-key
     Then response code should be 200
 
   Scenario: Using an invalid API Key
-    Given I set API-Key header to foobar
+    Given I set api-key header to foobar
     When I GET /api-key
     Then response code should be 401
     And response body should be valid json
@@ -40,12 +40,12 @@ Feature:
     And I store the value of body path $.access_token as accessToken in global scope
   
   Scenario: Using a valid OAuth Access Token
-    Given I set Authorization header to "Bearer `accessToken`"
+    Given I set authorization header to "Bearer `accessToken`"
     When I GET /oauth-token
     Then response code should be 200
   
   Scenario: Using an invalid OAuth Access Token
-    Given I set Authorization header to "Bearer foobar"
+    Given I set authorization header to "Bearer foobar"
     When I GET /oauth-token
     Then response code should be 401
     And response body should be valid json
@@ -54,16 +54,16 @@ Feature:
   Scenario: [Helper] Obtain JWT
     When I POST to /helpers/jwt
     Then response code should be 200
-    And response header Generated-JWT should exist
-    And I store the value of response header Generated-JWT as jwt in global scope
+    And response header generated-jwt should exist
+    And I store the value of response header generated-jwt as jwt in global scope
 
   Scenario: Using a valid JWT
-    Given I set Authorization header to "Bearer `jwt`"
+    Given I set authorization header to "Bearer `jwt`"
     When I GET /jwt
     Then response code should be 200
 
   Scenario: Using an invalid JWT
-    Given I set Authorization header to "Bearer foobar"
+    Given I set authorization header to "Bearer foobar"
     When I GET /jwt
     Then response code should be 401
     And response body should be valid json
