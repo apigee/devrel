@@ -25,33 +25,7 @@
          the key at runtime.
         -->
         <Value>
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEAxFrPtCN9rePJU6635LjZRwnHhuU6US9hDsUNjqmMuG7Cz8Xw
-uItNvwnuvOT3CNmomdcX3syjXW+HTTSz64oqwbffNknzTSjrhe/zm//8TAaeQB9o
-CBIkMePKb2Jd0GS82ZjGx/pvdHgBru77Nie/ZxZI94D9Isi6Z9Ngg+qITx6vr+UR
-eI6YFKi8NbUVnf2qYVqpjbuZyNoUg95rerk+DGluAgfVmMH1ddXBUkV0DJZklTU+
-vCyg1eQb1lVylDDMROg+eMnaFEx1Mumb5GOJls4hyYV44eleVSUVy9C48kqpwgwC
-hPtpUTbfOkp4CtS11RNXOu1gJjeb6N7OpWT/hQIDAQABAoIBAAHlgqYRxa/9SD+H
-q30JEAgwnv29jw+jroNPAe+D0bkiUL1jAw01Qz36IZUvfPdX6tn5iuB7B4Tqg9sK
-DEbVIc6XMQ+8LR5sq8GybJ7wHQa69aJW61FQo4rb0WO8Bn3xyyUq5Zie4Z61XgbL
-hh+iyKV9QJ0rYMaKO8qu7vq3NDPXarORYHRBHqLSeBJWA37+QYbMzl/sC5YEpNhQ
-ngt7ItNxIIuXoMhzkxMqE6dZa9ikG2KlOb9O/lMfPyeHkPNnCsIwA8wvRp0g+RKB
-ZHOl6JUxrHTwvg+IXFC9zXQoIy1aYdl3ZbcvYPBaWbRqFRGpgff+d/X21Y6Hz5PE
-VwwT080CgYEA6C0hxuTCpUXG+EASFbidBNfV6ovwyPw3F5jqPaesdB826iJmqUBa
-GG7hWxFTsFFuYkihok+XfmCCsNuwjYyK2NvfKLOkFJub3wXfXXnUzsRlCeKvVFL5
-pR5905EiVd6f39e+3j3jQdDWJgC9ORs+lae/BZ3VTiZlfj/8nogU8jcCgYEA2IC1
-iDLoTWwo/KhbfA0cfkkUpnJ031U9IO2ZCcp74Y3Fuv0VF0h9FcCGEL9/o1odFDGj
-OYdhHL/3wGckf4hB/jyj/DXztFJvzCzaIn6iDHlVavbuz+wwFpgSWhtNMLrfSCgU
-C19SV1T8zsEepIyshKzzRoTpWdbTSRqPWzgOLiMCgYEAt/T6bDJYnsaYjZ2GNrud
-fXbdwQa78yMTK5k3Dz7I/wC0a/Jx0Oxx9iX0XElwO6Vphmnx1z6k07b4FdUbICwY
-3xXmzML44HMinyRyBAhBusoVHC4FqRRNRKzSGU1HHS5VEfBJBKGYbE9hPZ8cTiDu
-B3lveq3BkjgN9mgQajN8FSUCgYA0igeDpdb58uV/atvInuXrP5DjU6NJD0ZmV0Js
-PdcSRXVWi1Qy8kRoou/l4JL48UVdQS57J39JmsxkxKL2z/oz2ENzUSRy/g5jXf8R
-n+lzXX59Fq+dhZOl6AGMHFP/H1pQCGnU2K0CxH0VL4hgJkM3b0EaO+blBlz/wJJJ
-cLEAQQKBgQDTt//bA+/1cq+JpJPk6vr9Hn83LpJQmYT5cJfTKQm0QaQnCMXrq03Y
-hwhUlp6qIIMOvrfXeSenHUJObt6PiBL2hpELZEnHASZZPbGQltdBM9W+jTRlgu6j
-70Uw6L9gkmbq++SHOrZMFi4WCzPUtLjER7qTwsneOektJfqwPkeegg==
------END RSA PRIVATE KEY-----
+        <!-- this entire file is replaced by the pipeline -->
         </Value>
     </AssignVariable>
 </AssignMessage>

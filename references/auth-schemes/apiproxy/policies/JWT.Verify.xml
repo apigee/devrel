@@ -16,17 +16,10 @@
 -->
 <VerifyJWT name="JWT.Verify">
     <Algorithm>RS256</Algorithm>
+    <Source>request.header.JWT</Source>
     <PublicKey>
         <Value>
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxFrPtCN9rePJU6635LjZ
-RwnHhuU6US9hDsUNjqmMuG7Cz8XwuItNvwnuvOT3CNmomdcX3syjXW+HTTSz64oq
-wbffNknzTSjrhe/zm//8TAaeQB9oCBIkMePKb2Jd0GS82ZjGx/pvdHgBru77Nie/
-ZxZI94D9Isi6Z9Ngg+qITx6vr+UReI6YFKi8NbUVnf2qYVqpjbuZyNoUg95rerk+
-DGluAgfVmMH1ddXBUkV0DJZklTU+vCyg1eQb1lVylDDMROg+eMnaFEx1Mumb5GOJ
-ls4hyYV44eleVSUVy9C48kqpwgwChPtpUTbfOkp4CtS11RNXOu1gJjeb6N7OpWT/
-hQIDAQAB
------END PUBLIC KEY-----
+        <!-- this entire file is replaced by the pipeline -->
         </Value>
     </PublicKey>
     <Subject>1234567890</Subject>
