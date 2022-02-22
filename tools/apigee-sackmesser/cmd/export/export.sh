@@ -43,7 +43,7 @@ mkdir -p "$export_folder"
 
 sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|. | select((. | length) > 1)' | while read -r sharedflow; do
     # Replacing white Spaces in the sharedflow name with %20
-    sharedflow=$(echo $sharedflow | sed -e 's/ /%20/g')
+    sharedflow=${sharedflow// /%20}
     loginfo "download shared flow: $sharedflow"
     mkdir -p "$export_folder/sharedflows/$sharedflow"
     latest="$(sackmesser list "organizations/$organization/sharedflows/$sharedflow" | jq '.revision | map(tonumber) | max')"
@@ -54,7 +54,7 @@ done
 
 sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while read -r proxy; do
     # Replacing white Spaces in the proxy name with %20
-    proxy=$(echo $proxy | sed -e 's/ /%20/g')
+    proxy=${proxy// /%20}
     loginfo "download proxy: $proxy"
     mkdir -p "$export_folder/proxies/$proxy"
     latest="$(sackmesser list "organizations/$organization/apis/$proxy" | jq '.revision | map(tonumber) | max')"
