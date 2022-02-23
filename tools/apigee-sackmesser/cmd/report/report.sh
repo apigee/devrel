@@ -96,6 +96,8 @@ if [ "$skip_api_lint" == "false" ]; then
         apigeelint -s "$proxyexportpath/apiproxy" -f html.js > "$export_folder/apigeelint/proxies/$proxyname.html" || true # apigeelint exits on error but we want to continue
         apigeelint -s "$proxyexportpath/apiproxy" -f json.js > "$export_folder/apigeelint/proxies/$proxyname.json" || true #
     done <   <(find "$export_folder/$organization/proxies" -type d -mindepth 1 -maxdepth 1 -print0)
+else
+    loginfo "Skipping Apigeelint as SKIP_API_LINT env var is set to true"
 fi
 
 performancequery="organizations/$organization/environments/$environment/stats/apiproxy"
