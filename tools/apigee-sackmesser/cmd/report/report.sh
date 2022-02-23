@@ -160,7 +160,8 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 while IFS= read -r -d '' proxylint
 do
-    proxyname=$(basename "${proxylint%%.*}")
+    proxyname=$(basename "$proxylint")
+    proxyname=${proxyname//.json/}
     proxyexportpath="$export_folder/$organization/proxies/$proxyname"
     if jq -e . >/dev/null 2>&1 <<<"$(cat "$proxylint")"; then
         errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
