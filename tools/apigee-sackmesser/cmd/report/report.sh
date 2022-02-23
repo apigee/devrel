@@ -107,7 +107,7 @@ do
     if [ -d "$proxyexportpath"/apiproxy/policies ];then
         mkdir -p "$export_folder/scratch/policyusage/$proxyname"
         for proxypolicy in "$proxyexportpath"/apiproxy/policies/*.xml; do
-            policytype=$(awk '/./{line=$0} END{print line}' "$proxypolicy" | sed 's@</\(.*\)>@\1@' )
+            policytype=$(xmllint -xpath "/*" "$proxypolicy" | awk '/./{line=$0} END{print line}' | sed 's@</\(.*\)>@\1@' )
             echo "$policytype" >> "$export_folder/allpolicies.txt"
             policyname=$(xmllint -xpath "string(/$policytype/@name)" "$proxypolicy")
             echo "{ \"type\": \"$policytype\", \"name\": \"$policyname\"}" > "$export_folder/scratch/policyusage/$proxyname/$policyname.json"
