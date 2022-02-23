@@ -181,7 +181,7 @@ do
     fi
 
     deployedrevision=$(jq --arg PROXY_NAME "$proxyname" '.[]|select(.name==$PROXY_NAME).revision' "$proxydeployments")
-    latestrevision=$(xmllint --xpath 'string(/APIProxy/@revision)' "/$proxyexportpath/apiproxy/$proxyname.xml")
+    latestrevision=$(xmllint --xpath 'string(/APIProxy/@revision)' "/$proxyexportpath/apiproxy/${proxyname//%20/ }.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
@@ -340,10 +340,18 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 while IFS= read -r -d '' sflint
 do
-    sfname=$(basename "${sflint%%.*}")
+    sfname=$(basename "${sflint}")
+    sfname=${sfname//.json/}
     sfexportpath="$export_folder/$organization/sharedflows/$sfname"
-    errorCount=$(jq '[.[].errorCount] | add' "$sflint")
-    warningCount=$(jq '[.[].warningCount] | add' "$sflint")
+
+    if jq -e . >/dev/null 2>&1 <<<"$(cat "$sflint")"; then
+        errorCount=$(jq '[.[].errorCount] | add' "$sflint")
+        warningCount=$(jq '[.[].warningCount] | add' "$sflint")
+    else
+        loginfo "Failed to parse JSON $sflint, Skipping errorCount & warningCount check !"
+        errorCount=0
+        warningCount=0
+    fi
 
     if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
@@ -354,7 +362,7 @@ do
     fi
 
     deployedrevision=$(jq --arg SF_NAME "$sfname" '.[]|select(.name==$SF_NAME).revision' "$sfdeployments")
-    latestrevision=$(xmllint --xpath 'string(/SharedFlowBundle/@revision)' "/$sfexportpath/sharedflowbundle/$sfname.xml")
+    latestrevision=$(xmllint --xpath 'string(/SharedFlowBundle/@revision)' "/$sfexportpath/sharedflowbundle/${sfname//%20/ }.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
