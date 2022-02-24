@@ -169,7 +169,7 @@ do
         errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
         warningCount=$(jq '[.[].warningCount] | add' "$proxylint")
     else
-        loginfo "Failed to parse JSON $proxylint, Skipping errorCount & warningCount check !"
+        logwarn "Failed to parse JSON $proxylint, Skipping errorCount & warningCount check !"
         errorCount=0
         warningCount=0
     fi
@@ -350,7 +350,7 @@ do
         errorCount=$(jq '[.[].errorCount] | add' "$sflint")
         warningCount=$(jq '[.[].warningCount] | add' "$sflint")
     else
-        loginfo "Failed to parse JSON $sflint, Skipping errorCount & warningCount check !"
+        logwarn "Failed to parse JSON $sflint, Skipping errorCount & warningCount check !"
         errorCount=0
         warningCount=0
     fi
