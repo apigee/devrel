@@ -36,6 +36,9 @@ function resource_link() {
     fi
 }
 
+skip_api_export="${SKIP_API_EXPORT:-false}"
+skip_api_lint="${SKIP_API_LINT:-false}"
+
 if [ -z "$organization" ]; then
     logfatal "No Apigee Organization Specified. Use -o ORGANIZATION to set the Apigee Organization you want to analyze"
     exit 1
@@ -51,7 +54,7 @@ if ! grep -q "$environment" <<< "$(sackmesser list "organizations/$organization/
     exit 1
 fi
 
-if [ -d "$export_folder" ]; then
+if [ -d "$export_folder" ] && [ "$skip_api_export" == "false" ]; then
     logerror "Folder $export_folder already exists. Please remove/rename and try again."
     exit 1
 fi
@@ -70,7 +73,11 @@ echo "</div></div>" >> "$report_html"
 loginfo "Exporting organization to $export_folder"
 mkdir -p "$export_folder"
 pushd "$export_folder"
-sackmesser export -o "$organization" --skip-config
+if [ "$skip_api_export" == "false" ]; then
+    sackmesser export -o "$organization" --skip-config
+else
+    loginfo "Skipping Export as SKIP_API_EXPORT env var is set to true"
+fi
 popd
 
 if [ ! -d "$export_folder/$organization/proxies" ]; then
@@ -81,13 +88,17 @@ fi
 loginfo "Running Apigeelint on Proxies"
 mkdir -p "$export_folder/apigeelint/proxies"
 
-while IFS= read -r -d '' proxyexportpath
-do
-    proxyname=$(basename "$proxyexportpath")
-    logdebug "Running Apigeelint on: $proxyexportpath"
-    apigeelint -s "$proxyexportpath/apiproxy" -f html.js > "$export_folder/apigeelint/proxies/$proxyname.html" || true # apigeelint exits on error but we want to continue
-    apigeelint -s "$proxyexportpath/apiproxy" -f json.js > "$export_folder/apigeelint/proxies/$proxyname.json" || true #
-done <   <(find "$export_folder/$organization/proxies" -type d -mindepth 1 -maxdepth 1 -print0)
+if [ "$skip_api_lint" == "false" ]; then
+    while IFS= read -r -d '' proxyexportpath
+    do
+        proxyname=$(basename "$proxyexportpath")
+        logdebug "Running Apigeelint on: $proxyexportpath"
+        apigeelint -s "$proxyexportpath/apiproxy" -f html.js > "$export_folder/apigeelint/proxies/$proxyname.html" || true # apigeelint exits on error but we want to continue
+        apigeelint -s "$proxyexportpath/apiproxy" -f json.js > "$export_folder/apigeelint/proxies/$proxyname.json" || true #
+    done <   <(find "$export_folder/$organization/proxies" -type d -mindepth 1 -maxdepth 1 -print0)
+else
+    loginfo "Skipping Apigeelint as SKIP_API_LINT env var is set to true"
+fi
 
 performancequery="organizations/$organization/environments/$environment/stats/apiproxy"
 performancequery+="?limit=14400&offset=0"
@@ -151,10 +162,17 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 while IFS= read -r -d '' proxylint
 do
-    proxyname=$(basename "${proxylint%%.*}")
+    proxyname=$(basename "$proxylint")
+    proxyname=${proxyname//.json/}
     proxyexportpath="$export_folder/$organization/proxies/$proxyname"
-    errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
-    warningCount=$(jq '[.[].warningCount] | add' "$proxylint")
+    if jq -e . >/dev/null 2>&1 <<<"$(cat "$proxylint")"; then
+        errorCount=$(jq '[.[].errorCount] | add' "$proxylint")
+        warningCount=$(jq '[.[].warningCount] | add' "$proxylint")
+    else
+        logwarn "Failed to parse JSON $proxylint, Skipping errorCount & warningCount check !"
+        errorCount=0
+        warningCount=0
+    fi
 
     if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
@@ -165,7 +183,7 @@ do
     fi
 
     deployedrevision=$(jq --arg PROXY_NAME "$proxyname" '.[]|select(.name==$PROXY_NAME).revision' "$proxydeployments")
-    latestrevision=$(xmllint --xpath 'string(/APIProxy/@revision)' "/$proxyexportpath/apiproxy/$proxyname.xml")
+    latestrevision=$(xmllint --xpath 'string(/APIProxy/@revision)' "/$proxyexportpath/apiproxy/${proxyname//%20/ }.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
@@ -324,10 +342,18 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 while IFS= read -r -d '' sflint
 do
-    sfname=$(basename "${sflint%%.*}")
+    sfname=$(basename "${sflint}")
+    sfname=${sfname//.json/}
     sfexportpath="$export_folder/$organization/sharedflows/$sfname"
-    errorCount=$(jq '[.[].errorCount] | add' "$sflint")
-    warningCount=$(jq '[.[].warningCount] | add' "$sflint")
+
+    if jq -e . >/dev/null 2>&1 <<<"$(cat "$sflint")"; then
+        errorCount=$(jq '[.[].errorCount] | add' "$sflint")
+        warningCount=$(jq '[.[].warningCount] | add' "$sflint")
+    else
+        logwarn "Failed to parse JSON $sflint, Skipping errorCount & warningCount check !"
+        errorCount=0
+        warningCount=0
+    fi
 
     if [ "$errorCount" -gt "0" ];then
         highlightclass="highlight-error"
@@ -338,7 +364,7 @@ do
     fi
 
     deployedrevision=$(jq --arg SF_NAME "$sfname" '.[]|select(.name==$SF_NAME).revision' "$sfdeployments")
-    latestrevision=$(xmllint --xpath 'string(/SharedFlowBundle/@revision)' "/$sfexportpath/sharedflowbundle/$sfname.xml")
+    latestrevision=$(xmllint --xpath 'string(/SharedFlowBundle/@revision)' "/$sfexportpath/sharedflowbundle/${sfname//%20/ }.xml")
 
     if [ -n "$deployedrevision" ];then
         linkrevision="$deployedrevision"
