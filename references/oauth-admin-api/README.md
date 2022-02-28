@@ -1,4 +1,3 @@
-
 # OAuth Admin API
 
 This reference implementation makes the OAuth2 token [revocation functionality](https://apidocs.apigee.com/docs/oauth-20-access-tokens/1/routes/organizations/%7Borg_name%7D/oauth2/revoke/post)

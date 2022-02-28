@@ -21,11 +21,7 @@ extends:
 parserOptions:
   ecmaVersion: 8
 overrides:
-  - files:
-      [
-        "references/identity-facade/test/integration/features/step_definitions/*.js",
-        "references/oidc-mock/test/integration/features/step_definitions/*.js",
-      ]
+  - files: ["**/features/step_definitions/*.js"]
     rules:
       new-cap: 0
   - files: "**/resources/jsc/*.js"
