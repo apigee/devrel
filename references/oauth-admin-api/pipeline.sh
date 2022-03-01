@@ -25,13 +25,13 @@ API_PRODUCT='oauth-admin'
 
 function cleanup {
   OAUTH_APP_ID=$(sackmesser list --googleapi -t "$APIGEE_TOKEN" "organizations/$APIGEE_X_ORG/developers/$DEVELOPER_EMAIL/apps/$DEVELOPER_APP" | jq -r '.appId')
-  sackmesser clean app "$OAUTH_APP_ID" -t "$APIGEE_TOKEN" -o $APIGEE_X_ORG --quiet || echo "No developer to clean up"
-  sackmesser clean developer "$DEVELOPER_EMAIL" -t "$APIGEE_TOKEN" -o $APIGEE_X_ORG --quiet || echo "No developer to clean up"
-  sackmesser clean product "$API_PRODUCT" -t "$APIGEE_TOKEN" -o $APIGEE_X_ORG --quiet || echo "No product to clean up"
+  sackmesser clean app "$OAUTH_APP_ID" -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet || echo "No developer to clean up"
+  sackmesser clean developer "$DEVELOPER_EMAIL" -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet || echo "No developer to clean up"
+  sackmesser clean product "$API_PRODUCT" -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet || echo "No product to clean up"
 }
 # trap cleanup EXIT
 
-# sackmesser deploy -o $APIGEE_X_ORG -e $APIGEE_X_ENV -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"
+sackmesser deploy -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"
 
 # Create a Developer
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers" \
@@ -102,11 +102,13 @@ EOF
 APP_RESPONSE=$(curl "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/$DEVELOPER_EMAIL/apps/$DEVELOPER_APP" \
 -H "Authorization: Bearer $APIGEE_TOKEN")
 
-export CLIENT_ID=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerKey')
-export CLIENT_SECRET=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerSecret')
+CLIENT_ID=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerKey')
+CLIENT_SECRET=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerSecret')
 
 # Approve the App
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/$DEVELOPER_EMAIL/apps/$DEVELOPER_APP/keys/$CLIENT_ID/apiproducts/$API_PRODUCT?action=approve" \
 -H "Authorization: Bearer $APIGEE_TOKEN"
 
 echo "Deployment Completed. Running Tests."
+
+CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET npm run test

@@ -35,8 +35,27 @@
                     <Name>OA-revoke-token</Name>
                 </Step>
             </Request>
+            <Response>
+                <Step>
+                    <Name>AM-set-status-202</Name>
+                </Step>
+            </Response>
         </Flow>
     </Flows>
+    <FaultRules>
+        <FaultRule name="Unknown App or Enduser">
+            <Condition>(fault.name = "app_id_not_found" or fault.name = "EmptyAppAndEndUserId")</Condition>
+            <Step>
+                <Name>RF-400</Name>
+            </Step>
+        </FaultRule>
+    </FaultRules>
+    <DefaultFaultRule name="fault-rule">
+        <Step>
+            <Name>RF-500</Name>
+            <Condition>fault.name != "RaiseFault"</Condition>
+        </Step>
+    </DefaultFaultRule>
     <HTTPProxyConnection>
         <BasePath>/oauth-admin/v1</BasePath>
         <VirtualHost>secure</VirtualHost>
