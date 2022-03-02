@@ -111,4 +111,5 @@ curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/devel
 
 echo "Deployment Completed. Running Tests."
 
+npm install
 CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET npm run test
