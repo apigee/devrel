@@ -619,8 +619,36 @@ EOF
   fi
 }
 
+create_k8s_sa_workload() {
+  K8S_SA=$1
+  GCP_SA=$2
+  kubectl create sa -n apigee $K8S_SA || echo "$K8S_SA exists"
+  kubectl annotate sa --overwrite -n apigee $K8S_SA iam.gke.io/gcp-service-account=$GCP_SA
+
+  gcloud iam service-accounts add-iam-policy-binding $GCP_SA \
+    --role roles/iam.workloadIdentityUser \
+    --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]"
+}
+
 create_sa() {
+
+  # make sure we don't download the service account keys
+  sed -i -e 's/download_key_file="y"/download_key_file="n"/g' "$APIGEECTL_HOME/tools/create-service-account"
+  sed -i -e 's/read -r download_key_file/# key download is not necessary for workload ID/g' "$APIGEECTL_HOME/tools/create-service-account"
+
   yes | "$APIGEECTL_HOME"/tools/create-service-account -e prod -d "$HYBRID_HOME/service-accounts"
+
+  APIGEE_ORG_HASH="$("$APIGEECTL_HOME"/apigeectl encode --org "$PROJECT_ID" 2>&1 | tail -1 | xargs | sed -e "s/^apigee-udca-//")"
+  APIGEE_ORG_ENV_HASH="$("$APIGEECTL_HOME"/apigeectl encode --org "$PROJECT_ID" --env "$ENV_NAME" 2>&1 | tail -1 | xargs | sed -e "s/^apigee-udca-//")"
+
+  create_k8s_sa_workload "apigee-cassandra-schema-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-cassandra-user-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-mart-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-connect-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-watcher-$APIGEE_ORG_HASH-sa" "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
 
   echo -n "🔛 Enabling runtime synchronizer"
     curl --fail -X POST -H "Authorization: Bearer $(token)" \
@@ -638,6 +666,7 @@ configure_runtime() {
 gcp:
   projectID: $PROJECT_ID
   region: "$REGION" # Analytics Region
+  workloadIdentityEnabled: true
 # Apigee org name.
 org: $PROJECT_ID
 # Kubernetes cluster name details
@@ -658,25 +687,24 @@ envs:
       synchronizer: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-synchronizer.json"
       udca: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
       runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-runtime.json"
-mart:
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
+# mart:
+#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
-connectAgent:
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
+# connectAgent:
+#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
 
-udca:
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
+# udca:
+#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
 
-metrics:
-  enabled: true
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-metrics.json"
+# metrics:
+#   enabled: false
+#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-metrics.json"
 
-watcher:
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
+# watcher:
+  # serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
 
 logger:
   enabled: false
-  serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-logger.json"
 EOF
 }
 
