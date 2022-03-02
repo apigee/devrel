@@ -14,11 +14,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault name="RF-500">
+<RaiseFault name="RF-401">
     <FaultResponse>
         <Set>
-            <StatusCode>500</StatusCode>
-            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error. If persists, check access to apigee.googleapis.com from Apigee runtime"}</Payload>
+            <StatusCode>401</StatusCode>
+            <ReasonPhrase>Unauthenticated</ReasonPhrase>
+            <Payload contentType="application/json">{"code": "401.99.01", "message": "Unauthenticated"}</Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>

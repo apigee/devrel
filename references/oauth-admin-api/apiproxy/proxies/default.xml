@@ -41,6 +41,13 @@
                 </Step>
             </Response>
         </Flow>
+        <Flow name="404">
+           <Request>
+               <Step>
+                  <Name>RF-404</Name>
+               </Step>
+           </Request>
+        </Flow>
     </Flows>
     <FaultRules>
         <FaultRule name="Unknown App or Enduser">
@@ -49,8 +56,23 @@
                 <Name>RF-400</Name>
             </Step>
         </FaultRule>
+        <FaultRule name="Unauthenticated">
+            <Condition>(fault.name = "invalid_access_token" or fault.name = "InvalidAccessToken")</Condition>
+            <Step>
+                <Name>RF-401</Name>
+            </Step>
+        </FaultRule>
+        <FaultRule name="Unauthorized">
+            <Condition>(fault.name = "access_token_expired")</Condition>
+            <Step>
+                <Name>RF-403</Name>
+            </Step>
+        </FaultRule>
     </FaultRules>
     <DefaultFaultRule name="fault-rule">
+        <Step>
+           <Name>AM-debug-fault-name</Name>
+        </Step>
         <Step>
             <Name>RF-500</Name>
             <Condition>fault.name != "RaiseFault"</Condition>

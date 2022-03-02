@@ -14,11 +14,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RaiseFault name="RF-500">
-    <FaultResponse>
-        <Set>
-            <StatusCode>500</StatusCode>
-            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error. If persists, check access to apigee.googleapis.com from Apigee runtime"}</Payload>
-        </Set>
-    </FaultResponse>
-</RaiseFault>
+<AssignMessage name="AM-debug-fault-name">
+    <AssignVariable>
+        <Name>debug.fault.name</Name>
+        <Ref>fault.name</Ref>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

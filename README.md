@@ -29,7 +29,7 @@ further to fit a particular use case.
   Reference implementation for using Apigee to expose a Cloud Run Service
 - [Data Converters Shared Flow](references/data-converters-shared-flow) -
   A reference shared flow for doing common response data JSON conversions
-- [Product Recommendations](references/product-recommendations) - 
+- [Product Recommendations](references/product-recommendations) -
   Smart API to Predict Customer Propensity to buy using Apigee, BigQuery ML and Cloud Spanner
 - [Proxy Template](references/proxy-template) -
   An extensible templating tool to bootstrap API proxies containing Security,
@@ -46,6 +46,9 @@ further to fit a particular use case.
   compliant identity provider
 - [KVM Admin API](references/kvm-admin-api) -
   Generic API proxy to provide Create, Read and Delete operations for KVMs
+- [OAuth Admin API](references/oauth-admin-api) -
+  API proxy to enable the revocation of Apigee-issued access tokens by
+  application or end user id.
 - [Dutch Healthcare Reference](references/dutch-healthcare) -
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
