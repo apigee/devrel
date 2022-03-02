@@ -64,10 +64,9 @@ download_apigee_ctl
 prepare_resources
 
 # create certificate for env group hostname
-
 create_cert $ENV_GROUP_NAME
 
-# create all required service accounts and download their keys
+# # create all required service accounts and prepare workload identities
 create_sa
 
 # configure the Apigee runtime
