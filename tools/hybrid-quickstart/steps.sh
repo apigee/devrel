@@ -683,25 +683,6 @@ instanceID: "$PROJECT_ID-$(date +%s)"
 
 envs:
   - name: $ENV_NAME
-    serviceAccountPaths:
-      synchronizer: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-synchronizer.json"
-      udca: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
-      runtime: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-runtime.json"
-# mart:
-#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
-
-# connectAgent:
-#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-mart.json"
-
-# udca:
-#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-udca.json"
-
-# metrics:
-#   enabled: false
-#   serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-metrics.json"
-
-# watcher:
-  # serviceAccountPath: "$HYBRID_HOME/service-accounts/$PROJECT_ID-apigee-watcher.json"
 
 logger:
   enabled: false
