@@ -622,10 +622,10 @@ EOF
 create_k8s_sa_workload() {
   K8S_SA=$1
   GCP_SA=$2
-  kubectl create sa -n apigee $K8S_SA || echo "$K8S_SA exists"
-  kubectl annotate sa --overwrite -n apigee $K8S_SA iam.gke.io/gcp-service-account=$GCP_SA
+  kubectl create sa -n apigee "$K8S_SA" || echo "$K8S_SA exists"
+  kubectl annotate sa --overwrite -n apigee "$K8S_SA" "iam.gke.io/gcp-service-account=$GCP_SA"
 
-  gcloud iam service-accounts add-iam-policy-binding $GCP_SA \
+  gcloud iam service-accounts add-iam-policy-binding "$GCP_SA" \
     --role roles/iam.workloadIdentityUser \
     --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]"
 }
