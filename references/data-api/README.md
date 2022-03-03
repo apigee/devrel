@@ -131,13 +131,13 @@ EOF
 )
 ```
 
-Use the app's key in an `apikey` query parameter
-in your request:
+Use the app's key in an `x-apikey` header in your request:
 
 ```sh
 APIKEY="$(curl "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/testdatauser@example.com/apps/premium-data-app" \
 -H "Authorization: Bearer $APIGEE_TOKEN" | jq -r '.credentials[0].consumerKey')"
-curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?apikey=$APIKEY&try=[1-10]" -I
+
+curl -H "x-apikey=$API_KEY" "https://$APIGEE_X_HOSTNAME/london/bikes/v1?try=[1-10]" -I
 ```
 
 Create an API Product in the Developer Portal:

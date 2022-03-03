@@ -16,6 +16,5 @@
 -->
 
 <APIProxy revision="1" name="$PROXY_NAME">
-    <ConfigurationVersion minorVersion="0" majorVersion="4"/>
-	<Description>Example API on top of data APIs</Description>
+    <Description>Example API on top of data APIs</Description>
 </APIProxy>

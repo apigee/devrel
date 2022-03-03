@@ -35,8 +35,10 @@
             <QueryParam name="fields" />
             <QueryParam name="offset" />
             <QueryParam name="limit" />
-            <QueryParam name="apikey" />
         </QueryParams>
+        <Headers>
+            <Header name="x-apikey"/>
+        </Headers>
     </Remove>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </AssignMessage>

@@ -23,7 +23,7 @@
         <Name>VA-verify-apikey</Name>
       </Step>
       <Step>
-         <Name>QU-enforce-quota</Name>
+        <Name>QU-enforce-quota</Name>
       </Step>
       <Step>
         <Name>RE-injection-protection</Name>
@@ -36,33 +36,42 @@
         <Name>RF-invalid-request</Name>
       </Step>
       <Step>
-         <Name>CO-cors-headers</Name>
+        <Name>CO-cors-headers</Name>
       </Step>
       <Step>
-         <Name>RC-response-cache</Name>
+        <Name>RC-response-cache</Name>
       </Step>
     </Request>
   </PreFlow>
   <FaultRules>
     <FaultRule name="Invalid Request">
-        <Condition>(fault.name = "ThreatDetected")</Condition>
-        <Step>
-            <Name>RF-invalid-request</Name>
-        </Step>
+      <Condition>(fault.name = "ThreatDetected")</Condition>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RF-invalid-request</Name>
+      </Step>
     </FaultRule>
     <FaultRule name="Unauthorized">
       <Condition>(fault.name = "FailedToResolveAPIKey")</Condition>
       <Step>
-          <Name>RF-unauthorized</Name>
+        <Name>CO-cors-headers</Name>
       </Step>
-  </FaultRule>
-</FaultRules>
-<DefaultFaultRule name="fault-rule">
+      <Step>
+        <Name>RF-unauthorized</Name>
+      </Step>
+    </FaultRule>
+  </FaultRules>
+  <DefaultFaultRule name="fault-rule">
     <Step>
-        <Name>RF-internal-error</Name>
-        <Condition>fault.name != "RaiseFault"</Condition>
+      <Name>CO-cors-headers</Name>
     </Step>
-</DefaultFaultRule>
+    <Step>
+      <Name>RF-internal-error</Name>
+      <Condition>fault.name != "RaiseFault"</Condition>
+    </Step>
+  </DefaultFaultRule>
   <HTTPProxyConnection>
     <BasePath>$BASE_PATH</BasePath>
   </HTTPProxyConnection>

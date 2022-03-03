@@ -43,8 +43,8 @@ paths:
           required: false
           schema:
             type: string
-        - name: apikey
-          in: query
+        - name: x-apikey
+          in: header
           description: API key for identifying the request.
           required: false
           schema:
