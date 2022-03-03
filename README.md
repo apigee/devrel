@@ -50,7 +50,7 @@ further to fit a particular use case.
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
   A reference for protecting API proxies against XML and JSON threats
-- [Auth Schemes](references/auth-schemes) - example implementations for various
+- [Auth Schemes](references/auth-schemes) - Example implementations for various
   popular API auth schemes
   
 ## Tools
