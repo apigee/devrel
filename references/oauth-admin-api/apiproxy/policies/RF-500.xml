@@ -18,7 +18,7 @@
     <FaultResponse>
         <Set>
             <StatusCode>500</StatusCode>
-            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error. If persists, check access to apigee.googleapis.com from Apigee runtime"}</Payload>
+            <Payload contentType="application/json">{"code": "500.99.01", "message": "Internal Error."}</Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>

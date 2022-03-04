@@ -56,16 +56,10 @@
                 <Name>RF-400</Name>
             </Step>
         </FaultRule>
-        <FaultRule name="Unauthenticated">
-            <Condition>(fault.name = "invalid_access_token" or fault.name = "InvalidAccessToken")</Condition>
+        <FaultRule name="Unauthorized">
+            <Condition>(fault.name = "invalid_access_token" or fault.name = "InvalidAccessToken" or fault.name = "access_token_expired")</Condition>
             <Step>
                 <Name>RF-401</Name>
-            </Step>
-        </FaultRule>
-        <FaultRule name="Unauthorized">
-            <Condition>(fault.name = "access_token_expired")</Condition>
-            <Step>
-                <Name>RF-403</Name>
             </Step>
         </FaultRule>
     </FaultRules>

@@ -1,18 +1,28 @@
 # OAuth Admin API
 
 This reference implementation makes the OAuth2 token [revocation functionality](https://apidocs.apigee.com/docs/oauth-20-access-tokens/1/routes/organizations/%7Borg_name%7D/oauth2/revoke/post)
-that existed in the Management API in Apigee Edge available for  Apigee X and
+that existed in the Management API in Apigee Edge, available for  Apigee X and
 hybrid.
 
 ## Prerequisites
 
+The following commands assume you have set the following environment variables:
+
+```sh
+export APIGEE_X_ORG=
+export APIGEE_X_ENV=
+export APIGEE_X_HOSTNAME=
+export APIGEE_X_TOKEN=$(gcloud auth print-access-token)
+```
+
 Because revoking tokens for existing API Proxies is a potentially disruptive
-operation you are strongly advised to protect this API proxy and issue
+operation, you are strongly advised to protect this API proxy and issue
 dedicated credentials for it. This implementation uses OAuth2 and assumes
-that the proxy is located within a special API product that is only
+that the proxy is included within a privileged API product which is only
 available to Applications that should be treated similar to the access
-credentials that controlled access to the corresponding Management APIs in
+credentials that control access to the corresponding Management APIs in
 Apigee Edge.
+
 
 You can do this using your regular automation process or follow the script
 below for a demo:
@@ -20,13 +30,13 @@ below for a demo:
 ```sh
 # Create a Developer Resource
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers" \
--H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Authorization: Bearer $APIGEE_X_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{ "email": "oauth-admin@example.com", "firstName": "oauth", "lastName": "admin", "userName": "oauthadmin" }'
 
 # Create an API Product for administrating OAuth tokens
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/apiproducts" \
--H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Authorization: Bearer $APIGEE_X_TOKEN" \
 -H "Content-Type: application/json" \
 --data @<(cat <<EOF
 {
@@ -62,7 +72,7 @@ EOF
 
 # Create an App for the OAuth Admin
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/oauth-admin@example.com/apps" \
--H "Authorization: Bearer $APIGEE_TOKEN" \
+-H "Authorization: Bearer $APIGEE_X_TOKEN" \
 -H "Content-Type: application/json" \
 --data @<(cat <<EOF
 {
@@ -75,15 +85,14 @@ EOF
 )
 
 APP_RESPONSE=$(curl "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/oauth-admin@example.com/apps/oauth-admin-app" \
--H "Authorization: Bearer $APIGEE_TOKEN")
+-H "Authorization: Bearer $APIGEE_X_TOKEN")
 
 CLIENT_ID=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerKey')
 CLIENT_SECRET=$(echo "$APP_RESPONSE" | jq -r '.credentials[0].consumerSecret')
 
 # Approve the App
 curl -X POST "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/oauth-admin@example.com/apps/oauth-admin-app/keys/$CLIENT_ID/apiproducts/oauth-admin?action=approve" \
--H "Authorization: Bearer $APIGEE_TOKEN"
-
+-H "Authorization: Bearer $APIGEE_X_TOKEN"
 ```
 
 ## Usage Guide
@@ -108,7 +117,7 @@ OAUTH_ADMIN_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token')
 APP_ID=$(echo "$TOKEN_RESPONSE" | jq -r '.application_name')
 ```
 
-Invalidate the token (invalidate the admin token itself)
+Invalidate all tokens for an app (including the admin token itself)
 
 ```sh
 curl -H "Authorization: Bearer $OAUTH_ADMIN_TOKEN" \
@@ -135,7 +144,7 @@ OAUTH_ADMIN_TOKEN=$(curl -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" | jq -r '.access_token')
 ```
 
-Invalidate the token (invalidate the admin token itself)
+Invalidate all tokens for an end user (including the admin token itself)
 
 ```sh
 curl -H "Authorization: Bearer $OAUTH_ADMIN_TOKEN" \

@@ -18,8 +18,8 @@
     <FaultResponse>
         <Set>
             <StatusCode>401</StatusCode>
-            <ReasonPhrase>Unauthenticated</ReasonPhrase>
-            <Payload contentType="application/json">{"code": "401.99.01", "message": "Unauthenticated"}</Payload>
+            <ReasonPhrase>Unauthorized</ReasonPhrase>
+            <Payload contentType="application/json">{"code": "401.99.01", "message": "Request lacks valid authentication credentials for the requested resource."}</Payload>
         </Set>
     </FaultResponse>
 </RaiseFault>
