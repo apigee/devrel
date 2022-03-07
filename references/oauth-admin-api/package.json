@@ -1,0 +1,10 @@
+{
+    "name": "oauth-admin-api",
+    "scripts": {
+        "test": "TEST_HOST=$APIGEE_X_HOSTNAME TEST_CLIENT_ID=$CLIENT_ID TEST_CLIENT_SECRET=$CLIENT_SECRET ./node_modules/.bin/cucumber-js --publish-quiet test/integration/features"
+    },
+    "devDependencies": {
+        "@cucumber/cucumber": "^7.3.2",
+        "apickli": "^3.0.2"
+    }
+}

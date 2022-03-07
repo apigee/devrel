@@ -48,6 +48,9 @@ further to fit a particular use case.
   compliant identity provider
 - [KVM Admin API](references/kvm-admin-api) -
   Generic API proxy to provide Create, Read and Delete operations for KVMs
+- [OAuth Admin API](references/oauth-admin-api) -
+  API proxy to enable the revocation of Apigee-issued access tokens by
+  application or end user id.
 - [Dutch Healthcare Reference](references/dutch-healthcare) -
   An API reference to accelerate implementation of Dutch Healthcare standards.
 - [XML & JSON Threat Protection](references/threat-protect) -
