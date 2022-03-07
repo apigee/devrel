@@ -33,7 +33,7 @@ gcloud projects add-iam-policy-binding "$BQ_PROJECT_ID" --member="serviceAccount
 
 ```sh
 export BQ_PROJECT_ID='my-bq-project'
-export BASE_PATH='/london/bikes/v1'
+export BASE_PATH='/london/v1/bikerentals'
 export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
 
 export PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})"
@@ -70,19 +70,19 @@ APIGEE_X_HOSTNAME='my-proxy-hostname'
 Basic API request:
 
 ```sh
-curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1" -v
+curl "https://$APIGEE_X_HOSTNAME/london/v1/bikerentals" -v
 ```
 
 Using query params:
 
 ```sh
-curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?limit=3&fields=start_station_name,end_station_name" | jq
+curl "https://$APIGEE_X_HOSTNAME/london/v1/bikerentals?limit=3&fields=start_station_name,end_station_name" | jq
 ```
 
 Triggering the quota limit for unauthenticated users:
 
 ```sh
-curl "https://$APIGEE_X_HOSTNAME/london/bikes/v1?try=[1-10]" -I
+curl "https://$APIGEE_X_HOSTNAME/london/v1/bikerentals?try=[1-20]" -I
 ```
 
 Create an API product with a higher quota and an app for it.
@@ -137,7 +137,7 @@ Use the app's key in an `x-apikey` header in your request:
 APIKEY="$(curl "https://apigee.googleapis.com/v1/organizations/$APIGEE_X_ORG/developers/testdatauser@example.com/apps/premium-data-app" \
 -H "Authorization: Bearer $APIGEE_TOKEN" | jq -r '.credentials[0].consumerKey')"
 
-curl -H "x-apikey=$API_KEY" "https://$APIGEE_X_HOSTNAME/london/bikes/v1?try=[1-10]" -I
+curl -H "x-apikey=$API_KEY" "https://$APIGEE_X_HOSTNAME/london/v1/bikerentals?try=[1-20]" -I
 ```
 
 Create an API Product in the Developer Portal:

@@ -19,7 +19,7 @@
     <Synchronous>true</Synchronous>
     <UseQuotaConfigInAPIProduct stepName="VA-verify-apikey">
         <DefaultConfig>
-            <Allow>5</Allow>
+            <Allow>10</Allow>
             <Interval>1</Interval>
             <TimeUnit>minute</TimeUnit>
         </DefaultConfig>

@@ -30,7 +30,7 @@ if [ "$EXISTING_EMAIL" != "$SA_EMAIL" ]; then
 fi
 
 export BQ_PROJECT_ID="$APIGEE_X_ORG"
-export BASE_PATH='/london/bikes/v1'
+export BASE_PATH='/london/v1/bikerentals'
 export DATA_SET='bigquery-public-data.london_bicycles.cycle_hire'
 PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})" && export PROXY_NAME
 
@@ -52,11 +52,4 @@ mv "$PROXY_DIR/apiproxy/proxy.xml" "$PROXY_DIR/apiproxy/$PROXY_NAME.xml"
 APIGEE_TOKEN=$(gcloud auth print-access-token);
 sackmesser deploy -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -d "$PROXY_DIR" -t "$APIGEE_TOKEN" --deployment-sa "$SA_EMAIL"
 
-echo "Testing data API ..."
-EXPECTED_LENGTH=4
-ACTUAL_LENGTH=$(curl --silent --show-error --fail "https://$APIGEE_X_HOSTNAME/london/bikes/v1?limit=$EXPECTED_LENGTH" | jq '(. | length)' )
-
-if ! [ "$EXPECTED_LENGTH" -eq "$ACTUAL_LENGTH" ]; then
-    echo "Expected a response with filtered length $EXPECTED_LENGTH but got $ACTUAL_LENGTH results"
-    exit 1
-fi
+TEST_BASE_URI="$APIGEE_X_HOSTNAME/london/v1" npm run test

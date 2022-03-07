@@ -62,6 +62,15 @@
         <Name>RF-unauthorized</Name>
       </Step>
     </FaultRule>
+    <FaultRule name="Too Many Requests">
+      <Condition>(fault.name = "QuotaViolation")</Condition>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RF-too-many-requests</Name>
+      </Step>
+    </FaultRule>
   </FaultRules>
   <DefaultFaultRule name="fault-rule">
     <Step>

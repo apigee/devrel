@@ -14,16 +14,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ResponseCache name="RC-response-cache">
-    <CacheKey>
-        <KeyFragment ref="request.uri" />
-        <KeyFragment ref="data.request.limit" />
-        <KeyFragment ref="data.request.offset" />
-        <KeyFragment ref="data.request.fields" />
-    </CacheKey>
-    <ExpirySettings>
-        <TimeoutInSeconds>60</TimeoutInSeconds>
-    </ExpirySettings>
-    <ExcludeErrorResponse>true</ExcludeErrorResponse>
-    <SkipCacheLookup>request.header.cache-control = "no-cache"</SkipCacheLookup>
-</ResponseCache>
+<RaiseFault name="RF-too-many-requests">
+    <FaultResponse>
+        <Set>
+            <Payload contentType="application/json">{"error":"Too Many Requests. Please try again later."}</Payload>
+            <StatusCode>429</StatusCode>
+            <ReasonPhrase>Too Many Requests</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+</RaiseFault>
