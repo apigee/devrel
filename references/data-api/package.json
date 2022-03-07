@@ -1,0 +1,12 @@
+{
+  "name": "data-api",
+  "version": "1.0.0",
+  "description": "API Proxy for Data Platforms",
+  "scripts": {
+    "test": "npm i && npx cucumber-js test --publish-quiet"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.1"
+  }
+}

@@ -27,6 +27,8 @@ further to fit a particular use case.
   Reference implementation for a shared flow to log to Google Cloud Logging
 - [Cloud Run](references/cloud-run) -
   Reference implementation for using Apigee to expose a Cloud Run Service
+- [Data API](references/data-api) - A reference implementation for using
+  Apigee to facilitate the consumption of data from a data platform.
 - [Data Converters Shared Flow](references/data-converters-shared-flow) -
   A reference shared flow for doing common response data JSON conversions
 - [Product Recommendations](references/product-recommendations) -
