@@ -72,6 +72,13 @@ export REGION='europe-west1'
 export ZONE='europe-west1-c'
 ```
 
+### Networking
+
+```sh
+export NETWORK='apigee-hybrid'
+export SUBNET='apigee-europe-west1'
+```
+
 ### Runtime GKE cluster
 
 ```sh

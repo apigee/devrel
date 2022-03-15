@@ -20,15 +20,22 @@ set_config_params() {
     echo "🔧 Configuring GCP Project"
     PROJECT_ID=${PROJECT_ID:-$(gcloud config get-value "project")}
     export PROJECT_ID
+    echo "- Project ID $PROJECT_ID"
     gcloud config set project "$PROJECT_ID"
 
     export AX_REGION=${AX_REGION:-'europe-west1'}
+    echo "- Analytics Region $AX_REGION"
 
     export REGION=${REGION:-'europe-west1'}
     gcloud config set compute/region "$REGION"
 
     export ZONE=${ZONE:-'europe-west1-c'}
     gcloud config set compute/zone "$ZONE"
+    echo "- Compute Location $REGION/$ZONE"
+
+    export NETWORK=${NETWORK:-'apigee-hybrid'}
+    export SUBNET=${SUBNET:-"apigee-$REGION"}
+    echo "- Network $NETWORK/$SUBNET"
 
     printf "\n🔧 Apigee hybrid Configuration:\n"
     export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
@@ -101,7 +108,7 @@ function wait_for_ready(){
     local iterations=0
     local actual_out
 
-    echo -e "Waiting for $action to return output $expected_output"
+    echo -e "Waiting for ${action//Bearer [^\"]*/xxxxx} to return output $expected_output"
     echo -e "Start: $(date)\n"
 
     while true; do
@@ -285,13 +292,33 @@ configure_network() {
 
     ENV_GROUP_NAME="$1"
 
+    if [ -z "$(gcloud compute networks list --format json --filter "name=$NETWORK" --format='get(name)')" ]; then
+      gcloud compute networks create "$NETWORK" --subnet-mode=custom
+    fi
+
+    if [ -z "$(gcloud compute networks subnets list --network "$NETWORK" --format json --filter "name=$SUBNET" --format='get(name)')" ]; then
+      gcloud compute networks subnets create "$SUBNET" --network "$NETWORK" --range "10.200.0.0/20" --region "$REGION"
+    fi
+
+    if [ -z "$(gcloud compute routers list --format json --filter "name=apigee-router" --format='get(name)')" ]; then
+      gcloud compute routers create apigee-router --network "$NETWORK"
+    fi
+
+    if [ -z "$(gcloud compute routers nats list --router apigee-router --format json --format='get(name)')" ]; then
+      gcloud compute routers nats create apigee-nat --router apigee-router --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+    fi
+
+    if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
+      gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443 --target-tags hybrid-quickstart --network "$NETWORK"
+    fi
+
     if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "google-managed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --global
       elif [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "self-signed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --region "$REGION"
       else
-        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet default --purpose SHARED_LOADBALANCER_VIP
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --network "$NETWORK" --subnet "$SUBNET" --purpose SHARED_LOADBALANCER_VIP
       fi
     fi
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
@@ -337,8 +364,14 @@ create_gke_cluster() {
         --region "$REGION" \
         --node-locations "$ZONE" \
         --release-channel stable \
-        --network default \
-        --subnetwork default \
+        --no-enable-master-authorized-networks \
+        --enable-ip-alias \
+        --enable-private-nodes \
+        --master-ipv4-cidr 172.16.0.16/28 \
+        --enable-shielded-nodes \
+        --shielded-secure-boot \
+        --network "$NETWORK" \
+        --subnetwork "$SUBNET" \
         --default-max-pods-per-node "110" \
         --enable-ip-alias \
         --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
@@ -346,6 +379,7 @@ create_gke_cluster() {
         --enable-autoscaling \
         --min-nodes "3" \
         --max-nodes "6" \
+        --tags=hybrid-quickstart \
         --labels mesh_id="$MESH_ID" \
         --workload-pool "$WORKLOAD_POOL" \
         --logging SYSTEM,WORKLOAD \
