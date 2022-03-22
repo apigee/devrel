@@ -1,0 +1,10 @@
+basepath: "{{basepath}}"
+operations:
+{{#each operations}}
+- id: {{this.id}}
+  http_match:
+  - path_template: "{{this.requestPath}}"
+    method: {{this.httpMethod}}
+{{/each}}
+target:
+  uri: "{{target}}"
