@@ -44,7 +44,7 @@ set_config_params() {
     echo "- TLS Certificate $CERT_TYPE"
 
     if [ "$CERT_TYPE" == "google-managed" ] && [ "$INGRESS_TYPE" != "external" ]; then
-        echo "Google Managed Certificates can only be used with an external ingress. SET CERT_TYPE to 'self-signed' (for the scrit to create one for you) or 'skip' if you want to provide your own as a k8s secret later."
+        echo "Google Managed Certificates can only be used with an external ingress. SET CERT_TYPE to 'self-signed' (for the script to create one for you) or 'skip' if you want to provide your own as a k8s secret later."
         exit 1
     fi
 
