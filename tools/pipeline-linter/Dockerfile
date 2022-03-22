@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:alpine3.12
+FROM golang:alpine3.14
 
 RUN apk add --no-cache git
-RUN go get github.com/google/addlicense
-RUN export GO111MODULE=on && go get github.com/googlecodelabs/tools/claat@v2.2.0
+RUN go install github.com/google/addlicense@v1.0.0
+RUN export GO111MODULE=on && go install github.com/googlecodelabs/tools/claat@v2.2.0
 
 # Install our dependencies
 COPY *.sh /usr/bin/
