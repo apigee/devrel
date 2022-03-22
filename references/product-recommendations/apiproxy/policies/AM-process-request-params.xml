@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2021 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<AssignMessage name="AM-process-request-params">
+    <AssignVariable>
+        <Name>original_request_verb</Name>
+        <Ref>request.verb</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>original_cache_control_header</Name>
+        <Value>private</Value>
+        <Ref>request.header.cache-control</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>userid</Name>
+        <Value>CUSTOMER_USERID</Value>
+        <Ref>request.header.x-userid</Ref>
+    </AssignVariable>
+    <Remove>
+        <Headers>
+            <Header name="x-user"/>
+            <Header name="x-apikey"/>
+        </Headers>
+    </Remove>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

@@ -26,12 +26,13 @@ usage: sackmesser COMMAND -e ENV -o ORG [--googleapi | --apigeeapi] [-t TOKEN | 
 Apigee Sackmesser utility.
 
 Commands:
-deploy
-list
-export
 await
-help
 clean
+deploy
+export
+help
+list
+report
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
@@ -52,6 +53,7 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
+--skip-config, Skip configuration in org export
 EOF
 }
 
@@ -64,6 +66,15 @@ elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE"
     logerror "Please provide a valid command"
     exit 1
 fi
+
+for dependency in jq xmllint mvn
+do
+  if ! [ -x "$(command -v $dependency)" ]; then
+    >&2 logfatal "Required command is not on your PATH: $dependency."
+    >&2 logfatal "Please install it before you continue."
+    exit 2
+  fi
+done
 
 shift 1
 posArgs=()
@@ -100,11 +111,12 @@ while [ "$#" -gt 0 ]; do
     --quiet) export quiet="T"; shift 1;;
     --token) export token="${2}"; shift 2;;
     --username) export username="${2}"; shift 2;;
+    --skip-config) export skip_config="T"; shift 1;;
 
     --apigeeapi) export apiversion="apigee"; shift 1;;
     --googleapi) export apiversion="google"; shift 1;;
 
-    -*) echo "[FATAL] unknown option: $1" >&2; exit 1;;
+    -*) logfatal "unknown option: $1" >&2; exit 1;;
     *) posArgs+=("$1"); shift 1;;
   esac
 done
@@ -130,7 +142,7 @@ else
 fi
 
 if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
-    echo "[FATAL] required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
+    logfatal "required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
     exit 1
 fi
 

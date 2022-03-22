@@ -1,0 +1,4 @@
+AssignMessage.SetPrivateKey.xml
+JWT.Verify.xml
+edge.json
+*.pem

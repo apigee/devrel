@@ -72,6 +72,13 @@ export REGION='europe-west1'
 export ZONE='europe-west1-c'
 ```
 
+### Networking
+
+```sh
+export NETWORK='apigee-hybrid'
+export SUBNET='apigee-europe-west1'
+```
+
 ### Runtime GKE cluster
 
 ```sh
@@ -111,9 +118,9 @@ If you use the default `DNS_NAME` you don't have to manually create a dns zone.
 You can use one of three different ways to issue TLS certificates for your
 Apigee hybrid ingress:
 
-- `export CERT_TYPE=''` (default) Automatically obtain trusted certificates (through
-  Let's encrypt). For details see [this](https://community.apigee.com/articles/86322/free-trusted-ssl-certificates-for-apigee-hybrid-in.html)
-  blog post in the Apigee community.
+- `export CERT_TYPE='google-managed'` (default) Use a Google-managed certificate.
+  For details see [this](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Apigee-hybrid-ingress-Three-different-options-to-expose-your/ta-p/79149)
+  blog post in the Apigee community. This requires external ingress.
 - `export CERT_TYPE='self-signed'` creates self-signed certificates
 - `export CERT_TYPE='skip'` skips the certificate creation and relies on you
   creating a `tls-hybrid-ingress` certificate in the `istio-system` namespace.

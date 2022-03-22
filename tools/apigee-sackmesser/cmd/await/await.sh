@@ -40,14 +40,7 @@ if [ "$res_type" = "sharedflow" ];then
     res_type_uri='sharedflows'
 fi
 
-if [ "$apiversion" = "google" ]; then
-    revisionJqPattern=".deployments? | map(select(.apiProxy==\"$res_name\") | .revision | tonumber) | max"
-else
-    revisionJqPattern=".aPIProxy[]? | select(.name==\"$res_name\") | .revision | map(.name | tonumber) | max"
-fi
-
-latest_revision=$(sackmesser list "organizations/$organization/environments/$environment/deployments$sf_query_param" | jq -r -c --arg res_name "$res_name" "$revisionJqPattern")
-
+latest_revision=$(sackmesser list "organizations/$organization/environments/$environment/deployments$sf_query_param" | jq -r -c --arg res_name "$res_name" ". | map(select(.name==\"$res_name\") | .revision) | max")
 
 elapsed=0
 max_elapsed=75 # max retries

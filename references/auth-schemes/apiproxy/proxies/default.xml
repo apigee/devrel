@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2022 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request/>
+        <Response/>
+    </PreFlow>
+    <Flows>
+
+        <Flow name="oauth-helper">
+            <Condition>(proxy.pathsuffix MatchesPath "/helpers/oauth") and (request.verb = "POST")</Condition>
+            <Request>
+                <Step>
+                    <Name>OAuth.GenerateToken</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+         <Flow name="jwt-helper">
+            <Condition>(proxy.pathsuffix MatchesPath "/helpers/jwt") and (request.verb = "POST")</Condition>
+            <Request>
+                <Step>
+                    <Name>AssignMessage.SetPrivateKey</Name>
+                </Step>
+                <Step>
+                    <Name>JWT.Generate</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+
+        <Flow name="verify-api-key">
+            <Condition>(proxy.pathsuffix MatchesPath "/api-key") and (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>APIKey.Verify</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+        <Flow name="verify-oauth-token">
+            <Condition>(proxy.pathsuffix MatchesPath "/oauth-token") and (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>OAuth.VerifyToken</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+        <Flow name="verify-jwt">
+            <Condition>(proxy.pathsuffix MatchesPath "/jwt") and (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>JWT.Verify</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+        <Flow name="verify-basic-auth">
+            <Condition>(proxy.pathsuffix MatchesPath "/basic-auth") and (request.verb = "GET")</Condition>
+            <Request>
+                <Step>
+                    <Name>BasicAuth.Decode</Name>
+                </Step>
+                <Step>
+                    <Condition>(flow.basicauth.username != "alex") or (private.flow.basicauth.password != "universe")</Condition>
+                    <Name>Fault.Unauthorized</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+
+        <Flow name="no-flow-match">
+            <Request>
+                <Step>
+                    <Name>Fault.NotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+
+    <HTTPProxyConnection>
+        <BasePath>/auth-schemes/v0</BasePath>
+    </HTTPProxyConnection>
+
+    <RouteRule name="no-target"/>
+</ProxyEndpoint>

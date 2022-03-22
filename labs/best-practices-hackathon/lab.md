@@ -50,7 +50,7 @@ Here are the prerequisites for completing the tasks:
   [Evaluation Account](https://login.apigee.com/sign__up)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
   [Maven](https://maven.apache.org/) (3.0.2+),
-  [Java JDK](https://java.com/en/download/manual.jsp) (8+) and
+  Java JDK (8+) and
   [NodeJS](https://nodejs.org/) (10+)
 - A REST Client - [Postman](https://www.postman.com/) or
   [Curl](https://curl.haxx.se/)

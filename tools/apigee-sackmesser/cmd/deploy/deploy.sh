@@ -21,11 +21,6 @@ set -e
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
-if ! which xmllint > /dev/null; then
-    logfatal "please install xmllint command"
-    exit 1
-fi
-
 # Make temp 'deploy' directory to keep things clean
 temp_folder="$PWD/deploy-$(date +%s)-$RANDOM"
 rm -rf "$temp_folder" && mkdir -p "$temp_folder"
@@ -127,6 +122,14 @@ skip_deployment=true #skip maven deploy unless bundle contains proxy or shared f
 if [ -d "$temp_folder/apiproxy" ]; then
     loginfo "Configuring API Proxy"
 
+    if [ -z "$(find "$temp_folder/apiproxy" -type f -name "*.xml" -maxdepth 1 -mindepth 1)" ]; then
+        if [ -z "$bundle_name" ]; then
+            bundle_name=$(basename "$source_dir")
+        fi
+        logwarn "Root XML file missing for $bundle_name (as required by the mvn plugin). Creating a temp file."
+        echo "<APIProxy revision=\"1\" name=\"$bundle_name\"/>" > "$temp_folder/apiproxy/$bundle_name.xml"
+    fi
+
     skip_deployment=false
 
     # Determine Proxy name
@@ -152,6 +155,14 @@ elif [ -d "$temp_folder/sharedflowbundle" ]; then
 
     skip_deployment=false
 
+    if [ -z "$(find "$temp_folder/sharedflowbundle" -type f -name "*.xml" -maxdepth 1 -mindepth 1)" ]; then
+        if [ -z "$bundle_name" ]; then
+            bundle_name=$(basename "$source_dir")
+        fi
+        logwarn "Root XML file missing for $bundle_name (as required by the mvn plugin). Creating a temp file."
+        echo "<SharedFlowBundle revision=\"1\" name=\"$bundle_name\"/>" > "$temp_folder/sharedflowbundle/$bundle_name.xml"
+    fi
+
     api_type="sharedflow"
 
     shared_flow_name_in_bundle="$(xmllint --xpath 'string(//SharedFlowBundle/@name)' "$temp_folder"/sharedflowbundle/*.xml)"
@@ -166,14 +177,20 @@ elif [ -d "$temp_folder/sharedflowbundle" ]; then
     fi
 fi
 
+
 if [ "$debug" = "T" ]; then
-    maven_debug='-X'
+    MVN_DEBUG="-X"
+fi
+
+if [ "$MVN_REDUCE_LOGS" = "T" ]; then
+    MVN_NTP="-ntp"
 fi
 
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
-    (cd "$temp_folder" && mvn install -B ${maven_debug:-} \
+    logdebug "Deploy to apigee.googleapis.com"
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -185,12 +202,14 @@ if [ "$apiversion" = "google" ]; then
         -Dapigee.config.file="$config_file_path" \
         -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}" \
+        -Dapigee.import-keys.phase="${import_keys_phase:-skip}" \
         -Dapigee.deployment.sa="${deployment_sa}")
 elif [ "$apiversion" = "apigee" ]; then
     # install for apigee Edge
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
+    logdebug "Deploy to Edge API"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install -B ${maven_debug:-} \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -204,31 +223,4 @@ elif [ "$apiversion" = "apigee" ]; then
         -Dapigee.config.dir="$config_dir_path" \
         -Dapigee.config.options="${config_action:-none}" \
         -Dapigee.import-keys.phase="${import_keys_phase:-skip}")
-fi
-
-# patching mvn plugin features
-if [ "$apiversion" = "google" ]; then
-    # https://github.com/apigee/apigee-config-maven-plugin/issues/134
-    if [ -f "$temp_folder"/resources/edge/org/importKeys.json ];then
-        jq -c 'to_entries[]' "$temp_folder"/resources/edge/org/importKeys.json | while read -r devcredentials; do
-            developer=$(echo "$devcredentials" | jq -r '.key')
-            echo "$devcredentials" | jq -c '.value[]?' | while read -r credential; do
-                app=$(echo "$credential" | jq -r '.name')
-                loginfo "Adding Credential for Developer $developer and App $app"
-                creation_request=$(echo "$credential" | jq 'del(.name) | del(.apiProducts)')
-                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys" \
-                    -H "Authorization: Bearer $token" \
-                    -H "Content-Type: application/json" \
-                    --data "$creation_request"
-
-                loginfo "Adding products for key for Developer $developer and App $app"
-                key=$(echo "$credential" | jq -r '.consumerKey')
-                update_request=$(echo "$credential" | jq '{apiProducts: .apiProducts}')
-                curl -s -X POST "https://apigee.googleapis.com/v1/organizations/$organization/developers/$developer/apps/$app/keys/$key" \
-                    -H "Authorization: Bearer $token" \
-                    -H "Content-Type: application/json" \
-                    --data "$update_request"
-            done
-        done
-    fi
 fi

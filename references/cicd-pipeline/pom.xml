@@ -61,7 +61,7 @@ limitations under the License.
 			<!-- Apigee Edge -->
 			<id>apigeeapi</id>
 			<properties>
-				<apigee.plugin.version>1.2.2</apigee.plugin.version>
+				<apigee.plugin.version>1.3.2</apigee.plugin.version>
 				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
 				<apigee.authtype>oauth</apigee.authtype>
 				<apigee.username>${username}</apigee.username>
@@ -72,7 +72,7 @@ limitations under the License.
 			<!-- Apigee X and hybrid -->
 			<id>googleapi</id>
 			<properties>
-				<apigee.plugin.version>2.1.0</apigee.plugin.version>
+				<apigee.plugin.version>2.2.2</apigee.plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 				<apigee.serviceaccount.file>${sa}</apigee.serviceaccount.file>

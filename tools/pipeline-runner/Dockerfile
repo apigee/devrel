@@ -24,6 +24,7 @@ RUN apk add --no-cache \
   openjdk11-jre-headless \
   openssl \
   util-linux \
+  gettext \
   # add chromium and dependencies for UI testing
   chromium \
   nss \
@@ -32,6 +33,9 @@ RUN apk add --no-cache \
   harfbuzz \
   ca-certificates \
   ttf-freefont
+
+# Reduce nighly log (requires maven 3.6.1+)
+ENV MVN_REDUCE_LOGS="T"
 
 # install claat
 RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
@@ -44,6 +48,9 @@ RUN npm install --global puppeteer@5.2.1
 
 # add our tooling scripts
 COPY *.sh /usr/bin/
+
+# install apgieelint
+RUN npm install --global apigeelint@2.10.0
 
 # Run script
 WORKDIR /home

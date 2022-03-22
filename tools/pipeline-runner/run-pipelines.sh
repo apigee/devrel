@@ -28,7 +28,7 @@ append_pipeline_result() {
 run_single_pipeline() {
   DIR=$1
   STARTTIME=$(date +%s)
-  (cd "$DIR" && ./pipeline.sh > >(sed "s#^#$DIR: #") 2> >(sed "s#^#$DIR (err): #" >&2))
+  (cd "$DIR" && ./pipeline.sh > >(sed "s#^#$(date "+%H:%M:%S") $DIR: #") 2> >(sed "s#^#$(date "+%H:%M:%S") $DIR (err): #" >&2))
   PIPELINE_EXIT=$?
   ENDTIME=$(date +%s)
   append_pipeline_result "$DIR,$PIPELINE_EXIT,$((ENDTIME-STARTTIME))s"
@@ -39,11 +39,6 @@ if [ -z "$APIGEE_USER" ] && [ -z "$APIGEE_PASS" ]; then
   echo "[WARN] NO CREDENTIALS - SKIPPING PIPELINES"
   exit 0
 fi
-
-echo "[INFO] cleaning up organizations"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
-sackmesser clean all --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" --quiet
-sackmesser clean all --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" --quiet
 
 if [ -z "$DIRS" ]; then
   for TYPE in references labs tools; do

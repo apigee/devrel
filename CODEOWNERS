@@ -1,22 +1,28 @@
-*       @seymen @danistrebel @OmidTahouri
+*       @seymen @danistrebel @omidtahouri
 
+/references/auth-schemes                @omidtahouri
+/labs/bdd-proxy-development             @markjkelly
+/labs/best-practices-hackathon          @sauliuz @seymen
+/labs/idp-okta-integration              @teodlh
 /references/cicd-pipeline               @danistrebel
 /references/cicd-sharedflow-pipeline    @ssvaidyanathan
 /references/cloud-logging-shared-flow   @danistrebel
-/references/common-shared-flows         @seymen @danistrebel @OmidTahouri
+/references/cloud-runner                @danistrebel
+/references/common-shared-flows         @seymen @danistrebel @omidtahouri
+/references/data-api                    @danistrebel
 /references/data-converters-shared-flow @tyayers
 /references/dutch-healthcare            @seymen
 /references/gcp-sa-auth-shared-flow     @danistrebel
 /references/identity-facade             @joelgauci
-/references/java-callout                @OmidTahouri
+/references/java-callout                @omidtahouri
 /references/js-callout                  @seymen
 /references/kvm-admin-api               @danistrebel
+/references/oauth-admin-api             @danistrebel
 /references/oidc-mock                   @joelgauci
-/references/proxy-template              @seymen @danistrebel @OmidTahouri
+/references/product-recommendations-api @kurtkanaskie
+/references/proxy-template              @seymen @danistrebel @omidtahouri
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
-/labs/best-practices-hackathon          @sauliuz @seymen
-/labs/bdd-proxy-development             @markjkelly
 /tools/apigee-openlegacy                @tomfi @joelgauci
 /tools/apigee-sackmesser                @danistrebel
 /tools/apigee-x-trial-provision         @yuriylesyuk @danistrebel

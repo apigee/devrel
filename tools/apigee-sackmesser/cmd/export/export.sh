@@ -37,10 +37,13 @@ if [ -d "$export_folder" ]; then
     exit 1
 fi
 
+
 loginfo "exporting to $export_folder"
 mkdir -p "$export_folder"
 
-sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|.'| while read -r sharedflow; do
+sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|. | select((. | length) > 1)' | while read -r sharedflow; do
+    # Replacing white Spaces in the sharedflow name with %20
+    sharedflow=${sharedflow// /%20}
     loginfo "download shared flow: $sharedflow"
     mkdir -p "$export_folder/sharedflows/$sharedflow"
     latest="$(sackmesser list "organizations/$organization/sharedflows/$sharedflow" | jq '.revision | map(tonumber) | max')"
@@ -50,6 +53,8 @@ sackmesser list "organizations/$organization/sharedflows" | jq -r -c '.[]|.'| wh
 done
 
 sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while read -r proxy; do
+    # Replacing white Spaces in the proxy name with %20
+    proxy=${proxy// /%20}
     loginfo "download proxy: $proxy"
     mkdir -p "$export_folder/proxies/$proxy"
     latest="$(sackmesser list "organizations/$organization/apis/$proxy" | jq '.revision | map(tonumber) | max')"
@@ -57,6 +62,11 @@ sackmesser list "organizations/$organization/apis" | jq -r -c '.[]|.' | while re
     unzip -q "$export_folder/proxies/$proxy/bundle.zip" -d "$export_folder/proxies/$proxy"
     rm "$export_folder/proxies/$proxy/bundle.zip"
 done
+
+if [ "$skip_config" == "T" ];then
+    loginfo "Skipping config export because --skip-config was set."
+    exit 0;
+fi
 
 loginfo "Org Export to: $export_folder/config/resources/edge/org"
 mkdir -p "$export_folder/config/resources/edge/org"

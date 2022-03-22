@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2022 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<ProxyEndpoint name="default">
+  <PreFlow name="PreFlow">
+    <Request>
+      <Step>
+        <Condition>request.queryparam.apikey IsNot null</Condition>
+        <Name>VA-verify-apikey</Name>
+      </Step>
+      <Step>
+        <Name>QU-enforce-quota</Name>
+      </Step>
+      <Step>
+        <Name>RE-injection-protection</Name>
+      </Step>
+      <Step>
+        <Name>AM-configure-defaults</Name>
+      </Step>
+      <Step>
+        <Condition>data.request.limit > 100</Condition>
+        <Name>RF-invalid-request</Name>
+      </Step>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RC-response-cache</Name>
+      </Step>
+    </Request>
+  </PreFlow>
+  <FaultRules>
+    <FaultRule name="Invalid Request">
+      <Condition>(fault.name = "ThreatDetected")</Condition>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RF-invalid-request</Name>
+      </Step>
+    </FaultRule>
+    <FaultRule name="Unauthorized">
+      <Condition>(fault.name = "FailedToResolveAPIKey")</Condition>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RF-unauthorized</Name>
+      </Step>
+    </FaultRule>
+    <FaultRule name="Too Many Requests">
+      <Condition>(fault.name = "QuotaViolation")</Condition>
+      <Step>
+        <Name>CO-cors-headers</Name>
+      </Step>
+      <Step>
+        <Name>RF-too-many-requests</Name>
+      </Step>
+    </FaultRule>
+  </FaultRules>
+  <DefaultFaultRule name="fault-rule">
+    <Step>
+      <Name>CO-cors-headers</Name>
+    </Step>
+    <Step>
+      <Name>RF-internal-error</Name>
+      <Condition>fault.name != "RaiseFault"</Condition>
+    </Step>
+  </DefaultFaultRule>
+  <HTTPProxyConnection>
+    <BasePath>$BASE_PATH</BasePath>
+  </HTTPProxyConnection>
+  <RouteRule name="bigquery">
+    <TargetEndpoint>bigquery</TargetEndpoint>
+    <Condition>request.verb = "GET"</Condition>
+  </RouteRule>
+  <RouteRule name="no-op"></RouteRule>
+</ProxyEndpoint>

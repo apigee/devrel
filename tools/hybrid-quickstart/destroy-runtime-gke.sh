@@ -34,7 +34,8 @@ echo "✅ Apigee hybrid cluster deleted"
 
 echo "🗑️ Clean up Networking"
 
-gcloud compute addresses delete apigee-ingress-ip --region "$REGION" -q
+gcloud compute addresses delete apigee-ingress-ip --region "$REGION" -q || echo "No regional IP address"
+gcloud compute addresses delete apigee-ingress-ip --global -q || echo "No global IP address"
 
 for target_pool in $(gcloud compute target-pools list --format="value(name)"); do
    gcloud compute target-pools delete "$target_pool" --region "$REGION" -q
@@ -47,6 +48,11 @@ gcloud dns record-sets import -z apigee-dns-zone \
 rm empty-file
 
 gcloud dns managed-zones delete apigee-dns-zone -q
+
+for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filter="name~^mcrt-"); do
+   gcloud compute ssl-certificates delete "$mcrt" -q
+done
+
 
 echo "✅ Apigee networking cleaned up"
 
