@@ -141,7 +141,7 @@ ask_confirm() {
     REPLY=${REPLY:-Y}
 
     if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-      echo "starting provisioning"
+      echo "continuing"
     else
       exit 1
     fi
