@@ -43,6 +43,11 @@ set_config_params() {
     export CERT_TYPE=${CERT_TYPE:-google-managed}
     echo "- TLS Certificate $CERT_TYPE"
 
+    if [ "$CERT_TYPE" == "google-managed" ] && [ "$INGRESS_TYPE" != "external" ]; then
+        echo "Google Managed Certificates can only be used with an external ingress. SET CERT_TYPE to 'self-signed' (for the script to create one for you) or 'skip' if you want to provide your own as a k8s secret later."
+        exit 1
+    fi
+
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
@@ -136,7 +141,7 @@ ask_confirm() {
     REPLY=${REPLY:-Y}
 
     if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-      echo "starting provisioning"
+      echo "continuing"
     else
       exit 1
     fi
@@ -318,7 +323,7 @@ configure_network() {
       elif [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "self-signed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --region "$REGION"
       else
-        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --network "$NETWORK" --subnet "$SUBNET" --purpose SHARED_LOADBALANCER_VIP
+        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet "$SUBNET" --purpose SHARED_LOADBALANCER_VIP
       fi
     fi
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
@@ -335,7 +340,7 @@ configure_network() {
       if [[ "$INGRESS_TYPE" == "external" ]]; then
         gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone
       else
-        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone --visibility="private" --networks="default"
+        gcloud dns managed-zones create apigee-dns-zone --dns-name="$DNS_NAME" --description=apigee-dns-zone --visibility="private" --networks="$NETWORK"
       fi
 
       rm -f transaction.yaml
@@ -649,7 +654,8 @@ spec:
         port:
           number: 15021 # for ASM 1.7.x and above, else 15020
 EOF
-
+  else
+    kubectl create ns apigee
   fi
 }
 
