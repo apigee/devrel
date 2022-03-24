@@ -22,7 +22,7 @@ this value is configurable.
 
 ## Apigee runtime options
 
-The reCAPTCHA enterprise reference can be deplopyed on both Apigee X and
+The reCAPTCHA enterprise reference can be deployed on both Apigee X and
 hybrid.
 
 ## Dependencies
