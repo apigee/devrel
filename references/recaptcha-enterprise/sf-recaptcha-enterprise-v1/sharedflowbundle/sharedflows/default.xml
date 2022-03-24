@@ -48,7 +48,7 @@
         <Name>EV-ExtractRiskScore</Name>
     </Step>
     <Step>
-        <Condition>flow.assessment.risk_score LesserThan max_score</Condition>
+        <Condition>flow.assessment.risk_score LesserThan min_score</Condition>
         <Name>RF-BadRequest</Name>
     </Step>
     <Step>
