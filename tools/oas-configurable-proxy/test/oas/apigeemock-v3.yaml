@@ -3,6 +3,10 @@ info:
   description: OpenAPI Specification for the Apigee mock target service endpoint.
   version: 1.0.0
   title: Mock Target API
+
+security:
+  - apiKeyAuth: []
+
 paths:
   /:
     get:
@@ -32,6 +36,8 @@ paths:
       summary: View personalized greeting
       operationId: View personalized greeting
       description: View a personalized greeting for the specified or guest user.
+      security:
+        - apiKeyQuery: []
       parameters:
         - name: user
           in: query
@@ -135,10 +141,18 @@ components:
       type: http
       description: HTTP Basic Authentication.
       scheme: basic
+            application/x-www-form-urlencoded, or application/xml format.
+    apiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: header       # can be "header", "query" or "cookie"
+      name: X-API-KEY
+    apiKeyQuery:
+      type: apiKey
+      in: query       # can be "header", "query" or "cookie"
+      name: apikey
   schemas:
     request-body:
       properties:
         replace-me:
           type: object
           description: Replace with request payload in application/json,
-            application/x-www-form-urlencoded, or application/xml format.

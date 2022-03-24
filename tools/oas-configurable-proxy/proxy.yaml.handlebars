@@ -5,6 +5,20 @@ operations:
   http_match:
   - path_template: "{{this.requestPath}}"
     method: {{this.httpMethod}}
+  {{#if this.consumerAuthorization.enabled }}
+  consumer_authorization:
+    locations:
+  {{#each consumerAuthorization.locations}}
+    - {{this.in}}: {{this.name}}
+  {{/each}}
+  {{/if}}
 {{/each}}
 target:
   uri: "{{targetService}}"
+{{#if consumerAuthorization.enabled }}
+consumer_authorization:
+  locations:
+{{#each consumerAuthorization.locations}}
+  - {{this.in}}: {{this.name}}
+{{/each}}
+{{/if}}

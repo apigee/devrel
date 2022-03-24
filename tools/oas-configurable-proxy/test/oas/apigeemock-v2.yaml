@@ -99,6 +99,8 @@ paths:
       summary: View request headers and body
       operationId: View request headers and body
       description: View the request headers and body in JSON format.
+      security:
+        - apiKeyAuth: []
       produces:
         - application/json
       responses:
