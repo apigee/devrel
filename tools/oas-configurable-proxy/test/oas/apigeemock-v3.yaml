@@ -1,6 +1,21 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
 openapi: 3.0.0
 info:
-  description: OpenAPI Specification for the Apigee mock target service endpoint.
+  description: "OpenAPI Specification for the Apigee mock
+    target service endpoint."
   version: 1.0.0
   title: Mock Target API
 
@@ -27,7 +42,8 @@ paths:
     get:
       summary: Get help
       operationId: Get help
-      description: View help information about available resources in HTML format.
+      description: "View help information about
+        available resources in HTML format."
       responses:
         "200":
           description: Success
@@ -91,11 +107,10 @@ paths:
     post:
       summary: Send request and view request headers and body
       operationId: Send request and view request headers and body
-      description: "Send a request and view the resulting request headers and body in JSON
-        format.
-The request payload can be specified using one of the
-        following formats: application/json, application/x-www-form-urlencoded,
-        or application/xml."
+      description: "Send a request and view the resulting request headers
+        and body in JSON format. The request payload can be specified using
+        one of the following formats: application/json,
+        application/x-www-form-urlencoded, or application/xml."
       requestBody:
         content:
           application/json:

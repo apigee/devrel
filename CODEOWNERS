@@ -29,5 +29,6 @@
 /tools/decrypt-hybrid-assets            @yuriylesyuk
 /tools/hybrid-quickstart                @danistrebel
 /tools/oas-apigee-mock                  @markjkelly
+/tools/oas-configurable-proxy           @danistrebel
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel

@@ -1,54 +1,68 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
 basepath: "/mock/v3"
 operations:
-- id: get-view-a-personalized-greeting
-  http_match:
-  - path_template: "/"
-    method: GET
-- id: get-get-help
-  http_match:
-  - path_template: "/help"
-    method: GET
-- id: get-view-personalized-greeting
-  http_match:
-  - path_template: "/user"
-    method: GET
-  consumer_authorization:
-    locations:
-    - query: apikey
-- id: get-view-api-affirmation
-  http_match:
-  - path_template: "/iloveapis"
-    method: GET
-- id: get-view-ip-address
-  http_match:
-  - path_template: "/ip"
-    method: GET
-- id: get-view-xml-response
-  http_match:
-  - path_template: "/xml"
-    method: GET
-- id: get-view-json-response
-  http_match:
-  - path_template: "/json"
-    method: GET
-- id: get-view-request-headers-and-body
-  http_match:
-  - path_template: "/echo"
-    method: GET
-- id: post-send-request-and-view-request-headers-and-body
-  http_match:
-  - path_template: "/echo"
-    method: POST
-- id: get-view-status-code-and-message
-  http_match:
-  - path_template: "/statuscode/{code}"
-    method: GET
-- id: get-validate-access-using-basic-authentication
-  http_match:
-  - path_template: "/auth"
-    method: GET
+  - id: get-view-a-personalized-greeting
+    http_match:
+      - path_template: "/"
+        method: GET
+  - id: get-get-help
+    http_match:
+      - path_template: "/help"
+        method: GET
+  - id: get-view-personalized-greeting
+    http_match:
+      - path_template: "/user"
+        method: GET
+    consumer_authorization:
+      locations:
+        - query: apikey
+  - id: get-view-api-affirmation
+    http_match:
+      - path_template: "/iloveapis"
+        method: GET
+  - id: get-view-ip-address
+    http_match:
+      - path_template: "/ip"
+        method: GET
+  - id: get-view-xml-response
+    http_match:
+      - path_template: "/xml"
+        method: GET
+  - id: get-view-json-response
+    http_match:
+      - path_template: "/json"
+        method: GET
+  - id: get-view-request-headers-and-body
+    http_match:
+      - path_template: "/echo"
+        method: GET
+  - id: post-send-request-and-view-request-headers-and-body
+    http_match:
+      - path_template: "/echo"
+        method: POST
+  - id: get-view-status-code-and-message
+    http_match:
+      - path_template: "/statuscode/{code}"
+        method: GET
+  - id: get-validate-access-using-basic-authentication
+    http_match:
+      - path_template: "/auth"
+        method: GET
 target:
   uri: "http://mocktarget.apigee.net"
 consumer_authorization:
   locations:
-  - header: X-API-KEY
+    - header: X-API-KEY

@@ -57,7 +57,7 @@ further to fit a particular use case.
   A reference for protecting API proxies against XML and JSON threats
 - [Auth Schemes](references/auth-schemes) - Example implementations for various
   popular API auth schemes
-  
+
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
@@ -79,6 +79,9 @@ Apigee products.
   A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
+- [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
+  A tool to generate to configurable proxy archives from an Open API
+  Specification
 
 ## Labs
 
