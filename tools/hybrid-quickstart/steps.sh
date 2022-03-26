@@ -667,7 +667,7 @@ create_k8s_sa_workload() {
 
   gcloud iam service-accounts add-iam-policy-binding "$GCP_SA" \
     --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]" --project $PROJECT_ID
+    --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]" --project "$PROJECT_ID"
 }
 
 create_sa() {
