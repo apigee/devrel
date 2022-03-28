@@ -23,7 +23,7 @@ nerp -> rs: flow callout with minimum risk score property (between 0.0 and 1.0)
 activate rs
 rs -> rs: extract reCAPTCHA \ntoken from x-recaptcha-token header
 rs -> rs: verify api key
-rs -> rs: <b>get sitekey from \nclient apps custom attribute</b>
+rs -> rs: get sitekey from \n<b>client apps custom attribute</b>
 rs -> re: exchange reCAPTCHA token for assessment response including a risk score (0.0 - 1.0):\n<b>POST https://recaptchaenterprise.googleapis.com/v1/projects/<GCP_projectId>/assessments</b>\nauthorization: Bearer <GCP access_token>\ncontent-type: application/json\n{"event":{"sitekey":<sitekey>,"token":<reCAPTCHA_token>}}
 re -> re: extract risk score from token
 re -> rs: return score + token validation + score details into a json content
