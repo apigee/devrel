@@ -11,9 +11,10 @@
   limitations under the License.
 */
 
-/*
-** function setDateAndTime( )
-*/
+/**
+ * Set date and time.
+ * @return {string}
+ */
 function setDateAndTime() {
     var today = new Date();
     return today.toISOString();
