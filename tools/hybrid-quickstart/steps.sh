@@ -667,7 +667,7 @@ create_k8s_sa_workload() {
 
   gcloud iam service-accounts add-iam-policy-binding "$GCP_SA" \
     --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]"
+    --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$K8S_SA]" --project "$PROJECT_ID"
 }
 
 create_sa() {
@@ -684,7 +684,7 @@ create_sa() {
   create_k8s_sa_workload "apigee-cassandra-schema-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-cassandra-user-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-mart-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-connect-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-connect-agent-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-watcher-$APIGEE_ORG_HASH-sa" "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
