@@ -15,18 +15,26 @@
  limitations under the License.
 -->
 <ProxyEndpoint name="default">
+    <FaultRules>
+        <FaultRule name="oas-failed">
+            <Condition>OASValidation.OA-Validation.failed = true</Condition>
+            <Step>
+                <Name>AM-FailedOASValidation</Name>
+            </Step>
+        </FaultRule>
+    </FaultRules>
     <PreFlow name="PreFlow">
         <Request>
             <Step>
                 <Name>OA-Validation</Name>
             </Step>
         </Request>
-        <Response/>
+        <Response />
     </PreFlow>
-    <Flows/>
+    <Flows />
     <PostFlow name="PostFlow">
-        <Request/>
-        <Response/>
+        <Request />
+        <Response />
     </PostFlow>
     <HTTPProxyConnection>
         <BasePath>/sackmesser-example-v1</BasePath>
