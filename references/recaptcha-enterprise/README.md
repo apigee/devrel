@@ -118,8 +118,8 @@ a Javascript client code that can retrieve a valid reCAPTCHA token, based on
 one of the 2 sitekeys created on your GCP platform during the deployment
 process.
 
-You can invoke the ```deliver-token-v1``` proxy using your favorite web browser
-using an URL of this form:
+You can invoke the ```recaptcha-deliver-token-v1``` proxy using your favorite
+web browser using an URL of this form:
 
     https://${APIGEE_X_HOSTNAME}/recaptcha/v1/token?sitekey=<your-sitekey-here>
 
@@ -141,7 +141,7 @@ enterprise sharedflow.
 The target endpoint of this proxy is [httpbin.org](https://httpbin.org)
 - ```recaptcha-deliver-token-v1```: an API proxy used to deliver an HTML page that
 includes a valid reCAPTCHA
-token (cf. [Option 2](#option-2-recaptcha-enterprise-is-usedmarkdown-header-)
+token (cf. [Option 2](#option-2-recaptcha-enterprise-is-used)
 above). This proxy is not intended to be used in production but only during test
 phases.
 - The ```RecaptchaEnterprise``` API product
