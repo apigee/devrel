@@ -14,7 +14,7 @@
 <AssignMessage name="AM-SetReCaptchaMock">
     <AssignVariable>
         <Name>flow.recaptcha.demo.enabled</Name>
-        <Value>@IsReCaptchaMockEnabled@</Value>
+        <Value>$IS_RECAPTCHA_MOCK_ENABLED</Value>
     </AssignVariable>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
     <AssignTo createNew="false" type="request"/>

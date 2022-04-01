@@ -11,4 +11,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="1" name="data-proxy-v1"/>
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>AM-DeliverRecaptchaToken</Name>
+            </Step>
+        </Request>
+    </PreFlow>
+    <PostFlow name="PostFlow"/>
+    <HTTPProxyConnection>
+        <BasePath>/recaptcha/v1/token</BasePath>
+    </HTTPProxyConnection>
+    <RouteRule name="noroute"/>
+</ProxyEndpoint>

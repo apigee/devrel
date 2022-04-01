@@ -26,58 +26,9 @@ var gcpProjectId = context.getVariable('flow.recaptcha.gcp-projectid');
 var siteKey = context.getVariable('flow.recaptcha.sitekey');
 
 // Set token validity and risk score
-var isTokenValid = false;
-var riskScore = 0;
-
-// Test the token value with format: X-RECAPTCHA-TOKEN-<SCORE>
-switch (reCaptchaToken) {
-  case 'X-RECAPTCHA-TOKEN-0':
-    riskScore = 0;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.1':
-    riskScore = 0.1;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.2':
-    riskScore = 0.2;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.3':
-    riskScore = 0.3;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.4':
-    riskScore = 0.4;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.5':
-    riskScore = 0.5;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.6':
-    riskScore = 0.6;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.7':
-    riskScore = 0.7;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.8':
-    riskScore = 0.8;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-0.9':
-    riskScore = 0.9;
-    isTokenValid = true;
-    break;
-  case 'X-RECAPTCHA-TOKEN-1':
-    riskScore = 1;
-    isTokenValid = true;
-    break;
-  default:
-    isTokenValid = false;
-}
+var token = reCaptchaToken.substring("X-RECAPTCHA-TOKEN-".length);
+var riskScore = parseFloat(token);
+var isTokenValid = (!isNaN(riskScore) && riskScore >= 0 && riskScore <= 1)?true:false;
 
 // Set the reCAPTCHA assessment response
 var assessmentResp = {

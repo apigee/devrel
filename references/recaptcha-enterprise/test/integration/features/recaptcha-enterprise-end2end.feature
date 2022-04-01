@@ -18,34 +18,6 @@ Feature:
   As a Client App 
   I want to access the protected resource of an API
   So that I can retrieve different types of information and data
-
-  Scenario: Client App Accesses Protected Resource with a valid reCAPTCHA token - Risk Score:0.6 (human)
-    Given I set x-recaptcha-token header to X-RECAPTCHA-TOKEN-0.6
-    Given I set x-apikey header to `clientId`
-    When I GET /headers
-    Then response code should be 200
-    And response body should be valid json
-  
-  Scenario: Client App Accesses Protected Resource with a valid reCAPTCHA token - Risk Score:0.7 (human)
-    Given I set x-recaptcha-token header to X-RECAPTCHA-TOKEN-0.7
-    Given I set x-apikey header to `clientId`
-    When I GET /headers
-    Then response code should be 200
-    And response body should be valid json
-  
-  Scenario: Client App Accesses Protected Resource with a valid reCAPTCHA token - Risk Score:0.8 (human)
-    Given I set x-recaptcha-token header to X-RECAPTCHA-TOKEN-0.8
-    Given I set x-apikey header to `clientId`
-    When I GET /headers
-    Then response code should be 200
-    And response body should be valid json
-
-  Scenario: Client App Accesses Protected Resource with a valid reCAPTCHA token - Risk Score:0.9 (human)
-    Given I set x-recaptcha-token header to X-RECAPTCHA-TOKEN-0.9
-    Given I set x-apikey header to `clientId`
-    When I GET /headers
-    Then response code should be 200
-    And response body should be valid json
   
   Scenario: Client App Accesses Protected Resource with a valid reCAPTCHA token - Risk Score:1 (human)
     Given I set x-recaptcha-token header to X-RECAPTCHA-TOKEN-1

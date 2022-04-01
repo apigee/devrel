@@ -17,7 +17,7 @@ const {
 } = require('@cucumber/cucumber')
 
 const clientId = process.env.TEST_APP_CONSUMER_KEY
-const basePath = '/data/v1'
+const basePath = '/recaptcha/v1/data'
 
 Before(function() {
   this.apickli = new apickli.Apickli('https', process.env.TEST_HOST + basePath)

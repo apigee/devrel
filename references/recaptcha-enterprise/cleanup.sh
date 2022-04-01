@@ -13,36 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Check for required variables
-if [ -z "$GCP_PROJECT" ]; then
-  echo "The required env variable GCP_PROJECT is missing";
-  exit 1
-fi
-
-# Manage optional variables
-GCP_REGION=${GCP_REGION:-europe-west1}
+PROJECT_ID=$(gcloud config get-value project)
 
 # Get an Apigee token
 APIGEE_TOKEN=$(gcloud auth print-access-token);
 
 # delete developer and related artifacts (client apps)
 echo "[INFO] Deleting recaptcha enterprise developer and apps"
-curl --fail --silent -X DELETE \
-    -H "Authorization: Bearer $APIGEE_TOKEN" \
-    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com
+sackmesser clean --googleapi -t "$APIGEE_TOKEN"  developer "janedoe@example.com" --quiet
 
 # delete api product
 echo "[INFO] Deleting recaptcha enterprise api product"
-curl --fail --silent -X DELETE \
-    -H "Authorization: Bearer $APIGEE_TOKEN" \
-    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/apiproducts/RecaptchaEnterprise
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" product RecaptchaEnterprise --quiet
 
 # delete the API proxy proxy and sharedflow from Apigee X or hybrid
 echo "[INFO] Deleting recaptcha enterprise api proxy and shared flow from Apigee (X/hybrid)"
-APIGEE_TOKEN=$(gcloud auth print-access-token);
-sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy data-proxy-v1
-sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy deliver-token-v1
-sackmesser clean --googleapi -t "$APIGEE_TOKEN" sharedflow sf-recaptcha-enterprise-v1
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy recaptcha-data-proxy-v1 --quiet
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy recaptcha-deliver-token-v1 --quiet
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" sharedflow sf-recaptcha-enterprise-v1 --quiet
 
 # Cleanup  GCP Assets
-gcloud iam service-accounts delete apigee-recaptcha-sa@"$GCP_PROJECT".iam.gserviceaccount.com --project "$GCP_PROJECT" -q
+gcloud iam service-accounts delete apigee-recaptcha-sa@"$APIGEE_X_ORG".iam.gserviceaccount.com --project "$PROJECT_ID" -q

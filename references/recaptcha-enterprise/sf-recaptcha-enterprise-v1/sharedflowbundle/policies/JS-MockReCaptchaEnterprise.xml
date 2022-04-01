@@ -11,4 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<APIProxy revision="1" name="deliver-token-v1"/>
+<Javascript timeLimit="200" name="JS-MockReCaptchaEnterprise">
+    <ResourceURL>jsc://JS-MockReCaptchaEnterprise.js</ResourceURL>
+</Javascript>

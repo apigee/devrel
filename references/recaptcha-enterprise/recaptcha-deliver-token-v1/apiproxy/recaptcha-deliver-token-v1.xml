@@ -11,6 +11,4 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript timeLimit="200" name="JS-AccessReCaptchaEnterprise">
-    <ResourceURL>jsc://JS-AccessReCaptchaEnterprise.js</ResourceURL>
-</Javascript>
+<APIProxy revision="1" name="recaptcha-deliver-token-v1"/>

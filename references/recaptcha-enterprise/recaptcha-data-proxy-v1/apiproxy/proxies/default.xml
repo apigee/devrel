@@ -35,7 +35,7 @@
     </Flows>
     <PostFlow name="PostFlow"/>
     <HTTPProxyConnection>
-        <BasePath>/data/v1</BasePath>
+        <BasePath>/recaptcha/v1/data</BasePath>
     </HTTPProxyConnection>
     <RouteRule name="default">
         <TargetEndpoint>default</TargetEndpoint>

@@ -24,8 +24,8 @@ generate_edge_mock_json() {
   ENV_NAME=$1
   SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-  rm -f "$SCRIPTPATH"/data-proxy-v1/edge.json
-  cat <<EOF >> "$SCRIPTPATH/data-proxy-v1/edge.json"
+  rm -f "$SCRIPTPATH"/recaptcha-data-proxy-v1/edge.json
+  cat <<EOF >> "$SCRIPTPATH/recaptcha-data-proxy-v1/edge.json"
 {
     "version": "1.0",
     "envConfig": {},
@@ -47,7 +47,7 @@ generate_edge_mock_json() {
                     "$ENV_NAME"
                 ],
                 "proxies": [
-                    "data-proxy-v1"
+                    "recaptcha-data-proxy-v1"
                 ]
             }
         ],
@@ -97,8 +97,8 @@ generate_edge_json() {
   SITEKEY_ALWAYS_0=$4
   SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
-  rm -f "$SCRIPTPATH"/data-proxy-v1/edge.json
-  cat <<EOF >> "$SCRIPTPATH/data-proxy-v1/edge.json"
+  rm -f "$SCRIPTPATH"/recaptcha-data-proxy-v1/edge.json
+  cat <<EOF >> "$SCRIPTPATH/recaptcha-data-proxy-v1/edge.json"
 {
     "version": "1.0",
     "envConfig": {},
@@ -120,7 +120,7 @@ generate_edge_json() {
                     "$ENV_NAME"
                 ],
                 "proxies": [
-                    "data-proxy-v1"
+                    "recaptcha-data-proxy-v1"
                 ]
             }
         ],
@@ -190,57 +190,34 @@ set_functional_test_env_var() {
     export TEST_APP_CONSUMER_SECRET
 }
 
-######################################
-### function: set_recaptcha_config ###
-######################################
-set_recaptcha_config() {
-
-    # Copy AM policy template
-    cp "$SCRIPTPATH"/templates/AM-SetReCaptchaMock.template.xml "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml
-
-    # replace reCAPTCHA tag in AM policy
-    sed -i.bak "s|@IsReCaptchaMockEnabled@|$1|" "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml
-
-    # remove .bak files
-    rm "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml.bak
-}
-
 ### script execution starts here...
 
-# Check for required variables
-if [ -z "$GCP_PROJECT" ]; then
-  echo "The required env variable GCP_PROJECT is missing";
-  exit 1
-fi
+PROJECT_ID=$(gcloud config get-value project)
 
 # Manage optional variables
-GCP_REGION=${GCP_REGION:-europe-west1}
 timestamp=$(date '+%s')
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
-# default value for reCAPTCHA mock mode (default is 'true')
-DEFAULT_IS_RECAPTCHA_MOCK_ENABLED=true
-
 # is reCAPTCHA mock enabled (=true) or not (=false)
-IS_RECAPTCHA_MOCK_ENABLED="${IS_RECAPTCHA_MOCK_ENABLED:-"$DEFAULT_IS_RECAPTCHA_MOCK_ENABLED"}"
+IS_RECAPTCHA_MOCK_ENABLED=${IS_RECAPTCHA_MOCK_ENABLED:-true}
+export IS_RECAPTCHA_MOCK_ENABLED
 
 # set reCAPTCHA config
-set_recaptcha_config "$IS_RECAPTCHA_MOCK_ENABLED"
+envsubst < "$SCRIPTPATH"/templates/AM-SetReCaptchaMock.template.xml > "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml
 
 echo "[INFO] Deploying reCAPTCHA enterprise reference to Google API (For X/hybrid)"
 APIGEE_TOKEN=$(gcloud auth print-access-token);
 
-## Generate Service Account for Apigee shared flow
-gcloud iam service-accounts create apigee-recaptcha-enterprise-sa \
---project "$GCP_PROJECT" || true
+SA_EMAIL="apigee-recaptcha-enterprise-sa@$APIGEE_X_ORG.iam.gserviceaccount.com"
 
-# Create the service account that is used to invoke the Google reCAPTCHA enterprise endpoint
-gcloud projects add-iam-policy-binding "$GCP_PROJECT" \
-    --member="serviceAccount:apigee-recaptcha-enterprise-sa@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/recaptchaenterprise.agent"
+## Generate Service Account for Apigee shared flow
+if [ -z "$(gcloud iam service-accounts list --filter "$SA_EMAIL" --format="value(email)"  --project "$APIGEE_X_ORG")" ]; then
+    gcloud iam service-accounts create apigee-recaptcha-enterprise-sa \
+    --project "$APIGEE_X_ORG"
+fi
 
 # If reCAPTCHA mock is enabled
-if [ -z "$IS_RECAPTCHA_MOCK_ENABLED" ] || [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
+if [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
 
     # generate edge.json file
     generate_edge_mock_json "$APIGEE_X_ENV"
@@ -254,7 +231,7 @@ if [ -z "$IS_RECAPTCHA_MOCK_ENABLED" ] || [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true
         -t "$APIGEE_TOKEN" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/sf-recaptcha-enterprise-v1 \
-        --deployment-sa apigee-recaptcha-enterprise-sa@"$GCP_PROJECT".iam.gserviceaccount.com
+        --deployment-sa "$SA_EMAIL"
 
     # deploy Apigee artifacts: proxy, developer, app, product
     sackmesser deploy --googleapi \
@@ -262,7 +239,7 @@ if [ -z "$IS_RECAPTCHA_MOCK_ENABLED" ] || [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true
         -e "$APIGEE_X_ENV" \
         -t "$APIGEE_TOKEN" \
         -h "$APIGEE_X_HOSTNAME" \
-        -d "$SCRIPTPATH"/data-proxy-v1
+        -d "$SCRIPTPATH"/recaptcha-data-proxy-v1
 
     # set developer app ('app-recaptcha-enterprise') credentials
     curl --fail --silent -X POST \
@@ -281,6 +258,11 @@ if [ -z "$IS_RECAPTCHA_MOCK_ENABLED" ] || [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true
 
 else
 
+    # Create the service account that is used to invoke the Google reCAPTCHA enterprise endpoint
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+        --member="serviceAccount:$SA_EMAIL" \
+        --role="roles/recaptchaenterprise.agent"
+
     # Generate 2 reCAPTCHA sitekeys: - Always 1 (score: 1) & Always 0 (score: 0)
     TMP0=$(gcloud recaptcha keys create --testing-score=0.0 --web --allow-all-domains --display-name="Always 0" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_0=$(echo "$TMP0" | cut -d'/' -f 4)
@@ -288,11 +270,8 @@ else
     TMP1=$(gcloud recaptcha keys create --testing-score=1.0 --web --allow-all-domains --display-name="Always 1" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_1=$(echo "$TMP1" | cut -d'/' -f 4)
 
-    # Get the current project Id
-    GCP_PROJECT_ID=$(gcloud config get-value project)
-
     # generate edge.json file
-    generate_edge_json "$APIGEE_X_ENV" "$GCP_PROJECT_ID" "$SITEKEY_ALWAYS_1" "$SITEKEY_ALWAYS_0"
+    generate_edge_json "$APIGEE_X_ENV" "$PROJECT_ID" "$SITEKEY_ALWAYS_1" "$SITEKEY_ALWAYS_0"
 
     # deploy Apigee sharedflow
     sackmesser deploy --googleapi \
@@ -301,7 +280,7 @@ else
         -t "$APIGEE_TOKEN" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/sf-recaptcha-enterprise-v1 \
-        --deployment-sa apigee-recaptcha-enterprise-sa@"$GCP_PROJECT".iam.gserviceaccount.com
+        --deployment-sa "$SA_EMAIL"
 
     # deploy Apigee artifacts: proxy, developer, app, product
     sackmesser deploy --googleapi \
@@ -309,7 +288,7 @@ else
         -e "$APIGEE_X_ENV" \
         -t "$APIGEE_TOKEN" \
         -h "$APIGEE_X_HOSTNAME" \
-        -d "$SCRIPTPATH"/data-proxy-v1
+        -d "$SCRIPTPATH"/recaptcha-data-proxy-v1
 
     # deploy an api proxy acting as a simple web page that can retrieve a reCAPTCHA token
     sackmesser deploy --googleapi \
@@ -317,7 +296,7 @@ else
         -e "$APIGEE_X_ENV" \
         -t "$APIGEE_TOKEN" \
         -h "$APIGEE_X_HOSTNAME" \
-        -d "$SCRIPTPATH"/deliver-token-v1
+        -d "$SCRIPTPATH"/recaptcha-deliver-token-v1
 
     echo "no tests run for custom reCAPTCHA enterprise configuration."
 

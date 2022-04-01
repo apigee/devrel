@@ -35,7 +35,7 @@
     </Step>
     <Step>
         <Condition>flow.recaptcha.demo.enabled = "true"</Condition>
-        <Name>JS-AccessReCaptchaEnterprise</Name>
+        <Name>JS-MockReCaptchaEnterprise</Name>
     </Step>
     <Step>
         <Name>EV-ExtractTokenValidity</Name>

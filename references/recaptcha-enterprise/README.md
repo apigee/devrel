@@ -17,27 +17,38 @@ The score ```1.0``` indicates that the interaction poses low risk and is very
 likely legitimate, whereas ```0.0``` indicates that the interaction poses high
 risk and might be fraudulent. Between both extremes, the sharedflow's
 processing decides if an API invocation must be rejected or not.
-The minimum score to consider an API call as legitimate is set at ```0.6```:
-this value is configurable.
+For the purpose of this reference we consider a minimum score of ```0.6```:
+this value is configurable and can be set to a higher or lower value depending
+on the risk profile of the client application.
 
 ## Apigee runtime options
 
 The reCAPTCHA enterprise reference can be deployed on both Apigee X and
-hybrid.
+hybrid. This reference would also work with Apigee Edge if the Service Account
+token is obtained though the sharedflow, which invoke the Google reCAPTCHA
+enterprise endpoint (```sf-recaptcha-enterprise-v1```).
 
 ## Dependencies
 
 - [Maven](https://maven.apache.org/)
 - [NodeJS](https://nodejs.org/en/) LTS version or above
 - Apigee Evaluation/Trial [Organization](https://login.apigee.com/sign__up)
-- [Google Cloud Platform](https://cloud.google.com/)
+- [Google Cloud Platform](https://cloud.google.com/) (GCP)
 
-This reference leverages Google reCAPTCHA Enterprise. Therefore, a Google
-Cloud Platform (GCP) service account is needed by the Apigee configuration
+This reference leverages Google reCAPTCHA Enterprise.
+Therefore, it is important to note that:
+
+- The reCAPTCHA Enterprise API (```recaptchaenterprise.googleapis.com```)
+must be **enabled** in your GCP project.
+- a GCP service account is needed by the Apigee configuration
 to securely invoke the Google reCAPTCHA Enterprise assessment endpoint.
+This service account is created during the deployment process on the GCP
+project you are currently using: the ```pipelines.sh``` will create a
+service account only if it doesn't exist.
 
-This service account is created during the deployment process on the Google
-Cloud project you are currently using.
+In case you want to create this service account manually - or with Terraform,
+please note that the role ```roles/recaptchaenterprise.agent``` must be granted
+to it.
 
 ## Quick start
 
@@ -46,7 +57,6 @@ Cloud project you are currently using.
     export APIGEE_X_ORG=xxx
     export APIGEE_X_ENV=xxx
     export APIGEE_X_HOSTNAME=api.example.com
-    export GCP_PROJECT=your-gcp-project
 
     ./pipeline.sh
 
@@ -102,7 +112,7 @@ associated to a risk score of ```1``` (human)
 associated to a risk score of ```0``` (bot)
 
 In order to deliver a valid reCAPTCHA token for test, an API proxy
-(```deliver-token-v1```) is deployed when this option is selected.
+(```recaptcha-deliver-token-v1```) is deployed when this option is selected.
 The intent of this proxy is to deliver a simple HTML page, which executes
 a Javascript client code that can retrieve a valid reCAPTCHA token, based on
 one of the 2 sitekeys created on your GCP platform during the deployment
@@ -111,7 +121,7 @@ process.
 You can invoke the ```deliver-token-v1``` proxy using your favorite web browser
 using an URL of this form:
 
-    https://${APIGEE_X_HOSTNAME}/web/v1/token?sitekey<your-sitekey-here>
+    https://${APIGEE_X_HOSTNAME}/recaptcha/v1/token?sitekey=<your-sitekey-here>
 
 As a result on the Web page, you get a valid reCAPTCHA Enterprise token that
 you can copy/paste for testing purposes:
@@ -126,9 +136,10 @@ containing the full configuration of the reCAPTCHA
 enterprise reference as well as the
 following artifacts:
 
-- ```data-proxy-v1```: a data proxy, which calls the reCAPTCHA enterprise sharedflow.
+- ```recaptcha-data-proxy-v1```: a data proxy, which calls the reCAPTCHA
+enterprise sharedflow.
 The target endpoint of this proxy is [httpbin.org](https://httpbin.org)
-- ```deliver-token-v1```: an API proxy used to deliver an HTML page that
+- ```recaptcha-deliver-token-v1```: an API proxy used to deliver an HTML page that
 includes a valid reCAPTCHA
 token (cf. [Option 2](#option-2-recaptcha-enterprise-is-usedmarkdown-header-)
 above). This proxy is not intended to be used in production but only during test
@@ -176,7 +187,7 @@ Using cURL, the request is the following:
 
     curl -H "X-Apikey: <consumer-key>" \
          -H "X-Recaptcha-Token: <recaptcha-token>" \
-         https://${APIGEE_X_HOSTNAME}/data/v1/headers
+         https://${APIGEE_X_HOSTNAME}/recaptcha/v1/data/headers
 
 ### Token validity
 
