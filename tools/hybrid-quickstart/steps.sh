@@ -51,13 +51,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_CTL_VERSION='1.6.5'
-    echo "- Apigeectl version $APIGEE_CTL_VERSION"
+    export APIGEE_HYBRID_VERSION='1.6.6'
+    echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
-    export CERT_MANAGER_VERSION='v1.2.0'
+    export CERT_MANAGER_VERSION='v1.5.4'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.9'
+    export ASM_VERSION='1.10'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
@@ -97,7 +97,7 @@ set_config_params() {
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:-$PWD}"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
-    export APIGEECTL_HOME=$QUICKSTART_TOOLS/apigeectl/apigeectl_$APIGEE_CTL_VERSION
+    export APIGEECTL_HOME=$QUICKSTART_TOOLS/apigeectl/apigeectl_$APIGEE_HYBRID_VERSION
     export HYBRID_HOME=$QUICKSTART_ROOT/hybrid-files
 
     echo "- Script root from: $QUICKSTART_ROOT"
@@ -113,7 +113,9 @@ function wait_for_ready(){
     local iterations=0
     local actual_out
 
-    echo -e "Waiting for ${action//Bearer [^\"]*/xxxxx} to return output $expected_output"
+    # shellcheck disable=SC2001
+    sanitized="$(echo "$action" | sed 's/Bearer [^\"]*/TOKEN/gi')"
+    echo -e "Waiting for $sanitized to return output $expected_output"
     echo -e "Start: $(date)\n"
 
     while true; do
@@ -422,12 +424,6 @@ install_asm() {
   curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
   chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
 
-  # patch ASM installer to allow for cloud build SA
-  sed -i -e 's/iam.gserviceaccount.com/gserviceaccount.com/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
-
-  # patch ASM installer to use the new kubectl --dry-run syntax
-  sed -i -e 's/--dry-run/--dry-run=client/g' "$QUICKSTART_TOOLS"/istio-asm/install_asm
-
   if [ "$CERT_TYPE" = "google-managed" ];then
     cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
 apiVersion: install.istio.io/v1alpha1
@@ -438,6 +434,12 @@ spec:
     - name: istio-ingressgateway
       enabled: true
       k8s:
+        resources:
+          requests:
+            cpu: 1000m
+        readinessProbe:
+          initialDelaySeconds: 45
+          periodSeconds: 60
         serviceAnnotations:
           cloud.google.com/neg: '{"ingress": true}'
           cloud.google.com/backend-config: '{"default": "ingress-backendconfig"}'
@@ -446,8 +448,8 @@ spec:
           type: ClusterIP
           ports:
           - name: status-port
-            port: 15021 # for ASM 1.7.x and above, else 15020
-            targetPort: 15021 # for ASM 1.7.x and above, else 15020
+            port: 15021
+            targetPort: 15021
           - name: https
             port: 443
             targetPort: 8443
@@ -462,6 +464,12 @@ spec:
     - name: istio-ingressgateway
       enabled: true
       k8s:
+        resources:
+          requests:
+            cpu: 1000m
+        readinessProbe:
+          initialDelaySeconds: 45
+          periodSeconds: 60
         serviceAnnotations:
           networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
@@ -469,8 +477,8 @@ spec:
           loadBalancerIP: $INGRESS_IP
           ports:
           - name: status-port
-            port: 15021 # for ASM 1.7.x and above, else 15020
-            targetPort: 15021 # for ASM 1.7.x and above, else 15020
+            port: 15021
+            targetPort: 15021
           - name: https
             port: 443
             targetPort: 8443
@@ -504,7 +512,7 @@ download_apigee_ctl() {
 
     curl --fail -L \
       -o "$APIGEECTL_ROOT/apigeectl.tar.gz" \
-      "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_CTL_VERSION/$APIGEE_CTL"
+      "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_HYBRID_VERSION/$APIGEE_CTL"
 
     tar xvzf "$APIGEECTL_ROOT/apigeectl.tar.gz" -C "$APIGEECTL_ROOT"
     rm "$APIGEECTL_ROOT/apigeectl.tar.gz"
@@ -652,7 +660,7 @@ spec:
     - destination:
         host: istio-ingressgateway.istio-system.svc.cluster.local
         port:
-          number: 15021 # for ASM 1.7.x and above, else 15020
+          number: 15021
 EOF
   else
     kubectl create ns apigee
