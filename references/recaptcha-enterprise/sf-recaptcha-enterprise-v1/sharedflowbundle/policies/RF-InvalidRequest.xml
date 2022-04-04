@@ -17,7 +17,7 @@
             <Headers/>
             <Payload contentType="application/json">{"error":"invalid_request","details":"missing header"}</Payload>
             <StatusCode>400</StatusCode>
-            <ReasonPhrase>Bad request</ReasonPhrase>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
 </RaiseFault>

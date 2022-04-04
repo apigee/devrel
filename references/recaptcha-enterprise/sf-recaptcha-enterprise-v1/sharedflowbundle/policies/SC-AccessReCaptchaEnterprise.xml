@@ -25,10 +25,6 @@
     </Request>
     <Response>recaptchaAssessmentResponse</Response>
     <HTTPTargetConnection>
-        <SSLInfo>
-            <Enabled>true</Enabled>
-            <IgnoreValidationErrors>true</IgnoreValidationErrors>
-        </SSLInfo>
         <Authentication>
             <GoogleAccessToken>
                 <Scopes>

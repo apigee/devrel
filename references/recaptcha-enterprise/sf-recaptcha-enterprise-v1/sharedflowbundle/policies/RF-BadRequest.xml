@@ -17,7 +17,7 @@
             <Headers/>
             <Payload contentType="application/json">{"error":"bad_request","details":"bot detected!"}</Payload>
             <StatusCode>400</StatusCode>
-            <ReasonPhrase>Bad request</ReasonPhrase>
+            <ReasonPhrase>Bad Request</ReasonPhrase>
         </Set>
     </FaultResponse>
 </RaiseFault>

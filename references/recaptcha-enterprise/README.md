@@ -2,8 +2,9 @@
 
 [Google reCAPTCHA Enterprise](https://cloud.google.com/recaptcha-enterprise)
 can be leveraged by Apigee in order to protect backend systems from fraudulent
-client side activities like **bots**.
-A reCAPTCHA token is silentely and periodically retrieved by a client app and
+API clients in the form of **bots**.
+
+A reCAPTCHA token is silently and periodically retrieved by a client app and
 transmitted to an Apigee runtime when an API is invoked.
 
 ## How it works?
@@ -32,7 +33,7 @@ enterprise endpoint (```sf-recaptcha-enterprise-v1```).
 
 - [Maven](https://maven.apache.org/)
 - [NodeJS](https://nodejs.org/en/) LTS version or above
-- Apigee Evaluation/Trial [Organization](https://login.apigee.com/sign__up)
+- An Apigee organization
 - [Google Cloud Platform](https://cloud.google.com/) (GCP)
 
 This reference leverages Google reCAPTCHA Enterprise.
@@ -40,11 +41,11 @@ Therefore, it is important to note that:
 
 - The reCAPTCHA Enterprise API (```recaptchaenterprise.googleapis.com```)
 must be **enabled** in your GCP project.
-- a GCP service account is needed by the Apigee configuration
+- A GCP service account is needed by the Apigee configuration
 to securely invoke the Google reCAPTCHA Enterprise assessment endpoint.
 This service account is created during the deployment process on the GCP
-project you are currently using: the ```pipeline.sh``` will create a
-service account only if it doesn't exist.
+project you are currently using: the ```pipeline.sh``` will attempt to create
+a service account only if it doesn't exist.
 
 In case you want to create this service account manually - or with Terraform,
 please note that the role ```roles/recaptchaenterprise.agent``` must be granted
@@ -78,7 +79,7 @@ transmitted through the ```X-Recaptcha-Token``` HTTP header.
 Here are the possible values for the mock reCAPTCHA token, the related risk
 score and token validity:
 
-| X-Recaptcha-Token | Risk Score | is Token Valid? |
+| Recaptcha-Token | Risk Score | is Token Valid? |
 | - | - | - |
 | X-RECAPTCHA-TOKEN-0     | 0    | yes |
 | X-RECAPTCHA-TOKEN-0.1   | 0.1  | yes |
