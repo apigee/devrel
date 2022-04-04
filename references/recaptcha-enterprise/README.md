@@ -25,7 +25,7 @@ on the risk profile of the client application.
 
 The reCAPTCHA enterprise reference can be deployed on both Apigee X and
 hybrid. This reference would also work with Apigee Edge if the Service Account
-token is obtained though the sharedflow, which invoke the Google reCAPTCHA
+token is obtained through the sharedflow, which invokes the Google reCAPTCHA
 enterprise endpoint (```sf-recaptcha-enterprise-v1```).
 
 ## Dependencies
@@ -43,7 +43,7 @@ must be **enabled** in your GCP project.
 - a GCP service account is needed by the Apigee configuration
 to securely invoke the Google reCAPTCHA Enterprise assessment endpoint.
 This service account is created during the deployment process on the GCP
-project you are currently using: the ```pipelines.sh``` will create a
+project you are currently using: the ```pipeline.sh``` will create a
 service account only if it doesn't exist.
 
 In case you want to create this service account manually - or with Terraform,
