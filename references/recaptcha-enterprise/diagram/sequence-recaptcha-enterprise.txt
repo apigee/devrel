@@ -1,0 +1,38 @@
+@startuml
+
+title "reCAPTCHA enterprise & Apigee X/hybrid"
+
+actor User as u
+entity "Client App" as b
+entity "Google\nreCAPTCHA enterprise" as re
+box "Apigee API Platform" #LightBlue
+entity "API Proxy\ndata-proxy-v1" as nerp
+entity "SharedFlow\nsf-recaptcha-enterprise-v1" as rs
+end box
+participant "Backend" as backend
+
+u -> b: User interaction
+b -> b: App activity
+b -> re: get reCAPTCHA token using sitekey
+re -> b: return reCAPTCHA token
+b -> nerp: GET /protected\n(http headers:\n<b>x-apikey</b>: <client_id>\n<b>x-recaptcha-token</b>: <reCAPTCHA enterprise token>)
+
+note over re,rs: Act based on reCAPTCHA Token Validation & Risk Score   
+
+nerp -> rs: flow callout with minimum risk score property (between 0.0 and 1.0)
+activate rs
+rs -> rs: extract reCAPTCHA \ntoken from x-recaptcha-token header
+rs -> rs: verify api key
+rs -> rs: get sitekey from \n<b>client apps custom attribute</b>
+rs -> re: exchange reCAPTCHA token for assessment response including a risk score (0.0 - 1.0):\n<b>POST https://recaptchaenterprise.googleapis.com/v1/projects/<GCP_projectId>/assessments</b>\nauthorization: Bearer <GCP access_token>\ncontent-type: application/json\n{"event":{"sitekey":<sitekey>,"token":<reCAPTCHA_token>}}
+re -> re: extract risk score from token
+re -> rs: return score + token validation + score details into a json content
+rs -> rs: allow/deny api call \nbased on token validity and reCAPTCHA risk score\nand flow callout risk score property\n(risk acceptance)
+rs -> rs: sanitize request headers\n(removing x-apikey and x-recaptcha-token)
+rs -> nerp
+deactivate rs
+nerp -> backend: forward request to backend api
+backend -> nerp: response 200 OK
+nerp -> b: response 200 OK
+
+@enduml

@@ -15,4 +15,4 @@ Feature: Sackmesser Example
 
   Scenario: Invalid path
     When I GET /not-part-of-oas
-    Then response code should be 500
+    Then response code should be 400
