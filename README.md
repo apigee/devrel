@@ -57,6 +57,8 @@ further to fit a particular use case.
   A reference for protecting API proxies against XML and JSON threats
 - [Auth Schemes](references/auth-schemes) - Example implementations for various
   popular API auth schemes
+- [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
+  API protection against bot leveraging reCAPTCHA enterprise
   
 ## Tools
 
