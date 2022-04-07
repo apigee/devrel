@@ -41,7 +41,6 @@ list
 report
 
 Options:
-Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
 --apigeeapi, use api.enterprise.apigee.com (for Edge)
 -b,--base-path, overrides the default base path for the API proxy

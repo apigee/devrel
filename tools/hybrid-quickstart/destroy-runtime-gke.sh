@@ -21,6 +21,9 @@ source "$QUICKSTART_ROOT/steps.sh"
 
 set_config_params
 
+# ask for confirmation (skip with QUIET_INSTALL=true)
+ask_confirm
+
 echo "🗑️ Delete Apigee hybrid cluster"
 
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME" --region "$REGION"

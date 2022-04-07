@@ -21,6 +21,7 @@
 /references/oidc-mock                   @joelgauci
 /references/product-recommendations-api @kurtkanaskie
 /references/proxy-template              @seymen @danistrebel @omidtahouri
+/references/recaptcha-enterprise        @joelgauci
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
 /tools/apigee-openlegacy                @tomfi @joelgauci
