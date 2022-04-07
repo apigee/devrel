@@ -4,7 +4,8 @@
   "description": "Generates Apigee Configurable Proxy Envs from Swagger Specs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "./pipeline.sh"
   },
   "author": "danistrebel",
   "dependencies": {

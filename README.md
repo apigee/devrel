@@ -80,7 +80,7 @@ Apigee products.
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
 - [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
-  A tool to generate to configurable proxy archives from an Open API
+  A tool to generate configurable proxy archives from an OpenAPI
   Specification
 
 ## Labs

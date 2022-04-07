@@ -38,7 +38,6 @@ generateFromOAS({ outFolder, oasPath, basepath, name, envs });
 async function generateFromOAS(config) {
     try {
         const api = await SwaggerParser.validate(config.oasPath);
-        api.openapi
         const oasVersionString = api.openapi || api.swagger;
         const oasVersionSplit = oasVersionString.split(".");
         const oasVersionMajor = parseInt(oasVersionSplit[0], 10);
