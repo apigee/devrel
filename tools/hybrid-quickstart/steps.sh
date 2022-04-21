@@ -51,13 +51,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.6.6'
+    export APIGEE_HYBRID_VERSION='1.7.0'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
-    export CERT_MANAGER_VERSION='v1.5.4'
+    export CERT_MANAGER_VERSION='v1.7.2'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.10'
+    export ASM_VERSION='1.12'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
@@ -65,13 +65,13 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "- 🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
       export JQ_VERSION='jq-1.6/jq-linux64'
+      export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "- 🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
       export JQ_VERSION='jq-1.6/jq-osx-amd64'
+      export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
       exit 2
@@ -316,7 +316,7 @@ configure_network() {
     fi
 
     if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
-      gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443 --target-tags hybrid-quickstart --network "$NETWORK"
+      gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK"
     fi
 
     if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
@@ -377,6 +377,7 @@ create_gke_cluster() {
         --master-ipv4-cidr 172.16.0.16/28 \
         --enable-shielded-nodes \
         --shielded-secure-boot \
+        --shielded-integrity-monitoring \
         --network "$NETWORK" \
         --subnetwork "$SUBNET" \
         --default-max-pods-per-node "110" \
@@ -412,17 +413,17 @@ install_asm() {
   mkdir -p "$QUICKSTART_TOOLS"/kpt
   curl --fail -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
   tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
-  export PATH=$PATH:"$QUICKSTART_TOOLS"/kpt
+  export PATH="$QUICKSTART_TOOLS"/kpt:$PATH # prevents asm from installing the wrong kpt version for macOS
 
   mkdir -p "$QUICKSTART_TOOLS"/jq
   curl --fail -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
   chmod +x "$QUICKSTART_TOOLS"/jq/jq
   export PATH=$PATH:"$QUICKSTART_TOOLS"/jq
-
   echo "🏗️ Installing Anthos Service Mesh"
+
   mkdir -p "$QUICKSTART_TOOLS"/istio-asm
-  curl --fail https://storage.googleapis.com/csm-artifacts/asm/install_asm_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/install_asm
-  chmod +x "$QUICKSTART_TOOLS"/istio-asm/install_asm
+  curl --fail https://storage.googleapis.com/csm-artifacts/asm/asmcli_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/asmcli
+  chmod +x "$QUICKSTART_TOOLS"/istio-asm/asmcli
 
   if [ "$CERT_TYPE" = "google-managed" ];then
     cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
@@ -437,9 +438,6 @@ spec:
         resources:
           requests:
             cpu: 1000m
-        readinessProbe:
-          initialDelaySeconds: 45
-          periodSeconds: 60
         serviceAnnotations:
           cloud.google.com/neg: '{"ingress": true}'
           cloud.google.com/backend-config: '{"default": "ingress-backendconfig"}'
@@ -467,9 +465,6 @@ spec:
         resources:
           requests:
             cpu: 1000m
-        readinessProbe:
-          initialDelaySeconds: 45
-          periodSeconds: 60
         serviceAnnotations:
           networking.gke.io/load-balancer-type: $INGRESS_TYPE
         service:
@@ -487,16 +482,16 @@ EOF
 
   rm -rf "$QUICKSTART_TOOLS"/istio-asm/install-out
   mkdir -p "$QUICKSTART_TOOLS"/istio-asm/install-out
-  ln -s "$QUICKSTART_TOOLS/kpt/kpt"  "$QUICKSTART_TOOLS"/istio-asm/install-out/kpt
 
-  "$QUICKSTART_TOOLS"/istio-asm/install_asm \
+  yes | "$QUICKSTART_TOOLS"/istio-asm/asmcli install \
     --project_id "$PROJECT_ID" \
+    --fleet_id "$PROJECT_ID" \
     --cluster_name "$GKE_CLUSTER_NAME" \
     --cluster_location "$REGION" \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
     --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
-    --enable_all \
-    --mode install
+    --ca mesh_ca \
+    --enable_all
 
   echo "✅ ASM installed"
 }
@@ -506,7 +501,7 @@ download_apigee_ctl() {
 
     APIGEECTL_ROOT="$QUICKSTART_TOOLS/apigeectl"
 
-    # Remove if it existed from an old install
+    # Remove existing apigeectl
     if [ -d "$APIGEECTL_ROOT" ]; then rm -rf "$APIGEECTL_ROOT"; fi
     mkdir -p "$APIGEECTL_ROOT"
 
