@@ -53,7 +53,7 @@ fi
 # because they don't have any side effects on the Apigee orgs
 # used for CI/CD.
 declare -A async_projects=(
- [./tools/hybrid-quickstart]=1  [tools/apigee-x-trial-provision]=1
+ [./tools/hybrid-quickstart]=1  [./tools/apigee-x-trial-provision]=1
 )
 async_pipeline_pids=''
 
@@ -62,7 +62,8 @@ STARTTIME=$(date +%s)
 # Starting async builds
 for DIR in ${DIRS//,/ }
 do
- if [ -n "${async_projects[$DIR]}" ] && [ -f  "$DIR/pipeline.sh" ]; then
+  RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
+  if [ -n "${async_projects[$RELATIVE_DIR]}" ] && [ -f  "$DIR/pipeline.sh" ]; then
     run_single_pipeline "$DIR" &
     pid=$!
     async_pipeline_pids="$async_pipeline_pids $pid"
