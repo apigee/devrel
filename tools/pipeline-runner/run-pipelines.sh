@@ -73,10 +73,11 @@ done
 
 for DIR in ${DIRS//,/ }
 do
+  RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"
     append_pipeline_result "[N/A] $DIR,0,0s"
-  elif [ -n "${async_projects[$DIR]}" ]; then
+  elif [ -n "${async_projects[$RELATIVE_DIR]}" ]; then
     echo "[INFO] DevRel Pipeline: $DIR (async, already started)"
   else
     echo "[INFO] DevRel Pipeline: $DIR"
