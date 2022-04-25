@@ -735,7 +735,9 @@ EOF
 install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
-    "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml )
+    "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml \
+      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml ) \
+      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml )
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
     echo "waiting for 30s for the webhook certs to propagate" && sleep 30
