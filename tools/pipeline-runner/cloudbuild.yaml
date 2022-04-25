@@ -27,7 +27,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Pull Image Cache'
     entrypoint: 'bash'
-    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/devrel-pipeline:latest -l warn || exit 0']
+    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/devrel-pipeline:latest || exit 0']
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Image'
     args:
