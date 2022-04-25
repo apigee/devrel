@@ -49,32 +49,46 @@ if [ -z "$DIRS" ]; then
   DIRS=$(echo "$DIRS" | cut -c 2-)
 fi
 
-async_pipelines=''
+# Allowing some solutions to run independently and async
+# because they don't have any side effects on the Apigee orgs
+# used for CI/CD.
+declare -A async_projects=(
+ [./tools/hybrid-quickstart]=1  [tools/apigee-x-trial-provision]=1
+)
+async_pipeline_pids=''
 
 STARTTIME=$(date +%s)
+
+# Starting async builds
+for DIR in ${DIRS//,/ }
+do
+ if [ -n "${async_projects[$DIR]}" ] && [ -f  "$DIR/pipeline.sh" ]; then
+    run_single_pipeline "$DIR" &
+    pid=$!
+    async_pipeline_pids="$async_pipeline_pids $pid"
+    echo "[INFO] DevRel Pipeline: $DIR (async) #$pid"
+  fi
+done
 
 for DIR in ${DIRS//,/ }
 do
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"
     append_pipeline_result "[N/A] $DIR,0,0s"
-  elif [ "$ASYNC_PIPELINE" = "true" ]; then
-    run_single_pipeline "$DIR" &
-    pid=$!
-    async_pipelines="$async_pipelines $pid"
-    echo "[INFO] DevRel Pipeline: $DIR (async) #$pid"
+  elif [ -n "${async_projects[$DIR]}" ]; then
+    echo "[INFO] DevRel Pipeline: $DIR (async, already started)"
   else
     echo "[INFO] DevRel Pipeline: $DIR"
     run_single_pipeline "$DIR"
   fi
 done
 
-if [ "$ASYNC_PIPELINE" = "true" ]; then
-  for pid in $(echo "$async_pipelines" | tr ";" "\n"); do
-    wait "$pid"
-    echo "[INFO] Done #$pid (return=$?)"
-  done
-fi
+echo "[INFO] Awaiting Async Pipelines"
+for pid in $(echo "$async_pipeline_pids" | tr ";" "\n"); do
+  echo "[INFO] Awaiting #$pid"
+  wait "$pid"
+  echo "[INFO] Done #$pid (return=$?)"
+done
 
 ENDTIME=$(date +%s)
 append_pipeline_result "TOTAL PIPELINE,0,$((ENDTIME-STARTTIME))s"
