@@ -9,7 +9,7 @@
     "@cucumber/cucumber": "7.3.0",
     "apickli": "3.0.1",
     "apigeetool": "^0.10.0",
-    "async": "^2.1.2",
+    "async": "^2.6.4",
     "commander": "^2.8.1",
     "inquirer": "1.2.3",
     "lodash.assign": "4.2.0",
