@@ -57,7 +57,7 @@ declare -A async_projects=(
 )
 async_pipeline_pids=''
 
-STARTTIME=$(date +%s)
+TOTAL_STARTTIME=$(date +%s)
 
 # Starting async builds
 for DIR in ${DIRS//,/ }
@@ -92,8 +92,8 @@ for pid in $(echo "$async_pipeline_pids" | tr ";" "\n"); do
   echo "[INFO] Done #$pid (return=$?)"
 done
 
-ENDTIME=$(date +%s)
-append_pipeline_result "TOTAL PIPELINE,0,$((ENDTIME-STARTTIME))s"
+TOTAL_ENDTIME=$(date +%s)
+append_pipeline_result "TOTAL PIPELINE,0,$((TOTAL_ENDTIME-TOTAL_STARTTIME))s"
 
 # print report
 echo
