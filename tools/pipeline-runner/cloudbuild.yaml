@@ -27,7 +27,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Pull Image Cache'
     entrypoint: 'bash'
-    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/devrel-pipeline:latest -l warn || exit 0']
+    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/devrel-pipeline:latest || exit 0']
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Image'
     args:
@@ -87,7 +87,6 @@ steps:
       - 'APIGEE_X_ENV=$_APIGEE_X_ENV'
       - 'APIGEE_X_HOSTNAME=$_APIGEE_X_HOSTNAME'
       - 'APIGEE_X_ORG=$_APIGEE_X_ORG'
-      - 'ASYNC_PIPELINE=$_ASYNC_PIPELINE'
       - 'HYBRID_GCP_PROJECT=$_HYBRID_GCP_PROJECT'
       - 'X_TRIAL_GCP_PROJECT=$_X_TRIAL_GCP_PROJECT'
     secretEnv:
@@ -145,5 +144,4 @@ substitutions:
   _CREATE_GH_ISSUE: "false" # true|false
   _REPO_GH_ISSUE: "apigee/devrel"
   _GH_BOT_NAME: "apigee-devrel-bot"
-  _ASYNC_PIPELINE: "false" # true|false
   #_PR_NUMBER: "" # automatically set for PRs

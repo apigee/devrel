@@ -2,10 +2,10 @@
     "name": "apigee-recaptcha-enterprise",
     "version": "1.0.0",
     "scripts": {
-      "test": "./node_modules/.bin/cucumber-js --publish-quiet test/integration/features"
+        "test": "./node_modules/.bin/cucumber-js --publish-quiet test/integration/features"
     },
     "devDependencies": {
-      "@cucumber/cucumber": "^7.3.0",
-      "apickli": "^3.0.1"
+        "@cucumber/cucumber": "^7.3.0",
+        "apickli": "^3.0.1"
     }
-  }
+}
