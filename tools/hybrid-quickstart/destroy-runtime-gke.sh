@@ -32,8 +32,11 @@ for persistent_disk in $(gcloud compute disks list --format="value(name)" --filt
    gcloud compute disks delete "$persistent_disk" --zone="$ZONE" -q
 done
 
-echo "✅ Apigee hybrid cluster deleted"
+for cluster in $(gcloud container hub memberships list --format="value(name)"); do
+   gcloud container hub memberships delete "$cluster" -q
+done
 
+echo "✅ Apigee hybrid cluster deleted"
 
 echo "🗑️ Clean up Networking"
 

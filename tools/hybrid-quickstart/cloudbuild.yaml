@@ -20,7 +20,7 @@ steps:
     args:
       - "-c"
       - |-
-        gcloud components update # b/229248353
+        gcloud version
         apt-get update && apt-get install zip -y
         ./initialize-runtime-gke.sh || touch .failure
     env:
