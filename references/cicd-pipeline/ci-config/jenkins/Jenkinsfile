@@ -2,13 +2,12 @@ pipeline {
 
     agent any
 
-    properties([
-        parameters([
-            string(name: 'API_VERSION', defaultValue: 'google'),
-            string(name: 'APIGEE_ORG', defaultValue: 'my-org'),
-            string(name: 'APIGEE_TEST_ENV', defaultValue: 'test1'),
-            string(name: 'TEST_HOST', defaultValue: 'api.example.com'),
-    ])
+    parameters {
+            string(name: 'API_VERSION', defaultValue: 'google')
+            string(name: 'APIGEE_ORG', defaultValue: 'my-org')
+            string(name: 'APIGEE_TEST_ENV', defaultValue: 'test1')
+            string(name: 'TEST_HOST', defaultValue: 'api.example.com')
+    }
 
     environment {
         APIGEE_CREDS = credentials('apigee')
