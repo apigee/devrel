@@ -161,7 +161,7 @@ pipeline {
             sh """
 
               gcloud auth activate-service-account --key-file=${GC_KEY}
-              APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
+              APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"
 
               mvn clean install \
                 -Pgoogleapi \
