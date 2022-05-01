@@ -32,8 +32,8 @@ pipeline {
     stages {
         stage('Version Check') {
             steps {
-                bat "npm -v"
-                bat "mvn -v"
+                sh "npm -v"
+                sh "mvn -v"
                 echo "Stable Revision: ${env.stable_revision}"
         }}
 
