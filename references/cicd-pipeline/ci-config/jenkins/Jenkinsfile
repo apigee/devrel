@@ -2,6 +2,9 @@ pipeline {
 
     agent any
 
+    customWorkspace "references/cicd-pipeline"
+
+
     parameters {
             string(name: 'API_VERSION', defaultValue: 'google')
             string(name: 'APIGEE_ORG', defaultValue: 'my-org')
@@ -29,8 +32,6 @@ pipeline {
         // TEST_HOST= 'api.example.com'
     }
 
-dir( "references/cicd-pipeline" ) {
-    sh "pwd"
     
     stages {
         stage('Version Check') {
@@ -185,5 +186,4 @@ dir( "references/cicd-pipeline" ) {
               trendsLimit: 10
       }
     }
-  }    
 }
