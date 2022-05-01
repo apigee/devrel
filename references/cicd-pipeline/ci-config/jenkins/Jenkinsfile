@@ -1,10 +1,6 @@
 pipeline {
 
-    agent any {
-        node {
-          customWorkspace "references/cicd-pipeline"
-      }
-    }
+    agent any
 
 
     parameters {
@@ -71,13 +67,17 @@ pipeline {
         }
 
         stage('Install dependencies') {
-          steps {
-            sh "npm install --silent --no-fund"
+          steps { 
+            dir( "references/cicd-pipeline" ) {
+
+              sh "npm install --silent --no-fund"
+            }
           }
         }
 
         stage('Static Code Analysis') {
           steps {
+        dir( "references/cicd-pipeline" ) {
             sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
@@ -105,9 +105,11 @@ pipeline {
             sh "rm apigeelint-out.html"
           }
         }
+        }
 
         stage('Unit Test') {
-          steps {
+          steps { dir( "references/cicd-pipeline" ) {
+
             sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
 
             publishHTML(target: [
@@ -118,7 +120,7 @@ pipeline {
               reportFiles: 'index.html',
               reportName: 'Unit Test Report'
             ])
-          }
+          } }
         }
 
         stage('Commit Author Extraction') {
@@ -138,7 +140,8 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'apigee'}
           }
-          steps {
+          steps {            dir( "references/cicd-pipeline" ) {
+
             sh """
               mvn clean install \
                 -Papigeeapi \
@@ -150,7 +153,7 @@ pipeline {
                 -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
                 """
 
-          }
+          } }
         }
 
         stage('Deploy X/hybrid') {
