@@ -9,6 +9,12 @@ pipeline {
             string(name: 'TEST_HOST', defaultValue: 'api.example.com')
     }
 
+    tools {
+        maven 'M3'
+//        jdk 'JDK'
+//        nodejs 'NODEJS'
+    }
+
     environment {
         APIGEE_CREDS = credentials('apigee')
 
@@ -24,6 +30,15 @@ pipeline {
     }
 
     stages {
+        stage('Version Check') {
+            steps {
+                sendNotifications 'STARTED'
+                bat "npm -v"
+                bat "mvn -v"
+                echo "$apigeeUsername"
+                echo "Stable Revision: ${env.stable_revision}"
+        }}
+
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
             script{
