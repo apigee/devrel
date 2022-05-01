@@ -67,17 +67,14 @@ pipeline {
         }
 
         stage('Install dependencies') {
-          steps { 
-            dir( "references/cicd-pipeline" ) {
+          steps { dir( "references/cicd-pipeline" ) {
 
               sh "npm install --silent --no-fund"
-            }
-          }
+          } }
         }
 
         stage('Static Code Analysis') {
-          steps {
-        dir( "references/cicd-pipeline" ) {
+          steps {        dir( "references/cicd-pipeline" ) {
             sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
@@ -103,8 +100,7 @@ pipeline {
             ]);
 
             sh "rm apigeelint-out.html"
-          }
-        }
+          }        }
         }
 
         stage('Unit Test') {
@@ -160,7 +156,7 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'google'}
           }
-          steps {
+          steps {  dir( "references/cicd-pipeline" ) {
             sh """
               APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
 
@@ -172,23 +168,23 @@ pipeline {
                 -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
                 -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
             """
-          }
+          } }
         }
 
         stage('Functional Test') {
-          steps {
+          steps { dir( "references/cicd-pipeline" ) {
             sh "TEST_HOST=${env.TEST_HOST} node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
-          }
+          } }
         }
     }
 
     post {
-      always {
+      always {  dir( "references/cicd-pipeline" ) {
         cucumber reportTitle: 'Apickli test report',
               fileIncludePattern: '**/reports.json',
               jsonReportDirectory: "target",
               sortingMethod: 'ALPHABETICAL',
               trendsLimit: 10
-      }
+      } }
     }
 }
