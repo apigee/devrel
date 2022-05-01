@@ -157,7 +157,10 @@ pipeline {
             expression { env.API_VERSION ==  'google'}
           }
           steps {  dir( "references/cicd-pipeline" ) {
+           withCredentials([file(credentialsId: 'apigee', variable: 'GC_KEY')]) {
             sh """
+
+              gcloud auth activate-service-account --key-file=${GC_KEY}"
               APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
 
               mvn clean install \
