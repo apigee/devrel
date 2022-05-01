@@ -1,9 +1,9 @@
 pipeline {
 
-    agent any
-
-    node {
-        customWorkspace "references/cicd-pipeline"
+    agent any {
+        node {
+          customWorkspace "references/cicd-pipeline"
+      }
     }
 
 
