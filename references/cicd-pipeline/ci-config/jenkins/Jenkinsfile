@@ -29,6 +29,9 @@ pipeline {
         // TEST_HOST= 'api.example.com'
     }
 
+dir( "references/cicd-pipeline" ) {
+    sh "pwd"
+    
     stages {
         stage('Version Check') {
             steps {
@@ -182,4 +185,5 @@ pipeline {
               trendsLimit: 10
       }
     }
+  }    
 }
