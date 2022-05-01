@@ -32,10 +32,8 @@ pipeline {
     stages {
         stage('Version Check') {
             steps {
-                sendNotifications 'STARTED'
                 bat "npm -v"
                 bat "mvn -v"
-                echo "$apigeeUsername"
                 echo "Stable Revision: ${env.stable_revision}"
         }}
 
