@@ -1,0 +1,23 @@
+{
+  "name": "BikeTripsQuery-v1",
+  "profile": "bigquery",
+  "endpoints": [
+    {
+      "name": "default",
+      "basePath": "/trips2",
+      "target": {
+        "name": "BikeTrips",
+        "query": "SELECT * FROM bigquery-public-data.austin_bikeshare.bikeshare_trips %filter% %orderBy% %pageSize% %pageToken%"
+      },
+      "quotas": [
+        {
+          "count": 30,
+          "timeUnit": "minute"
+        }
+      ],
+      "spikeArrest": {
+        "rate": "30s"
+      }
+    }
+  ]
+}

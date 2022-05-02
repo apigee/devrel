@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^(https://deploy.cloud.run|http://localhost:3000)"
+    }
+  ]
+}

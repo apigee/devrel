@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+require = require('esm')(module /*, options*/);
+const cli = require('../dist/cli.js').default;
+
+const myCli = new cli();
+myCli.process(process.argv);

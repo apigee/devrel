@@ -1,0 +1,37 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Configuration file for MegaLinter
+# See all available variables at https://megalinter.github.io/configuration/ and in linters documentation
+
+APPLY_FIXES: all # all, none, or list of linter keys
+# ENABLE: # If you use ENABLE variable, all other languages/formats/tooling-formats will be disabled by default
+# ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
+DISABLE:
+  - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
+  - SPELL # Uncomment to disable checks of spelling mistakes
+DISABLE_LINTERS:
+  - DOCKERFILE_DOCKERFILELINT
+  - DOCKERFILE_HADOLINT
+  - HTML_HTMLHINT
+  - TYPESCRIPT_STANDARD
+EXCLUDED_DIRECTORIES:
+  - examples
+  - dist
+  - build
+  - node_modules
+  - .vscode
+SHOW_ELAPSED_TIME: true
+#FILEIO_REPORTER: true
+# DISABLE_ERRORS: true # Uncomment if you want MegaLinter to detect errors but not block CI to pass

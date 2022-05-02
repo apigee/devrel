@@ -1,0 +1,70 @@
+{
+  "api": {
+    "apiTags": {},
+    "isPublic": true,
+    "operations": [
+      {
+        "name": "get-vversion-getsupplierbyid-id-v1",
+        "policies": {
+          "inbound": {
+            "rewriteUriPolicy": {
+              "rewriteUri": "/api/v{version}/GetSupplierById/{id}"
+            }
+          }
+        }
+      },
+      {
+        "name": "get-vversion-getallsuppliers-v1",
+        "policies": {
+          "inbound": {
+            "rewriteUriPolicy": {
+              "rewriteUri": "/api/v{version}/GetAllSuppliers"
+            }
+          }
+        }
+      },
+      {
+        "name": "post-vversion-setsupplier-v1",
+        "policies": {
+          "inbound": {
+            "rewriteUriPolicy": {
+              "rewriteUri": "/api/v{version}/SetSupplier"
+            }
+          }
+        }
+      }
+    ],
+    "policies": {
+      "inbound": {
+        "basicAuthenticationBackendEnabled": false,
+        "totalThrottlingEnabled": true,
+        "validateJwtTokenAzureAdV1": {
+          "overrideScopeEnabled": false,
+          "backendAudiencevalidationEnabled": true
+        }
+      }
+    }
+  },
+  "backend": {
+    "validateCertificateChain": false,
+    "validateCertificateName": false
+  },
+  "environments": [
+    {
+      "backendBaseUrl": "https://backend-t66njk6y6a-ey.a.run.app",
+      "physicalEnvironment": "dev",
+      "backendAudienceConfiguration": {
+        "backendAudience": "api://5ce2b6a6-5f99-4988-8ac8-fds3232"
+      }
+    }
+  ],
+  "product": {
+    "apiTestBackendProduct": {
+      "productName": "apitest-supplier"
+    },
+    "apiTestProductType": "backend",
+    "deployTeamBackendProduct": {
+      "productName": "apitest-supplier"
+    }
+  }
+}
