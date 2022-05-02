@@ -14,7 +14,7 @@ Click <walkthrough-editor-open-file filePath="tools/apigee-templater/env.sh">her
 Then, source the `env.sh` file in the Cloud shell.
 
 ```sh
-source ./env.sh
+source ./tools/apigee-templater/env.sh
 ```
 ---
 ## Create a simple proxy
