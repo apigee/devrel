@@ -3,7 +3,7 @@ A tool for automating the templating of Apigee API proxies through either a **CL
 
 You can try out the tool easily in Google Cloud Shell including a tutorial walk-through of the features by clicking here:
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://ssh.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/tyayers/devrel&cloudshell_git_branch=main&cloudshell_workspace=.&cloudshell_tutorial=docs/cloudshell-tutorial.md)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://ssh.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/tyayers/devrel&cloudshell_git_branch=main&cloudshell_workspace=.&cloudshell_tutorial=tools/apigee-templater/docs/cloudshell-tutorial.md)
 
 ## Prerequisites
 This tool assumes you already have an Apigee X org and environment provisioned (either production or eval, see [here](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro) for more info).  Also you should have **gcloud** installed and the project set to where Apigee X is provisioned.
