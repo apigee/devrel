@@ -9,7 +9,7 @@ Let's get started!
 ## Setup environment
 Edit the provided sample `env.sh` file, and set the environment variables there to the GCP project where Apigee X is provisioned.
 
-Click <walkthrough-editor-open-file filePath="env.sh">here</walkthrough-editor-open-file> to open the file in the editor
+Click <walkthrough-editor-open-file filePath="tools/apigee-templater/env.sh">here</walkthrough-editor-open-file> to open the file in the editor
 
 Then, source the `env.sh` file in the Cloud shell.
 
