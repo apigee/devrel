@@ -171,7 +171,6 @@ script {
 
 echo "SA_TOKEN: ${env.SA_TOKEN}"
 
-\\env.APIGEE_SA_TOKEN="${env.APIGEE_TOKEN
 
 //              env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"', returnStdout: true).trim()
 //              env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"
