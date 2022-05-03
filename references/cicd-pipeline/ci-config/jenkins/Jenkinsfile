@@ -161,7 +161,9 @@ script {
 //                env.APIGEE_SA_TOKEN=sh("\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}")
               env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth application-defautl print-access-token)}"', returnStdout: true).trim()
 
-//              }
+              }
+              
+              
 //              env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"', returnStdout: true).trim()
 //              env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"
 
@@ -170,7 +172,6 @@ script {
 //            } 
 
 
-echo env.APIGEE_SA_TOKEN
 
             sh """
               mvn clean install \
