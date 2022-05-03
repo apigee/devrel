@@ -15,7 +15,6 @@ pipeline {
     environment {
         APIGEE_CREDS = credentials('apigee')
 
-        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION }
 
 
         // Multiple options for setting the Apigee deployment target config:
@@ -40,6 +39,14 @@ pipeline {
 
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
+          
+println "===="
+println env.API_VERSION
+
+
+        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION }
+          
+          
             script{
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
