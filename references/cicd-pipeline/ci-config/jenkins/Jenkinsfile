@@ -5,11 +5,11 @@ pipeline {
 
     parameters {
             string(name: 'API_VERSION_P', defaultValue: 'google')
-            string(name: 'APIGEE_ORG', defaultValue: 'my-org')
-            string(name: 'APIGEE_TEST_ENV', defaultValue: 'test1')
-            string(name: 'TEST_HOST', defaultValue: 'api.example.com')
-            string(name: 'WORK_DIR', defaultValue: 'references/cicd-pipeline')
-            choice(name: 'GCP_SA_AUTH', choices: [ "vm-scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
+            string(name: 'APIGEE_ORG_P', defaultValue: 'my-org')
+            string(name: 'APIGEE_TEST_ENV_P', defaultValue: 'test1')
+            string(name: 'TEST_HOST_P', defaultValue: 'api.example.com')
+            string(name: 'WORK_DIR_P', defaultValue: 'references/cicd-pipeline')
+            choice(name: 'GCP_SA_AUTH_P', choices: [ "vm-scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
     }
 
     environment {
@@ -39,18 +39,15 @@ pipeline {
 
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
-          
             script{
 
-println "===="
-println env.API_VERSION
-
-
-        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION_P }
-          
-          
-println env.API_VERSION
-
+              // env var/param precedence
+              if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION_P }
+              if( ! env.APIGEE_ORG ){ env.APIGEE_ORG = params.APIGEE_ORG_P }
+              if( ! env.APIGEE_TEST_ENV ){ env.APIGEE_TEST_ENV = params.APIGEE_TEST_ENV_P }
+              if( ! env.TEST_HOST ){ env.TEST_HOST = params.TEST_HOST_P }
+              if( ! env.WORK_DIR ){ env.WORK_DIR = params.WORK_DIR_P }
+              if( ! env.GCP_SA_AUTH ){ env.GCP_SA_AUTH = params.GCP_SA_AUTH_P }
 
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
