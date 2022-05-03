@@ -14,7 +14,7 @@ pipeline {
 
             string(name: 'APIGEE_USER_P', defaultValue: 'not-used')
             string(name: 'APIGEE_PASS_P', defaultValue: 'not-used')
-            string(name: 'APIGEE_TOKEN_P', defaultValue: 'null')
+            string(name: 'APIGEE_TOKEN_P', defaultValue: '')
 
             string(name: 'GIT_BRANCH_P', defaultValue: 'nightly')
             string(name: 'AUTHOR_EMAIL_P', defaultValue: 'cicd@apigee.google.com')
