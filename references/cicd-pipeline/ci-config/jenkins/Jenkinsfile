@@ -9,7 +9,7 @@ pipeline {
             string(name: 'APIGEE_TEST_ENV', defaultValue: 'test1')
             string(name: 'TEST_HOST', defaultValue: 'api.example.com')
             string(name: 'WORK_DIR', defaultValue: 'references/cicd-pipeline')
-            choice(name: 'GCP_SA_AUTH', choices: [ "vm_scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
+            choice(name: 'GCP_SA_AUTH', choices: [ "vm-scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
     }
 
     environment {
@@ -162,7 +162,7 @@ pipeline {
                    env.SA_TOKEN=sh(script:'gcloud auth print-access-token', returnStdout: true).trim()
                  }
               } else {
-                 env.SA_TOKEN=sh(script:'gcloud auth print-access-token', returnStdout: true).trim()
+                 env.SA_TOKEN=sh(script:'gcloud auth application-default print-access-token', returnStdout: true).trim()
               }
 
               sh """
