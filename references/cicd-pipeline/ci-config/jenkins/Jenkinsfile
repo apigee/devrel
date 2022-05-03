@@ -162,7 +162,7 @@ script {
 
 //              env.APIGEE_SA_TOKEN="gcloud auth application-default print-access-token"
 
-              env.SA_TOKEN=sh(script:"gcloud auth print-access-token"', returnStdout: true).trim()
+              env.SA_TOKEN=sh(script:'gcloud auth print-access-token', returnStdout: true).trim()
               
               //', returnStdout: true).trim()
 
