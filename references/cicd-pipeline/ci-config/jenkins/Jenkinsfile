@@ -159,7 +159,10 @@ script {
               withCredentials([file(credentialsId: 'apigee', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
 //                sh 'gcloud auth activate-service-account --key-file=${GC_KEY}'
 //                env.APIGEE_SA_TOKEN=sh("\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}")
-              env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"', returnStdout: true).trim()
+
+              env.APIGEE_SA_TOKEN=sh("\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}")
+              
+              //', returnStdout: true).trim()
 
               }
     }
