@@ -160,8 +160,8 @@ script {
                 sh '''
                   gcloud auth activate-service-account --key-file=${GC_KEY}
                 
-                APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"
                 '''
+                env.APIGEE_SA_TOKEN=sh("\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}")
                 
               }
 
