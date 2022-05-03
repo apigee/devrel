@@ -40,6 +40,8 @@ pipeline {
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
           
+            script{
+
 println "===="
 println env.API_VERSION
 
@@ -47,7 +49,8 @@ println env.API_VERSION
         if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION }
           
           
-            script{
+
+
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
