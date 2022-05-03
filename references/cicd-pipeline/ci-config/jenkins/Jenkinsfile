@@ -4,7 +4,7 @@ pipeline {
 
 
     parameters {
-            string(name: 'API_VERSION', defaultValue: 'google')
+            string(name: 'API_VERSION_P', defaultValue: 'google')
             string(name: 'APIGEE_ORG', defaultValue: 'my-org')
             string(name: 'APIGEE_TEST_ENV', defaultValue: 'test1')
             string(name: 'TEST_HOST', defaultValue: 'api.example.com')
@@ -46,9 +46,10 @@ println "===="
 println env.API_VERSION
 
 
-        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION }
+        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION_P }
           
           
+println env.API_VERSION
 
 
               // Main branch for Apigee test environment
