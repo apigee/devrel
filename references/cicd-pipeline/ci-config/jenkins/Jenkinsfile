@@ -182,7 +182,7 @@ echo "SA_TOKEN: ${env.SA_TOKEN}"
 
 
             sh """
-                APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-SA_TOKEN}"
+                APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\${SA_TOKEN}}"
             
               mvn clean install \
                 -Pgoogleapi \
