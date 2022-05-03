@@ -68,14 +68,14 @@ pipeline {
         }
 
         stage('Install dependencies') {
-          steps { dir( "env.WORK_DIR" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
 
               sh "npm install --silent --no-fund"
           } }
         }
 
         stage('Static Code Analysis') {
-          steps {        dir( "env.WORK_DIR" ) {
+          steps {        dir( "${env.WORK_DIR}" ) {
             sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
@@ -105,7 +105,7 @@ pipeline {
         }
 
         stage('Unit Test') {
-          steps { dir( "env.WORK_DIR" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
 
             sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
 
@@ -137,7 +137,7 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'apigee'}
           }
-          steps {            dir( "env.WORK_DIR" ) {
+          steps {            dir( "${env.WORK_DIR}" ) {
 
             sh """
               mvn clean install \
@@ -157,7 +157,7 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'google'}
           }
-          steps {  dir( "env.WORK_DIR" ) {
+          steps {  dir( "${env.WORK_DIR}" ) {
            withCredentials([file(credentialsId: 'apigee', variable: 'GC_KEY')]) {
             sh """
 
@@ -177,14 +177,14 @@ pipeline {
         }
 
         stage('Functional Test') {
-          steps { dir( "env.WORK_DIR" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
             sh "TEST_HOST=${env.TEST_HOST} node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
           } }
         }
     }
 
     post {
-      always {  dir( "env.WORK_DIR" ) {
+      always {  dir( "${env.WORK_DIR}" ) {
         cucumber reportTitle: 'Apickli test report',
               fileIncludePattern: '**/reports.json',
               jsonReportDirectory: "target",
