@@ -156,15 +156,17 @@ pipeline {
 
 script {
            if (env.GCP_SA_AUTH == "jenkins-scope") {
-              withCredentials([file(credentialsId: 'apigee', variable: 'GC_KEY')]) {
-                sh 'gcloud auth activate-service-account --key-file=${GC_KEY}'
-              }
-              env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"', returnStdout: true).trim()
+              withCredentials([file(credentialsId: 'apigee', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+//                sh 'gcloud auth activate-service-account --key-file=${GC_KEY}'
+                env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
+
+//              }
+//              env.APIGEE_SA_TOKEN=sh(script:'echo "\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"', returnStdout: true).trim()
 //              env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth print-access-token)}"
 
-            } else {
-                env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
-            } 
+//            } else {
+//                env.APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
+//            } 
 
             sh """
               mvn clean install \
