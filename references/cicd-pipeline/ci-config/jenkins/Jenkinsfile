@@ -7,15 +7,22 @@ pipeline {
             string(name: 'API_VERSION_P', defaultValue: 'google')
             string(name: 'APIGEE_ORG_P', defaultValue: 'my-org')
             string(name: 'APIGEE_TEST_ENV_P', defaultValue: 'test1')
+            string(name: 'APIGEE_PROD_ENV_P', defaultValue: '')
             string(name: 'TEST_HOST_P', defaultValue: 'api.example.com')
             string(name: 'WORK_DIR_P', defaultValue: 'references/cicd-pipeline')
             choice(name: 'GCP_SA_AUTH_P', choices: [ "vm-scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
+
+            string(name: 'APIGEE_USER_P', defaultValue: 'not-used')
+            string(name: 'APIGEE_PASS_P', defaultValue: 'not-used')
+            string(name: 'APIGEE_TOKEN_P', defaultValue: 'null')
+
+            string(name: 'GIT_BRANCH_P', defaultValue: 'nightly')
+            string(name: 'AUTHOR_EMAIL_P', defaultValue: 'cicd@apigee.google.com')
+
     }
 
     environment {
         APIGEE_CREDS = credentials('apigee')
-
-
 
         // Multiple options for setting the Apigee deployment target config:
         // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
@@ -34,7 +41,6 @@ pipeline {
             steps {
                 sh "npm -v"
                 sh "mvn -v"
-                echo "Stable Revision: ${env.stable_revision}"
         }}
 
         stage('Set Apigee Env and Proxy Suffix') {
@@ -45,9 +51,17 @@ pipeline {
               if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION_P }
               if( ! env.APIGEE_ORG ){ env.APIGEE_ORG = params.APIGEE_ORG_P }
               if( ! env.APIGEE_TEST_ENV ){ env.APIGEE_TEST_ENV = params.APIGEE_TEST_ENV_P }
+              if( ! env.APIGEE_PROD_ENV ){ env.APIGEE_TEST_ENV = params.APIGEE_PROD_ENV_P }
               if( ! env.TEST_HOST ){ env.TEST_HOST = params.TEST_HOST_P }
               if( ! env.WORK_DIR ){ env.WORK_DIR = params.WORK_DIR_P }
               if( ! env.GCP_SA_AUTH ){ env.GCP_SA_AUTH = params.GCP_SA_AUTH_P }
+
+              if( ! env.APIGEE_USER ){ env.APIGEE_USER = params.APIGEE_USER_P }
+              if( ! env.APIGEE_PASS ){ env.APIGEE_PASS = params.APIGEE_PASS_P }
+              if( ! env.APIGEE_TOKEN ){ env.APIGEE_TOKEN = params.APIGEE_TOKEN_P }
+
+              if( ! env.GIT_BRANCH ){ env.GIT_BRANCH = params.GIT_BRANCH_P }
+              if( ! env.AUTHOR_EMAIL ){ env.AUTHOR_EMAIL = params.AUTHOR_EMAIL_P }
 
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
