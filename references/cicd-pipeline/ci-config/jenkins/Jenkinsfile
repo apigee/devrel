@@ -184,7 +184,7 @@ echo "SA_TOKEN: ${env.SA_TOKEN}"
               mvn clean install \
                 -Pgoogleapi \
                 -Denv="${env.APIGEE_ENV}" \
-                -Dtoken="\${env.APIGEE_SA_TOKEN}" \
+                -Dtoken="${env.APIGEE_SA_TOKEN}" \
                 -Dorg="${env.APIGEE_ORG}" \
                 -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
                 -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
