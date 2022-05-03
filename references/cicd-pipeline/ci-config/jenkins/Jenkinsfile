@@ -15,6 +15,9 @@ pipeline {
     environment {
         APIGEE_CREDS = credentials('apigee')
 
+        if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION }
+
+
         // Multiple options for setting the Apigee deployment target config:
         // 1. As a jenkins global property at ${JENKINS_URL}/configure if you don't have access to edit this file
         // 2. As a branch specific environment variable in the first pipeline stage
@@ -70,7 +73,7 @@ pipeline {
         }
 
         stage('Static Code Analysis') {
-          steps {        dir( "${env.WORK_DIR}" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
             sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
@@ -132,7 +135,7 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'apigee'}
           }
-          steps {            dir( "${env.WORK_DIR}" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
 
             sh """
               mvn clean install \
@@ -152,7 +155,7 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'google'}
           }
-          steps {  dir( "${env.WORK_DIR}" ) {
+          steps { dir( "${env.WORK_DIR}" ) {
 
            // Token precedence: env var; jenkins-scope sa; vm-scope sa; 
 
@@ -188,7 +191,7 @@ pipeline {
     }
 
     post {
-      always {  dir( "${env.WORK_DIR}" ) {
+      always { dir( "${env.WORK_DIR}" ) {
         cucumber reportTitle: 'Apickli test report',
               fileIncludePattern: '**/reports.json',
               jsonReportDirectory: "target",
