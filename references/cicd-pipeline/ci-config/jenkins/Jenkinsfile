@@ -10,7 +10,7 @@ pipeline {
             string(name: 'APIGEE_PROD_ENV_P', defaultValue: '')
             string(name: 'TEST_HOST_P', defaultValue: 'api.example.com')
             string(name: 'WORK_DIR_P', defaultValue: 'references/cicd-pipeline')
-            choice(name: 'GCP_SA_AUTH_P', choices: [ "vm-scope", "jenkins-scope" ], description: 'GCP SA Scope'  )
+            choice(name: 'GCP_SA_AUTH_P', choices: [ "vm-scope", "jenkins-scope", "token" ], description: 'GCP SA/Token Scope'  )
 
             string(name: 'APIGEE_USER_P', defaultValue: 'not-used')
             string(name: 'APIGEE_PASS_P', defaultValue: 'not-used')
@@ -83,6 +83,7 @@ pipeline {
               println "Apigee Org: " + env.APIGEE_ORG
               println "Apigee Env: " + env.APIGEE_ENV
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
+              println "Apigee Authentication Schema: " + env.GCP_SA_AUTH
             }
           }
         }
@@ -179,24 +180,24 @@ pipeline {
           }
           steps { dir( "${env.WORK_DIR}" ) {
 
-           // Token precedence: env var; jenkins-scope sa; vm-scope sa; 
+           // Token precedence: env var; jenkins-scope sa; vm-scope sa; token;
 
             script {
               if (env.GCP_SA_AUTH == "jenkins-scope") {
                  withCredentials([file(credentialsId: 'apigee', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                    env.SA_TOKEN=sh(script:'gcloud auth print-access-token', returnStdout: true).trim()
                  }
-              } else {
+              } else if (env.GCP_SA_AUTH == "token") {
+                 env.SA_TOKEN=env.APIGEE_TOKEN
+              } else { // vm-scope
                  env.SA_TOKEN=sh(script:'gcloud auth application-default print-access-token', returnStdout: true).trim()
               }
 
               sh """
-                APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\${SA_TOKEN}}"
-
                 mvn clean install \
                   -Pgoogleapi \
                   -Denv="${env.APIGEE_ENV}" \
-                  -Dtoken="\${APIGEE_SA_TOKEN}" \
+                  -Dtoken=${env.SA_TOKEN}" \
                   -Dorg="${env.APIGEE_ORG}" \
                   -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
                   -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
