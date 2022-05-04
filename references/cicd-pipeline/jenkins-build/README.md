@@ -31,7 +31,7 @@ docker tag ghcr.io/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 
 ```sh
 docker build -t apigee/devrel-jenkins-base:latest .
-docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
+docker build -f ./jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 ```
 
 #### Option C: Cloud Build on GCP
@@ -151,7 +151,6 @@ You can also run a local Docker image as follows:
 ```sh
 docker run \
   -p 8080:8080 \
-  -p 5000:5000 \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
@@ -172,7 +171,6 @@ the access token via environment variables.
 ```sh
 docker run \
   -p 8080:8080 \
-  -p 5000:5000 \
   -e APIGEE_TOKEN="$(gcloud auth print-access-token)" \
   -e APIGEE_ORG \
   -e APIGEE_TEST_ENV="test1" \

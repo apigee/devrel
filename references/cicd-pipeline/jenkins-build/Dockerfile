@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-FROM jenkins/jenkins:2.315-alpine
+FROM jenkins/jenkins:2.346-alpine
 
 USER root
 RUN apk update && apk add --no-cache git maven nodejs npm
