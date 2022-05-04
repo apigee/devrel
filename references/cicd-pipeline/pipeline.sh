@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+SCRIPTPATH=$( (cd "$(dirname "$0")" && pwd ))
 
 echo "[INFO] CICD Pipeline for Apigee X/hybrid (Cloud Build)"
 BRANCH_NAME_X=devrel-cloudbuild
@@ -22,8 +23,9 @@ SUBSTITUTIONS_X="_INT_TEST_HOST=$APIGEE_X_HOSTNAME"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_DEPLOYMENT_ORG=$APIGEE_X_ORG"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_APIGEE_TEST_ENV=$APIGEE_X_ENV"
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_API_VERSION=google"
+SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_WORK_DIR=."
 SUBSTITUTIONS_X="$SUBSTITUTIONS_X,BRANCH_NAME=$BRANCH_NAME_X"
-gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
+gcloud builds submit --config="$SCRIPTPATH/ci-config/cloudbuild/cloudbuild.yaml" \
   --substitutions="$SUBSTITUTIONS_X"
 
 echo "[INFO] CICD Pipeline for Apigee Edge (Cloud Build)"
@@ -31,25 +33,27 @@ echo "[INFO] CICD Pipeline for Apigee Edge (Cloud Build)"
 BRANCH_NAME_EDGE=devrel-cloudbuild
 SUBSTITUTIONS_EDGE="_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
 SUBSTITUTIONS_EDGE="$SUBSTITUTIONS_EDGE,_DEPLOYMENT_ORG=$APIGEE_ORG"
+SUBSTITUTIONS_X="$SUBSTITUTIONS_X,_WORK_DIR=."
 SUBSTITUTIONS_EDGE="$SUBSTITUTIONS_EDGE,BRANCH_NAME=$BRANCH_NAME_EDGE"
 
-gcloud builds submit --config=./ci-config/cloudbuild/cloudbuild.yaml \
+gcloud builds submit --config="$SCRIPTPATH/ci-config/cloudbuild/cloudbuild.yaml" \
   --substitutions="$SUBSTITUTIONS_EDGE"
 
-echo "[INFO] CICD Pipeline for Apigee Edge (Jenkins)"
+echo "[INFO] Build Jenkins File Runner Image"
 
-(cd jenkins-build && docker build -f Dockerfile -t apigee/devrel-jenkins-base:latest .)
-(cd jenkins-build && docker build -f jenkinsfile-runner/Dockerfile --build-arg baseImage=apigee/devrel-jenkins-base --build-arg baseImageTag=latest -t apigee/devrel-jenkinsfile:latest .)
+docker build -f "$SCRIPTPATH/jenkins-build/Dockerfile" -t apigee/devrel-jenkins-base:latest "$SCRIPTPATH/jenkins-build"
+docker build -f "$SCRIPTPATH/jenkins-build/jenkinsfile-runner/Dockerfile" --build-arg baseImage=apigee/devrel-jenkins-base --build-arg baseImageTag=latest -t apigee/devrel-jenkinsfile:latest "$SCRIPTPATH/jenkins-build"
 
 # because volume mounts don't work inside docker in docker without reference to the host file system
-cat << EOF > ./Dockerfile-jenkins-cicd
+cat << EOF >  "$SCRIPTPATH/Dockerfile-jenkins-cicd"
 FROM apigee/devrel-jenkinsfile:latest
 COPY --chown=jenkins  . /workspace
 RUN cp /workspace/ci-config/jenkins/Jenkinsfile /workspace/Jenkinsfile
 EOF
-docker build -f ./Dockerfile-jenkins-cicd -t apigee/devrel-jenkinsfile-airports:latest .
-rm ./Dockerfile-jenkins-cicd
+docker build -f  "$SCRIPTPATH/Dockerfile-jenkins-cicd" -t apigee/devrel-jenkinsfile-airports:latest  "$SCRIPTPATH"
+rm  "$SCRIPTPATH/Dockerfile-jenkins-cicd"
 
+echo "[INFO] CICD Pipeline for Apigee Edge (Jenkins)"
 docker run \
   -e APIGEE_USER \
   -e APIGEE_PASS \
@@ -61,6 +65,7 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
+  -e WORK_DIR="." \
   apigee/devrel-jenkinsfile-airports:latest
 
 
@@ -80,4 +85,5 @@ docker run \
   -e GIT_BRANCH=nightly \
   -e AUTHOR_EMAIL="cicd@apigee.google.com" \
   -e JENKINS_ADMIN_PASS="password" \
+  -e WORK_DIR="." \
   apigee/devrel-jenkinsfile-airports:latest

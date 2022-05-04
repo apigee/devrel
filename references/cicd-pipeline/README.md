@@ -68,7 +68,7 @@ GIT_URL='https://github.com/ORG/REPO.git'
 ```
 
 ```sh
-cd devrel/references/cicd-pipeline
+cd devrel
 git init
 git remote add origin $GIT_URL
 git checkout -b feature/cicd-pipeline
