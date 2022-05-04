@@ -16,11 +16,12 @@ steps:
     # Install node dependencies for linting and testing
   - name: node
     id: "Install Dependencies"
-    entrypoint: npm
+    entrypoint: "bash"
     args:
-      - "install"
-      - "--silent"
-      - "--no-fund"
+      - "-c"
+      - |-
+        cd "$_WORK_DIR"
+        npm install --silent --no-fund
     # Run static code analysis and linting
   - name: node
     id: "Static Code Analysis"
@@ -28,6 +29,7 @@ steps:
     args:
       - "-c"
       - |-
+        cd "$_WORK_DIR"
         npm run apigeelint | tee report.apigeelint.html && \
         if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi && \
         npm run eslint | tee report.eslint.html && \
@@ -38,15 +40,18 @@ steps:
     entrypoint: "bash"
     args:
       - "-c"
-      - "npm run unit-test"
+      - |-
+        cd "$_WORK_DIR"
+        npm run unit-test
     # Fetch Apigee credentials
     # and set branch specific config parameters
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: "bash"
     id: "Fetch Credentials"
+    entrypoint: "bash"
     args:
       - "-c"
       - |-
+        cd "$_WORK_DIR"
         # Config based on branch name
         if [ "$BRANCH_NAME" = "main" ]
         then
@@ -86,6 +91,7 @@ steps:
     args:
       - "-c"
       - |-
+        cd "$_WORK_DIR"
         if [ "$_API_VERSION" = "apigee" ]
         then
           source env.txt && \
@@ -114,6 +120,7 @@ steps:
     args:
       - "-c"
       - |-
+        cd "$_WORK_DIR"
         source env.txt && \
         npm run integration-test | tee report.e2e.html && \
         if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
@@ -126,6 +133,7 @@ steps:
     args:
       - "-c"
       - |-
+        cd "$_WORK_DIR"
         gsutil cp -r coverage* \
         gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID/coverage && \
         gsutil cp ./report.*.html \
@@ -142,3 +150,4 @@ substitutions:
   _API_VERSION: apigee #apigee|google
   # Host name for the integration test
   _INT_TEST_HOST: org-env.apigee.net
+  _WORK_DIR: "references/cicd-pipeline"

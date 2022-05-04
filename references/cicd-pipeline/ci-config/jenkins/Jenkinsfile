@@ -2,6 +2,25 @@ pipeline {
 
     agent any
 
+
+    parameters {
+            string(name: 'API_VERSION_P', defaultValue: 'google')
+            string(name: 'APIGEE_ORG_P', defaultValue: 'my-org')
+            string(name: 'APIGEE_TEST_ENV_P', defaultValue: 'test1')
+            string(name: 'APIGEE_PROD_ENV_P', defaultValue: '')
+            string(name: 'TEST_HOST_P', defaultValue: 'api.example.com')
+            string(name: 'WORK_DIR_P', defaultValue: 'references/cicd-pipeline')
+            choice(name: 'GCP_SA_AUTH_P', choices: [ "vm-scope", "jenkins-scope", "token" ], description: 'GCP SA/Token Scope'  )
+
+            string(name: 'APIGEE_USER_P', defaultValue: 'not-used')
+            string(name: 'APIGEE_PASS_P', defaultValue: 'not-used')
+            string(name: 'APIGEE_TOKEN_P', defaultValue: '')
+
+            string(name: 'GIT_BRANCH_P', defaultValue: 'nightly')
+            string(name: 'AUTHOR_EMAIL_P', defaultValue: 'cicd@apigee.google.com')
+
+    }
+
     environment {
         APIGEE_CREDS = credentials('apigee')
 
@@ -16,10 +35,34 @@ pipeline {
         // TEST_HOST= 'api.example.com'
     }
 
+    
     stages {
+        stage('Version Check') {
+            steps {
+                sh "npm -v"
+                sh "mvn -v"
+        }}
+
         stage('Set Apigee Env and Proxy Suffix') {
           steps {
             script{
+
+              // env var/param precedence
+              if( ! env.API_VERSION ){ env.API_VERSION = params.API_VERSION_P }
+              if( ! env.APIGEE_ORG ){ env.APIGEE_ORG = params.APIGEE_ORG_P }
+              if( ! env.APIGEE_TEST_ENV ){ env.APIGEE_TEST_ENV = params.APIGEE_TEST_ENV_P }
+              if( ! env.APIGEE_PROD_ENV ){ env.APIGEE_TEST_ENV = params.APIGEE_PROD_ENV_P }
+              if( ! env.TEST_HOST ){ env.TEST_HOST = params.TEST_HOST_P }
+              if( ! env.WORK_DIR ){ env.WORK_DIR = params.WORK_DIR_P }
+              if( ! env.GCP_SA_AUTH ){ env.GCP_SA_AUTH = params.GCP_SA_AUTH_P }
+
+              if( ! env.APIGEE_USER ){ env.APIGEE_USER = params.APIGEE_USER_P }
+              if( ! env.APIGEE_PASS ){ env.APIGEE_PASS = params.APIGEE_PASS_P }
+              if( ! env.APIGEE_TOKEN ){ env.APIGEE_TOKEN = params.APIGEE_TOKEN_P }
+
+              if( ! env.GIT_BRANCH ){ env.GIT_BRANCH = params.GIT_BRANCH_P }
+              if( ! env.AUTHOR_EMAIL ){ env.AUTHOR_EMAIL = params.AUTHOR_EMAIL_P }
+
               // Main branch for Apigee test environment
               if (env.GIT_BRANCH == "main") {
                   env.APIGEE_DEPLOYMENT_SUFFIX = ""
@@ -40,18 +83,20 @@ pipeline {
               println "Apigee Org: " + env.APIGEE_ORG
               println "Apigee Env: " + env.APIGEE_ENV
               println "Proxy Deployment Suffix: " + env.APIGEE_DEPLOYMENT_SUFFIX
+              println "Apigee Authentication Schema: " + env.GCP_SA_AUTH
             }
           }
         }
 
         stage('Install dependencies') {
-          steps {
-            sh "npm install --silent --no-fund"
-          }
+          steps { dir( "${env.WORK_DIR}" ) {
+
+              sh "npm install --silent --no-fund"
+          } }
         }
 
         stage('Static Code Analysis') {
-          steps {
+          steps { dir( "${env.WORK_DIR}" ) {
             sh "./node_modules/eslint/bin/eslint.js --format html . > eslint-out.html"
 
             publishHTML(target: [
@@ -77,11 +122,12 @@ pipeline {
             ]);
 
             sh "rm apigeelint-out.html"
-          }
+          }        }
         }
 
         stage('Unit Test') {
-          steps {
+          steps { dir( "${env.WORK_DIR}" ) {
+
             sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
 
             publishHTML(target: [
@@ -92,7 +138,7 @@ pipeline {
               reportFiles: 'index.html',
               reportName: 'Unit Test Report'
             ])
-          }
+          } }
         }
 
         stage('Commit Author Extraction') {
@@ -112,7 +158,8 @@ pipeline {
           when {
             expression { env.API_VERSION ==  'apigee'}
           }
-          steps {
+          steps { dir( "${env.WORK_DIR}" ) {
+
             sh """
               mvn clean install \
                 -Papigeeapi \
@@ -124,42 +171,55 @@ pipeline {
                 -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
                 """
 
-          }
+          } }
         }
 
         stage('Deploy X/hybrid') {
           when {
             expression { env.API_VERSION ==  'google'}
           }
-          steps {
-            sh """
-              APIGEE_SA_TOKEN="\${APIGEE_TOKEN:-\$(gcloud auth application-default print-access-token)}"
+          steps { dir( "${env.WORK_DIR}" ) {
 
-              mvn clean install \
-                -Pgoogleapi \
-                -Denv="${env.APIGEE_ENV}" \
-                -Dtoken="\$APIGEE_SA_TOKEN" \
-                -Dorg="${env.APIGEE_ORG}" \
-                -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
-                -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
-            """
-          }
+           // Token precedence: env var; jenkins-scope sa; vm-scope sa; token;
+
+            script {
+              if (env.GCP_SA_AUTH == "jenkins-scope") {
+                 withCredentials([file(credentialsId: 'apigee', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                   env.SA_TOKEN=sh(script:'gcloud auth print-access-token', returnStdout: true).trim()
+                 }
+              } else if (env.GCP_SA_AUTH == "token") {
+                 env.SA_TOKEN=env.APIGEE_TOKEN
+              } else { // vm-scope
+                 env.SA_TOKEN=sh(script:'gcloud auth application-default print-access-token', returnStdout: true).trim()
+              }
+
+              sh """
+                mvn clean install \
+                  -Pgoogleapi \
+                  -Denv="${env.APIGEE_ENV}" \
+                  -Dtoken="${env.SA_TOKEN}" \
+                  -Dorg="${env.APIGEE_ORG}" \
+                  -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
+                  -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
+              """
+            }
+          } }
         }
 
         stage('Functional Test') {
-          steps {
+          steps { dir( "${env.WORK_DIR}" ) {
             sh "TEST_HOST=${env.TEST_HOST} node ./node_modules/.bin/cucumber-js ./target/test/integration --format json:./target/reports.json"
-          }
+          } }
         }
     }
 
     post {
-      always {
+      always { dir( "${env.WORK_DIR}" ) {
         cucumber reportTitle: 'Apickli test report',
               fileIncludePattern: '**/reports.json',
               jsonReportDirectory: "target",
               sortingMethod: 'ALPHABETICAL',
               trendsLimit: 10
-      }
+      } }
     }
 }
