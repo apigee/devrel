@@ -76,6 +76,7 @@ TOKEN=$(gcloud auth print-access-token)
 docker run \
   -e APIGEE_USER="not-used" \
   -e APIGEE_PASS="not-used" \
+  -e GCP_SA_AUTH="token" \
   -e APIGEE_TOKEN="$TOKEN" \
   -e APIGEE_ORG="$APIGEE_X_ORG" \
   -e APIGEE_TEST_ENV="$APIGEE_X_ENV" \
