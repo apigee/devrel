@@ -203,8 +203,8 @@ pipeline {
                    -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
                    -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
                 """
+              }
             }
-}
           } }
         }
 
