@@ -193,7 +193,7 @@ pipeline {
                  env.SA_TOKEN=sh(script:'gcloud auth application-default print-access-token', returnStdout: true).trim()
               }
 
-wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: token, var: 'SA_TOKEN']]]) {
+wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: "env.SA_TOKEN", var: 'SA_TOKEN']]]) {
              sh """
                 mvn clean install \
                   -Pgoogleapi \
