@@ -194,6 +194,7 @@ pipeline {
               }
 
               sh """
+wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: token, var: 'SA_TOKEN']]]) {
                 mvn clean install \
                   -Pgoogleapi \
                   -Denv="${env.APIGEE_ENV}" \
@@ -203,6 +204,7 @@ pipeline {
                   -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
               """
             }
+}
           } }
         }
 
