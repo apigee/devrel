@@ -40,7 +40,7 @@ export PROXY_NAME="$( tr '/' '-' <<< ${BASE_PATH:1})"
 
 rm -rf "./$PROXY_NAME/"
 mkdir "./$PROXY_NAME/"
-cp -r template/ "./$PROXY_NAME/"
+cp -r template/. "./$PROXY_NAME/"
 
 find ./$PROXY_NAME -name '*.xml' -print0 |
 while IFS= read -r -d '' file; do
