@@ -193,15 +193,17 @@ pipeline {
                  env.SA_TOKEN=sh(script:'gcloud auth application-default print-access-token', returnStdout: true).trim()
               }
 
-              sh """
-                mvn clean install \
-                  -Pgoogleapi \
-                  -Denv="${env.APIGEE_ENV}" \
-                  -Dtoken="${env.SA_TOKEN}" \
-                  -Dorg="${env.APIGEE_ORG}" \
-                  -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
-                  -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
-              """
+             wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env.SA_TOKEN, var: 'SA_TOKEN']]]) {
+               sh """
+                 mvn clean install \
+                   -Pgoogleapi \
+                   -Denv="${env.APIGEE_ENV}" \
+                   -Dtoken="${env.SA_TOKEN}" \
+                   -Dorg="${env.APIGEE_ORG}" \
+                   -Ddeployment.suffix="${env.APIGEE_DEPLOYMENT_SUFFIX}" \
+                   -Ddeployment.description="Jenkins Build: ${env.BUILD_TAG} Author: ${env.AUTHOR_EMAIL}"
+                """
+              }
             }
           } }
         }
