@@ -38,7 +38,7 @@ The pipeline context also has the `gcloud` context of a serviceaccount user
 
 ## Static Checks
 
-Static code checks such as [Super Linter](https://github.com/github/super-linter)
+Static code checks such as [Mega Linter](https://megalinter.github.io/)
  and [In Solidarity](https://github.com/apps/in-solidarity) are part of the
  linter workflow. They do not need to be included in your pipeline script. We
  recommend you allow the DevRel [workflows](.github/workflows) to automatically
