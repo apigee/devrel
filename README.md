@@ -59,7 +59,7 @@ further to fit a particular use case.
   popular API auth schemes
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
-  
+
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
@@ -81,6 +81,9 @@ Apigee products.
   A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
+- [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
+  A tool to generate configurable proxy archives from an OpenAPI
+  Specification
 
 ## Labs
 
