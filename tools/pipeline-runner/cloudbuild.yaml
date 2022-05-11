@@ -65,7 +65,7 @@ steps:
       - |-
         max_duration=6960 # cloud build timeout minus 4m
         if [ -n "$_PR_NUMBER" ]; then
-          FULL_PIPELINE_REQUIRED=$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER" | jq '.body | contains("[X] PR requires full pipeline run")' )
+          FULL_PIPELINE_REQUIRED=$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER" | jq '.body |= ascii_downcase | .body | contains("[x] pr requires full pipeline run")' )
           PROJECTS=$(list-repo-changes.sh)
           if [ "$$FULL_PIPELINE_REQUIRED" = "true" ]; then
             echo "Running Full Pipeline as required in the PR"
