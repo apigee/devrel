@@ -5,7 +5,7 @@
   "author": "danistrebel",
   "scripts": {
     "test": "npm run unit-test && npm run integration-test",
-    "unit-test": "nyc --reporter=html mocha --recursive \"./test/unit/*.js\"",
+    "unit-test": "nyc --reporter=html mocha --recursive \"./test/unit/*.js\" --timeout 5000",
     "integration-test": "cucumber-js ./test/integration",
     "lint": "npm run eslint && npm run apigeelint",
     "eslint": "eslint --format html .",

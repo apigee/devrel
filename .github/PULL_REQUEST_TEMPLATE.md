@@ -7,7 +7,7 @@ What's changed, or what was fixed?
 **Fixes:** #issue
 
 ## Housekeeping
-(please check all that apply [X], do not edit the text)
+(please check all that apply [x], do not edit the text)
 - [ ] I have run all the tests locally and they all pass.
 - [ ] I have followed the relevant style guide for my changes.
 - [ ] PR requires full pipeline run (Run for changes only by default).
