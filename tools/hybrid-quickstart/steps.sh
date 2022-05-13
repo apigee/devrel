@@ -385,7 +385,7 @@ create_gke_cluster() {
         --default-max-pods-per-node "110" \
         --enable-ip-alias \
         --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-        --num-nodes "3" \
+        --num-nodes "4" \
         --enable-autoscaling \
         --min-nodes "3" \
         --max-nodes "6" \
