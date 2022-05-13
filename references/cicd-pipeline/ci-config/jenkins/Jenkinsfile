@@ -35,7 +35,7 @@ pipeline {
         // TEST_HOST= 'api.example.com'
     }
 
-    
+
     stages {
         stage('Version Check') {
             steps {
@@ -128,7 +128,7 @@ pipeline {
         stage('Unit Test') {
           steps { dir( "${env.WORK_DIR}" ) {
 
-            sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha ./test/unit"
+            sh "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha --timeout 5000 --recursive ./test/unit"
 
             publishHTML(target: [
               allowMissing: false,
