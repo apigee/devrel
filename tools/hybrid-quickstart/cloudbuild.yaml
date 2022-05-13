@@ -27,6 +27,7 @@ steps:
       - 'ENV_NAME=$_QUICKSTART_ENV_NAME'
       - 'ENV_GROUP_NAME=$_QUICKSTART_ENV_GROUP_NAME'
       - 'CERT_TYPE=$_CERT_TYPE'
+      - 'PRIVATE_CLUSTER=$_PRIVATE_CLUSTER'
       - 'QUIET_INSTALL=true'
 
 
@@ -79,4 +80,5 @@ substitutions:
   _QUICKSTART_ENV_NAME: test1
   _QUICKSTART_ENV_GROUP_NAME: test
   _DESTROY_AFTER_VALIDATION: "false"
+  _PRIVATE_CLUSTER: "true"
   _CERT_TYPE: "" # default: 'google-managed'
