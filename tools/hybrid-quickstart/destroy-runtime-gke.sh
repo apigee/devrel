@@ -55,6 +55,23 @@ rm empty-file
 
 gcloud dns managed-zones delete apigee-dns-zone -q
 
+
+for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+   gcloud compute forwarding-rules delete --global "$fwdrule" -q
+done
+
+for targetproxy in $(gcloud compute target-https-proxies list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+   gcloud compute target-https-proxies delete "$targetproxy" -q
+done
+
+for urlmap in $(gcloud compute url-maps list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+   gcloud compute url-maps delete "$urlmap" -q
+done
+
+for backendsystem in $(gcloud compute backend-services list --format="value(name)" --filter="name~istio-ingressgateway"); do
+   gcloud compute backend-services delete --global "$backendsystem" -q
+done
+
 for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filter="name~^mcrt-"); do
    gcloud compute ssl-certificates delete "$mcrt" -q
 done
