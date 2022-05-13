@@ -122,6 +122,7 @@ export PROXY_PREEMPTIBLE=${PROXY_PREEMPTIBLE:-false}
 export PROXY_MIG_MIN_SIZE=${PROXY_MIG_MIN_SIZE:-1}
 export CERTIFICATES=${CERTIFICATES:-managed}
 export ENV_GROUP_NAME='eval-group'
+export MANAGED_DOMAIN_PREFIX=${MANAGED_DOMAIN_PREFIX:-$ENV_GROUP_NAME}
 
 CERT_DISPLAY=$CERTIFICATES
 
@@ -147,7 +148,7 @@ else
 fi
 
 if [ "$CERTIFICATES" = "managed" ]; then
-  export RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME.[external-ip].nip.io"
+  export RUNTIME_HOST_ALIAS="$MANAGED_DOMAIN_PREFIX.[external-ip].nip.io"
 else
   export RUNTIME_HOST_ALIAS=${RUNTIME_HOST_ALIAS:-$ORG-eval.apigee.net}
 fi
@@ -169,6 +170,7 @@ else
   echo "  PROXY_PREEMPTIBLE=$PROXY_PREEMPTIBLE"
   echo "  PROXY_MIG_MIN_SIZE=$PROXY_MIG_MIN_SIZE"
   echo "  CERTIFICATES=$CERT_DISPLAY"
+  echo "  MANAGED_DOMAIN_PREFIX=$MANAGED_DOMAIN_PREFIX"
   echo "  RUNTIME_HOST_ALIAS=$RUNTIME_HOST_ALIAS"
 fi
 echo ""
@@ -357,7 +359,7 @@ echo "Step 7e: Upload credentials:"
 
 if [ "$CERTIFICATES" = "managed" ]; then
   echo "Step 7e.1: Using Google managed certificate:"
-  RUNTIME_HOST_ALIAS="$ENV_GROUP_NAME".$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
+  RUNTIME_HOST_ALIAS="$MANAGED_DOMAIN_PREFIX".$(echo "$RUNTIME_IP" | tr '.' '-').nip.io
   gcloud compute ssl-certificates create apigee-ssl-cert \
     --domains="$RUNTIME_HOST_ALIAS" --project "$PROJECT" --quiet
 elif [ "$CERTIFICATES" = "generated" ]; then
