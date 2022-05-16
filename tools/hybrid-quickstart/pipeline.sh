@@ -15,5 +15,5 @@
 # limitations under the License.
 
 gcloud builds submit --config ./cloudbuild.yaml --suppress-logs \
-  --substitutions="_DESTROY_AFTER_VALIDATION=true" \
+  --substitutions="_DESTROY_AFTER_VALIDATION=true,_PRIVATE_CLUSTER=false" \
   --project "$HYBRID_GCP_PROJECT"
