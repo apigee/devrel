@@ -37,6 +37,13 @@ set_config_params() {
     export SUBNET=${SUBNET:-"apigee-$REGION"}
     echo "- Network $NETWORK/$SUBNET"
 
+    export PRIVATE_CLUSTER=${PRIVATE_CLUSTER:-'true'}
+    echo "- Private Cluster $PRIVATE_CLUSTER"
+
+    export CONTROL_PLANE_CIDR=${CONTROL_PLANE_CIDR:-'172.16.0.16/28'}
+    echo "- GKE control plane CIDR (private cluster only) $CONTROL_PLANE_CIDR"
+
+
     printf "\n🔧 Apigee hybrid Configuration:\n"
     export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
     echo "- Ingress type $INGRESS_TYPE"
@@ -315,10 +322,6 @@ configure_network() {
       gcloud compute routers nats create apigee-nat --router apigee-router --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
     fi
 
-    if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
-      gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK"
-    fi
-
     if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "google-managed" ]]; then
         gcloud compute addresses create apigee-ingress-ip --global
@@ -367,14 +370,23 @@ create_gke_cluster() {
     echo "🚀 Create GKE cluster"
 
     if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
-      gcloud container clusters create "$GKE_CLUSTER_NAME" \
+
+      if [ "$PRIVATE_CLUSTER" = "true" ];then
+        if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
+          gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK" --source-ranges "$CONTROL_PLANE_CIDR"
+        fi
+
+        CLUSTER_FLAGS="--no-enable-master-authorized-networks --enable-private-nodes --master-ipv4-cidr $CONTROL_PLANE_CIDR --tags=hybrid-quickstart,private-cluster"
+      else
+        CLUSTER_FLAGS="--tags=hybrid-quickstart"
+      fi
+
+
+      gcloud container clusters create "$GKE_CLUSTER_NAME" "$CLUSTER_FLAGS" \
         --region "$REGION" \
         --node-locations "$ZONE" \
         --release-channel stable \
-        --no-enable-master-authorized-networks \
         --enable-ip-alias \
-        --enable-private-nodes \
-        --master-ipv4-cidr 172.16.0.16/28 \
         --enable-shielded-nodes \
         --shielded-secure-boot \
         --shielded-integrity-monitoring \
@@ -383,7 +395,7 @@ create_gke_cluster() {
         --default-max-pods-per-node "110" \
         --enable-ip-alias \
         --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-        --num-nodes "3" \
+        --num-nodes "4" \
         --enable-autoscaling \
         --min-nodes "3" \
         --max-nodes "6" \
@@ -398,6 +410,7 @@ create_gke_cluster() {
 
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
+
 
     echo "✅ GKE set up"
 }
@@ -732,20 +745,32 @@ logger:
 EOF
 }
 
+apigeectl_init() {
+  "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
+}
+
+apigeectl_apply() {
+  "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
+}
+
+
 install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
-    "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml \
-      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml ) \
-      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml )
+
+    apigeectl_init \
+      || ( sleep 60 && apigeectl_init ) \
+      || ( sleep 120 && apigeectl_init ) \
+      || ( sleep 240 && apigeectl_init )
+
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
     wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
     echo "waiting for 30s for the webhook certs to propagate" && sleep 30
 
-
-    "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml \
-      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml ) \
-      || ( sleep 120 && "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml )
+    apigeectl_apply \
+      || ( sleep 60 && apigeectl_apply ) \
+      || ( sleep 120 && apigeectl_apply ) \
+      || ( sleep 240 && apigeectl_apply )
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
     wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Runtime: Running."
