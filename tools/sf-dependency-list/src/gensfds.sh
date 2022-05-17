@@ -66,6 +66,7 @@ for sf in */; do
 
 if [ "$target" = "dot" ]; then
 
+  # shellcheck disable=SC2046
   list=$(grep -Ril "<FlowCallout " $(ls))
   if [ -z "$list" ];then
     printf "  \"%s\";\n" "$sflow"
@@ -79,6 +80,7 @@ if [ "$target" = "dot" ]; then
 fi
 
 if [ "$target" = "tsort" ]; then
+  # shellcheck disable=SC2046
   list=$(grep -Ril "<FlowCallout " $(ls))
   if [ -z "$list" ];then
           orphans+=("$sflow")
