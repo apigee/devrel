@@ -84,7 +84,7 @@ Apigee products.
 - [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
   A tool to generate configurable proxy archives from an OpenAPI
   Specification
-- [Generate Shared Flows Dependencies](tools/apigee-gensfds) -
+- [Generate Shared Flows Dependency List](tools/sf-dependency-list) -
   A tool to generate topologically sorted Shared Flow dependencies.
 
 ## Labs

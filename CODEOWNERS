@@ -33,4 +33,4 @@
 /tools/oas-configurable-proxy           @danistrebel
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel
-/tools/apigee-gensfds                   @yuriylesyuk @danistrebel
+/tools/sf-dependency-list               @yuriylesyuk @danistrebel
