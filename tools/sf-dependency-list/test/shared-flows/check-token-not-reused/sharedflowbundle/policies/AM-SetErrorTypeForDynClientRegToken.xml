@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetErrorTypeForDynClientRegToken">
+    <DisplayName>AM-SetErrorTypeForDynClientRegToken</DisplayName>
+    <AssignVariable>
+        <Name>errorType</Name>
+        <Value>invalid_client_metadata</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>TokenReusedMessage</Name>
+        <Template>Reused Dynamic Client Registration token</Template>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http"/>
+</AssignMessage>

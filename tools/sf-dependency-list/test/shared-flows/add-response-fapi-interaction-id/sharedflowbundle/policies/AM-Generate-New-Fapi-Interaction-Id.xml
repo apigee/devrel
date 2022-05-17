@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-Generate-New-Fapi-Interaction-Id">
+    <DisplayName>AM-Generate-New-Fapi-Interaction-Id</DisplayName>
+    <FaultRules/>
+    <Properties/>
+    <Set>
+        <Headers>
+            <Header name="x-fapi-interaction-id">{createUuid()}</Header>
+        </Headers>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo transport="http" createNew="false"/>
+</AssignMessage>

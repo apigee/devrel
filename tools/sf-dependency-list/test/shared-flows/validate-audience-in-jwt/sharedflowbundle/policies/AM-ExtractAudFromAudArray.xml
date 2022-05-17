@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-ExtractAudFromAudArray">
+    <DisplayName>AM-ExtractAudFromAudArray</DisplayName>
+    <Properties/>
+    <AssignVariable>
+        <Name>audAsString</Name>
+        <Template>{substring(audClaim,1,-1)}</Template>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http"/>
+</AssignMessage>
