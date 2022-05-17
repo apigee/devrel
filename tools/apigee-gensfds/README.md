@@ -17,7 +17,7 @@ The simplest way is to directly download a script into a directory of your choic
 and change its executable permissions.
 
 ```
-curl -LO https://raw.githubusercontent.com/apigee/devrel/main/tools/apigee-gensfds/gensfds.sh&&chmod +x gensfds.sh
+curl -LO https://raw.githubusercontent.com/apigee/devrel/main/tools/apigee-gensfds/src/gensfds.sh &&chmod +x gensfds.sh
 ```
 
 ## Usage
