@@ -39,8 +39,8 @@ setup() {
   rankdir=LR
   node [shape=box,fixedsize=true,width=3]
   "add-response-fapi-interaction-id";
-  "authenticate-with-private-key-jwt" -> "validate-audience-in-jwt";
   "authenticate-with-private-key-jwt" -> "check-token-not-reused";
+  "authenticate-with-private-key-jwt" -> "validate-audience-in-jwt";
   "check-token-not-reused";
   "validate-audience-in-jwt";
 }'
@@ -49,8 +49,8 @@ setup() {
 @test "Generate tsort output" {
     run gensfds.sh $DIR/shared-flows tsort
     
-    assert_output 'validate-audience-in-jwt
-check-token-not-reused
+    assert_output 'check-token-not-reused
+validate-audience-in-jwt
 authenticate-with-private-key-jwt
 add-response-fapi-interaction-id'
 }
