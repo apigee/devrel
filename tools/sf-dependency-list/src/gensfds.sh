@@ -66,7 +66,7 @@ for sf in */; do
 
 if [ "$target" = "dot" ]; then
 
-  list=$(grep -Ril "<FlowCallout " `ls`)
+  list=$(grep -Ril "<FlowCallout " $(ls))
   if [ -z "$list" ];then
     printf "  \"%s\";\n" "$sflow"
   else
@@ -79,7 +79,7 @@ if [ "$target" = "dot" ]; then
 fi
 
 if [ "$target" = "tsort" ]; then
-  list=$(grep -Ril "<FlowCallout " `ls`)
+  list=$(grep -Ril "<FlowCallout " $(ls))
   if [ -z "$list" ];then
           orphans+=("$sflow")
   else
