@@ -2,7 +2,7 @@
 
 A tool which generates the topologically sorted list of Apigee Shared Flows. This is helpful to figure out the correct install sequence for Apigee Shared Flows.
 
-Apigee X/Hybrid causes an error condition if a FlowCallout policy refers to
+Apigee X/hybrid causes an error condition if a FlowCallout policy refers to
 a Shared Flow that is not deployed yet.
 
 The tool also generates dot file that visualizes the dependencies.

@@ -14,10 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-Generate-New-Fapi-Interaction-Id">
+<AssignMessage name="AM-Generate-New-Fapi-Interaction-Id">
     <DisplayName>AM-Generate-New-Fapi-Interaction-Id</DisplayName>
-    <FaultRules/>
-    <Properties/>
     <Set>
         <Headers>
             <Header name="x-fapi-interaction-id">{createUuid()}</Header>

@@ -14,10 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FlowCallout async="false" continueOnError="false" enabled="true" name="FC-CheckTokenNotReused">
+<FlowCallout name="FC-CheckTokenNotReused">
     <DisplayName>FC-CheckTokenNotReused</DisplayName>
-    <FaultRules/>
-    <Properties/>
     <SharedFlowBundle>check-token-not-reused</SharedFlowBundle>
     <Parameters>
         <Parameter name="jwtPayload" ref="jwt.JWT-VerifyPrivateKeyJWT.payload-json"/>

@@ -16,8 +16,6 @@
 
 set -e
 
-set -e
-
 npm install --no-fund
 
 PATH=$(npm bin):$PATH npm run test

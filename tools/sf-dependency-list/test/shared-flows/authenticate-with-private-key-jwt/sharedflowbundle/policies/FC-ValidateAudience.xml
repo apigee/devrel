@@ -14,7 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FlowCallout async="false" continueOnError="false" enabled="true" name="FC-ValidateAudience">
+<FlowCallout name="FC-ValidateAudience">
     <DisplayName>FC-ValidateAudience</DisplayName>
     <SharedFlowBundle>validate-audience-in-jwt</SharedFlowBundle>
     <Parameters ignoreUnresolvedVariables="true">
