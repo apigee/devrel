@@ -375,35 +375,57 @@ create_gke_cluster() {
         if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
           gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK" --source-ranges "$CONTROL_PLANE_CIDR"
         fi
-
-        CLUSTER_FLAGS="--no-enable-master-authorized-networks --enable-private-nodes --master-ipv4-cidr $CONTROL_PLANE_CIDR --tags=hybrid-quickstart,private-cluster"
+        gcloud container clusters create "$GKE_CLUSTER_NAME" \
+            --no-enable-master-authorized-networks \
+            --enable-private-nodes \
+            --master-ipv4-cidr="$CONTROL_PLANE_CIDR" \
+            --tags="hybrid-quickstart,private-cluster" \
+            --region "$REGION" \
+            --node-locations "$ZONE" \
+            --release-channel stable \
+            --enable-ip-alias \
+            --enable-shielded-nodes \
+            --shielded-secure-boot \
+            --shielded-integrity-monitoring \
+            --network "$NETWORK" \
+            --subnetwork "$SUBNET" \
+            --default-max-pods-per-node "110" \
+            --enable-ip-alias \
+            --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
+            --num-nodes "4" \
+            --enable-autoscaling \
+            --min-nodes "3" \
+            --max-nodes "6" \
+            --tags=hybrid-quickstart \
+            --labels mesh_id="$MESH_ID" \
+            --workload-pool "$WORKLOAD_POOL" \
+            --logging SYSTEM,WORKLOAD \
+            --monitoring SYSTEM
       else
-        CLUSTER_FLAGS="--tags=hybrid-quickstart"
+        gcloud container clusters create "$GKE_CLUSTER_NAME" \
+            --tags="hybrid-quickstart" \
+            --region "$REGION" \
+            --node-locations "$ZONE" \
+            --release-channel stable \
+            --enable-ip-alias \
+            --enable-shielded-nodes \
+            --shielded-secure-boot \
+            --shielded-integrity-monitoring \
+            --network "$NETWORK" \
+            --subnetwork "$SUBNET" \
+            --default-max-pods-per-node "110" \
+            --enable-ip-alias \
+            --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
+            --num-nodes "4" \
+            --enable-autoscaling \
+            --min-nodes "3" \
+            --max-nodes "6" \
+            --tags=hybrid-quickstart \
+            --labels mesh_id="$MESH_ID" \
+            --workload-pool "$WORKLOAD_POOL" \
+            --logging SYSTEM,WORKLOAD \
+            --monitoring SYSTEM
       fi
-
-
-      gcloud container clusters create "$GKE_CLUSTER_NAME" "$CLUSTER_FLAGS" \
-        --region "$REGION" \
-        --node-locations "$ZONE" \
-        --release-channel stable \
-        --enable-ip-alias \
-        --enable-shielded-nodes \
-        --shielded-secure-boot \
-        --shielded-integrity-monitoring \
-        --network "$NETWORK" \
-        --subnetwork "$SUBNET" \
-        --default-max-pods-per-node "110" \
-        --enable-ip-alias \
-        --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-        --num-nodes "4" \
-        --enable-autoscaling \
-        --min-nodes "3" \
-        --max-nodes "6" \
-        --tags=hybrid-quickstart \
-        --labels mesh_id="$MESH_ID" \
-        --workload-pool "$WORKLOAD_POOL" \
-        --logging SYSTEM,WORKLOAD \
-        --monitoring SYSTEM
     fi
 
     gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --region "$REGION"
@@ -414,7 +436,6 @@ create_gke_cluster() {
 
     echo "✅ GKE set up"
 }
-
 
 install_certmanager() {
   echo "👩🏽‍💼 Creating Cert Manager"
