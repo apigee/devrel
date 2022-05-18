@@ -5,7 +5,7 @@ htmlpublisher:1.30
 junit:1.63
 mask-passwords:3.1
 matrix-project:771.v574584b_39e60
-script-security:1172.v35f6a_0b_8207e
+script-security:1158.v7c1b_73a_69a_08
 token-macro:293.v283932a_0a_b_49
 workflow-aggregator:2.7
 workflow-multibranch:712.vc169a_1387405
