@@ -771,6 +771,7 @@ apigeectl_init() {
 }
 
 apigeectl_apply() {
+  kubectl wait --for=condition=ready --timeout 240s pod -l app=apigee-controller -n apigee-system
   "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 }
 
@@ -785,8 +786,10 @@ install_runtime() {
       || ( sleep 240 && apigeectl_init )
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
-    wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
-    echo "waiting for 30s for the webhook certs to propagate" && sleep 30
+    kubectl wait --for=condition=ready --timeout 240s pod -l app=apigee-controller -n apigee-system
+    kubectl wait --for=condition=complete --timeout 240s job/apigee-resources-install  -n apigee-system
+
+    echo "Waiting for 30s for the webhook certs to propagate" && sleep 30
 
     apigeectl_apply \
       || ( sleep 60 && apigeectl_apply ) \
@@ -794,7 +797,7 @@ install_runtime() {
       || ( sleep 240 && apigeectl_apply )
 
     sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
-    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Runtime: Running."
+    kubectl wait --for=condition=ready --timeout 600s pod -l app=apigee-runtime -n apigee
 
     popd || return
 
