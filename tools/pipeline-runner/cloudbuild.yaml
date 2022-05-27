@@ -92,7 +92,7 @@ steps:
     secretEnv:
       - 'APIGEE_USER'
       - 'APIGEE_PASS'
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
     id: 'Log pipeline results to cloud logging'
     entrypoint: "bash"
     args:
@@ -156,6 +156,7 @@ availableSecrets:
       env: GITHUB_TOKEN
 options:
   machineType: 'E2_HIGHCPU_8'
+  logging: GCS_ONLY
 timeout: 7200s # 120min (needs to be updated with max_duration of pipeline)
 images: ['gcr.io/$PROJECT_ID/devrel-pipeline:latest']
 substitutions:
