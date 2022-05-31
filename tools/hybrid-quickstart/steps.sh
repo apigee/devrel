@@ -780,19 +780,19 @@ install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
 
+    export -f apigeectl_init
     timeout 10m bash -c 'until apigeectl_init; do sleep 20; done'
 
     echo -n "⏳ Waiting for Apigeectl init "
-    "$APIGEECTL_HOME"/apigeectl check-ready -f "$HYBRID_HOME"/overrides/overrides.yaml
     timeout 5m bash -c 'until kubectl wait --for=condition=ready --timeout 10s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
     timeout 5m bash -c 'until kubectl wait --for=condition=complete --timeout 10s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
 
     echo "Waiting for 30s for the webhook certs to propagate" && sleep 30
 
+    export -f apigeectl_apply
     timeout 10m bash -c 'until apigeectl_apply; do sleep 20; done'
 
     echo -n "⏳ Waiting for Apigeectl apply "
-    "$APIGEECTL_HOME"/apigeectl check-ready -f "$HYBRID_HOME"/overrides/overrides.yaml
     timeout 30m bash -c 'until kubectl wait --for=condition=ready --timeout 10s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
 
     popd || return
