@@ -783,14 +783,15 @@ install_runtime() {
     mkdir -p "$HYBRID_HOME"/generated
 
     export -f apigeectl_init
-    timeout 12m bash -c 'until apigeectl_init; do sleep 20; done'
+    timeout 20m bash -c 'until apigeectl_init; do sleep 30; done'
 
     echo -n "⏳ Waiting for Apigeectl init "
-    timeout 5m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
-    timeout 5m bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s issuer apigee-selfsigned-issuer -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
 
     echo -n "⏳ Waiting for Serving Cert "
-    timeout 5m bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
 
     export -f apigeectl_apply
     timeout 12m bash -c 'until apigeectl_apply; do sleep 20; done'
