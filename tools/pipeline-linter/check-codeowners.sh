@@ -14,6 +14,9 @@
 # limitations under the License.
 
 
+# Ensures that all sub-projects in this repository are listed
+# in the CODEOWNERS file in the root of the repository.
+
 set -e
 
 ERRORS=""

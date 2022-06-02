@@ -81,6 +81,12 @@ steps:
         else
           timeout "$$max_duration" run-pipelines.sh "$_CI_PROJECT" || true
         fi
+
+        if [ ! -f ./pipeline-result.txt ]; then
+          echo "No Results Reported;fail;N/A" > ./pipeline-result.txt;
+        elif ! grep -qF "TOTAL PIPELINE" ./pipeline-result.txt; then
+          echo "Pipeline Timeout;fail;[max duration]" >> ./pipeline-result.txt;
+        fi
     env:
       - 'APIGEE_ENV=$_APIGEE_ENV'
       - 'APIGEE_ORG=$_APIGEE_ORG'
@@ -93,35 +99,12 @@ steps:
       - 'APIGEE_USER'
       - 'APIGEE_PASS'
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
-    id: 'Log pipeline results to cloud logging'
+    id: 'Write pipeline results to cloud logging'
     entrypoint: "bash"
     args:
       - "-c"
       - |-
-        jq -Rsn --arg RUN_TYPE "$_RUN_TYPE" --arg BUILD_ID "$BUILD_ID" '
-            [inputs
-            | . / "\n"
-            | (.[] | select(length > 0) | . / ";") as $$input
-            | {"build": $$BUILD_ID, "type": $$RUN_TYPE, "solution": $$input[0], "success": $$input[1] | test("pass"), "duration": $$input[2]  | sub("s"; "") | tonumber}
-            ]
-        ' <./pipeline-result.txt > results.json
-
-
-        cat results.json | jq -r -c '.[]|.' | while read -r log; do
-            if [ "$(echo "$$log" | jq '.success')" = "true" ]; then
-              SEVERITY=INFO
-            else
-              SEVERITY=ERROR
-            fi
-            gcloud logging write pipeline-results "$$log" --payload-type=json --severity $$SEVERITY
-        done
-
-        if [ ! -f ./pipeline-result.txt ]; then
-          echo "No Results Reported;fail;N/A" > ./pipeline-result.txt;
-        elif ! grep -qF "TOTAL PIPELINE" ./pipeline-result.txt; then
-          echo "Pipeline Timeout;fail;[max duration]" >> ./pipeline-result.txt;
-        fi
-
+        cat ./pipeline-result.txt | cloud-logging.sh
   - name: 'gcr.io/$PROJECT_ID/devrel-pipeline:latest'
     id: 'Create GH Comment or Issue'
     entrypoint: "bash"
