@@ -25,7 +25,7 @@ cat | jq -Rsn --arg RUN_TYPE "$_RUN_TYPE" --arg BUILD_ID "$BUILD_ID" '
     | map(.duration = (.duration | sub("s"; "") | tonumber? // 0))
 ' > results.json
 
-cat results.json | jq -r -c '.[]|.' | while read -r log; do
+jq -r -c '.[]|.' < results.json | while read -r log; do
     if [ "$(echo "$log" | jq '.success')" = "true" ]; then
         SEVERITY=INFO
     else
