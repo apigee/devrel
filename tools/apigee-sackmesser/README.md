@@ -3,11 +3,19 @@
 <!-- markdownlint-disable-next-line MD013 MD033 -->
 <img src="./img/sackmesser-logo.png" alt="sackmesser-logo" width="200" align="right" >
 
-The Apigee Sackmesser lets you deploy API proxies, shared flows and
-configuration to Apigee Edge as well as hybrid/X without writing any additional
-manifest files.
+> :blue_book: **Sack·mes·ser**: from the German words "Sack" *pocket* and
+"Messer" *knife* is the Swiss German name for the famous multi-tool that
+is used by adventurers in a variety of practical situations.
+
+Apigee Sackmesser is a collection of tools that provide a unifying experience
+for interacting with the Apigee Management APIs for Apigee X/hybrid and Edge.
+It also lets you deploy API proxies, shared flows and configuration to both
+stacks without writing any additional manifest files.
 
 Please note that Apigee Private Cloud (OPDK) is not yet supported at this time.
+For interacting with the management API of Apigee X/hybrid only (without the
+need for backwards compatibility for Apigee Edge) you can also try the [apigeecli](https://github.com/apigee/apigeecli)
+commandline utility.
 
 Sackmesser can be used either as a commandline tool or a Docker
 container. To use it as a CLI you can add it to your path:
@@ -78,7 +86,11 @@ mount to refer to local directories):
 docker run -v "$PWD":/opt/apigee apigee-sackmesser COMMAND [...]
 ```
 
-### Scenario: Deploy a proxy straight from Github to Apigee X / hybrid
+### Scenario: Deploy a proxy bundle
+
+The **deploy** command lets you deploy proxies, shared flows and configurations.
+
+Example: Deploy a proxy straight from Github to Apigee X / hybrid
 
 ```sh
 sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-pipeline \
@@ -89,7 +101,7 @@ sackmesser deploy -g https://github.com/apigee/devrel/tree/main/references/cicd-
 -b "/airports/v1"
 ```
 
-### Scenario: Deploy a proxy from the local file system to Apigee Edge
+Example: Deploy a proxy from the local file system to Apigee Edge
 
 ```sh
 MFA=<MFA token goes here>
@@ -108,6 +120,10 @@ sackmesser deploy -d "$PWD/../../references/cicd-pipeline" \
 
 ### Scenario: Export all resources of a specific org
 
+The **export** command lets you export proxies and configuration to the local
+file system. The resources can be used for analysis and/or to be re-deployed
+via the deploy command.
+
 ```sh
 # Apigee X/hybrid
 sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_TOKEN"
@@ -117,6 +133,9 @@ sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PAS
 ```
 
 ### Scenario: List all deployments in a specific org and environment
+
+The **list** command is a helper function around the Apigee management API
+to list resources in an Apigee organization.
 
 ```sh
 # Apigee X/hybrid
@@ -128,15 +147,24 @@ sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$A
 
 ### Scenario: Clean up all proxies in a specific org
 
+The **clean** command can be used to delete individual resources e.g proxies or
+developers from an Apigee organization.
+
 ```sh
 # Apigee X/hybrid
-sackmesser clean --googleapi -t "$APIGEE_TOKEN" proxy all
+sackmesser clean --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" proxy all
+sackmesser clean developer "janedoe@example.com" --googleapi -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG"
 
 # Apigee Edge
 sackmesser clean --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" proxy all
+sackmesser clean developer "janedoe@example.com" --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS"
 ```
 
 ### Scenario: Create a Report of Deployments in an Environment
+
+The **report** command can be used to create an HTML report that shows the
+usage of Apigee features and their compliance with best practices
+within an environment.
 
 ```sh
 # Apigee X/hybrid
