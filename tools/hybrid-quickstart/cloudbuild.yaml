@@ -75,7 +75,7 @@ steps:
           echo "Earlier failure in the pipeline"
           exit -1
         fi
-timeout: 2700s #45min
+timeout: 3600s #60min
 substitutions:
   _QUICKSTART_ENV_NAME: test1
   _QUICKSTART_ENV_GROUP_NAME: test

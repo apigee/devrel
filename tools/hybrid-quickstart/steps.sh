@@ -767,10 +767,13 @@ EOF
 }
 
 apigeectl_init() {
+  echo -n "🏃 Running apigeectl init"
   "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
 }
 
 apigeectl_apply() {
+  echo -n "🏃 Running apigeectl apply"
+  timeout 5m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
   "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 }
 
@@ -779,25 +782,24 @@ install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
     mkdir -p "$HYBRID_HOME"/generated
 
-    apigeectl_init \
-      || ( sleep 60 && apigeectl_init ) \
-      || ( sleep 120 && apigeectl_init ) \
-      || ( sleep 240 && apigeectl_init )
+    export -f apigeectl_init
+    timeout 20m bash -c 'until apigeectl_init; do sleep 30; done'
 
-    sleep 2 && echo -n "⏳ Waiting for Apigeectl init "
-    wait_for_ready "Running" "kubectl get po -l app=apigee-controller -n apigee-system -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Controller: Running"
-    echo "waiting for 30s for the webhook certs to propagate" && sleep 30
+    echo -n "⏳ Waiting for Apigeectl init "
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s issuer apigee-selfsigned-issuer -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
+    timeout 10m bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
 
-    apigeectl_apply \
-      || ( sleep 60 && apigeectl_apply ) \
-      || ( sleep 120 && apigeectl_apply ) \
-      || ( sleep 240 && apigeectl_apply )
+    echo -n "⏳ Waiting for Serving Cert "
 
-    sleep 2 && echo -n "⏳ Waiting for Apigeectl apply "
-    wait_for_ready "Running" "kubectl get po -l app=apigee-runtime -n apigee -o=jsonpath='{.items[0].status.phase}' 2>/dev/null" "Apigee Runtime: Running."
+    export -f apigeectl_apply
+    timeout 12m bash -c 'until apigeectl_apply; do sleep 20; done'
+
+    echo -n "⏳ Waiting for Apigeectl apply "
+    timeout 30m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
 
     popd || return
-
     echo "🎉🎉🎉 Hybrid installation completed!"
 }
 
