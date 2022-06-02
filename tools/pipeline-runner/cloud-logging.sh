@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Helper utility to publish the pipeline build results as
+# log entries in cloud logging
+
 cat | jq -Rsn --arg RUN_TYPE "$_RUN_TYPE" --arg BUILD_ID "$BUILD_ID" '
     [inputs
     | . / "\n"
