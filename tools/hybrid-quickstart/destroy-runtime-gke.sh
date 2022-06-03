@@ -28,8 +28,10 @@ echo "🗑️ Delete Apigee hybrid cluster"
 
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME" --region "$REGION"
 
-for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
-   gcloud compute disks delete "$persistent_disk" --zone="$ZONE" -q
+gcloud compute disks list --format=json --filter="name~^gke-$GKE_CLUSTER_NAME" | jq -r -c '.[]' | while read -r disk; do
+   name=$(echo $disk | jq -r '.name')
+   diskzone=$(echo $disk | jq -r '.zone')
+   gcloud compute disks delete "$name" --zone="$diskzone" -q
 done
 
 for cluster in $(gcloud container hub memberships list --format="value(name)"); do
@@ -40,8 +42,8 @@ echo "✅ Apigee hybrid cluster deleted"
 
 echo "🗑️ Clean up Networking"
 
-gcloud compute addresses delete apigee-ingress-ip --region "$REGION" -q || echo "No regional IP address"
-gcloud compute addresses delete apigee-ingress-ip --global -q || echo "No global IP address"
+gcloud compute addresses delete "$INGRESS_IP_NAME" --region "$REGION" -q || echo "No regional IP address"
+gcloud compute addresses delete "$INGRESS_IP_NAME" --global -q || echo "No global IP address"
 
 for target_pool in $(gcloud compute target-pools list --format="value(name)"); do
    gcloud compute target-pools delete "$target_pool" --region "$REGION" -q
@@ -56,15 +58,15 @@ rm empty-file
 gcloud dns managed-zones delete apigee-dns-zone -q
 
 
-for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
    gcloud compute forwarding-rules delete --global "$fwdrule" -q
 done
 
-for targetproxy in $(gcloud compute target-https-proxies list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+for targetproxy in $(gcloud compute target-https-proxies list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
    gcloud compute target-https-proxies delete "$targetproxy" -q
 done
 
-for urlmap in $(gcloud compute url-maps list --format="value(name)" --filter="name~xlb-apigee-ingress"); do
+for urlmap in $(gcloud compute url-maps list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
    gcloud compute url-maps delete "$urlmap" -q
 done
 

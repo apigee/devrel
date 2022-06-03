@@ -19,9 +19,6 @@ set -e
 QUICKSTART_ROOT="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 export QUICKSTART_ROOT
 
-ENV_NAME=${ENV_NAME:="test1"}
-ENV_GROUP_NAME=${ENV_GROUP_NAME:="test"}
-
 source "$QUICKSTART_ROOT/steps.sh"
 
 # enables all required GCP APIs

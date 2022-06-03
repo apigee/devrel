@@ -35,6 +35,9 @@ gcloud version
 #installed zip
 zip -v
 
+#installed timeout
+timeout --version
+
 #login if needed
 gcloud auth list
 ```
