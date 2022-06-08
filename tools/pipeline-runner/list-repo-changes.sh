@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Helper utility to list all sub-project with changes (excluding .md files)
+
 git fetch origin
 
 git diff --name-only origin/main | \
