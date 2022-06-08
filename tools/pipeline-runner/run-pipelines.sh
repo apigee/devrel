@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Main Pipeline runner script to run pipeline checks for all sub-projects
+
 DIRS="$1"
-PIPELINE_REPORT=""
 DEVREL_ROOT="$PWD"
 
-PATH=$PATH:"$DEVREL_ROOT/tools/another-apigee-client"
 PATH=$PATH:"$DEVREL_ROOT/tools/apigee-sackmesser/bin"
 
 append_pipeline_result() {
@@ -49,7 +49,7 @@ if [ -z "$DIRS" ]; then
   DIRS=$(echo "$DIRS" | cut -c 2-)
 fi
 
-# Allowing some solutions to run independently and async
+# Allowing some solutions to run independently and asynchronous
 # because they don't have any side effects on the Apigee orgs
 # used for CI/CD.
 declare -A async_projects=(
@@ -59,7 +59,7 @@ async_pipeline_pids=''
 
 TOTAL_STARTTIME=$(date +%s)
 
-# Starting async builds
+# Starting asynchronous pipelines
 for DIR in ${DIRS//,/ }
 do
   RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
@@ -71,6 +71,7 @@ do
   fi
 done
 
+# Starting synchronous pipelines
 for DIR in ${DIRS//,/ }
 do
   RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
@@ -92,15 +93,12 @@ for pid in $(echo "$async_pipeline_pids" | tr ";" "\n"); do
   echo "[INFO] Done #$pid (return=$?)"
 done
 
+# Signal that all pipelines finished in time
 TOTAL_ENDTIME=$(date +%s)
 append_pipeline_result "TOTAL PIPELINE,0,$((TOTAL_ENDTIME-TOTAL_STARTTIME))s"
 
-# print report
+# Print report to stdout
 echo
 echo "FINAL RESULT"
 column -s ";" -t ./pipeline-result.txt
 echo
-
-# set exit code
-! echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '{ print $2 }' | grep -v -q "0"
-
