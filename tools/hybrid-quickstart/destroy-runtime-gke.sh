@@ -79,11 +79,11 @@ for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filt
 done
 
 if [ -n "$(gcloud compute routers nats list --region "$REGION" --router "rt-$REGION" --format json --format='get(name)')" ]; then
-   gcloud compute routers nats delete "apigee-nat-$REGION" --router "rt-$REGION"
+   gcloud compute routers nats delete "apigee-nat-$REGION" --router "rt-$REGION"  -q
 fi
 
 if [ -n "$(gcloud compute routers list --format json --filter "name=rt-$REGION" --format='get(name)')" ]; then
-   gcloud compute routers delete "rt-$REGION" --network "$NETWORK"
+   gcloud compute routers delete "rt-$REGION" -q
 fi
 
 echo "✅ Apigee networking cleaned up"
