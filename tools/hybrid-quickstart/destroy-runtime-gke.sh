@@ -28,10 +28,10 @@ echo "🗑️ Delete Apigee hybrid cluster"
 
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME" --region "$REGION"
 
-gcloud compute disks list --format=json --filter="name~^gke-$GKE_CLUSTER_NAME" | jq -r -c '.[]' | while read -r disk; do
-   name=$(echo $disk | jq -r '.name')
-   diskzone=$(echo $disk | jq -r '.zone')
-   gcloud compute disks delete "$name" --zone="$diskzone" -q
+for disk_zone in $(echo "$ZONE" | tr "," " "); do
+   for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
+      gcloud compute disks delete "$persistent_disk" --zone="$disk_zone" -q || echo "disk not in $disk_zone"
+   done
 done
 
 for cluster in $(gcloud container hub memberships list --format="value(name)"); do
@@ -78,6 +78,13 @@ for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filt
    gcloud compute ssl-certificates delete "$mcrt" -q
 done
 
+if [ -n "$(gcloud compute routers nats list --region "$REGION" --router "rt-$REGION" --format json --format='get(name)')" ]; then
+   gcloud compute routers nats delete "apigee-nat-$REGION" --router "rt-$REGION"
+fi
+
+if [ -n "$(gcloud compute routers list --format json --filter "name=rt-$REGION" --format='get(name)')" ]; then
+   gcloud compute routers delete "rt-$REGION" --network "$NETWORK"
+fi
 
 echo "✅ Apigee networking cleaned up"
 

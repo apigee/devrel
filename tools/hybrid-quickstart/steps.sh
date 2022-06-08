@@ -330,7 +330,7 @@ configure_network() {
     fi
 
     if [ -z "$(gcloud compute routers nats list --router "rt-$REGION" --format json --format='get(name)')" ]; then
-      gcloud compute routers nats create "apigee-nat-$REGION" --router "rt-$REGION" --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+      gcloud compute routers nats create "apigee-nat-$REGION" --router "rt-$REGION" --region "$REGION" --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
     fi
 
     if [ -z "$(gcloud compute addresses list --format json --filter "name=$INGRESS_IP_NAME" --format='get(address)')" ]; then
