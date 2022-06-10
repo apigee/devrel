@@ -86,7 +86,7 @@ set_config_params() {
       export JQ_VERSION='jq-1.6/jq-osx-amd64'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
       if ! [ -x "$(command -v timeout)" ]; then
-        echo "Please install the timeouty command for macOS. E.g. 'brew install coreutils'"
+        echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
         exit 2
       fi
     else
