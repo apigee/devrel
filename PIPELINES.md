@@ -10,11 +10,37 @@ The `pipeline.sh` script:
 - is run whenever a Pull Request changes that project
 - is run for all projects each night
 - is run on a private continuous integration server after an initial code
- review
+  review
 - has access to an Apigee Edge organization, accessed with the variables
  below.
 - runs in a Docker container that you can see [here](./tools/pipeline-runner/Dockerfile).
- You can run a pipeline locally e.g. `npm run pipeline -- references/js-callout`
+
+  You can run a pipeline locally:
+
+  ```sh
+  docker run \
+    -v $(pwd):/home \
+    -e APIGEE_USER -e APIGEE_PASS -e APIGEE_ORG -e APIGEE_ENV \
+    -e APIGEE_X_ORG -e APIGEE_X_ENV -e APIGEE_X_HOSTNAME \
+    -v ~/.config:/root/.config \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -it ghcr.io/apigee/devrel-pipeline-runner:latest run-pipelines.sh references/js-callout
+  ```
+
+  Where:
+  - The `APIGEE_` variables point to your Apigee instance
+  - This repo is mounted in the home directory
+  - (Required for X) mount your gcloud config folder
+  - (Required for Docker-in-Docker pipelines) mount the docker socket
+  - Specify a reference e.g. `references/js-callout` or omit to run everything
+
+  Should you need to make changes to the pipeline runner, you can
+  build your own image by running the following command and replacing
+  the image reference above:
+
+  ```sh
+  docker build -t devrel-pipeline-runner:local ./tools/pipeline-runner
+  ```
 
 A simple example of a pipeline can be found [here](./references/js-callout/pipeline.sh)
 
