@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Runs the `generate-docs.sh` command for every sub-project and
+# creates a `generated` folder in the root of the readme that can
+# be used to serve static web content for labs etc.
+
 rm -rf ./generated
 
 mkdir -p ./generated/references

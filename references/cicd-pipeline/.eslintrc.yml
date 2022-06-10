@@ -16,7 +16,6 @@ env:
   node: true
   es6: true
 extends:
-  - google
   - prettier
 rules:
   no-var: 0

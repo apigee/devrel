@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Ensures that all sub-projects in this repository are listed
+# in the README file in the root of the repository.
 
 set -e
 

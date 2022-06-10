@@ -16,7 +16,6 @@
     "apickli": "^3.0.1",
     "apigeelint": "^2.13.0",
     "eslint": "^7.0.0",
-    "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.11.0",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
