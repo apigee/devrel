@@ -2,12 +2,11 @@
   "name": "healthcare-v1",
   "version": "1.0.0",
   "scripts": {
-    "test": "npm i && npx cucumber-js --retry 3 test"
+    "test": "npm i && npx cucumber-js --publish-quiet --retry 3 test"
   },
   "dependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1",
-    "apigeetool": "^0.15.1",
     "sleep-promise": "^9.1.0"
   }
 }
