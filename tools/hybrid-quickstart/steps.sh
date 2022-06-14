@@ -29,13 +29,13 @@ set_config_params() {
     export REGION=${REGION:-'europe-west1'}
     gcloud config set compute/region "$REGION"
 
-    export ZONE=${ZONE:-'europe-west1-c'}
-    gcloud config set compute/zone "$ZONE"
+    export ZONE=${ZONE:-'europe-west1-b,europe-west1-c,europe-west1-d'}
     echo "- Compute Location $REGION/$ZONE"
 
     export NETWORK=${NETWORK:-'apigee-hybrid'}
     export SUBNET=${SUBNET:-"apigee-$REGION"}
-    echo "- Network $NETWORK/$SUBNET"
+    export SUBNET_RANGE=${SUBNET_RANGE:-"10.200.0.0/20"}
+    echo "- Network $NETWORK/$SUBNET - $SUBNET_RANGE"
 
     export PRIVATE_CLUSTER=${PRIVATE_CLUSTER:-'true'}
     echo "- Private Cluster $PRIVATE_CLUSTER"
@@ -45,6 +45,12 @@ set_config_params() {
 
 
     printf "\n🔧 Apigee hybrid Configuration:\n"
+    export ENV_NAME=${ENV_NAME:="test1"}
+    echo "- Environment Name $ENV_NAME"
+    export ENV_GROUP_NAME=${ENV_GROUP_NAME:="test"}
+    echo "- Environment Group Name $ENV_GROUP_NAME"
+    export INGRESS_IP_NAME=${INGRESS_IP_NAME:-'ingress-ip'} # internal|external
+    echo "- Ingress address name $INGRESS_IP_NAME"
     export INGRESS_TYPE=${INGRESS_TYPE:-'external'} # internal|external
     echo "- Ingress type $INGRESS_TYPE"
     export CERT_TYPE=${CERT_TYPE:-google-managed}
@@ -58,7 +64,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.7.0'
+    export APIGEE_HYBRID_VERSION='1.7.1'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
@@ -79,6 +85,10 @@ set_config_params() {
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
       export JQ_VERSION='jq-1.6/jq-osx-amd64'
       export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
+      if ! [ -x "$(command -v timeout)" ]; then
+        echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
+        exit 2
+      fi
     else
       echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
       exit 2
@@ -95,7 +105,8 @@ set_config_params() {
     echo "- Mesh ID $MESH_ID"
 
     # these will be set if the steps are run in order
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)" || echo "")
+
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=$INGRESS_IP_NAME" --format="get(address)" || echo "")
     export INGRESS_IP
     echo "- Ingress IP ${INGRESS_IP:-N/A}"
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
@@ -311,27 +322,27 @@ configure_network() {
     fi
 
     if [ -z "$(gcloud compute networks subnets list --network "$NETWORK" --format json --filter "name=$SUBNET" --format='get(name)')" ]; then
-      gcloud compute networks subnets create "$SUBNET" --network "$NETWORK" --range "10.200.0.0/20" --region "$REGION"
+      gcloud compute networks subnets create "$SUBNET" --network "$NETWORK" --range "$SUBNET_RANGE" --region "$REGION"
     fi
 
-    if [ -z "$(gcloud compute routers list --format json --filter "name=apigee-router" --format='get(name)')" ]; then
-      gcloud compute routers create apigee-router --network "$NETWORK"
+    if [ -z "$(gcloud compute routers list --format json --filter "name=rt-$REGION" --format='get(name)')" ]; then
+      gcloud compute routers create "rt-$REGION" --network "$NETWORK"
     fi
 
-    if [ -z "$(gcloud compute routers nats list --router apigee-router --format json --format='get(name)')" ]; then
-      gcloud compute routers nats create apigee-nat --router apigee-router --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+    if [ -z "$(gcloud compute routers nats list --router "rt-$REGION" --format json --format='get(name)')" ]; then
+      gcloud compute routers nats create "apigee-nat-$REGION" --router "rt-$REGION" --region "$REGION" --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
     fi
 
-    if [ -z "$(gcloud compute addresses list --format json --filter 'name=apigee-ingress-ip' --format='get(address)')" ]; then
+    if [ -z "$(gcloud compute addresses list --format json --filter "name=$INGRESS_IP_NAME" --format='get(address)')" ]; then
       if [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "google-managed" ]]; then
-        gcloud compute addresses create apigee-ingress-ip --global
+        gcloud compute addresses create "$INGRESS_IP_NAME" --global
       elif [[ "$INGRESS_TYPE" == "external" && "$CERT_TYPE" == "self-signed" ]]; then
-        gcloud compute addresses create apigee-ingress-ip --region "$REGION"
+        gcloud compute addresses create "$INGRESS_IP_NAME" --region "$REGION"
       else
-        gcloud compute addresses create apigee-ingress-ip --region "$REGION" --subnet "$SUBNET" --purpose SHARED_LOADBALANCER_VIP
+        gcloud compute addresses create "$INGRESS_IP_NAME" --region "$REGION" --subnet "$SUBNET" --purpose SHARED_LOADBALANCER_VIP
       fi
     fi
-    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=apigee-ingress-ip" --format="get(address)")
+    INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=$INGRESS_IP_NAME" --format="get(address)")
     export INGRESS_IP
 
     export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
@@ -372,8 +383,8 @@ create_gke_cluster() {
     if [ -z "$(gcloud container clusters list --filter "name=$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
 
       if [ "$PRIVATE_CLUSTER" = "true" ];then
-        if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-webhook" --format='get(name)')" ]; then
-          gcloud compute firewall-rules create allow-master-webhook --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK" --source-ranges "$CONTROL_PLANE_CIDR"
+        if [ -z "$(gcloud compute firewall-rules list --format json --filter "name=allow-master-$GKE_CLUSTER_NAME" --format='get(name)')" ]; then
+          gcloud compute firewall-rules create "allow-master-$GKE_CLUSTER_NAME" --allow tcp:9443,tcp:15017 --target-tags hybrid-quickstart --network "$NETWORK" --source-ranges "$CONTROL_PLANE_CIDR"
         fi
         gcloud container clusters create "$GKE_CLUSTER_NAME" \
             --no-enable-master-authorized-networks \
@@ -392,10 +403,10 @@ create_gke_cluster() {
             --default-max-pods-per-node "110" \
             --enable-ip-alias \
             --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-            --num-nodes "4" \
+            --num-nodes "1" \
             --enable-autoscaling \
-            --min-nodes "3" \
-            --max-nodes "6" \
+            --min-nodes "1" \
+            --max-nodes "3" \
             --tags=hybrid-quickstart \
             --labels mesh_id="$MESH_ID" \
             --workload-pool "$WORKLOAD_POOL" \
@@ -416,10 +427,10 @@ create_gke_cluster() {
             --default-max-pods-per-node "110" \
             --enable-ip-alias \
             --machine-type "$GKE_CLUSTER_MACHINE_TYPE" \
-            --num-nodes "4" \
+            --num-nodes "1" \
             --enable-autoscaling \
-            --min-nodes "3" \
-            --max-nodes "6" \
+            --min-nodes "1" \
+            --max-nodes "3" \
             --tags=hybrid-quickstart \
             --labels mesh_id="$MESH_ID" \
             --workload-pool "$WORKLOAD_POOL" \
@@ -604,7 +615,7 @@ create_cert() {
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: apigee-xlb-cert
+  name: "apigee-cert-$ENV_GROUP_NAME"
   namespace: istio-system
 spec:
   domains:
@@ -627,10 +638,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    networking.gke.io/managed-certificates: "apigee-xlb-cert"
-    kubernetes.io/ingress.global-static-ip-name: apigee-ingress-ip
+    networking.gke.io/managed-certificates: "apigee-cert-$ENV_GROUP_NAME"
+    kubernetes.io/ingress.global-static-ip-name: $INGRESS_IP_NAME
     kubernetes.io/ingress.allow-http: "false"
-  name: xlb-apigee-ingress
+  name: xlb-apigee-$ENV_GROUP_NAME
   namespace: istio-system
 spec:
   defaultBackend:
@@ -742,7 +753,7 @@ configure_runtime() {
   cat << EOF > "$HYBRID_HOME"/overrides/overrides.yaml
 gcp:
   projectID: $PROJECT_ID
-  region: "$REGION" # Analytics Region
+  region: "$AX_REGION" # Analytics Region
   workloadIdentityEnabled: true
 # Apigee org name.
 org: $PROJECT_ID
@@ -773,7 +784,7 @@ apigeectl_init() {
 
 apigeectl_apply() {
   echo -n "🏃 Running apigeectl apply"
-  timeout 5m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+  timeout 300 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
   "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 }
 
@@ -786,18 +797,16 @@ install_runtime() {
     timeout 20m bash -c 'until apigeectl_init; do sleep 30; done'
 
     echo -n "⏳ Waiting for Apigeectl init "
-    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
-    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s issuer apigee-selfsigned-issuer -n apigee-system; do sleep 10; done'
-    timeout 10m bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
-    timeout 10m bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
-
-    echo -n "⏳ Waiting for Serving Cert "
+    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s issuer apigee-selfsigned-issuer -n apigee-system; do sleep 10; done'
+    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
+    timeout 600 bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
 
     export -f apigeectl_apply
-    timeout 12m bash -c 'until apigeectl_apply; do sleep 20; done'
+    timeout 720 bash -c 'until apigeectl_apply; do sleep 20; done'
 
     echo -n "⏳ Waiting for Apigeectl apply "
-    timeout 30m bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
+    timeout 1800 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
 
     popd || return
     echo "🎉🎉🎉 Hybrid installation completed!"

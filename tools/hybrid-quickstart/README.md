@@ -35,6 +35,9 @@ gcloud version
 #installed zip
 zip -v
 
+#installed timeout
+timeout --version
+
 #login if needed
 gcloud auth list
 ```
@@ -69,7 +72,7 @@ export AX_REGION='europe-west1'
 
 ```sh
 export REGION='europe-west1'
-export ZONE='europe-west1-c'
+export ZONE='europe-west1-b,europe-west1-c,europe-west1-d'
 ```
 
 ### Networking
