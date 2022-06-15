@@ -11,9 +11,9 @@ The `pipeline.sh` script:
 - is run for all projects each night
 - is run on a private continuous integration server after an initial code
   review
-- has access to an Apigee Edge organization, accessed with the variables
- below.
-- runs in a Docker container that you can see [here](./tools/pipeline-runner/Dockerfile).
+- depends on external configuration parameters in the form of environment
+  variables to let the pipeline target Apigee X and Edge organizations
+- runs in a Docker container that you can see [here](./tools/pipeline-runner/Dockerfile)
 
   You can run a pipeline locally:
 
@@ -44,10 +44,10 @@ The `pipeline.sh` script:
 
 A simple example of a pipeline can be found [here](./references/js-callout/pipeline.sh)
 
-### Variables
+### Environment Variables
 
 Currently, pipelines tests can run against Apigee Edge or Apigee X. The
- following variables are available for this:
+ following environment variables are available for this:
 
 | Variable          | Description                                           |
 | ----------------- | ----------------------------------------------------- |
