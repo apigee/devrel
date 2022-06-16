@@ -38,7 +38,7 @@ docker build -f ./jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 
 ```sh
 PROJECT_ID=<my-project>
-gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
+gcloud builds submit --config ./cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
 docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
