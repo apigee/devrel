@@ -17,11 +17,11 @@
 const verb = context.getVariable("request.verb");
 const path = context.getVariable("mock.path");
 var response = {"error": "not found"};
-var status = 404;
+var httpStatus = 404;
 
 // metadata
 if(verb === "GET" && path === "/metadata") {
-  status = 200;
+  httpStatus = 200;
   response = {
     "resourceType": "CapabilityStatement",
     "id": "0c18f1d5-d005-4031-9e67-6222ea0308b3",
@@ -146,7 +146,7 @@ if(verb === "GET" && path === "/metadata") {
 }
 // Patient
 if(verb === "GET" && path === "/Patient/nl-core-patient-03") {
-  status = 200;
+  httpStatus = 200;
   response = {
     "resourceType": "Patient",
     "id": "nl-core-patient-03",
@@ -399,7 +399,7 @@ if(verb === "GET" && path === "/Patient/nl-core-patient-03") {
 }
 // AllergyIntolerance
 if(verb === "GET" && path === "/AllergyIntolerance/zib-allergyintolerance-01") {
-  status = 200;
+  httpStatus = 200;
   response = {
     "resourceType": "AllergyIntolerance",
     "id": "zib-allergyintolerance-01",
@@ -520,6 +520,6 @@ if(verb === "GET" && path === "/AllergyIntolerance/zib-allergyintolerance-01") {
   };
 }
 
-context.setVariable("response.status.code", status);
+context.setVariable("response.status.code", httpStatus);
 context.setVariable("response.content", JSON.stringify(response));
 context.setVariable("response.header.Content-Type", "application/json");
