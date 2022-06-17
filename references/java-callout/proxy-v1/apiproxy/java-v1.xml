@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<APIProxy revision="1" name="currency-v1">
+<APIProxy revision="1" name="java-v1">
     <ConfigurationVersion minorVersion="0" majorVersion="4"/>
 	<Description>@description</Description>
 </APIProxy>

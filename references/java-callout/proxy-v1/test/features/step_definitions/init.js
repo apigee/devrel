@@ -20,10 +20,7 @@ const { Before: before, setDefaultTimeout } = require("@cucumber/cucumber");
 before(function () {
   this.apickli = new apickli.Apickli(
     "https",
-    process.env.APIGEE_ORG +
-      "-" +
-      process.env.APIGEE_ENV +
-      ".apigee.net/apigee-java/v1"
+    process.env.TEST_HOST + "/apigee-java/v1"
   );
 });
 

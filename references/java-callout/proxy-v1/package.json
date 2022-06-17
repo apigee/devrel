@@ -1,11 +1,11 @@
 {
-  "name": "currency-v1",
+  "name": "java-v1",
   "version": "1.0.0",
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1"
   },
   "scripts": {
-    "test": "npx cucumber-js test"
+    "test": "npx cucumber-js --publish-quiet test"
   }
 }
