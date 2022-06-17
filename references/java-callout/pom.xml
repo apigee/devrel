@@ -23,7 +23,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
   <artifactId>java-project-v1</artifactId>
   <packaging>pom</packaging>
   <version>1.0</version>
-  <name>Currency Parent Project</name>
+  <name>Java Callout Reference</name>
   <modules>
     <module>java-callout</module>
     <module>proxy-v1</module>

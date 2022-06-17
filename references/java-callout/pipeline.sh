@@ -14,7 +14,15 @@
 # limitations under the License.
 
 set -e
-set -x
 
-mvn install -Ptest -B -ntp
-npm test --prefix proxy-v1
+echo "Testing on Apigee Edge"
+mvn install -Papigee-edge -Dapigee.env="$APIGEE_ENV" -Dapigee.org="$APIGEE_ORG" \
+  -Dapigee.username="$APIGEE_USER" -Dapigee.password="$APIGEE_PASS" -B -ntp
+
+TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test --prefix proxy-v1
+
+echo "Testing on Apigee X"
+mvn install -Papigee-x -Dapigee.env="$APIGEE_X_ENV" -Dapigee.org="$APIGEE_X_ORG" \
+  -Dapigee.bearer="$(gcloud auth print-access-token)" -B -ntp
+
+ TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix proxy-v1
