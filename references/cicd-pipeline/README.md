@@ -200,6 +200,14 @@ You are responsible to ensure you have the following plugins enabled:
 - [HTML Publisher](https://plugins.jenkins.io/htmlpublisher/)
 - [Cucumber Reports](https://plugins.jenkins.io/cucumber-reports/)
 
+The Jenkinsfile provided in this repo expects a credential object to exist for Edge deployments: 
+
+APIGEE_CREDS = credentials('apigee') 
+- [Jenkins Credentials](https://www.jenkins.io/doc/book/using/using-credentials/#adding-new-global-credentials)
+
+The Jenkinsfile provided in this repo also expects several environment variables. The required environment variables must be configured under Global properties in Sytem Configuration -> Configure System or provided as [parameters](https://wiki.jenkins.io/display/JENKINS/Parameterized+Build) when the pipeline runs.
+
+
 ### CI/CD Configuration Instructions
 
 #### Jenkins Configuration / Start
