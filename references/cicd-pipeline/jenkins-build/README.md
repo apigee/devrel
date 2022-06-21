@@ -189,11 +189,10 @@ gcloud iam service-accounts keys create $KEY_FILE_PATH --iam-account=$SERVICE_AC
 
 docker run -d
   -p 8080:8080 \
-  -e APIGEE_TOKEN="$(gcloud auth print-access-token)" \
-  -e APIGEE_ORG="teodlh-apigeex-342821" \
-  -e APIGEE_TEST_ENV="eval" \
+  -e APIGEE_ORG="my-org" \
+  -e APIGEE_TEST_ENV="test" \
   -e APIGEE_PROD_ENV="prod"
-  -e TEST_HOST="apigeex.dlhdemo.com" \
+  -e TEST_HOST="api.example.apigee.com" \
   -e GCP_SA_AUTH="vm-scope" \
   -e API_VERSION="google"
   -e JENKINS_ADMIN_PASS="password" \
