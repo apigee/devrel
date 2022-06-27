@@ -164,14 +164,11 @@ docker run \
 
 ##### Apigee X/hybrid in local Docker
 
-*Note:* for long running jenkins deployments consider mounting the gcloud
-service account credentials from the host filesystem instead of passing
-the access token via environment variables.
-
 ```sh
 docker run \
   -p 8080:8080 \
   -e APIGEE_TOKEN="$(gcloud auth print-access-token)" \
+  -e GCP_SA_AUTH="token" \
   -e APIGEE_ORG \
   -e APIGEE_TEST_ENV="test1" \
   -e APIGEE_PROD_ENV="prod1" \
@@ -180,6 +177,30 @@ docker run \
   -e JENKINS_ADMIN_PASS="password" \
   apigee/devrel-jenkins:latest
 ```
+
+*Note:* for long running jenkins deployments consider mounting the gcloud
+service account credential file from the host filesystem instead of passing
+the access token via environment variables:
+
+```sh
+export KEY_FILE_PATH=/tmp/keys/jenkins-key-file.json
+
+gcloud iam service-accounts keys create $KEY_FILE_PATH --iam-account=$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com
+
+docker run -d
+  -p 8080:8080 \
+  -e APIGEE_ORG="my-org" \
+  -e APIGEE_TEST_ENV="test" \
+  -e APIGEE_PROD_ENV="prod"
+  -e TEST_HOST="api.example.apigee.com" \
+  -e GCP_SA_AUTH="vm-scope" \
+  -e API_VERSION="google"
+  -e JENKINS_ADMIN_PASS="password" \
+  -e GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE_PATH" \
+  -v "$KEY_FILE_PATH:$KEY_FILE_PATH:ro" \
+  apigee/devrel-jenkins:latest
+```
+
 
 After the initialization is completed, you can login with the Jenkins web UI
 `http://localhost:8080` using the `admin` user and the password you specified
