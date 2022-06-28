@@ -20,7 +20,7 @@ RUN apk update && apk add --no-cache git maven nodejs npm
 USER jenkins
 
 COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
 
 COPY --chown=jenkins jenkins.yml /var/jenkins_home/casc_configs/jenkins.yaml
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
