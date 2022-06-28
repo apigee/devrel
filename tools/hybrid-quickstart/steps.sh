@@ -64,13 +64,13 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.7.1'
+    export APIGEE_HYBRID_VERSION='1.7.2'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.7.2'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.12'
+    export ASM_VERSION='1.13'
     echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
