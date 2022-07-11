@@ -21,15 +21,14 @@ const runCode = () => {
   return require(code);
 };
 
-const responseWithTraceId = {
-  headers: {
-    "X-Amzn-Trace-Id": "blah blah",
-  },
+const originalResponse = {
+  headers: {},
 };
 
-const responseWithoutTraceId = {
+const responseWithExtraHeader = {
   headers: {
     "Content-Type": "text/plain",
+    "x-foo": "bar"
   },
 };
 
@@ -37,10 +36,10 @@ beforeEach(() => {
   global.context = {};
 });
 
-test("can remove trace id from response", () => {
+test("can add an extra header to the response", () => {
   global.context.getVariable = jest
     .fn()
-    .mockReturnValueOnce(JSON.stringify(responseWithTraceId));
+    .mockReturnValueOnce(JSON.stringify(originalResponse));
 
   global.context.setVariable = jest.fn();
 
@@ -50,21 +49,5 @@ test("can remove trace id from response", () => {
 
   expect(
     JSON.parse(global.context.setVariable.mock.calls[0][1])
-  ).not.toHaveProperty("X-Amzn-Trace.Id");
-});
-
-test("no change in responses where there is no sensitive properties", () => {
-  global.context.getVariable = jest
-    .fn()
-    .mockReturnValueOnce(JSON.stringify(responseWithoutTraceId));
-
-  global.context.setVariable = jest.fn();
-
-  runCode();
-
-  expect(global.context.setVariable.mock.calls[0][0]).toBe("response.content");
-
-  expect(JSON.parse(global.context.setVariable.mock.calls[0][1])).toStrictEqual(
-    responseWithoutTraceId
-  );
+  ).toHaveProperty("headers.x-foo");
 });
