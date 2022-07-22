@@ -536,6 +536,7 @@ EOF
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
     --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
     --ca mesh_ca \
+    --option legacy-default-ingressgateway \
     --enable_all
 
   echo "✅ ASM installed"
