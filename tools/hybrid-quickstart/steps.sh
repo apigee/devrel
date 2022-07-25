@@ -109,6 +109,10 @@ set_config_params() {
     INGRESS_IP=$(gcloud compute addresses list --format json --filter "name=$INGRESS_IP_NAME" --format="get(address)" || echo "")
     export INGRESS_IP
     echo "- Ingress IP ${INGRESS_IP:-N/A}"
+    if [ -n "$INGRESS_IP" ]; then
+      export DNS_NAME=${DNS_NAME:="$(echo "$INGRESS_IP" | tr '.' '-').nip.io"}
+    fi
+    echo "- DNS NAME ${DNS_NAME:-N/A}"
     NAME_SERVER=$(gcloud dns managed-zones describe apigee-dns-zone --format="json" --format="get(nameServers[0])" 2>/dev/null || echo "")
     export NAME_SERVER
     echo "- Nameserver ${NAME_SERVER:-N/A}"
@@ -534,8 +538,18 @@ EOF
     --cluster_name "$GKE_CLUSTER_NAME" \
     --cluster_location "$REGION" \
     --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
+    --ca mesh_ca \
+    --enable_all
+
+  yes | "$QUICKSTART_TOOLS"/istio-asm/asmcli install \
+    --project_id "$PROJECT_ID" \
+    --fleet_id "$PROJECT_ID" \
+    --cluster_name "$GKE_CLUSTER_NAME" \
+    --cluster_location "$REGION" \
+    --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
     --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
     --ca mesh_ca \
+    --option legacy-default-ingressgateway \
     --enable_all
 
   echo "✅ ASM installed"
@@ -737,6 +751,7 @@ create_sa() {
   create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-metrics-sa" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
 
   echo -n "🔛 Enabling runtime synchronizer"
     curl --fail -X POST -H "Authorization: Bearer $(token)" \
