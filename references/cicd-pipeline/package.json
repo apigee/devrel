@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run unit-test && npm run integration-test",
     "unit-test": "nyc --reporter=html mocha --recursive --timeout 5000 \"./test/unit/*.js\"",
-    "integration-test": "cucumber-js ./test/integration",
+    "integration-test": "cucumber-js --publish-quiet ./test/integration",
     "lint": "npm run eslint && npm run apigeelint",
     "eslint": "eslint --format html .",
     "apigeelint": "apigeelint -s ./apiproxy -f html.js -e PO025,PO013"
