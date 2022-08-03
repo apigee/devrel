@@ -70,11 +70,11 @@ GIT_URL='https://github.com/ORG/REPO.git'
 ```sh
 cd devrel
 git init
-git remote add origin $GIT_URL
+git remote add gcp $GIT_URL
 git checkout -b feature/cicd-pipeline
 git add .
 git commit -m "initial commit"
-git push -u origin feature/cicd-pipeline
+git push -u gcp feature/cicd-pipeline
 ```
 
 ## Orchestration using Run Cloud
@@ -104,6 +104,11 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$CLOUD_BUILD_SA" \
   --role="roles/apigee.apiAdmin"
+
+# Required only for org-level config
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/apigee.orgAdmin"
 ```
 
 Configure the (externally reachable) hostname of your Apigee environment
@@ -118,7 +123,7 @@ APIGEE_HOSTNAME=api.my-host.example.com
 Run the deployment (with a simulated git branch name)
 
 ```sh
-gcloud builds submit --config='./ci-config/cloudbuild/cloudbuild.yaml' \
+gcloud builds submit --config='./references/cicd-pipeline/ci-config/cloudbuild/cloudbuild.yaml' \
   --substitutions="_API_VERSION=google,_DEPLOYMENT_ORG=$PROJECT_ID,_APIGEE_TEST_ENV=$APIGEE_ENV,_INT_TEST_HOST=$APIGEE_HOSTNAME,BRANCH_NAME=experiment"
 ```
 
@@ -127,7 +132,7 @@ Or set up a push-trigger for the Google source repository
 ```sh
 gcloud beta builds triggers create cloud-source-repositories \
     --repo="$REPO_NAME" --branch-pattern='.*' --name="cicd-example" \
-    --build-config='ci-config/cloudbuild/cloudbuild.yaml' \
+    --build-config='references/cicd-pipeline/ci-config/cloudbuild/cloudbuild.yaml' \
     --substitutions="_API_VERSION=google,_DEPLOYMENT_ORG=$PROJECT_ID,_APIGEE_TEST_ENV=$APIGEE_ENV,_INT_TEST_HOST=$APIGEE_HOSTNAME"
 ```
 
@@ -164,7 +169,7 @@ echo "$APIGEE_PASS" | gcloud secrets create devrel_apigee_pass --data-file=-
 Run the deployment (with a simulated git branch name)
 
 ```sh
-gcloud builds submit  --config=./ci-config/cloudbuild/cloudbuild.yaml --substitutions="_API_VERSION=apigee,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net,_DEPLOYMENT_ORG=$APIGEE_ORG,BRANCH_NAME=experiment"
+gcloud builds submit  --config=./references/cicd-pipeline/ci-config/cloudbuild/cloudbuild.yaml --substitutions="_API_VERSION=apigee,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net,_DEPLOYMENT_ORG=$APIGEE_ORG,BRANCH_NAME=experiment" --project "$PROJECT_ID"
 ```
 
 Or set up a push-trigger for the Google source repository
@@ -172,8 +177,9 @@ Or set up a push-trigger for the Google source repository
 ```sh
 gcloud beta builds triggers create cloud-source-repositories \
     --repo="$REPO_NAME" --branch-pattern='.*' --name="cicd-example-edge" \
-    --build-config='ci-config/cloudbuild/cloudbuild.yaml' \
-    --substitutions="_API_VERSION=apigee,_DEPLOYMENT_ORG=$APIGEE_ORG,_APIGEE_TEST_ENV=$APIGEE_ENV,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
+    --build-config='references/cicd-pipeline/ci-config/cloudbuild/cloudbuild.yaml' \
+    --substitutions="_API_VERSION=apigee,_DEPLOYMENT_ORG=$APIGEE_ORG,_APIGEE_TEST_ENV=$APIGEE_ENV,_INT_TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net" \
+    --project "$PROJECT_ID"
 ```
 
 ## Orchestration using Jenkins
@@ -200,9 +206,9 @@ You are responsible to ensure you have the following plugins enabled:
 - [HTML Publisher](https://plugins.jenkins.io/htmlpublisher/)
 - [Cucumber Reports](https://plugins.jenkins.io/cucumber-reports/)
 
-The Jenkinsfile provided in this repo expects a credential object to exist for Apigee Edge deployments: 
+The Jenkinsfile provided in this repo expects a credential object to exist for Apigee Edge deployments:
 
-APIGEE_CREDS = credentials('apigee') 
+APIGEE_CREDS = credentials('apigee')
 - [Jenkins Credentials](https://www.jenkins.io/doc/book/using/using-credentials/#adding-new-global-credentials)
 
 The Jenkinsfile provided in this repo also expects several environment variables. The required environment variables must be configured under Global properties in System Configuration -> Configure System or provided as [parameters](https://wiki.jenkins.io/display/JENKINS/Parameterized+Build) when the pipeline runs.
