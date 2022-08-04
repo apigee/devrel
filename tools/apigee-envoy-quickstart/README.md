@@ -52,8 +52,11 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     ```bash
     mkdir apigee-envoy-toolkit && cd "$_"
     export ENVOY_HOME=$(pwd)
-    wget -O apigee-envoy-quickstart-main.zip https://github.com/ganadurai/apigee-envoy-quickstart/archive/refs/heads/main.zip
-    unzip apigee-envoy-quickstart-main.zip
+    wget -O devrel.zip https://github.com/ganadurai/devrel/archive/refs/heads/main.zip
+    unzip devrel.zip
+    mv devrel-main apigee-devrel
+    rm devrel.zip
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ```
 
 1. **Run to install the quickstart toolkit.**
