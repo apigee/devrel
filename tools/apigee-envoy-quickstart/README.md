@@ -52,7 +52,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     ```bash
     mkdir apigee-envoy-toolkit && cd "$_"
     export ENVOY_HOME=$(pwd)
-    wget -O devrel.zip https://github.com/ganadurai/devrel/archive/refs/heads/main.zip
+    wget -O devrel.zip https://github.com/apigee/devrel/archive/refs/heads/main.zip
     unzip devrel.zip
     mv devrel-main apigee-devrel
     rm devrel.zip
