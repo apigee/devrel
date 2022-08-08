@@ -50,8 +50,8 @@ init() {
 }
 
 createDir() {
-    mkdir $CLI_HOME
-    mkdir $REMOTE_SERVICE_HOME
+    mkdir "$CLI_HOME"
+    mkdir "$REMOTE_SERVICE_HOME"
 }
 
 PARAMETERS=()
@@ -98,7 +98,7 @@ fi
 
 if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]
 then
-    gke-gcloud-auth-plugin --version 2>&1 >/dev/null
+    gke-gcloud-auth-plugin --version > /dev/null 2>&1
     RESULT=$?
     if [ $RESULT -eq 0 ]; then
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True
