@@ -74,7 +74,7 @@ RESULT=$?
 
 counter=0;
 while [ $RESULT -ne 0 ] && [ $counter -lt 5 ]; do
-  printf "\n\nTesting the httpbin application $counter of 5\n"
+  printf "\n\nTesting the httpbin application %s of 5\n" "$counter"
   sleep 20
   if [[ -z $PIPELINE_TEST ]]; then
     testHttpbin;
