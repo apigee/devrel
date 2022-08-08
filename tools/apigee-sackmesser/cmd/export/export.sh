@@ -23,7 +23,11 @@ source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
 mgmtAPIDownload() {
     loginfo "Sackmesser export (zip) $1"
-    curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
+    if [ "$opdk" == "yes" ]; then
+        curl -fsS -u $username:$password -v "http://$baseuri/v1/$1" -o "$2"
+    else 
+        curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
+    fi
 }
 
 urlencode() {

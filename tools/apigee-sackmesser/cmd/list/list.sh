@@ -50,4 +50,9 @@ elif [ "$apiversion" = "apigee" ]; then
     esac
 fi
 
-curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$partial_uri" | jq "$jq_pattern"
+if [ "$opdk" == "yes" ]; then
+    token=`echo -n $username:$password | base64`
+    curl -fsS -H "Authorization: Basic $token" -v "http://$baseuri/v1/$partial_uri" | jq "$jq_pattern" #to do: logic for https
+else 
+    curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$partial_uri" | jq "$jq_pattern"
+fi
