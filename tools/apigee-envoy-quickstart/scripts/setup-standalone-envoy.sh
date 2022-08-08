@@ -16,7 +16,7 @@
 
 set -e
 
-chmod 644 $CLI_HOME/config.yaml
+chmod 644 "$CLI_HOME"/config.yaml
 
 sleep 5
 
