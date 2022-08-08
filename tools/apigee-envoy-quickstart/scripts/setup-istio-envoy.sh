@@ -18,8 +18,7 @@ testHttpbin() {
   printf "\n\nTesting the httpbin application\n"
   kubectl --context=${CLUSTER_CTX} -n $NAMESPACE run -it --rm --image=curlimages/curl --restart=Never curl \
       --overrides='{ "apiVersion": "v1", "metadata": {"annotations": { "sidecar.istio.io/inject":"false" } } }' \
-      -- curl -i httpbin.apigee.svc.cluster.local/headers | grep 200 \
-  2>&1 >/dev/null
+      -- curl -i httpbin.apigee.svc.cluster.local/headers | grep 200 > /dev/null 2>&1
   RESULT=$?
   return $RESULT
 }

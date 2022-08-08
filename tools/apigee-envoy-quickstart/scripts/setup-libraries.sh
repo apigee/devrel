@@ -58,7 +58,7 @@ fi
 
 if [ "$PLATFORM" != 'edge' ]
 then
-    curl -i -v $APIGEE_X_HOSTNAME/remote-token/certs | grep 200 2>&1 >/dev/null
+    curl -i -v $APIGEE_X_HOSTNAME/remote-token/certs | grep 200 > /dev/null 2>&1
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
       echo "FAILED : Not success in provisioning the apigee adapter proxies to the mgmt plane"

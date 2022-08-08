@@ -34,8 +34,7 @@ fi
 #Validate the Apigee org and env
 
 curl -i -H "Authorization: ${TOKEN_TYPE} ${TOKEN}" \
-"${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" \
-2>&1 >/dev/null
+"${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" > /dev/null 2>&1
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "please verify the provided values about Apigee"
