@@ -16,6 +16,9 @@
 
 set -e
 
+export ISTIO_TEMPLATE_VER="istio-1.12"
+export STANDALONE_TEMPLATE_VER="envoy-1.15"
+
 usage() {
     echo -e "$*\n usage: $(basename "$0")" \
         "-t <type> -a <action>\n" \
@@ -41,13 +44,14 @@ init() {
     if [ "$PLATFORM" == 'edge' ]; then
         export MGMT_HOST="https://api.enterprise.apigee.com"
     fi
+    if [[ -z $PROJECT_ID ]] && [[ $INSTALL_TYPE == 'standalone-apigee-envoy' ]]; then
+        export PROJECT_ID=$APIGEE_PROJECT_ID;
+    fi
 }
 
 createDir() {
-
     mkdir $CLI_HOME
     mkdir $REMOTE_SERVICE_HOME
-
 }
 
 PARAMETERS=()
@@ -127,7 +131,7 @@ if [ $INSTALL_TYPE == 'istio-apigee-envoy' -a $ACTION == 'install' ]
 then
     createDir;
     echo "Installing istio-apigee-envoy"
-    export TEMPLATE="istio-1.12"
+    export TEMPLATE=$ISTIO_TEMPLATE_VER
     ./istio-apigee-envoy-install.sh
 elif [ $INSTALL_TYPE == 'istio-apigee-envoy' -a $ACTION == 'delete' ]
 then
@@ -137,7 +141,7 @@ elif [ $INSTALL_TYPE == 'standalone-apigee-envoy' -a $ACTION == 'install' ]
 then
     createDir;
     echo "Installing standalone-apigee-envoy"
-    export TEMPLATE="envoy-1.15"
+    export TEMPLATE=$STANDALONE_TEMPLATE_VER
     ./standalone-apigee-envoy-install.sh
 elif [ $INSTALL_TYPE == 'standalone-apigee-envoy' -a $ACTION == 'delete' ]
 then

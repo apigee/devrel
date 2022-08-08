@@ -31,12 +31,12 @@ if [[ -z $PROJECT_ID ]]; then
     exit 1
 fi
 
-if [[ -z $CLUSTER_NAME ]]; then
+if [[ -z $CLUSTER_NAME ]] && [[ $INSTALL_TYPE == 'istio-apigee-envoy' ]]; then
     echo "Environment variable CLUSTER_NAME is not set, please checkout README.md"
     exit 1
 fi
 
-if [[ -z $CLUSTER_LOCATION ]]; then
+if [[ -z $CLUSTER_LOCATION ]] && [[ $INSTALL_TYPE == 'istio-apigee-envoy' ]]; then
     echo "Environment variable CLUSTER_LOCATION is not set, please checkout README.md"
     exit 1
 fi
@@ -51,14 +51,15 @@ if [[ -z $TOKEN ]]; then
     exit 1
 fi
 
-#Validate the kubernetes cluster
-
-gcloud --project=${PROJECT_ID} container clusters list \
+if [[ $INSTALL_TYPE == 'istio-apigee-envoy' ]]; then
+  #Validate the kubernetes cluster
+  gcloud --project=${PROJECT_ID} container clusters list \
     --filter="name~${CLUSTER_NAME}" >/dev/null
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "please verify the provided values about GKE cluster"
-  exit 1
+  RESULT=$?
+  if [ $RESULT -ne 0 ]; then
+    echo "please verify the provided values about GKE cluster"
+    exit 1
+  fi
 fi
 
 echo "Validation istio params successful.."
