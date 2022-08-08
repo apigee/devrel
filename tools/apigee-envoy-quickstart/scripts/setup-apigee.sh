@@ -34,7 +34,7 @@ then
     } ],
     "description" : "API Product for api proxies in Envoy",
     "environments": [
-        "'${APIGEE_ENV}'"
+        "${APIGEE_ENV}"
     ],
     "apiResources" : [ "/headers" ]
     }'
@@ -52,7 +52,7 @@ else
     ],
     "description": "API Product for api proxies in Envoy",
     "environments": [
-        "'${APIGEE_ENV}'"
+        "${APIGEE_ENV}"
     ],
     "operationGroup": {
         "operationConfigs": [
