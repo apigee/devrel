@@ -53,7 +53,7 @@ fi
 
 if [[ $INSTALL_TYPE == 'istio-apigee-envoy' ]]; then
   #Validate the kubernetes cluster
-  gcloud --project=${PROJECT_ID} container clusters list \
+  gcloud --project="${PROJECT_ID}" container clusters list \
     --filter="name~${CLUSTER_NAME}" >/dev/null
   RESULT=$?
   if [ $RESULT -ne 0 ]; then
