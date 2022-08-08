@@ -109,7 +109,8 @@ init;
 
 if [ "$PLATFORM" == 'opdk' ] || [ "$PLATFORM" == 'edge' ]
 then
-    export TOKEN=$(echo -n "$APIGEE_USER":"$APIGEE_PASS" | base64 | tr -d \\r)
+    TOKEN=$(echo -n "$APIGEE_USER":"$APIGEE_PASS" | base64 | tr -d \\r)
+    export TOKEN;
     export TOKEN_TYPE="Basic"
 else
     export TOKEN_TYPE="Bearer"
@@ -127,24 +128,20 @@ else
     export APIGEE_ENV=$APIGEE_X_ENV
 fi
 
-if [ $INSTALL_TYPE == 'istio-apigee-envoy' -a $ACTION == 'install' ]
-then
+if [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]; then
     createDir;
     echo "Installing istio-apigee-envoy"
     export TEMPLATE=$ISTIO_TEMPLATE_VER
     ./istio-apigee-envoy-install.sh
-elif [ $INSTALL_TYPE == 'istio-apigee-envoy' -a $ACTION == 'delete' ]
-then
+elif [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'delete' ]]; then
     echo "Deleting istio-apigee-envoy"
     ./scripts/delete-apigee-envoy-setup.sh
-elif [ $INSTALL_TYPE == 'standalone-apigee-envoy' -a $ACTION == 'install' ]
-then
+elif [ "$INSTALL_TYPE" == 'standalone-apigee-envoy' -a "$ACTION" == 'install' ]; then
     createDir;
     echo "Installing standalone-apigee-envoy"
     export TEMPLATE=$STANDALONE_TEMPLATE_VER
     ./standalone-apigee-envoy-install.sh
-elif [ $INSTALL_TYPE == 'standalone-apigee-envoy' -a $ACTION == 'delete' ]
-then
+elif [[ "$INSTALL_TYPE" == 'standalone-apigee-envoy' ]] && [[ "$ACTION" == 'delete' ]]; then
     echo "Deleting standalone-apigee-envoy"
     ./scripts/delete-apigee-envoy-setup.sh
 else

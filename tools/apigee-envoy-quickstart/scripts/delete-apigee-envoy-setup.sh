@@ -14,27 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ $INSTALL_TYPE == 'istio-apigee-envoy' ]
+if [ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]
 then
-    gcloud --project=${PROJECT_ID} container clusters get-credentials \
-    ${CLUSTER_NAME} --zone ${CLUSTER_LOCATION}
+    gcloud --project="${PROJECT_ID}" container clusters get-credentials \
+    "${CLUSTER_NAME}" --zone "${CLUSTER_LOCATION}"
 
-    echo "Deleting the namespace - "$NAMESPACE
-    kubectl --context=${CLUSTER_CTX} delete namespace $NAMESPACE
+    echo "Deleting the namespace - $NAMESPACE"
+    kubectl --context="${CLUSTER_CTX}" delete namespace "$NAMESPACE"
 
     echo "Deleting the service account role binding"
-    gcloud projects remove-iam-policy-binding $APIGEE_PROJECT_ID \
+    gcloud projects remove-iam-policy-binding "$APIGEE_PROJECT_ID" \
     --member="serviceAccount:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/apigee.analyticsAgent"
 
     echo "Deleting the service account"
-    gcloud iam service-accounts delete $ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com \
-    --project=$APIGEE_PROJECT_ID --quiet
+    gcloud iam service-accounts delete "$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com \
+    --project="$APIGEE_PROJECT_ID" --quiet
 
-    rm $ENVOY_HOME/$AX_SERVICE_ACCOUNT
+    rm "$ENVOY_HOME"/"$AX_SERVICE_ACCOUNT"
 fi
 
-if [ $INSTALL_TYPE == 'standalone-apigee-envoy' ]
+if [ "$INSTALL_TYPE" == 'standalone-apigee-envoy' ]
 then
     echo "Deleting docker containers"
     docker ps -a --format "{{ json . }}" | jq ' select( .Image | contains("envoyproxy")) | .Names ' | xargs docker rm -f
@@ -52,10 +52,10 @@ curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}" -X DELETE "${MGMT_HOST}/v1/organ
 
 
 echo "Deleting the directory"
-rm -Rf $CLI_HOME
-rm -Rf $REMOTE_SERVICE_HOME
+rm -Rf "$CLI_HOME"
+rm -Rf "$REMOTE_SERVICE_HOME"
 if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]; then
-    rm $ENVOY_HOME/*-sa.json
+    rm "$ENVOY_HOME"/*-sa.json
 fi
-rm $ENVOY_HOME/*.tar.*
+rm "$ENVOY_HOME"/*.tar.*
 
