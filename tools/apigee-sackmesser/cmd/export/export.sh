@@ -75,9 +75,11 @@ fi
 loginfo "Org Export to: $export_folder/config/resources/edge/org"
 mkdir -p "$export_folder/config/resources/edge/org"
 
+echo "Create Temp Directory"
 mkdir -p "$export_folder/temp/developers"
 mkdir -p "$export_folder/temp/apps"
 mkdir -p "$export_folder/temp/importKeys"
+echo "Temp Directory Created"
 
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do
     loginfo "download developer: $email"
@@ -109,16 +111,24 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
     fi
 done
 
+if ls "$export_folder/temp/developers"/*.json 1> /dev/null 2>&1; then
 jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
+fi
+if ls "$export_folder/temp/apps"/*.json 1> /dev/null 2>&1; then
 jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
+fi
+if ls "$export_folder/temp/importKeys"/*.json 1> /dev/null 2>&1; then
 jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
+fi
 
 mkdir -p "$export_folder/temp/apiproducts"
 sackmesser list "organizations/$organization/apiproducts" | jq -r -c '.[]|.' | while read -r product; do
     loginfo "download API product: $product"
     sackmesser list "organizations/$organization/apiproducts/$(urlencode "$product")" > "$export_folder/temp/apiproducts/$product".json
 done
+if ls "$export_folder/temp/apiproducts"/*.json 1> /dev/null 2>&1; then
 jq -n '[inputs]' "$export_folder/temp/apiproducts"/*.json > "$export_folder/config/resources/edge/org/apiProducts.json"
+fi
 
 mkdir -p "$export_folder/temp/keyvaluemaps"
 sackmesser list "organizations/$organization/keyvaluemaps" | jq -r -c '.[]|.' | while read -r kvmname; do
