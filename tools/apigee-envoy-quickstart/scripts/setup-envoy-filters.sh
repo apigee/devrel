@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 set -e
 
-cd $ENVOY_CONFIGS_HOME
+cd "$ENVOY_CONFIGS_HOME"
 
-kubectl --context=${CLUSTER_CTX} apply -f request-authentication.yaml
-kubectl --context=${CLUSTER_CTX} apply -f envoyfilter-sidecar.yaml
+kubectl --context="${CLUSTER_CTX}" apply -f request-authentication.yaml
+kubectl --context="${CLUSTER_CTX}" apply -f envoyfilter-sidecar.yaml

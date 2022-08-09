@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ testHttpbin;
 RESULT=$?
 
 counter=0;
-while [ $RESULT -ne 0 ] $counter -lt 5 ]; do
+while [[ $RESULT -ne 0 ]] && [[ $counter -lt 5 ]]; do
   printf "\n\nTesting the httpbin application $counter of 5\n"
   sleep 20
   testHttpbin;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ fi
 #Validate the Apigee org and env
 
 curl -i -H "Authorization: ${TOKEN_TYPE} ${TOKEN}" \
-"${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" \
-2>&1 >/dev/null
+"${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" > /dev/null 2>&1
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "please verify the provided values about Apigee"

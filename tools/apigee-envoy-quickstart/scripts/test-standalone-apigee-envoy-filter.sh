@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ testHttpbin() {
     RESULT=1
     OUTPUT=$(curl -i http://localhost:8080/headers -H 'Host: httpbin.org' \
         -H "x-api-key: $CONSUMER_KEY" | grep HTTP)
-    printf "\n$OUTPUT"
+    printf "\n%s" "$OUTPUT"
     if [[ "$OUTPUT" == *"200"* ]]; then
         RESULT=0
     fi
@@ -32,9 +32,9 @@ testCIRunnerHttpbin() {
                             jq ' select( .Image | contains("envoyproxy")) | .Names ' | \
                             tr -d '"')
     RESULT=1
-    OUTPUT=$(docker exec -it $envoyproxy_cntnr_name curl -i http://localhost:8080/headers -H 'Host: httpbin.org' \
+    OUTPUT=$(docker exec -it "$envoyproxy_cntnr_name" curl -i http://localhost:8080/headers -H 'Host: httpbin.org' \
         -H "x-api-key: $CONSUMER_KEY" | grep HTTP)
-    printf "\n$OUTPUT"
+    printf "\n%s" "$OUTPUT"
     if [[ "$OUTPUT" == *"200"* ]]; then
         RESULT=0
     fi
@@ -43,12 +43,11 @@ testCIRunnerHttpbin() {
 
 printf "\nExtract the consumer key\n"
 
-export CONSUMER_KEY=$(curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}"  \
+CONSUMER_KEY=$(curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}"  \
     -H "Content-Type:application/json" \
     "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-app-2" | \
-    jq '.credentials[0].consumerKey'); \
-    export CONSUMER_KEY=$(echo $CONSUMER_KEY|cut -d '"' -f 2); \
-    echo "" && echo ""
+    jq '.credentials[0].consumerKey');CONSUMER_KEY=$(echo $CONSUMER_KEY|cut -d '"' -f 2)
+export CONSUMER_KEY
 
 printf "\nWait for few minutes for the Envoy and Apigee adapter to have the setup completed. Then try the below command"
 
@@ -75,7 +74,7 @@ RESULT=$?
 
 counter=0;
 while [ $RESULT -ne 0 ] && [ $counter -lt 5 ]; do
-  printf "\n\nTesting the httpbin application $counter of 5\n"
+  printf "\n\nTesting the httpbin application %s of 5\n" "$counter"
   sleep 20
   if [[ -z $PIPELINE_TEST ]]; then
     testHttpbin;
