@@ -40,4 +40,6 @@
 - Contributor License [Agreement](https://opensource.google/docs/cla/)
 - In [Solidarity](https://developers.google.com/style/inclusive-documentation)
 - [Pipelines](./PIPELINES.md)
-
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  standards to tell the release automation which [SemVer](https://semver.org/)
+  version increase is intended.
