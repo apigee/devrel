@@ -53,6 +53,8 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
+--insecure, set this flag if you are using OPDK and http endpoint for Management API
+--opdk, Set this flag if your are using OPDK
 --skip-config, Skip configuration in org export
 EOF
 }
@@ -93,7 +95,6 @@ while [ "$#" -gt 0 ]; do
     -p) export password="$2"; shift 2;;
     -t) export token="$2"; shift 2;;
     -u) export username="$2"; shift 2;;
-    -k) export opdk="$2"; shift 2;;
 
     --async) export deploy_options="async"; shift 1;;
     --base-path) export base_path="${2}"; shift 2;;
@@ -113,7 +114,8 @@ while [ "$#" -gt 0 ]; do
     --token) export token="${2}"; shift 2;;
     --username) export username="${2}"; shift 2;;
     --skip-config) export skip_config="T"; shift 1;;
-    --opdk) export opdk="$2"; shift 2;;
+    --opdk) export opdk="T"; shift 1;;
+    --insecure) export insecure="T"; shift 1;;
 
     --apigeeapi) export apiversion="apigee"; shift 1;;
     --googleapi) export apiversion="google"; shift 1;;
@@ -143,14 +145,13 @@ else
     export baseuri=${baseuri:-api.enterprise.apigee.com}
 fi
 
-
-
 if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
     logfatal "required either -t (OAuth2 or GCP access token) or -u and -p (Edge username and password)"
     exit 1
 fi
 
-if [[ -z "$token" && "$apiversion" = "apigee" && "$opdk" = "yes" ]]; then
+if [[ -z "$token" && "$apiversion" = "apigee" && "$opdk" = "T" ]]; then
+    logdebug "Getting Apigee Basic token for user $username"
     token=`echo -n $username:$password | base64`
     export $token
 elif [[ -z "$token" && "$apiversion" = "apigee" ]]; then
@@ -165,7 +166,6 @@ elif [[ -z "$token" && "$apiversion" = "apigee" ]]; then
       --data "grant_type=password")
     token=$(echo "$response" | jq -r '.access_token')
     export token
-    echo "token from sackmesser: $token"
 elif [ "$apiversion" = "apigee" ]; then
     export token=${token:-$APIGEE_TOKEN}
 fi

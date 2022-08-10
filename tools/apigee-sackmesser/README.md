@@ -68,7 +68,8 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
---opdk, Set it to yes if your are using OPDK
+--insecure, set this flag if you are using OPDK and http endpoint for Management API
+--opdk, set this flag if your are using OPDK
 --skip-config, Skip configuration in org export
 ```
 
