@@ -64,7 +64,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.7.2'
+    export APIGEE_HYBRID_VERSION='1.7.3'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
