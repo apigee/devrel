@@ -12,8 +12,8 @@ for interacting with the Apigee Management APIs for Apigee X/hybrid and Edge.
 It also lets you deploy API proxies, shared flows and configuration to both
 stacks without writing any additional manifest files.
 
-Please note that Apigee Private Cloud (OPDK) only supports list, export and report operations at this time. Support for other
-operations would be added soon.
+Please note that Apigee Sackmesser only supports list, export and report operations for Apigee Private Cloud (OPDK) at this time.
+Support for other operations would be added soon.
 For interacting with the management API of Apigee X/hybrid only (without the
 need for backwards compatibility for Apigee Edge) you can also try the [apigeecli](https://github.com/apigee/apigeecli)
 commandline utility.
@@ -69,7 +69,7 @@ Options:
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
 --insecure, set this flag if you are using OPDK and http endpoint for Management API
---opdk, set this flag if your are using OPDK
+--opdk, set this flag if you are using OPDK
 --skip-config, Skip configuration in org export
 ```
 
