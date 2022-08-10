@@ -25,7 +25,7 @@ testHttpbin() {
 
 echo "Fixing the generated yaml files to use the namespace user provided"
 
-kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" apply -f $CLI_HOME/config.yaml
+kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" apply -f "$CLI_HOME"/config.yaml
 
 cd "$ENVOY_CONFIGS_HOME" || exit
 sed -i "s/namespace: default/namespace: ${NAMESPACE}/g" "$ENVOY_CONFIGS_HOME"/httpbin.yaml

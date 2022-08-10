@@ -136,7 +136,7 @@ if [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]
 elif [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'delete' ]]; then
     echo "Deleting istio-apigee-envoy"
     ./scripts/delete-apigee-envoy-setup.sh
-elif [ "$INSTALL_TYPE" == 'standalone-apigee-envoy' -a "$ACTION" == 'install' ]; then
+elif [[ "$INSTALL_TYPE" == 'standalone-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]; then
     createDir;
     echo "Installing standalone-apigee-envoy"
     export TEMPLATE=$STANDALONE_TEMPLATE_VER
