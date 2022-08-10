@@ -12,7 +12,8 @@ for interacting with the Apigee Management APIs for Apigee X/hybrid and Edge.
 It also lets you deploy API proxies, shared flows and configuration to both
 stacks without writing any additional manifest files.
 
-Please note that Apigee Private Cloud (OPDK) is not yet supported at this time.
+Please note that Apigee Private Cloud (OPDK) only supports list, export and report operations at this time. Support for other
+operations would be added soon.
 For interacting with the management API of Apigee X/hybrid only (without the
 need for backwards compatibility for Apigee Edge) you can also try the [apigeecli](https://github.com/apigee/apigeecli)
 commandline utility.
@@ -50,7 +51,7 @@ report
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
---apigeeapi, use api.enterprise.apigee.com (for Edge)
+--apigeeapi, use api.enterprise.apigee.com (for Edge), also set this flag if you are using OPDK
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy or shared flow bundle to be deployed
 -e,--environment, Apigee environment name
@@ -67,6 +68,7 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
+--opdk, Set it to yes if your are using OPDK
 --skip-config, Skip configuration in org export
 ```
 

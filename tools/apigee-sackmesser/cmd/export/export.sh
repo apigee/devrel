@@ -75,11 +75,9 @@ fi
 loginfo "Org Export to: $export_folder/config/resources/edge/org"
 mkdir -p "$export_folder/config/resources/edge/org"
 
-echo "Create Temp Directory"
 mkdir -p "$export_folder/temp/developers"
 mkdir -p "$export_folder/temp/apps"
 mkdir -p "$export_folder/temp/importKeys"
-echo "Temp Directory Created"
 
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do
     loginfo "download developer: $email"
