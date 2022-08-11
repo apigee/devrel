@@ -35,7 +35,7 @@ usage() {
 
 init() {
     export CLUSTER_CTX="gke_${PROJECT_ID}_${CLUSTER_LOCATION}_${CLUSTER_NAME}"
-    export ENVOY_AX_SA="x-apigee-envoy-adapter-2-sa"
+    export ENVOY_AX_SA="apigee-envoy-adapter-sa"
     export CLI_HOME=$ENVOY_HOME/apigee-remote-service-cli
     export REMOTE_SERVICE_HOME=$ENVOY_HOME/apigee-remote-service-envoy
     export ENVOY_CONFIGS_HOME=$CLI_HOME/envoy-configs-and-samples
@@ -124,8 +124,10 @@ then
     ./scripts/validate-opdk-edge-setup.sh
 else
     ./scripts/validate-new-gen-setup.sh
-    export APIGEE_ORG=$APIGEE_X_ORG
-    export APIGEE_ENV=$APIGEE_X_ENV
+    # shellcheck disable=SC2153
+    export APIGEE_ORG="$APIGEE_X_ORG"
+    # shellcheck disable=SC2153
+    export APIGEE_ENV="$APIGEE_X_ENV"
 fi
 
 if [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]; then

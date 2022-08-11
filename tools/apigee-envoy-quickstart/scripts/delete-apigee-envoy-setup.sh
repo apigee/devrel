@@ -22,6 +22,8 @@ then
     echo "Deleting the namespace - $NAMESPACE"
     kubectl --context="${CLUSTER_CTX}" delete namespace "$NAMESPACE"
 
+# TODO : NOt delete SA and Binding, but just SA key. 
+
     echo "Deleting the service account role binding"
     gcloud projects remove-iam-policy-binding "$APIGEE_PROJECT_ID" \
     --member="serviceAccount:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" \

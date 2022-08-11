@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#TODO : Check the SA exisist and then create if missing, check in cloud-run
+# https://github.com/apigee/devrel/blob/main/references/cloud-run/pipeline.sh#L32
+
 gcloud iam service-accounts create "$ENVOY_AX_SA" \
 --project="$APIGEE_PROJECT_ID"
 

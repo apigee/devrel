@@ -21,7 +21,7 @@ testHttpbin() {
   OUTPUT=$(kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" run -it --rm --image=curlimages/curl \
   --restart=Never curl --overrides='{"apiVersion": "v1", "metadata": {"annotations":{"sidecar.istio.io/inject": "false"}}}' \
   -- curl -i httpbin.apigee.svc.cluster.local/headers -H "x-api-key: $CONSUMER_KEY" | grep 200)
-  printf "$OUTPUT"
+  printf "%s" "$OUTPUT"
   if [[ "$OUTPUT" == *"200"* ]]; then
       RESULT=0
   fi
@@ -41,9 +41,13 @@ printf "\nWait for few minutes for the Envoy and Apigee adapter to have the setu
 
 printf "\n\n"
 
-echo kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" run -it --rm --image=curlimages/curl --restart=Never curl \
-    --overrides=\'{\"apiVersion\":\"v1\", \"metadata\":{\"annotations\": { \"sidecar.istio.io/inject\":\"false\" } } }\' \
-    -- curl -i httpbin.apigee.svc.cluster.local/headers -H "\"x-api-key: $CONSUMER_KEY\""
+#printf kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" run -it --rm --image=curlimages/curl --restart=Never curl \
+#    --overrides=\'{\"apiVersion\":\"v1\", \"metadata\":{\"annotations\": { \"sidecar.istio.io/inject\":\"false\" } } }\' \
+#    -- curl -i httpbin.apigee.svc.cluster.local/headers -H "\"x-api-key: $CONSUMER_KEY\""
+
+printf "kubectl --context=\"%s\" -n \"%s\" run -it --rm --image=curlimages/curl --restart=Never curl \
+--overrides=\'{\"apiVersion\":\"v1\", \"metadata\":{\"annotations\": { \"sidecar.istio.io/inject\":\"false\" } } }\' \
+-- curl -i httpbin.apigee.svc.cluster.local/headers -H \'x-api-key: %s\'" "${CLUSTER_CTX}" "${NAMESPACE}" "${CONSUMER_KEY}"
 
 printf "\n"
 
@@ -69,3 +73,5 @@ else
   printf "\nValidation of the apigee envoy quickstart engine NOT successful" 
 fi
 
+#TODO : Validate cloud-logging post install 
+# https://github.com/apigee/devrel/blob/main/references/cloud-logging-shared-flow/pipeline.sh#L42-L47
