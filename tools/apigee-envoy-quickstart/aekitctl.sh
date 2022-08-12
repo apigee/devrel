@@ -96,7 +96,7 @@ if [[ -z $ACTION ]]; then
     usage "action is a mandatory field"
 fi
 
-if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]
+if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ] && [ "$PIPELINE_TEST" != 'true' ]
 then
     gke-gcloud-auth-plugin --version > /dev/null 2>&1
     RESULT=$?

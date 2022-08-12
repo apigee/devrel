@@ -72,6 +72,3 @@ if [ $RESULT -eq 0 ]; then
 else
   printf "\nValidation of the apigee envoy quickstart engine NOT successful" 
 fi
-
-#TODO : Validate cloud-logging post install 
-# https://github.com/apigee/devrel/blob/main/references/cloud-logging-shared-flow/pipeline.sh#L42-L47

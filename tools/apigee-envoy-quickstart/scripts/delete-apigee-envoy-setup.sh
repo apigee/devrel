@@ -67,3 +67,5 @@ if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]; then
 fi
 rm "$ENVOY_HOME"/*.tar.*
 
+echo "Done with the cleanup.."
+

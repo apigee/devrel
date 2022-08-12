@@ -32,9 +32,15 @@ printf "Running edge envoy setup"
 printf "Running edge envoy cleanup"
 ./aekitctl.sh --type standalone-apigee-envoy --action delete --platform edge
 
+export APIGEE_PROJECT_ID="$APIGEE_X_ORG"
+TOKEN=$(gcloud auth print-access-token);
+export TOKEN
 
+printf "Running X envoy cleanup"
+./aekitctl.sh --type standalone-apigee-envoy --action delete
 
+printf "Running X envoy setup"
+./aekitctl.sh --type standalone-apigee-envoy --action install
 
-
-
-
+printf "Running X envoy cleanup"
+./aekitctl.sh --type standalone-apigee-envoy --action delete
