@@ -59,7 +59,7 @@ further to fit a particular use case.
   popular API auth schemes
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
-  
+
 ## Tools
 
 This folder contains ready-made utilities which simplify and assist the usage of
@@ -81,6 +81,11 @@ Apigee products.
   A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
+- [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
+  A tool to generate configurable proxy archives from an OpenAPI
+  Specification
+- [Generate Shared Flows Dependency List](tools/sf-dependency-list) -
+  A tool to generate topologically sorted Shared Flow dependencies.
 
 ## Labs
 
@@ -92,7 +97,7 @@ technical or non-technical topic.
 - [BDD Proxy Development](labs/bdd-proxy-development) [(web)](https://apigee.github.io/devrel/labs/bdd-proxy-development)
   A 200 level lab demonstrating behavior-driven API development by building,
   deploying and testing a mock API, generated from an Open API Specification.
-- [Identity facade with Okta](labs/idp-okta-integration)
+- [Identity facade with Okta](labs/idp-okta-integration) [(web)](https://apigee.github.io/devrel/labs/idp-okta-integration)
   A 300 level lab that shows how to configure the Apigee Identity Facade with Okta IDP.
 
 ## Contributing

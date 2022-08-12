@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Main Pipeline runner script to run pipeline checks for all sub-projects
+
 DIRS="$1"
-PIPELINE_REPORT=""
 DEVREL_ROOT="$PWD"
 
-PATH=$PATH:"$DEVREL_ROOT/tools/another-apigee-client"
 PATH=$PATH:"$DEVREL_ROOT/tools/apigee-sackmesser/bin"
 
 append_pipeline_result() {
@@ -49,42 +49,56 @@ if [ -z "$DIRS" ]; then
   DIRS=$(echo "$DIRS" | cut -c 2-)
 fi
 
-async_pipelines=''
+# Allowing some solutions to run independently and asynchronous
+# because they don't have any side effects on the Apigee orgs
+# used for CI/CD.
+declare -A async_projects=(
+ [./tools/hybrid-quickstart]=1  [./tools/apigee-x-trial-provision]=1
+)
+async_pipeline_pids=''
 
-STARTTIME=$(date +%s)
+TOTAL_STARTTIME=$(date +%s)
 
+# Starting asynchronous pipelines
 for DIR in ${DIRS//,/ }
 do
+  RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
+  if [ -n "${async_projects[$RELATIVE_DIR]}" ] && [ -f  "$DIR/pipeline.sh" ]; then
+    run_single_pipeline "$DIR" &
+    pid=$!
+    async_pipeline_pids="$async_pipeline_pids $pid"
+    echo "[INFO] DevRel Pipeline: $DIR (async) #$pid"
+  fi
+done
+
+# Starting synchronous pipelines
+for DIR in ${DIRS//,/ }
+do
+  RELATIVE_DIR=".${DIR:${#DEVREL_ROOT}}"
   if ! test -f  "$DIR/pipeline.sh"; then
     echo "[WARN] $DIR/pipeline.sh NOT FOUND"
     append_pipeline_result "[N/A] $DIR,0,0s"
-  elif [ "$ASYNC_PIPELINE" = "true" ]; then
-    run_single_pipeline "$DIR" &
-    pid=$!
-    async_pipelines="$async_pipelines $pid"
-    echo "[INFO] DevRel Pipeline: $DIR (async) #$pid"
+  elif [ -n "${async_projects[$RELATIVE_DIR]}" ]; then
+    echo "[INFO] DevRel Pipeline: $DIR (async, already started)"
   else
     echo "[INFO] DevRel Pipeline: $DIR"
     run_single_pipeline "$DIR"
   fi
 done
 
-if [ "$ASYNC_PIPELINE" = "true" ]; then
-  for pid in $(echo "$async_pipelines" | tr ";" "\n"); do
-    wait "$pid"
-    echo "[INFO] Done #$pid (return=$?)"
-  done
-fi
+echo "[INFO] Awaiting Async Pipelines"
+for pid in $(echo "$async_pipeline_pids" | tr ";" "\n"); do
+  echo "[INFO] Awaiting #$pid"
+  wait "$pid"
+  echo "[INFO] Done #$pid (return=$?)"
+done
 
-ENDTIME=$(date +%s)
-append_pipeline_result "TOTAL PIPELINE,0,$((ENDTIME-STARTTIME))s"
+# Signal that all pipelines finished in time
+TOTAL_ENDTIME=$(date +%s)
+append_pipeline_result "TOTAL PIPELINE,0,$((TOTAL_ENDTIME-TOTAL_STARTTIME))s"
 
-# print report
+# Print report to stdout
 echo
 echo "FINAL RESULT"
 column -s ";" -t ./pipeline-result.txt
 echo
-
-# set exit code
-! echo "$PIPELINE_REPORT" | tr ";" "\n" | awk -F"," '{ print $2 }' | grep -v -q "0"
-

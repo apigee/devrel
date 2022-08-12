@@ -25,13 +25,13 @@ export APIGEE_TOKEN
 (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi --async)
 
 ARGS=$*
-SACK_ARGS="${ARGS:---googleapi}"
+SACKMESSER_ARGS="${ARGS:---googleapi}"
 
-bash "$SCRIPTPATH"/../../tools/apigee-sackmesser/bin/sackmesser deploy \
-  -d healthcare-mock-v1 "$SACK_ARGS"
+sackmesser deploy \
+  -d healthcare-mock-v1 "$SACKMESSER_ARGS"
 
-bash "$SCRIPTPATH"/../../tools/apigee-sackmesser/bin/sackmesser deploy \
-  -d healthcare-v1 "$SACK_ARGS"
+sackmesser deploy \
+  -d healthcare-v1 "$SACKMESSER_ARGS"
 
 npm i --no-fund --prefix healthcare-v1
 TEST_BASEPATH='/healthcare/v1' TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix healthcare-v1

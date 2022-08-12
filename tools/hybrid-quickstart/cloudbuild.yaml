@@ -20,12 +20,14 @@ steps:
     args:
       - "-c"
       - |-
+        gcloud version
         apt-get update && apt-get install zip -y
         ./initialize-runtime-gke.sh || touch .failure
     env:
       - 'ENV_NAME=$_QUICKSTART_ENV_NAME'
       - 'ENV_GROUP_NAME=$_QUICKSTART_ENV_GROUP_NAME'
       - 'CERT_TYPE=$_CERT_TYPE'
+      - 'PRIVATE_CLUSTER=$_PRIVATE_CLUSTER'
       - 'QUIET_INSTALL=true'
 
 
@@ -73,9 +75,10 @@ steps:
           echo "Earlier failure in the pipeline"
           exit -1
         fi
-timeout: 2700s #45min
+timeout: 3600s #60min
 substitutions:
   _QUICKSTART_ENV_NAME: test1
   _QUICKSTART_ENV_GROUP_NAME: test
   _DESTROY_AFTER_VALIDATION: "false"
-  _CERT_TYPE: "" # default (let's encrypt)
+  _PRIVATE_CLUSTER: "true"
+  _CERT_TYPE: "" # default: 'google-managed'

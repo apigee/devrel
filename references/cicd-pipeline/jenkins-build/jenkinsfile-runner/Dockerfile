@@ -21,7 +21,7 @@ FROM ${baseImage}:${baseImageTag}
 
 USER root
 WORKDIR /usr/share/jenkins
-RUN jar -xvf jenkins.war
+RUN jar -xf jenkins.war
 USER jenkins
 
 COPY --from=filerunner --chown=jenkins /app /app

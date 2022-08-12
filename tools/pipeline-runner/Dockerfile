@@ -24,6 +24,7 @@ RUN apk add --no-cache \
   openjdk11-jre-headless \
   openssl \
   util-linux \
+  coreutils \
   gettext \
   # add chromium and dependencies for UI testing
   chromium \

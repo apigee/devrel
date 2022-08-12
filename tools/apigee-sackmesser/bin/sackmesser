@@ -67,7 +67,7 @@ elif [ -z "$CMD_TYPE" ] || [ ! -f "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE"
     exit 1
 fi
 
-for dependency in jq xmllint mvn
+for dependency in jq xmllint mvn unzip
 do
   if ! [ -x "$(command -v $dependency)" ]; then
     >&2 logfatal "Required command is not on your PATH: $dependency."

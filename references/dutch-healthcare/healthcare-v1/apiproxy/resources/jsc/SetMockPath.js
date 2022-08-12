@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-var mockUrl = context.getVariable("proxy.url").replace("/healthcare/v1", "/healthcare-mock/v1").replace(/https?/i, "https")
+var mockUrl = context.getVariable("proxy.url").replace("/healthcare/v1", "/healthcare-mock/v1")
 context.setVariable('target.url', mockUrl);

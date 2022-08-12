@@ -1,8 +1,12 @@
 # KVM Admin Proxy
 
+**Note:** KVM APIs have been added to Apigee X and can be found
+in the [Apigee API docs](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.environments.keyvaluemaps).
+This KVM admin proxy is no longer needed if you are using Apigee X.
+
 Depending on the Apigee deployment model you might have Management APIs for
 accessing and modifying the entries of Apigee Key Value Maps (KVMs). In Apigee
-hybrid and Apigee X the access to entries of the KVMs is not provided via the
+hybrid the access to entries of the KVMs is not provided via the
 Apigee APIs and you will need to leverage Apigee policies to perform CRUD
 operations on the KVM contents.
 

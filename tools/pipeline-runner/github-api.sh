@@ -12,6 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Helper utility to publish the pipeline build results as
+# Github issues (failed nightly) or comment (PR)
+
 buildresult=$(cat)
 
 REPORT_ROWS=$(echo "$buildresult" | awk -F";" '$0="|"$1"|"$2"|"$3"|"' OFS="|")

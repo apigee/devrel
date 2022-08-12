@@ -28,17 +28,22 @@ echo "🗑️ Delete Apigee hybrid cluster"
 
 yes | gcloud container clusters delete "$GKE_CLUSTER_NAME" --region "$REGION"
 
-for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
-   gcloud compute disks delete "$persistent_disk" --zone="$ZONE" -q
+for disk_zone in $(echo "$ZONE" | tr "," " "); do
+   for persistent_disk in $(gcloud compute disks list --format="value(name)" --filter="name~^gke-"); do
+      gcloud compute disks delete "$persistent_disk" --zone="$disk_zone" -q || echo "disk not in $disk_zone"
+   done
+done
+
+for cluster in $(gcloud container hub memberships list --format="value(name)"); do
+   gcloud container hub memberships delete "$cluster" -q
 done
 
 echo "✅ Apigee hybrid cluster deleted"
 
-
 echo "🗑️ Clean up Networking"
 
-gcloud compute addresses delete apigee-ingress-ip --region "$REGION" -q || echo "No regional IP address"
-gcloud compute addresses delete apigee-ingress-ip --global -q || echo "No global IP address"
+gcloud compute addresses delete "$INGRESS_IP_NAME" --region "$REGION" -q || echo "No regional IP address"
+gcloud compute addresses delete "$INGRESS_IP_NAME" --global -q || echo "No global IP address"
 
 for target_pool in $(gcloud compute target-pools list --format="value(name)"); do
    gcloud compute target-pools delete "$target_pool" --region "$REGION" -q
@@ -52,10 +57,34 @@ rm empty-file
 
 gcloud dns managed-zones delete apigee-dns-zone -q
 
+
+for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
+   gcloud compute forwarding-rules delete --global "$fwdrule" -q
+done
+
+for targetproxy in $(gcloud compute target-https-proxies list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
+   gcloud compute target-https-proxies delete "$targetproxy" -q
+done
+
+for urlmap in $(gcloud compute url-maps list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
+   gcloud compute url-maps delete "$urlmap" -q
+done
+
+for backendsystem in $(gcloud compute backend-services list --format="value(name)" --filter="name~istio-ingressgateway"); do
+   gcloud compute backend-services delete --global "$backendsystem" -q
+done
+
 for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filter="name~^mcrt-"); do
    gcloud compute ssl-certificates delete "$mcrt" -q
 done
 
+if [ -n "$(gcloud compute routers nats list --region "$REGION" --router "rt-$REGION" --format json --format='get(name)')" ]; then
+   gcloud compute routers nats delete "apigee-nat-$REGION" --router "rt-$REGION"  -q
+fi
+
+if [ -n "$(gcloud compute routers list --format json --filter "name=rt-$REGION" --format='get(name)')" ]; then
+   gcloud compute routers delete "rt-$REGION" -q
+fi
 
 echo "✅ Apigee networking cleaned up"
 

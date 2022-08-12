@@ -48,53 +48,43 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
     </pluginRepository>
   </pluginRepositories>
   <properties>
-    <project.build.sourceEncoding>
-    UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>
-    UTF-8</project.reporting.outputEncoding>
-    <org.slf4j.simpleLogger.defaultLogLevel>
-    info</org.slf4j.simpleLogger.defaultLogLevel>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
     <project.root.dir>${basedir}</project.root.dir>
     <target.root.dir>${basedir}/target</target.root.dir>
-    <deployment.suffix>${user.name}</deployment.suffix>
-    <commit />
-    <branch>a local</branch>
+    <edge.apigee.plugin.version>1.3.2</edge.apigee.plugin.version>
+    <x.apigee.plugin.version>2.3.1</x.apigee.plugin.version>
   </properties>
   <!-- This is where you add the environment specific properties under various profile names -->
   <!-- For apigee.options, refer to "Advanced Configuration Options" under https://github.com/apigee/apigee-deploy-maven-plugin#pom-xml-sample -->
   <profiles>
     <profile>
-      <id>test</id>
+      <id>apigee-edge</id>
       <properties>
-        <apigee.profile>test</apigee.profile>
+        <apigee.profile>apigee-edge</apigee.profile>
         <apigee.env>test</apigee.env>
         <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
         <apigee.apiversion>v1</apigee.apiversion>
         <apigee.org>${env.APIGEE_ORG}</apigee.org>
         <apigee.username>${env.APIGEE_USER}</apigee.username>
         <apigee.password>${env.APIGEE_PASS}</apigee.password>
-        <apigee.options>update</apigee.options>
-        <api.northbound.domain>
-        ${env.API_DOMAIN_TEST}</api.northbound.domain>
-        <api.testtag>~@wip</api.testtag>
+        <apigee.options>override</apigee.options>
+        <apigee.plugin.version>${edge.apigee.plugin.version}</apigee.plugin.version>
       </properties>
     </profile>
     <profile>
-      <id>prod</id>
+      <id>apigee-x</id>
       <properties>
-        <apigee.profile>prod</apigee.profile>
-        <apigee.env>prod</apigee.env>
-        <apigee.hosturl>
-        https://api.enterprise.apigee.com</apigee.hosturl>
+        <apigee.profile>apigee-x</apigee.profile>
+        <apigee.env>test</apigee.env>
+        <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
         <apigee.apiversion>v1</apigee.apiversion>
-        <apigee.org>${env.APIGEE_ORG}</apigee.org>
-        <apigee.username>${env.APIGEE_USER}</apigee.username>
-        <apigee.password>${env.APIGEE_PASS}</apigee.password>
+        <apigee.org>${env.APIGEE_X_ORG}</apigee.org>
+        <apigee.bearer>${bearer}</apigee.bearer>
         <apigee.options>override</apigee.options>
-        <apigee.override.delay>5</apigee.override.delay>
-        <api.northbound.domain>
-        ${env.API_DOMAIN_PROD}</api.northbound.domain>
         <api.testtag>~@wip,~@mock</api.testtag>
+        <apigee.plugin.version>${x.apigee.plugin.version}</apigee.plugin.version>
       </properties>
     </profile>
   </profiles>
@@ -104,7 +94,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
         <plugin>
           <groupId>io.apigee.build-tools.enterprise4g</groupId>
           <artifactId>apigee-edge-maven-plugin</artifactId>
-          <version>1.3.2</version>
+          <version>${apigee.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

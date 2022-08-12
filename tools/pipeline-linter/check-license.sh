@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Ensures that all files in this repository have the required license headers
+
 set -e
 
 addlicense -check "$PWD"

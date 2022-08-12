@@ -31,14 +31,14 @@ docker tag ghcr.io/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
 
 ```sh
 docker build -t apigee/devrel-jenkins-base:latest .
-docker build -f jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
+docker build -f ./jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 ```
 
 #### Option C: Cloud Build on GCP
 
 ```sh
 PROJECT_ID=<my-project>
-gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
+gcloud builds submit --config ./cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml --project $PROJECT_ID
 docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
 docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
@@ -151,7 +151,6 @@ You can also run a local Docker image as follows:
 ```sh
 docker run \
   -p 8080:8080 \
-  -p 5000:5000 \
   -e APIGEE_USER \
   -e APIGEE_PASS \
   -e APIGEE_ORG \
@@ -165,15 +164,11 @@ docker run \
 
 ##### Apigee X/hybrid in local Docker
 
-*Note:* for long running jenkins deployments consider mounting the gcloud
-service account credentials from the host filesystem instead of passing
-the access token via environment variables.
-
 ```sh
 docker run \
   -p 8080:8080 \
-  -p 5000:5000 \
   -e APIGEE_TOKEN="$(gcloud auth print-access-token)" \
+  -e GCP_SA_AUTH="token" \
   -e APIGEE_ORG \
   -e APIGEE_TEST_ENV="test1" \
   -e APIGEE_PROD_ENV="prod1" \
@@ -182,6 +177,30 @@ docker run \
   -e JENKINS_ADMIN_PASS="password" \
   apigee/devrel-jenkins:latest
 ```
+
+*Note:* for long running jenkins deployments consider mounting the gcloud
+service account credential file from the host filesystem instead of passing
+the access token via environment variables:
+
+```sh
+export KEY_FILE_PATH=/tmp/keys/jenkins-key-file.json
+
+gcloud iam service-accounts keys create $KEY_FILE_PATH --iam-account=$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com
+
+docker run -d
+  -p 8080:8080 \
+  -e APIGEE_ORG="my-org" \
+  -e APIGEE_TEST_ENV="test" \
+  -e APIGEE_PROD_ENV="prod"
+  -e TEST_HOST="api.example.apigee.com" \
+  -e GCP_SA_AUTH="vm-scope" \
+  -e API_VERSION="google"
+  -e JENKINS_ADMIN_PASS="password" \
+  -e GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE_PATH" \
+  -v "$KEY_FILE_PATH:$KEY_FILE_PATH:ro" \
+  apigee/devrel-jenkins:latest
+```
+
 
 After the initialization is completed, you can login with the Jenkins web UI
 `http://localhost:8080` using the `admin` user and the password you specified
