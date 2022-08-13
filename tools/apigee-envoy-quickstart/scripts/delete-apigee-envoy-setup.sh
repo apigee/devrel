@@ -22,14 +22,22 @@ then
     echo "Deleting the namespace - $NAMESPACE"
     kubectl --context="${CLUSTER_CTX}" delete namespace "$NAMESPACE"
 
-    echo "Deleting the service account role binding"
-    gcloud projects remove-iam-policy-binding "$APIGEE_PROJECT_ID" \
-    --member="serviceAccount:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" \
-    --role="roles/apigee.analyticsAgent"
+    if [[ -z $PIPELINE_TEST ]]; then
 
-    echo "Deleting the service account"
-    gcloud iam service-accounts delete "$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com \
-    --project="$APIGEE_PROJECT_ID" --quiet
+        echo "Deleting the service account role binding"
+        gcloud projects remove-iam-policy-binding "$APIGEE_PROJECT_ID" \
+        --member="serviceAccount:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" \
+        --role="roles/apigee.analyticsAgent"
+
+        echo "Deleting the service account"
+        gcloud iam service-accounts delete "$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com \
+        --project="$APIGEE_PROJECT_ID" --quiet
+    else
+        echo "Skipping the delete of service account - $ENVOY_AX_SA, deleting the SA keys"
+        gcloud iam service-accounts keys delete "$AX_SERVICE_ACCOUNT" \
+        --project="$APIGEE_PROJECT_ID" \
+        --iam-account="$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com
+    fi
 
     rm "$ENVOY_HOME"/"$AX_SERVICE_ACCOUNT"
 fi
@@ -58,4 +66,6 @@ if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]; then
     rm "$ENVOY_HOME"/*-sa.json
 fi
 rm "$ENVOY_HOME"/*.tar.*
+
+echo "Done with the cleanup.."
 

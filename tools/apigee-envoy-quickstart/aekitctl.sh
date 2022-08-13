@@ -35,7 +35,7 @@ usage() {
 
 init() {
     export CLUSTER_CTX="gke_${PROJECT_ID}_${CLUSTER_LOCATION}_${CLUSTER_NAME}"
-    export ENVOY_AX_SA="x-apigee-envoy-adapter-2-sa"
+    export ENVOY_AX_SA="apigee-envoy-adapter-sa"
     export CLI_HOME=$ENVOY_HOME/apigee-remote-service-cli
     export REMOTE_SERVICE_HOME=$ENVOY_HOME/apigee-remote-service-envoy
     export ENVOY_CONFIGS_HOME=$CLI_HOME/envoy-configs-and-samples
@@ -96,7 +96,7 @@ if [[ -z $ACTION ]]; then
     usage "action is a mandatory field"
 fi
 
-if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]
+if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ] && [ "$PIPELINE_TEST" != 'true' ]
 then
     gke-gcloud-auth-plugin --version > /dev/null 2>&1
     RESULT=$?
@@ -124,8 +124,10 @@ then
     ./scripts/validate-opdk-edge-setup.sh
 else
     ./scripts/validate-new-gen-setup.sh
-    export APIGEE_ORG=$APIGEE_X_ORG
-    export APIGEE_ENV=$APIGEE_X_ENV
+    # shellcheck disable=SC2153
+    export APIGEE_ORG="$APIGEE_X_ORG"
+    # shellcheck disable=SC2153
+    export APIGEE_ENV="$APIGEE_X_ENV"
 fi
 
 if [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]; then
@@ -136,7 +138,7 @@ if [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]
 elif [[ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]] && [[ "$ACTION" == 'delete' ]]; then
     echo "Deleting istio-apigee-envoy"
     ./scripts/delete-apigee-envoy-setup.sh
-elif [ "$INSTALL_TYPE" == 'standalone-apigee-envoy' -a "$ACTION" == 'install' ]; then
+elif [[ "$INSTALL_TYPE" == 'standalone-apigee-envoy' ]] && [[ "$ACTION" == 'install' ]]; then
     createDir;
     echo "Installing standalone-apigee-envoy"
     export TEMPLATE=$STANDALONE_TEMPLATE_VER

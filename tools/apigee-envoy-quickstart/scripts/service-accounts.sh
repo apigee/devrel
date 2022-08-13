@@ -13,10 +13,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-gcloud iam service-accounts create "$ENVOY_AX_SA" \
---project="$APIGEE_PROJECT_ID"
-
+FOUND_SA_IN_PROJECT="$(gcloud iam service-accounts list --filter "$ENVOY_AX_SA" \
+  --format="value(email)"  --project "$APIGEE_PROJECT_ID" | grep -w "^$ENVOY_AX_SA")"
+if [ -z "$FOUND_SA_IN_PROJECT" ]; then
+    gcloud iam service-accounts create "$ENVOY_AX_SA" \
+    --project="$APIGEE_PROJECT_ID"
+fi
 gcloud projects add-iam-policy-binding "$APIGEE_PROJECT_ID" --member \
 "serviceAccount:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" --role "roles/apigee.analyticsAgent"
 
