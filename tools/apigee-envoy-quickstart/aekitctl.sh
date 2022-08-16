@@ -16,6 +16,10 @@
 
 set -e
 
+source ./scripts/validate.sh
+source ./scripts/validate-opdk-edge-setup.sh
+source ./scripts/validate-new-gen-setup.sh
+
 export ISTIO_TEMPLATE_VER="istio-1.12"
 export STANDALONE_TEMPLATE_VER="envoy-1.15"
 
@@ -27,7 +31,7 @@ usage() {
         "example: $(basename "$0") -t standalone-apigee-envoy -a install\n" \
         "example: $(basename "$0") -t standalone-apigee-envoy -a delete\n" \
         "Parameters:\n" \
-        "-t --type        : Apigee protected Envoy installation type, valida values 'istio-apigee-envoy'. 'standalone-apigee-envoy'\n" \
+        "-t --type        : Apigee protected Envoy installation type, valid values 'istio-apigee-envoy'. 'standalone-apigee-envoy'\n" \
         "-a --action      : Install or Delete action, valid values 'install', 'delete'\n" \
         "-p --platform    : Standalone install for platform opdk or edge, valid values 'opdk', 'edge'\n"
     exit 1
@@ -117,13 +121,17 @@ else
     export MGMT_HOST="https://apigee.googleapis.com"
 fi
 
-./scripts/validate.sh
+#./scripts/validate.sh
+validate;
 
 if [ "$PLATFORM" == 'opdk' ] || [ "$PLATFORM" == 'edge' ]
 then
-    ./scripts/validate-opdk-edge-setup.sh
+    #./scripts/validate-opdk-edge-setup.sh
+    validateOpdkEdgeSetup;
 else
-    ./scripts/validate-new-gen-setup.sh
+    #./scripts/validate-new-gen-setup.sh
+    validateNewGenSetup;
+
     # shellcheck disable=SC2153
     export APIGEE_ORG="$APIGEE_X_ORG"
     # shellcheck disable=SC2153

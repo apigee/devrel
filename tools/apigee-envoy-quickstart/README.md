@@ -99,15 +99,15 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     export APIGEE_REMOTE_SRVC_CLI_VERSION=<version for Apigee Remote Service cli for Envoy>
     export APIGEE_REMOTE_SRVC_ENVOY_VERSION=<version for Apigee Remote Service for Envoy>
     ```
-    Latest cli version can be found **[here](https://github.com/apigee/apigee-remote-service-cli/releases/tag/v2.0.5)**<br />
-    Latest apigee-envoy version can be found **[here](https://github.com/apigee/apigee-remote-service-envoy/releases/tag/v2.0.5)**
+    Latest cli version can be found **[here](https://github.com/apigee/apigee-remote-service-cli/releases/latest)**<br />
+    Latest apigee-envoy version can be found **[here](https://github.com/apigee/apigee-remote-service-envoy/releases/latest)**
 
 1. **Set up local authentication to your project.**
     ```bash
     gcloud config set project $APIGEE_PROJECT_ID
     gcloud auth application-default login --no-launch-browser
 
-    export TOKEN=$(gcloud auth print-access-token);echo $TOKEN
+    export TOKEN=$(gcloud auth print-access-token)
     ```
 
 1. **Download the Apigee Envoy PoC Toolkit binary.** 
@@ -129,7 +129,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **On successful run, it displays the commands (kubeclt run, curl) to validate the traffic intiated to the Envoy endpoints being protected by Apigee Adapter service.**
 
-#### Cleanup
+### Cleanup
 
 1. **Run to cleanup the PoC setup from the GKE and Apigee platform**
     ```bash

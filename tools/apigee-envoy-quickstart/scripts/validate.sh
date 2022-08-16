@@ -16,32 +16,35 @@
 
 set -e
 
-if [ "$PLATFORM" != 'edge' ] && [[ -z $APIGEE_X_HOSTNAME ]]; then
-    echo "Environment variable APIGEE_X_HOSTNAME is not set, please checkout README.md"
+function validate()
+{
+    if [ "$PLATFORM" != 'edge' ] && [[ -z $APIGEE_X_HOSTNAME ]]; then
+        echo "Environment variable APIGEE_X_HOSTNAME is not set, please checkout README.md"
+        exit 1
+    fi
+
+    if [[ -z $APIGEE_REMOTE_SRVC_CLI_VERSION ]]; then
+        echo "Environment variable APIGEE_REMOTE_SRVC_CLI_VERSION is not set, please checkout https://github.com/apigee/apigee-remote-service-cli/releases/latest"
+        exit 1
+    fi
+
+    if [[ -z $APIGEE_REMOTE_SRVC_ENVOY_VERSION ]]; then
+        echo "Environment variable APIGEE_REMOTE_SRVC_ENVOY_VERSION is not set, please checkout https://github.com/apigee/apigee-remote-service-envoy/releases/latest"
+        exit 1
+    fi
+
+    #Validate the Apigee org and env
+
+    curl -i -H "Authorization: ${TOKEN_TYPE} ${TOKEN}" \
+    "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" > /dev/null 2>&1
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+    echo "please verify the provided values about Apigee"
     exit 1
-fi
+    fi
 
-if [[ -z $APIGEE_REMOTE_SRVC_CLI_VERSION ]]; then
-    echo "Environment variable APIGEE_REMOTE_SRVC_CLI_VERSION is not set, please checkout https://github.com/apigee/apigee-remote-service-cli/releases/latest"
-    exit 1
-fi
+    #Validate the Apigee virtualhost reachability
+    #TODO
 
-if [[ -z $APIGEE_REMOTE_SRVC_ENVOY_VERSION ]]; then
-    echo "Environment variable APIGEE_REMOTE_SRVC_ENVOY_VERSION is not set, please checkout https://github.com/apigee/apigee-remote-service-envoy/releases/latest"
-    exit 1
-fi
-
-#Validate the Apigee org and env
-
-curl -i -H "Authorization: ${TOKEN_TYPE} ${TOKEN}" \
-"${MGMT_HOST}/v1/organizations/${APIGEE_ORG}" > /dev/null 2>&1
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "please verify the provided values about Apigee"
-  exit 1
-fi
-
-#Validate the Apigee virtualhost reachability
-#TODO
-
-echo "Validation successful.."
+    echo "Validation successful.."
+}
