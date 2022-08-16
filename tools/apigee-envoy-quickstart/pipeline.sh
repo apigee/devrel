@@ -23,6 +23,12 @@ export PIPELINE_TEST="true"
 export APIGEE_REMOTE_SRVC_CLI_VERSION=2.0.5
 export APIGEE_REMOTE_SRVC_ENVOY_VERSION=2.0.5
 
+if [[ "$APIGEE_X_HOSTNAME" == http* ]]; then
+    echo "Runtime hostname value correctly set";
+else
+    APIGEE_X_HOSTNAME="https://$APIGEE_X_HOSTNAME";
+fi
+
 printf "Running edge envoy cleanup"
 ./aekitctl.sh --type standalone-apigee-envoy --action delete --platform edge
 
