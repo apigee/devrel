@@ -217,12 +217,12 @@ if [ -z "$(gcloud iam service-accounts list --filter "$SA_EMAIL" --format="value
 fi
 
 # Create DataCollectors on Apigee for custom analytics data reports (risk score and token validity)
-curl --fail --silent -X POST \
+curl --silent -X POST \
     -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
     --data '{"name":"dc_riskScore","description":"data collection of Enterprise reCAPTCHA risk score","type":"FLOAT"}' \
     https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
 
-curl --fail --silent -X POST \
+curl --silent -X POST \
     -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
     --data '{"name":"dc_tokenValidity","description":"data collection of Enterprise reCAPTCHA token validity","type":"STRING"}' \
     https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
