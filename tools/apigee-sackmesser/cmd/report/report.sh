@@ -449,7 +449,7 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
         then
             encrypted="✅"
         else
-            encrypted="X"
+            encrypted="❌"
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
@@ -496,7 +496,7 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
         then
             isEnabled="✅"
         else
-            isEnabled="X"
+            isEnabled="❌"
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
