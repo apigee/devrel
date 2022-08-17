@@ -115,13 +115,13 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
 done
 
 if ls "$export_folder/temp/developers"/*.json 1> /dev/null 2>&1; then
-jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
+    jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
 fi
 if ls "$export_folder/temp/apps"/*.json 1> /dev/null 2>&1; then
-jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
+    jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
 fi
 if ls "$export_folder/temp/importKeys"/*.json 1> /dev/null 2>&1; then
-jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
+    jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
 fi
 
 mkdir -p "$export_folder/temp/apiproducts"
