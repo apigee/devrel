@@ -53,8 +53,8 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
---insecure, set this flag if you are using OPDK and http endpoint for Management API
---opdk, Set this flag if your are using OPDK
+--insecure, set this flag if you are using Apigee Private Cloud (OPDK) and http endpoint for Management API
+--opdk, set this flag if you are using Apigee Private Cloud (OPDK)
 --skip-config, Skip configuration in org export
 EOF
 }
@@ -127,7 +127,7 @@ done
 
 if [[ -z "$apiversion" ]]; then
     logdebug "using default API version: Google API (apigee.googleapis.com)"
-    logdebug "for Apigee Edge (api.enterprise.apigee.com) please specify --apigeeapi"
+    logdebug "for Apigee Edge (api.enterprise.apigee.com) and Apigee Private Cloud (OPDK), please specify --apigeeapi"
     export apiversion="google"
 fi
 
@@ -151,7 +151,7 @@ if [[ -z "$token" && (-z "$username"  || -z "$password") ]]; then
 fi
 
 if [[ -z "$token" && "$apiversion" = "apigee" && "$opdk" = "T" ]]; then
-    logdebug "Getting Apigee Basic token for user $username"
+    logdebug "Getting Apigee Basic Auth token for user $username"
     token=`echo -n $username:$password | base64`
     export $token
 elif [[ -z "$token" && "$apiversion" = "apigee" ]]; then
@@ -170,7 +170,7 @@ elif [ "$apiversion" = "apigee" ]; then
     export token=${token:-$APIGEE_TOKEN}
 fi
 
-logdebug "Apigee OAuth2 access token: ${token:0:8}..."
+logdebug "Apigee OAuth2 (note: Basic Auth for Apigee Private Cloud [OPDK]) access token: ${token:0:8}..."
 
 logdebug "Sackmesser command: $CMD_TYPE"
 "$SACKMESSER_ROOT"/cmd/"$CMD_TYPE"/"$CMD_TYPE".sh "${posArgs[@]}"
