@@ -24,7 +24,7 @@ source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 mgmtAPIDownload() {
     loginfo "Sackmesser export (zip) $1"
     if [ "$opdk" == "T" ]; then
-        token=`echo -n $username:$password | base64`
+        token=$(echo -n "$username":"$password" | base64)
         if [ "$insecure" == "T" ]; then
             curl -fsS -H "Authorization: Basic $token" -v "http://$baseuri/v1/$1" -o "$2"
         else

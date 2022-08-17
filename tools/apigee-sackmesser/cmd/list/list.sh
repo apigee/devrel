@@ -52,7 +52,7 @@ fi
 
 
 if [ "$opdk" == "T" ]; then
-    token=`echo -n $username:$password | base64`
+    token=$(echo -n "$username":"$password" | base64)
     if [ "$insecure" == "T" ]; then
         curl -fsS -H "Authorization: Basic $token" -v "http://$baseuri/v1/$partial_uri" | jq "$jq_pattern"
     else
