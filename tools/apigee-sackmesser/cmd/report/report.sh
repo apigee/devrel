@@ -443,7 +443,7 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/kvms".json | while read i; do 
     kvmName=$(echo "$i" | jq -r '.name')
     _encrypted=$(echo "$i" | jq -r '.encrypted')
-    keyCount=1
+    keyCount=$(echo "$i" | jq -r '.entry | length')
 
     if [ $_encrypted = true ]
         then
