@@ -408,7 +408,7 @@ done <   <(find "$export_folder/apigeelint/sharedflows/"*.json -print0)
 
 echo "</tbody></table></div></div>" >> "$report_html"
 
-echo "<h2>Configurations</h2>" >> "$report_html"
+echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
 loginfo "Exporting Configurations"
 
@@ -434,8 +434,8 @@ fi
 echo "<div><table id=\"kvm-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
 echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"id\">Name</th>" >> "$report_html"
-echo "<th data-sortable=\"true\" data-field=\"rev\">Encypted</th>" >> "$report_html"
-echo "<th data-sortable=\"true\" data-field=\"policies\">Number of Keys</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"encrypted\">Encrypted</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"keys\">Number of Keys</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
@@ -505,6 +505,47 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     echo "<td>"$host"</td>"  >> "$report_html"
     echo "<td>$port</td>" >> "$report_html"
     echo "<td>$isEnabled</td>" >> "$report_html"
+    echo "</tr>"  >> "$report_html"
+done
+
+echo "</tbody></table></div></div>" >> "$report_html"
+
+echo "<h3>Keystores</h3>" >> "$report_html"
+
+mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/keystore"
+
+sackmesser list "organizations/$organization/environments/$environment/keystores"| jq -r -c '.[]|.' | while read -r keystorename; do
+        sackmesser list "organizations/$organization/environments/$environment/keystores/$keystorename" > "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json)
+        if [ "$elem_count" -ge "1000" ]; then logwarn "Keystores in Apigee Edge are limited to 1000 entries."; fi
+    done
+
+if ls "$export_folder/$organization/config/resources/edge/env/$environment/keystore"/*.json 1> /dev/null 2>&1; then
+    jq -n '[inputs]' "$export_folder/$organization/config/resources/edge/env/$environment/keystore"/*.json > "$export_folder/$organization/config/resources/edge/env/$environment/keystores".json
+fi
+
+echo "<div><table id=\"keystore-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
+echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"id\">Name</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"keys\">Number of Keys</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"aliases\">Number of Aliases</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"certs\">Number of Certs</th>" >> "$report_html"
+echo "</tr></thead>" >> "$report_html"
+
+echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
+
+jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/keystores".json | while read i; do 
+    keystoreName=$(echo "$i" | jq -r '.name')
+    aliasCount=$(echo "$i" | jq -r '.aliases | length')
+    keyCount=$(echo "$i" | jq -r '.keys | length')
+    certCount=$(echo "$i" | jq -r '.certs | length')
+
+    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+    # echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
+    echo "<td>$keystoreName</td>"  >> "$report_html"
+    echo "<td>$keyCount</td>" >> "$report_html"
+    echo "<td>$aliasCount</td>" >> "$report_html"
+    echo "<td>$certCount</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
 done
 
