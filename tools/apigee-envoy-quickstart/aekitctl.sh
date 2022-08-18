@@ -23,7 +23,8 @@ source ./scripts/validate-new-gen-setup.sh
 export ISTIO_TEMPLATE_VER="istio-1.12"
 export STANDALONE_TEMPLATE_VER="envoy-1.15"
 
-export APIGEE_ENVOY_ADAPTER_IMG_VERSION=
+export APIGEE_ENVOY_ADAPTER_IMG="google/apigee-envoy-adapter:v2.0.5"
+export ENVOY_PROXY_IMG="envoyproxy/envoy:v1.21-latest"
 
 usage() {
     echo -e "$*\n usage: $(basename "$0")" \
