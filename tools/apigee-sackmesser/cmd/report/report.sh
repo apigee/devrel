@@ -412,11 +412,6 @@ echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
 loginfo "Exporting Configurations"
 
-# if [ ! -d "$export_folder/$organization/config/resources/edge/env/$environment" ]; then
-#     mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment"
-#     echo "<p><i>No Configurations found in organization $organization</i></p>" >> "$report_html"
-# fi
-
 echo "<h3>Key Value Maps</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/kvm"
@@ -453,7 +448,6 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    # echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$kvmName</td>"  >> "$report_html"
     echo "<td>"$encrypted"</td>"  >> "$report_html"
     echo "<td>$keyCount</td>" >> "$report_html"
@@ -500,7 +494,6 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     fi
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    # echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$tsName</td>"  >> "$report_html"
     echo "<td>"$host"</td>"  >> "$report_html"
     echo "<td>$port</td>" >> "$report_html"
@@ -541,7 +534,6 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     certCount=$(echo "$i" | jq -r '.certs | length')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    # echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$keystoreName</td>"  >> "$report_html"
     echo "<td>$keyCount</td>" >> "$report_html"
     echo "<td>$aliasCount</td>" >> "$report_html"
@@ -580,12 +572,11 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
     apiProductName=$(echo "$i" | jq -r '.name')
-    envs=$(echo "$i" | jq -r '.environments')
-    proxies=$(echo "$i" | jq -r '.proxies')
+    envs=$(echo "$i" | jq -r '.environments[]')
+    proxies=$(echo "$i" | jq -r '.proxies[]')
     approvalType=$(echo "$i" | jq -r '.approvalType')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    # echo "<th scope=\"row\"><a href=\"$(resource_link "sharedflows/$sfname" "$linkrevision")\" target=\"_blank\">$sfname<a></th>" >> "$report_html"
     echo "<td>$apiProductName</td>"  >> "$report_html"
     echo "<td>"$envs"</td>"  >> "$report_html"
     echo "<td>$proxies</td>" >> "$report_html"
