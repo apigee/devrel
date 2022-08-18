@@ -2,14 +2,14 @@
 
 The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapters. 
 
-* [Envoy with Apigee adapter as containers within Kubernetes platform for Apigee X/Hybrid]()
-* [Envoy with Apigee adapter as native docker containers for Apigee X/Hybrid]()
-* [Envoy with Apigee adapter as docker containers for OPDK/Edge]()
+* [Envoy with Apigee adapter as containers within Kubernetes platform for Apigee X/Hybrid](#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform)
+* [Envoy with Apigee adapter as native docker containers for Apigee X/Hybrid](#envoy-with-apigee-adapter-as-native-docker-containers-for-apigee-xhybrid)
+* [Envoy with Apigee adapter as docker containers for OPDK/Edge](#envoy-with-apigee-adapter-as-docker-containers-for-opdkedge)
 
 ## Envoy with Apigee adapter as containers within Kubernetes platform  
 <br/>
 
-[Apigee protected ASM Envoy Proxies within Kubernetes Engine](https://cloud.google.com/apigee/docs/api-platform/envoy-adapter/v2.0.x/example-hybrid).
+[Apigee protected ASM Envoy Proxies within Kubernetes Engine](https://cloud.google.com/apigee/docs/api-platform/envoy-adapter/latest/example-hybrid).
 
 ![poc-setup](assets/istio-apigee-envoy.png)
 
@@ -78,7 +78,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 ## Envoy with Apigee adapter as native docker containers for Apigee X/Hybrid  
 
-[Apigee protected Envoy Proxies in docker containers](https://cloud.google.com/apigee/docs/api-platform/envoy-adapter/v2.0.x/example-apigee).
+[Apigee protected Envoy Proxies in docker containers](https://cloud.google.com/apigee/docs/api-platform/envoy-adapter/latest/example-apigee).
 
 ![poc-setup](assets/standalone-apigee-envoy.png)
 
@@ -139,7 +139,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 ## Envoy with Apigee adapter as docker containers for OPDK/Edge  
 
-[Apigee protected Envoy Proxies in docker containers for OPDK platform](https://docs.apigee.com/api-platform/envoy-adapter/v2.0.x/example-edge).
+[Apigee protected Envoy Proxies in docker containers for OPDK platform](https://docs.apigee.com/api-platform/envoy-adapter/latest/example-edge).
 
 ![poc-setup](assets/standalone-apigee-envoy-opdk-edge.png)
 
