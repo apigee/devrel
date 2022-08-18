@@ -24,13 +24,13 @@ if [[ -z $PIPELINE_TEST ]]; then
 
   nohup docker run \
   -v "$CLI_HOME"/config.yaml:/config.yaml \
-  -p 5000:5000 google/apigee-envoy-adapter:v2.0.5 &
+  -p 5000:5000 "$APIGEE_ENVOY_ADAPTER_IMG" &
 
 else
   echo "Creating Dockerfile to copy the config files for apigee-envoy-adapter"
 
   cat << EOF >  "$ENVOY_HOME/Dockerfile-aekitctl"
-FROM google/apigee-envoy-adapter:v2.0.5
+FROM "$APIGEE_ENVOY_ADAPTER_IMG"
 COPY ./apigee-remote-service-cli/config.yaml /config.yaml
 EOF
 
@@ -64,13 +64,13 @@ if [[ -z $PIPELINE_TEST ]]; then
     nohup docker run --net=host -v "$ENVOY_CONFIGS_HOME"/logs:/tmp/logs \
     -v "$ENVOY_CONFIGS_HOME"/envoy-config.yaml:/etc/envoy/envoy.yaml \
     -p 8080:8080 \
-    --rm envoyproxy/envoy:v1.21-latest --log-path /tmp/logs/custom.log \
+    --rm "$ENVOY_PROXY_IMG" --log-path /tmp/logs/custom.log \
     -c /etc/envoy/envoy.yaml --log-level debug &
 
 else
   echo "Creating Dockerfile to copy the config files for envoy"
   cat << EOF >  "$ENVOY_HOME/Dockerfile-aekitctl"
-FROM envoyproxy/envoy:v1.21-latest
+FROM "$ENVOY_PROXY_IMG"
 RUN apt-get update
 RUN apt-get -y install curl
 COPY ./apigee-remote-service-cli/envoy-configs-and-samples/envoy-config.yaml /etc/envoy/envoy.yaml

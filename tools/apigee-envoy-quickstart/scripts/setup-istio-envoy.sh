@@ -52,7 +52,7 @@ while [ $RESULT -ne 0 ] && [ $counter -lt 10 ]; do
 done
 
 if [ $RESULT -ne 0 ]; then
-  printf "Access to httpbin ClusterIP endpoint fails after 5 tries, pre-enabling of envoy filter that enforces Apigee authentication this test should succeed"
+  printf "Access to httpbin ClusterIP endpoint fails after 10 tries, pre-enabling of envoy filter that enforces Apigee authentication this test should succeed"
   exit 1
 fi
 
