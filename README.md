@@ -86,6 +86,8 @@ Apigee products.
   Specification
 - [Generate Shared Flows Dependency List](tools/sf-dependency-list) -
   A tool to generate topologically sorted Shared Flow dependencies.
+- [Apigee Envoy Quickstart Toolkit](tools/apigee-envoy-quickstart) -
+  A tool to set up the sample deployments of Apigee Envoy.
 
 ## Labs
 
