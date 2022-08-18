@@ -406,16 +406,16 @@ do
     echo "</tr>"  >> "$report_html"
 done <   <(find "$export_folder/apigeelint/sharedflows/"*.json -print0)
 
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
 loginfo "Exporting Configurations"
 
-if [ ! -d "$export_folder/$organization/config/resources/edge/env/$environment" ]; then
-    mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment"
-    echo "<p><i>No Configurations found in organization $organization</i></p>" >> "$report_html"
-fi
+# if [ ! -d "$export_folder/$organization/config/resources/edge/env/$environment" ]; then
+#     mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment"
+#     echo "<p><i>No Configurations found in organization $organization</i></p>" >> "$report_html"
+# fi
 
 echo "<h3>Key Value Maps</h3>" >> "$report_html"
 
@@ -460,7 +460,7 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     echo "</tr>"  >> "$report_html"
 done
 
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h3>Target Servers</h3>" >> "$report_html"
 
@@ -508,7 +508,7 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     echo "</tr>"  >> "$report_html"
 done
 
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h3>Keystores</h3>" >> "$report_html"
 
