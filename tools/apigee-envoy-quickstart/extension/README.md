@@ -6,7 +6,7 @@ The starter kit deploys httpbin service configured with Envoy proxies as side ca
 
 This extension enables the expose of deployed sample application (httpbin) externally via istio-ingressgateway. It showcases apigee enabled envoy proxies can offer protection of api traffic intiated externally. 
 
-![poc-setup](assets/istio-apigee-envoy-external.png)
+![poc-setup](../assets/istio-apigee-envoy-external.png)
 
 ### Pre-requisities:
 
