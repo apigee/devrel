@@ -58,12 +58,11 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     unzip devrel.zip
     mv devrel-main apigee-devrel
     rm devrel.zip
-    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ```
 
 1. **Run to install the quickstart toolkit.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    ```bash
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type istio-apigee-envoy --action install
     ```
 
@@ -72,7 +71,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 ### Cleanup
 1. **Run to cleanup the PoC setup from the GKE and Apigee platform**
     ```bash
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type istio-apigee-envoy --action delete
     ```
 
@@ -122,8 +121,8 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     ```
 
 1. **Run to install the quickstart toolkit.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    ```bash
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action install
     ```
 
@@ -133,7 +132,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Run to cleanup the PoC setup from the GKE and Apigee platform**
     ```bash
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action delete
     ```
 
@@ -184,13 +183,13 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Run to install the quickstart toolkit for opdk.**
     ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action install --platform opdk
     ```
 
 1. **Run to install the quickstart toolkit for edge.**
     ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action install --platform edge
     ```
 
@@ -200,13 +199,13 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Run to cleanup the PoC setup from OPDK Apigee platform**
     ```bash
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action delete --platform opdk
     ```
 
 1. **Run to cleanup the PoC setup from Edge Apigee platform**
     ```bash
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action delete --platform edge
     
 
