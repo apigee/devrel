@@ -419,7 +419,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/kv
 sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps"| jq -r -c '.[]|.' | while read -r kvmname; do
         sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" > "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json
         elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json)
-        if [ "$elem_count" -ge "1000" ]; then logwarn "KVMs in Apigee Edge are limited to 1000 entries."; fi
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/kvm"/*.json 1> /dev/null 2>&1; then
@@ -463,7 +462,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/ta
 sackmesser list "organizations/$organization/environments/$environment/targetservers"| jq -r -c '.[]|.' | while read -r tsname; do
         sackmesser list "organizations/$organization/environments/$environment/targetservers/$tsname" > "$export_folder/$organization/config/resources/edge/env/$environment/target-servers/$tsname".json
         elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/target-servers/$tsname".json)
-        if [ "$elem_count" -ge "1000" ]; then logwarn "Target Servers in Apigee Edge are limited to 1000 entries."; fi
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/target-servers"/*.json 1> /dev/null 2>&1; then
@@ -510,7 +508,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/ke
 sackmesser list "organizations/$organization/environments/$environment/keystores"| jq -r -c '.[]|.' | while read -r keystorename; do
         sackmesser list "organizations/$organization/environments/$environment/keystores/$keystorename" > "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json
         elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json)
-        if [ "$elem_count" -ge "1000" ]; then logwarn "Keystores in Apigee Edge are limited to 1000 entries."; fi
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/keystore"/*.json 1> /dev/null 2>&1; then
@@ -592,7 +589,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/ap
 sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
         sackmesser list "organizations/$organization/apiproducts/$apiProductName" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json
         elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json)
-        if [ "$elem_count" -ge "1000" ]; then logwarn "Target Servers in Apigee Edge are limited to 1000 entries."; fi
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/api-products"/*.json 1> /dev/null 2>&1; then
