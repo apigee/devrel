@@ -20,7 +20,6 @@ init() {
   export CLUSTER_CTX="gke_${PROJECT_ID}_${CLUSTER_LOCATION}_${CLUSTER_NAME}"
   export ASM_GATEWAYS_NAMESPACE="istio-ingressgateway"
   export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-  export TOKEN_TYPE="Bearer"
   export MGMT_HOST="https://apigee.googleapis.com"
   export APIGEE_ORG=$APIGEE_PROJECT_ID
   gcloud container clusters get-credentials "$CLUSTER_NAME" \
@@ -95,7 +94,7 @@ installIstioIngressGateway() {
 }
 
 fetchConsumerKey() {
-  CONSUMER_KEY=$(curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}"  \
+  CONSUMER_KEY=$(curl -H "Authorization: Bearer ${TOKEN}"  \
     -H "Content-Type:application/json" \
     "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-app-2" | \
     jq '.credentials[0].consumerKey'); \
@@ -110,7 +109,7 @@ fetchConsumerKey() {
 
 testExternalAccess() {
   RESULT=1
-  OUTPUT=$(curl -i http://"$EXTERNAL_IP"/headers -H 'Host: httpbin.apigee.svc.cluster.local' \
+  OUTPUT=$(curl -i http://"$EXTERNAL_IP"/headers -H 'Host: httpbin.org' \
       -H "x-api-key: $CONSUMER_KEY" | grep HTTP)
 
   printf "\n%s" "$OUTPUT"
@@ -142,8 +141,6 @@ if [[ -z "$EXTERNAL_IP" ]] || [[ "$EXTERNAL_IP" == 'null' ]]; then
     exit 1
 fi
 
-kubectl --context="${CLUSTER_CTX}" get svc -n "$ASM_GATEWAYS_NAMESPACE"
-
 echo "Installing gateway for httpbin..."
 cat <<EOF > "${ENVOY_HOME}"/httpbin-gateway.yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -159,7 +156,7 @@ spec:
        name: http
        protocol: HTTP
      hosts:
-       - "*"
+       - "httpbin.org"
 EOF
 
 kubectl apply -n $ASM_GATEWAYS_NAMESPACE \
@@ -173,7 +170,7 @@ metadata:
   name: httpbin-ingress
 spec:
   hosts:
-  - "*"
+  - "httpbin.org"
   gateways:
   - httpbin-gateway
   http:
@@ -189,8 +186,8 @@ kubectl apply -n $ASM_GATEWAYS_NAMESPACE \
 
 fetchConsumerKey;
 
-echo "Testing httpbin via externalip..."
-echo curl -i http://"$EXTERNAL_IP"/headers -H "\"x-api-key: $CONSUMER_KEY\"" -H "\"Host: httpbin.apigee.svc.cluster.local\""
+echo "Testing httpbin via external IP..."
+echo curl -i http://"$EXTERNAL_IP"/headers -H "\"x-api-key: $CONSUMER_KEY\"" -H "\"Host: httpbin.org\""
 echo "Waiting for the deployments to be complete (35s)..."
 
 sleep 35;
@@ -199,7 +196,7 @@ RESULT=$?
 
 counter=0;
 while [ $RESULT -ne 0 ] && [ $counter -lt 5 ]; do
-  printf "\n\nTesting the httpbin applicatio via external access %s of 5\n" "$counter"
+  printf "\n\nTesting the httpbin application via external access %s of 5\n" "$counter"
   sleep 5
   testExternalAccess;
   RESULT=$?
