@@ -213,9 +213,11 @@ if [[ $counter != 5 ]]; then
 fi
 
 echo "Note: The reason for host override is bcos of the Apigee product is protecting this api host. \
-The request hitting the Loadbalancer (via istio-ingressgateway) can carry any valid domain name. \
+The request hitting the Loadbalancer (via istio-ingressgateway) can carry any valid domain name resolving to the LB. \
 The apigee product protects the k8s ClusterIP service host and hence needed the Host override in the request. 
 Only for this service host the envoy apigee adapter will trigger the authn with Apigee runtime."
+printf "\n"
+echo "If a domain name is alias'd to the LB and the request should be protected via Envoy, this domain name should be added to the Apigee product."
 
 printf "\n\n"
 
