@@ -16,16 +16,16 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 ### Pre-requisities:
 
-1. Deployment of [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) of apigee-envoy deployment within Istio enabled Kubernetes platform. 
+1. Deployment of [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) of apigee-envoy adapter within Istio enabled Kubernetes platform. 
 
-1. Ensure Kubernetes cluster is running with istio-ingressgateway and supports external load balancers.
+1. Ensure Kubernetes cluster is running with istio-ingressgateway and supports external load balancers.(Execute [step 4 and 5](#set-the-namespace-hosting-istio-ingressgateway) below to setup ingressgateway is missing withing the cluster)
 
 1. Ensure istio-ingressgateway has the following under metadata -> labels section
-   "istio: ingressgateway"
+   <br/>"istio: ingressgateway"
 
 ### Installation:
 
-1. **Set your GCP Project ID, Apigee platform environment variables.** 
+1. **Set environment variables.** 
     ```bash
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     export GKE_PROJECT_ID=<gcp-project-id-hosting-the-cluster>
@@ -50,12 +50,12 @@ This extension enables the exposure of deployed sample application (httpbin) ext
      export CLUSTER_CTX="gke_${GKE_PROJECT_ID}_${CLUSTER_LOCATION}_${CLUSTER_NAME}"
     ```
 
-1. **Set the namespace hosting istio-ingressgateway**
+1. ### Set the namespace hosting istio-ingressgateway
     ```bash
     export $ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
     ```  
 
-1. ### Install istio-ingressgateway (if missing in istio enabled mesh)
+1. ### Execute the below if istio-ingressgateway is missing in the istio enabled cluster
     ```bash
     git clone https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git \
     /tmp/asm
@@ -72,7 +72,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     kubectl get svc istio-ingressgateway -n $ISTIO_GATEWAY_NS
     ```
 
-1. **Overwrite the service details that has to be exposed outside the mesh, if different from the service deployed in the starter kit (httpbin application)**
+1. **Overwrite the service details that has to be exposed outside the mesh, if different from the service (httpbin application) deployed in the [starter kit](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform)**
     ```bash
     export TARGET_HOST="httpbin.org"
     export TARGET_SERVICE_NAME="httpbin"
@@ -87,53 +87,53 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     export TCP_INGRESS_PORT=$(kubectl -n $ISTIO_GATEWAY_NS get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
     ```
 
-1. **An ingress Gateway describes a load balancer operating at the edge of the mesh that receives incoming HTTP/TCP connections. It configures exposed ports, protocols, etc.**
+1. **Setup Gateway component**
     ```bash
-cat <<EOF > /tmp/httpbin-gateway.tmpl
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: httpbin-gateway
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-    - port:
-        number: 80
-        name: http
-        protocol: HTTP
-      hosts:
-        - "$TARGET_HOST"
-EOF
+   cat <<EOF > /tmp/httpbin-gateway.tmpl              
+   apiVersion: networking.istio.io/v1alpha3
+   kind: Gateway
+   metadata:
+     name: httpbin-gateway
+   spec:
+     selector:
+       istio: ingressgateway
+     servers:
+       - port:
+           number: 80
+           name: http
+           protocol: HTTP
+         hosts:
+           - "$TARGET_HOST"
+   EOF
 
-    envsubst < /tmp/httpbin-gateway.tmpl > /tmp/httpbin-gateway.yaml
+   envsubst < /tmp/httpbin-gateway.tmpl > /tmp/httpbin-gateway.yaml
 
-    kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-gateway.yaml
+   kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-gateway.yaml
     ```
 
 1. **Configure routes for traffic entering via the Gateway:**
     ```bash
-    cat <<EOF > /tmp/httpbin-virtual-service.tmpl
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: httpbin-ingress
-spec:
-  hosts:
-  - "$TARGET_HOST"
-  gateways:
-  - httpbin-gateway
-  http:
-  - route:
-    - destination:
-        host: $TARGET_SERVICE_NAME.$TARGET_SERVICE_NAMESPACE.svc.cluster.local
-        port:
-          number: 80
-EOF
+   cat <<EOF > /tmp/httpbin-virtual-service.tmpl
+   apiVersion: networking.istio.io/v1alpha3
+   kind: VirtualService
+   metadata:
+     name: httpbin-ingress
+   spec:
+     hosts:
+     - "$TARGET_HOST"
+     gateways:
+     - httpbin-gateway
+     http:
+     - route:
+       - destination:
+           host: $TARGET_SERVICE_NAME.$TARGET_SERVICE_NAMESPACE.svc.cluster.local
+           port:
+             number: 80
+   EOF
 
-    envsubst < /tmp/httpbin-virtual-service.tmpl > /tmp/httpbin-virtual-service.yaml
+   envsubst < /tmp/httpbin-virtual-service.tmpl > /tmp/httpbin-virtual-service.yaml
     
-    kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-virtual-service.yaml
+   kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-virtual-service.yaml
     ```
 
 1. **Extract the consumer key from the developer app, this is created on Apigee platform during the [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) :**
@@ -143,7 +143,6 @@ EOF
     "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-app-2" | \
     jq '.credentials[0].consumerKey'); \
     CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2); 
-    export CONSUMER_KEY;
     ```
 
 1. **Extract IP address exposed via ingressgateway component**
