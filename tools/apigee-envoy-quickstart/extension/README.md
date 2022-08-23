@@ -18,10 +18,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. Deployment of [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) of apigee-envoy adapter within Istio enabled Kubernetes platform. 
 
-1. Ensure Kubernetes cluster is running with istio-ingressgateway and supports external load balancers.(Execute [step 4 and 5](#set-the-namespace-hosting-istio-ingressgateway) below to setup ingressgateway is missing withing the cluster)
-
-1. Ensure istio-ingressgateway has the following under metadata -> labels section
-   <br/>"istio: ingressgateway"
+1. Ensure Kubernetes cluster is running with istio-ingressgateway and supports external load balancers.(Execute [step 4 and 5](#set-the-namespace-hosting-istio-ingressgateway) below to setup ingressgateway, if missing within the cluster)
 
 ### Installation:
 
