@@ -64,14 +64,12 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.7.3'
+    export APIGEE_HYBRID_VERSION='1.8.0'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export KPT_VERSION='v0.34.0'
     echo "- kpt version $KPT_VERSION"
     export CERT_MANAGER_VERSION='v1.7.2'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-    export ASM_VERSION='1.13'
-    echo "- ASM version $ASM_VERSION"
 
     OS_NAME=$(uname -s)
 
@@ -457,104 +455,6 @@ install_certmanager() {
   kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
 }
 
-install_asm() {
-  echo "🏗️ Preparing ASM install requirements"
-  mkdir -p "$QUICKSTART_TOOLS"/kpt
-  curl --fail -L -o "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" "https://github.com/GoogleContainerTools/kpt/releases/download/${KPT_VERSION}/${KPT_BINARY}"
-  tar xzf "$QUICKSTART_TOOLS/kpt/kpt.tar.gz" -C "$QUICKSTART_TOOLS/kpt"
-  export PATH="$QUICKSTART_TOOLS"/kpt:$PATH # prevents asm from installing the wrong kpt version for macOS
-
-  mkdir -p "$QUICKSTART_TOOLS"/jq
-  curl --fail -L -o "$QUICKSTART_TOOLS"/jq/jq "https://github.com/stedolan/jq/releases/download/$JQ_VERSION"
-  chmod +x "$QUICKSTART_TOOLS"/jq/jq
-  export PATH=$PATH:"$QUICKSTART_TOOLS"/jq
-  echo "🏗️ Installing Anthos Service Mesh"
-
-  mkdir -p "$QUICKSTART_TOOLS"/istio-asm
-  curl --fail https://storage.googleapis.com/csm-artifacts/asm/asmcli_$ASM_VERSION > "$QUICKSTART_TOOLS"/istio-asm/asmcli
-  chmod +x "$QUICKSTART_TOOLS"/istio-asm/asmcli
-
-  if [ "$CERT_TYPE" = "google-managed" ];then
-    cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-spec:
-  components:
-    ingressGateways:
-    - name: istio-ingressgateway
-      enabled: true
-      k8s:
-        resources:
-          requests:
-            cpu: 1000m
-        serviceAnnotations:
-          cloud.google.com/neg: '{"ingress": true}'
-          cloud.google.com/backend-config: '{"default": "ingress-backendconfig"}'
-          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
-        service:
-          type: ClusterIP
-          ports:
-          - name: status-port
-            port: 15021
-            targetPort: 15021
-          - name: https
-            port: 443
-            targetPort: 8443
-EOF
-  else
-    cat << EOF > "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-spec:
-  components:
-    ingressGateways:
-    - name: istio-ingressgateway
-      enabled: true
-      k8s:
-        resources:
-          requests:
-            cpu: 1000m
-        serviceAnnotations:
-          networking.gke.io/load-balancer-type: $INGRESS_TYPE
-        service:
-          type: LoadBalancer
-          loadBalancerIP: $INGRESS_IP
-          ports:
-          - name: status-port
-            port: 15021
-            targetPort: 15021
-          - name: https
-            port: 443
-            targetPort: 8443
-EOF
-  fi
-
-  rm -rf "$QUICKSTART_TOOLS"/istio-asm/install-out
-  mkdir -p "$QUICKSTART_TOOLS"/istio-asm/install-out
-
-  yes | "$QUICKSTART_TOOLS"/istio-asm/asmcli install \
-    --project_id "$PROJECT_ID" \
-    --fleet_id "$PROJECT_ID" \
-    --cluster_name "$GKE_CLUSTER_NAME" \
-    --cluster_location "$REGION" \
-    --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
-    --ca mesh_ca \
-    --enable_all
-
-  yes | "$QUICKSTART_TOOLS"/istio-asm/asmcli install \
-    --project_id "$PROJECT_ID" \
-    --fleet_id "$PROJECT_ID" \
-    --cluster_name "$GKE_CLUSTER_NAME" \
-    --cluster_location "$REGION" \
-    --output_dir "$QUICKSTART_TOOLS"/istio-asm/install-out \
-    --custom_overlay "$QUICKSTART_TOOLS"/istio-asm/istio-operator-patch.yaml \
-    --ca mesh_ca \
-    --option legacy-default-ingressgateway \
-    --enable_all
-
-  echo "✅ ASM installed"
-}
-
 download_apigee_ctl() {
     echo "📥 Setup Apigeectl"
 
@@ -617,10 +517,12 @@ create_cert() {
 
   cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
 
+  kubectl create ns apigee || echo "Couldn't create namespace Apigee. Does it already exist?"
+
   kubectl create secret tls tls-hybrid-ingress \
     --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
     --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
-    -n istio-system --dry-run=client -o yaml | kubectl apply -f -
+    -n apigee --dry-run=client -o yaml | kubectl apply -f -
 
   if [ "$CERT_TYPE" = "google-managed" ];then
     echo "🏢 Letting Google manage the cert - $ENV_GROUP_NAME"
@@ -630,7 +532,7 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: "apigee-cert-$ENV_GROUP_NAME"
-  namespace: istio-system
+  namespace: apigee
 spec:
   domains:
     - "$ENV_GROUP_NAME.$DNS_NAME"
@@ -639,7 +541,7 @@ apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: ingress-backendconfig
-  namespace: istio-system
+  namespace: apigee
 spec:
   healthCheck:
     requestPath: /healthz/ready
@@ -647,6 +549,30 @@ spec:
     type: HTTP
   logging:
     enable: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigee-ingressgateway-quickstart
+  namespace: apigee
+  annotations:
+    cloud.google.com/backend-config: '{"default": "ingress-backendconfig"}'
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/app-protocols: '{"https":"HTTPS", "status-port": "HTTP"}'
+  labels:
+    app: apigee-ingressgateway-quickstart
+spec:
+  ports:
+  - name: status-port
+    port: 15021
+    targetPort: 15021
+  - name: https
+    port: 443
+    targetPort: 8443
+  selector:
+    app: apigee-ingressgateway
+    ingress_name: apigee-ingress
+  type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -656,65 +582,13 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: $INGRESS_IP_NAME
     kubernetes.io/ingress.allow-http: "false"
   name: xlb-apigee-$ENV_GROUP_NAME
-  namespace: istio-system
+  namespace: apigee
 spec:
   defaultBackend:
     service:
-      name: istio-ingressgateway
+      name: apigee-ingressgateway-quickstart
       port:
         number: 443
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: apigee
----
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: apigee-wildcard
-  namespace: apigee
-spec:
-  selector:
-    app: istio-ingressgateway
-  servers:
-  - hosts:
-    - '*'
-    port:
-      name: https-apigee-443
-      number: 443
-      protocol: HTTPS
-    tls:
-      credentialName: tls-hybrid-ingress
-      mode: SIMPLE
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: health
-  namespace: apigee
-spec:
-  gateways:
-  - apigee-wildcard
-  hosts:
-  - '*'
-  http:
-  - match:
-    - headers:
-        user-agent:
-          prefix: GoogleHC
-      method:
-        exact: GET
-      uri:
-        exact: /
-    rewrite:
-      authority: istio-ingressgateway.istio-system.svc.cluster.local:15021
-      uri: /healthz/ready
-    route:
-    - destination:
-        host: istio-ingressgateway.istio-system.svc.cluster.local
-        port:
-          number: 15021
 EOF
   else
     kubectl create ns apigee
@@ -781,15 +655,44 @@ virtualhosts:
   - name: $ENV_GROUP_NAME
     sslSecret: tls-hybrid-ingress
     additionalGateways: ["apigee-wildcard"]
+    selector:
+      app: apigee-ingressgateway
 
-instanceID: "$PROJECT_ID-$(date +%s)"
+instanceID: "$GKE_CLUSTER_NAME-$REGION"
 
 envs:
   - name: $ENV_NAME
 
 logger:
   enabled: false
+
+ao:
+  args:
+    disableIstioConfigInAPIServer: true
+
+ingressGateways:
+- name: apigee-ingress
+  replicaCountMin: 2
+  replicaCountMax: 4
 EOF
+
+if [ "$CERT_TYPE" = "google-managed" ]; then
+  echo "Setting Apigee Ingress IB to Internal because Ingress resource is used"
+# Apigee hybrid ingress is always created as type LoadBalancer. Ensure that the LB isn't external.
+# waiting for b/243908647
+# cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
+#   svcAnnotations:
+#     networking.gke.io/load-balancer-type: "Internal"
+# EOF
+else
+cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
+  # b/243908647
+  # svcAnnotations:
+  #   networking.gke.io/load-balancer-type: "$INGRESS_TYPE"
+  svcLoadBalancerIP: $INGRESS_IP
+EOF
+fi
+
 }
 
 apigeectl_init() {
@@ -809,7 +712,7 @@ install_runtime() {
     mkdir -p "$HYBRID_HOME"/generated
 
     export -f apigeectl_init
-    timeout 20m bash -c 'until apigeectl_init; do sleep 30; done'
+    timeout 1200 bash -c 'until apigeectl_init; do sleep 30; done'
 
     echo -n "⏳ Waiting for Apigeectl init "
     timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
@@ -822,6 +725,26 @@ install_runtime() {
 
     echo -n "⏳ Waiting for Apigeectl apply "
     timeout 1800 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
+
+    cat <<EOF | kubectl apply -f -
+apiVersion: apigee.cloud.google.com/v1alpha1
+kind: ApigeeRoute
+metadata:
+  name: apigee-wildcard
+  namespace: apigee
+spec:
+  hostnames:
+  - '*'
+  ports:
+  - number: 443
+    protocol: HTTPS
+    tls:
+      credentialName: tls-hybrid-ingress
+      mode: SIMPLE
+  selector:
+    app: apigee-ingressgateway
+  enableNonSniClient: true
+EOF
 
     popd || return
     echo "🎉🎉🎉 Hybrid installation completed!"
