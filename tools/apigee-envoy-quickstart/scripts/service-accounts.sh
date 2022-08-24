@@ -40,8 +40,7 @@ fi
 
 getAxRoles;
 if [[ $ROLES_ASSIGNED == 0 ]] && [[ -z $PIPELINE_TEST ]]; then
-  echo "Adding roles..."
-  #addAxRole;
+  addAxRole;
 fi
 
 getAxRoles;
