@@ -86,7 +86,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Setup Gateway component**
     ```bash
-   cat <<EOF > /tmp/httpbin-gateway.tmpl              
+   cat <<EOF > /tmp/httpbin-gateway.yaml              
    apiVersion: networking.istio.io/v1alpha3
    kind: Gateway
    metadata:
@@ -103,14 +103,12 @@ This extension enables the exposure of deployed sample application (httpbin) ext
            - "$TARGET_HOST"
    EOF
 
-   envsubst < /tmp/httpbin-gateway.tmpl > /tmp/httpbin-gateway.yaml
-
    kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-gateway.yaml
     ```
 
 1. **Configure routes for traffic entering via the Gateway:**
     ```bash
-   cat <<EOF > /tmp/httpbin-virtual-service.tmpl
+   cat <<EOF > /tmp/httpbin-virtual-service.yaml
    apiVersion: networking.istio.io/v1alpha3
    kind: VirtualService
    metadata:
@@ -128,8 +126,6 @@ This extension enables the exposure of deployed sample application (httpbin) ext
              number: 80
    EOF
 
-   envsubst < /tmp/httpbin-virtual-service.tmpl > /tmp/httpbin-virtual-service.yaml
-    
    kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-virtual-service.yaml
     ```
 
@@ -142,15 +138,8 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2); 
     ```
 
-1. **Extract IP address exposed via ingressgateway component**
-    ```bash
-    EXTERNAL_IP=$(kubectl --context="${CLUSTER_CTX}" get svc -n "$ISTIO_GATEWAY_NS" -o json | \
-    jq '.items[0].status.loadBalancer.ingress[0].ip' | \
-    cut -d '"' -f 2)
-    ```
-
 1. **Testing protected service via external IP...**
     ```bash
-    curl -i http://"$EXTERNAL_IP"/headers -H "x-api-key: $CONSUMER_KEY" \
+    curl -i http://"$INGRESS_HOST"/headers -H "x-api-key: $CONSUMER_KEY" \
     -H "Host: $TARGET_HOST"
     ```
