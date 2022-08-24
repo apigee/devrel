@@ -23,7 +23,7 @@ addAxRole() {
 getAxRoles() {
   ROLES_ASSIGNED=$(gcloud projects get-iam-policy "$APIGEE_PROJECT_ID" --flatten="bindings[].members" \
     --format='table(bindings.role)' \
-    --filter="bindings.members:abcd@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" | \
+    --filter="bindings.members:$ENVOY_AX_SA@$APIGEE_PROJECT_ID.iam.gserviceaccount.com" | \
     grep -c "roles/apigee.analyticsAgent")
 
   export ROLES_ASSIGNED;
@@ -40,7 +40,8 @@ fi
 
 getAxRoles;
 if [[ $ROLES_ASSIGNED == 0 ]] && [[ -z $PIPELINE_TEST ]]; then
-  addAxRole;
+  echo "Adding roles..."
+  #addAxRole;
 fi
 
 getAxRoles;
