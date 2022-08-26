@@ -453,6 +453,9 @@ create_gke_cluster() {
 install_certmanager() {
   echo "👩🏽‍💼 Creating Cert Manager"
   kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml
+
+  echo "Sleep for 2 minutes to ease API server pressure."
+  sleep 120
 }
 
 download_apigee_ctl() {
@@ -706,6 +709,11 @@ apigeectl_apply() {
   "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
 }
 
+install_wildcard_gateway() {
+  timeout 300 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+  kubectl apply -f "$HYBRID_HOME"/generated/wildcard-gateway.yaml
+}
+
 
 install_runtime() {
     pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
@@ -726,7 +734,7 @@ install_runtime() {
     echo -n "⏳ Waiting for Apigeectl apply "
     timeout 1800 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
 
-    cat <<EOF | kubectl apply -f -
+    cat << EOF > "$HYBRID_HOME"/generated/wildcard-gateway.yaml
 apiVersion: apigee.cloud.google.com/v1alpha1
 kind: ApigeeRoute
 metadata:
@@ -745,6 +753,9 @@ spec:
     app: apigee-ingressgateway
   enableNonSniClient: true
 EOF
+
+    export -f install_wildcard_gateway
+    timeout 600 bash -c 'until install_wildcard_gateway; do sleep 20; done'
 
     popd || return
     echo "🎉🎉🎉 Hybrid installation completed!"
