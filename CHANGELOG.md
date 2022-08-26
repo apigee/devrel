@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/apigee/devrel/compare/v1.0.0...v1.0.1) (2022-08-26)
+
+
+### Bug Fixes
+
+* typo in Sackmesser Deploy ([864c7e3](https://github.com/apigee/devrel/commit/864c7e3cc2ffdc0f869ebc115a35ffc505c9d8e1))
+
 ## 1.0.0 (2022-08-19)
 
 
