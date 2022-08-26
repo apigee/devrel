@@ -156,6 +156,70 @@ has been selected:
   - ```app-recaptcha-enterprise-always0```
   - ```app-recaptcha-enterprise-always1```
 
+## Creating Custom Reports for Token Validity and Risk Score
+
+The sharedflow ```sf-recaptcha-enterprise-v1``` contains 2
+[DataCapture](https://cloud.google.com/apigee/docs/api-platform/reference/policies/data-capture-policy)
+policies, which are used to retrieve the token validity
+(true or false) and risk score.
+
+These values are extracted from the Google reCAPTCHA enterprise assessment
+response and store into 2 data collectors:
+
+- dc_riskScore
+- dc_TokenValidity
+
+From there, it is possible to create custom reports.
+Here is an example for each data collector:
+
+### Custom Report for Risk Score
+
+![Custom Report Risk Score](./images/example-riskScore.png "Risk Score")
+
+The cURL command to create this report is the following:
+
+    $ export APIGEE_TOKEN=$(gcloud auth print-access-token)
+
+    $ curl -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $APIGEE_TOKEN" \
+    --data '{"name":"my-riskscore-report",
+    "displayName":"my-riskscore-report",
+    "metrics":[{"name":"dc_riskScore",
+    "function":"avg"},
+    {"name":"dc_riskScore","function":"min"},
+    {"name":"dc_riskScore","function":"max"},
+    {"name":"message_count","function":"sum"}],
+    "dimensions":["apiproxy","proxy_basepath","proxy_pathsuffix"],
+    "chartType":"column"}' \
+    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/reports
+
+### Custom Report for Token Validity
+
+![Custom Report Token Validity](./images/example-tokenValidity.png "Token Validity")
+
+The Client IP address (X-Forwarded-For HTTP header) has been intentionally
+hidden on this report.
+
+The cURL command to create this report is the following:
+
+    $ export APIGEE_TOKEN=$(gcloud auth print-access-token)
+
+    $ curl -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $APIGEE_TOKEN" \
+    --data '{"name":"my-token-validity-report",
+    "displayName":"my-token-validity-report",
+    "metrics":[{"name":"message_count",
+    "function":"sum"}],
+    "dimensions":[
+    "dc_tokenValidity",
+    "apiproxy",
+    "proxy_basepath",
+    "proxy_pathsuffix",
+    "client_id",
+    "x_forwarded_for_ip"],
+    "chartType":"column"}' \
+    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/reports
+
 ## reCAPTCHA Enterprise & Apigee Sequence Diagram
 
 The following sequence diagram provides all the interactions between:

@@ -216,6 +216,17 @@ if [ -z "$(gcloud iam service-accounts list --filter "$SA_EMAIL" --format="value
     --project "$APIGEE_X_ORG"
 fi
 
+# Create DataCollectors on Apigee for custom analytics data reports (risk score and token validity)
+curl --silent -X POST \
+    -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+    --data '{"name":"dc_riskScore","description":"data collection of Enterprise reCAPTCHA risk score","type":"FLOAT"}' \
+    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
+
+curl --silent -X POST \
+    -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+    --data '{"name":"dc_tokenValidity","description":"data collection of Enterprise reCAPTCHA token validity","type":"STRING"}' \
+    https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
+
 # If reCAPTCHA mock is enabled
 if [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
 
