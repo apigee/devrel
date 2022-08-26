@@ -45,7 +45,7 @@ fi
 
 getAxRoles;
 if [[ $ROLES_ASSIGNED == 0 ]]; then
-  echo "Needed roles not assigned, exiting"
+  echo "Needed role 'roles/apigee.analyticsAgent' can't be assigned, exiting"
   exit 1;
 fi
 
