@@ -25,7 +25,7 @@ testHttpbin() {
   
   OUTPUT=$( grep "HTTP" "$ENVOY_HOME"/test-curl-output.txt)
   rm "$ENVOY_HOME"/test-curl-output.txt
-  
+
   if [[ "$OUTPUT" == *"200"* ]]; then
       RESULT=0
   fi
@@ -69,7 +69,7 @@ done
 
 if [ $RESULT -eq 0 ]; then
   printf '\U1F44D'
-  printf "\nValidation of the apigee envoy quickstart engine successful" 
+  printf "\nValidation of the apigee envoy quickstart engine successful\n\n" 
 else
-  printf "\n\nValidation of the apigee envoy quickstart engine NOT successful" 
+  printf "\n\nValidation of the apigee envoy quickstart engine NOT successful\n\n" 
 fi
