@@ -18,10 +18,14 @@ set -e
 
 testHttpbin() {
   RESULT=1
-  OUTPUT=$(kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" run -it --rm --image=curlimages/curl \
+
+  kubectl --context="${CLUSTER_CTX}" -n "$NAMESPACE" run -it --rm --image=curlimages/curl \
   --restart=Never curl --overrides='{"apiVersion": "v1", "metadata": {"annotations":{"sidecar.istio.io/inject": "false"}}}' \
-  -- curl -i httpbin.apigee.svc.cluster.local/headers -H "x-api-key: $CONSUMER_KEY" | grep 200)
-  printf "%s" "$OUTPUT"
+  -- curl -i httpbin.apigee.svc.cluster.local/headers -H "x-api-key: $CONSUMER_KEY" > "$ENVOY_HOME"/test-curl-output.txt
+  
+  OUTPUT=$( grep "HTTP" "$ENVOY_HOME"/test-curl-output.txt)
+  rm "$ENVOY_HOME"/test-curl-output.txt
+  
   if [[ "$OUTPUT" == *"200"* ]]; then
       RESULT=0
   fi
@@ -64,7 +68,7 @@ while [[ $RESULT -ne 0 ]] && [[ $counter -lt 5 ]]; do
 done
 
 if [ $RESULT -eq 0 ]; then
-  printf '\U1F44D\n'
+  printf '\U1F44D'
   printf "\nValidation of the apigee envoy quickstart engine successful" 
 else
   printf "\n\nValidation of the apigee envoy quickstart engine NOT successful" 
