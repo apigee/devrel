@@ -39,7 +39,9 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     export APIGEE_REMOTE_SRVC_CLI_VERSION=<version for Apigee Remote Service cli for Envoy>
     export APIGEE_REMOTE_SRVC_ENVOY_VERSION=<version for Apigee Remote Service for Envoy>
     ```
-    Latest cli version can be found **[here](https://github.com/apigee/apigee-remote-service-cli/releases/latest)**<br />
+    When specifying the version numbers, ignore the 'v' prefix and use just the number.
+    
+    Latest cli version can be found **[here](https://github.com/apigee/apigee-remote-service-cli/releases/latest)**. Please ignore the prefix "v" and just use the version number.<br />
     Latest apigee-envoy version can be found **[here](https://github.com/apigee/apigee-remote-service-envoy/releases/latest)**
 
 1. **Set up local authentication to your project.**
@@ -50,20 +52,25 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     export TOKEN=$(gcloud auth print-access-token)
     ```
 
-1. **Download the Apigee Envoy PoC Toolkit binary.** 
+1. **Set apigee-envoy home directory where the tool will be executed and the binaries will be loaded**
     ```bash
     mkdir apigee-envoy-toolkit && cd "$_"
     export ENVOY_HOME=$(pwd)
-    wget -O devrel.zip https://github.com/apigee/devrel/archive/refs/heads/main.zip
-    unzip devrel.zip
-    mv devrel-main apigee-devrel
-    rm devrel.zip
-    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
+    ```
+
+1. **Clone Apigee DevRel repository, if not exists.** 
+    ```bash
+    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    ```
+
+1. **Set the devrel project location**
+    ```bash
+    export DEVREL_HOME=<cloned-devrel-directory>
     ```
 
 1. **Run to install the quickstart toolkit.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    ```bash
+    cd ${DEVREL_HOME}/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type istio-apigee-envoy --action install
     ```
 
@@ -110,21 +117,26 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     export TOKEN=$(gcloud auth print-access-token)
     ```
 
-1. **Download the Apigee Envoy PoC Toolkit binary.** 
+1. **Set apigee-envoy home directory where the tool will be executed and the binaries will be loaded**
     ```bash
     mkdir apigee-envoy-toolkit && cd "$_"
     export ENVOY_HOME=$(pwd)
-    wget -O devrel.zip https://github.com/apigee/devrel/archive/refs/heads/main.zip
-    unzip devrel.zip
-    mv devrel-main apigee-devrel
-    rm devrel.zip
-    cd ${ENVOY_HOME}/apigee-devrel/tools/apigee-envoy-quickstart/
+    ```
+
+1. **Clone Apigee DevRel repository, if not exists.** 
+    ```bash
+    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    ```
+
+1. **Set the devrel project location**
+    ```bash
+    export DEVREL_HOME=<cloned-devrel-directory>
     ```
 
 1. **Run to install the quickstart toolkit.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
-    ./aekitctl.sh --type standalone-apigee-envoy --action install
+    ```bash
+    cd ${DEVREL_HOME}/tools/apigee-envoy-quickstart/
+    ./aekitctl.sh --type istio-apigee-envoy --action install
     ```
 
 1. **On successful run, it displays the commands (kubeclt run, curl) to validate the traffic intiated to the Envoy endpoints being protected by Apigee Adapter service.**
@@ -174,23 +186,31 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
     export APIGEE_REMOTE_SRVC_ENVOY_VERSION=<version for Apigee Remote Service for Envoy>
     ```
 
-1. **Download the Apigee Envoy PoC Toolkit binary.** 
+1. **Set apigee-envoy home directory where the tool will be executed and the binaries will be loaded**
     ```bash
     mkdir apigee-envoy-toolkit && cd "$_"
     export ENVOY_HOME=$(pwd)
-    wget -O apigee-envoy-quickstart-main.zip https://github.com/ganadurai/apigee-envoy-quickstart/archive/refs/heads/main.zip
-    unzip apigee-envoy-quickstart-main.zip
+    ```
+
+1. **Clone Apigee DevRel repository, if not exists.** 
+    ```bash
+    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    ```
+
+1. **Set the devrel project location**
+    ```bash
+    export DEVREL_HOME=<cloned-devrel-directory>
     ```
 
 1. **Run to install the quickstart toolkit for opdk.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
-    ./aekitctl.sh --type standalone-apigee-envoy --action install --platform opdk
+    ```bash
+    cd ${DEVREL_HOME}/tools/apigee-envoy-quickstart/
+    ./aekitctl.sh --type istio-apigee-envoy --action install --platform opdk
     ```
 
 1. **Run to install the quickstart toolkit for edge.**
-    ```bash 
-    cd ${ENVOY_HOME}/apigee-envoy-quickstart-main
+    ```bash
+    cd ${DEVREL_HOME}/tools/apigee-envoy-quickstart/
     ./aekitctl.sh --type standalone-apigee-envoy --action install --platform edge
     ```
 

@@ -64,7 +64,8 @@ while [[ $RESULT -ne 0 ]] && [[ $counter -lt 5 ]]; do
 done
 
 if [ $RESULT -eq 0 ]; then
+  printf '\U1F44D\n'
   printf "\nValidation of the apigee envoy quickstart engine successful" 
 else
-  printf "\nValidation of the apigee envoy quickstart engine NOT successful" 
+  printf "\n\nValidation of the apigee envoy quickstart engine NOT successful" 
 fi

@@ -57,8 +57,8 @@ init() {
 }
 
 createDir() {
-    mkdir "$CLI_HOME"
-    mkdir "$REMOTE_SERVICE_HOME"
+    mkdir -p "$CLI_HOME"
+    mkdir -p "$REMOTE_SERVICE_HOME"
 }
 
 PARAMETERS=()
