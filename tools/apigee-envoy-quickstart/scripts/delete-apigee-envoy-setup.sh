@@ -14,6 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+delete_sa_keys() {
+  for SA_KEY_NAME in $(gcloud iam service-accounts keys list \
+  --project="$APIGEE_PROJECT_ID" \
+  --iam-account="$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com \
+  --format="get(name)" --filter="keyType=USER_MANAGED")
+  do
+    gcloud iam service-accounts keys delete "$SA_KEY_NAME" \
+    --project="$APIGEE_PROJECT_ID" \
+    --iam-account="$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com -q
+  done
+}
+
 if [ "$INSTALL_TYPE" == 'istio-apigee-envoy' ]
 then
     gcloud --project="${PROJECT_ID}" container clusters get-credentials \
@@ -21,6 +33,12 @@ then
 
     echo "Deleting the namespace - $NAMESPACE"
     kubectl --context="${CLUSTER_CTX}" delete namespace "$NAMESPACE"
+fi
+
+if [ "$PLATFORM" != 'opdk' ] && [ "$PLATFORM" != 'edge' ]
+then
+    echo "deleting the SA keys"
+    delete_sa_keys;
 
     if [[ -z $PIPELINE_TEST ]]; then
 
@@ -32,14 +50,8 @@ then
         echo "Deleting the service account"
         gcloud iam service-accounts delete "$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com \
         --project="$APIGEE_PROJECT_ID" --quiet
-    else
-        echo "Skipping the delete of service account - $ENVOY_AX_SA, deleting the SA keys"
-        gcloud iam service-accounts keys delete "$AX_SERVICE_ACCOUNT" \
-        --project="$APIGEE_PROJECT_ID" \
-        --iam-account="$ENVOY_AX_SA"@"$APIGEE_PROJECT_ID".iam.gserviceaccount.com
     fi
-
-    rm "$ENVOY_HOME"/"$AX_SERVICE_ACCOUNT"
+    rm "$AX_SERVICE_ACCOUNT"
 fi
 
 if [ "$INSTALL_TYPE" == 'standalone-apigee-envoy' ]

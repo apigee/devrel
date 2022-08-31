@@ -44,7 +44,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Set up local authentication to your project.**
     ```bash
-    gcloud config set project $PROJECT_ID
+    gcloud config set project $APIGEE_PROJECT_ID
     gcloud auth application-default login --no-launch-browser
 
     export TOKEN=$(gcloud auth print-access-token)
