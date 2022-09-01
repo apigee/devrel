@@ -62,15 +62,23 @@ for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --f
    gcloud compute forwarding-rules delete --global "$fwdrule" -q
 done
 
+for fwdrule in $(gcloud compute forwarding-rules list --format="value(name)" --regions="$REGION"); do
+   gcloud compute forwarding-rules delete --region="$REGION" "$fwdrule" -q
+done
+
 for targetproxy in $(gcloud compute target-https-proxies list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
    gcloud compute target-https-proxies delete "$targetproxy" -q
+done
+
+for targetpool in $(gcloud compute target-pools list --format="value(name)"); do
+   gcloud compute target-pools delete "$targetpool" --region="$REGION" -q
 done
 
 for urlmap in $(gcloud compute url-maps list --format="value(name)" --filter="name~xlb-apigee-$ENV_GROUP_NAME"); do
    gcloud compute url-maps delete "$urlmap" -q
 done
 
-for backendsystem in $(gcloud compute backend-services list --format="value(name)" --filter="name~istio-ingressgateway"); do
+for backendsystem in $(gcloud compute backend-services list --format="value(name)" --filter="name~apigee-devrel-ingressgateway"); do
    gcloud compute backend-services delete --global "$backendsystem" -q
 done
 
