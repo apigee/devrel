@@ -60,7 +60,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Clone Apigee DevRel repository, if not exists.** 
     ```bash
-    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    git clone https://github.com/apigee/devrel.git
     ```
 
 1. **Set the devrel project location**
@@ -125,7 +125,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Clone Apigee DevRel repository, if not exists.** 
     ```bash
-    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    git clone https://github.com/apigee/devrel.git
     ```
 
 1. **Set the devrel project location**
@@ -194,7 +194,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 
 1. **Clone Apigee DevRel repository, if not exists.** 
     ```bash
-    git clone https://github.com/apigee/devrel/archive/refs/heads/main.zip
+    git clone https://github.com/apigee/devrel.git
     ```
 
 1. **Set the devrel project location**
