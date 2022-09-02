@@ -413,7 +413,7 @@ echo "<h2>Environment Configurations</h2>" >> "$report_html"
 loginfo "Exporting Configurations"
 
 if [ "$opdk" == "T" ]; then
-    opdk_dir=$PWD/cmd/report/opdk
+    opdk_dir=$SCRIPT_FOLDER/opdk
     source $opdk_dir/keyvaluemaps.sh
     source $opdk_dir/targetservers.sh
     source $opdk_dir/keystores.sh
@@ -427,7 +427,7 @@ echo "<h2>Organization Configurations</h2>" >> "$report_html"
 loginfo "Exporting Org Configurations"
 
 if [ "$opdk" == "T" ]; then
-    opdk_dir=$PWD/cmd/report/opdk
+    opdk_dir=$SCRIPT_FOLDER/opdk
     source $opdk_dir/apiproducts.sh
     source $opdk_dir/developers.sh
     source $opdk_dir/developerapps.sh
