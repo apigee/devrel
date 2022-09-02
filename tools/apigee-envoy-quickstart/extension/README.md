@@ -44,7 +44,6 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     gcloud container clusters get-credentials "$CLUSTER_NAME" \
      --zone "$CLUSTER_LOCATION" \
      --project "$GKE_PROJECT_ID"
-     export CLUSTER_CTX="gke_${GKE_PROJECT_ID}_${CLUSTER_LOCATION}_${CLUSTER_NAME}"
     ```
 
 1. ### Set the namespace hosting istio-ingressgateway
@@ -86,7 +85,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Setup Gateway component**
     ```bash
-   cat <<EOF > /tmp/httpbin-gateway.yaml              
+   cat <<EOF kubectl apply -n $ISTIO_GATEWAY_NS -f -
    apiVersion: networking.istio.io/v1alpha3
    kind: Gateway
    metadata:
@@ -102,13 +101,11 @@ This extension enables the exposure of deployed sample application (httpbin) ext
          hosts:
            - "$TARGET_HOST"
    EOF
-
-   kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-gateway.yaml
     ```
 
 1. **Configure routes for traffic entering via the Gateway:**
     ```bash
-   cat <<EOF > /tmp/httpbin-virtual-service.yaml
+   cat <<EOF | kubectl apply -n $ISTIO_GATEWAY_NS -f -
    apiVersion: networking.istio.io/v1alpha3
    kind: VirtualService
    metadata:
@@ -125,8 +122,6 @@ This extension enables the exposure of deployed sample application (httpbin) ext
            port:
              number: 80
    EOF
-
-   kubectl apply -n $ISTIO_GATEWAY_NS -f /tmp/httpbin-virtual-service.yaml
     ```
 
 1. **Extract the consumer key from the developer app, this is created on Apigee platform during the [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) :**
