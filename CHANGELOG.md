@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/apigee/devrel/compare/v1.0.1...v1.1.0) (2022-09-01)
+
+
+### Features
+
+* bump hybrid quickstart to 1.8 with Apigee ingress ([7c4ffe9](https://github.com/apigee/devrel/commit/7c4ffe956fbf4df3afa4ca8d05ce9f188885f5d5))
+
+
+### Bug Fixes
+
+* add retry for wildcard gateway install ([d10cd87](https://github.com/apigee/devrel/commit/d10cd879515f280f752e88644872e5878cdb2ddf))
+
 ## [1.0.1](https://github.com/apigee/devrel/compare/v1.0.0...v1.0.1) (2022-08-26)
 
 
