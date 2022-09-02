@@ -128,7 +128,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     ```bash
     CONSUMER_KEY=$(curl -H "Authorization: Bearer ${TOKEN}"  \
     -H "Content-Type:application/json" \
-    "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-app-2" | \
+    "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-dev-app" | \
     jq '.credentials[0].consumerKey'); \
     CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2); 
     ```
