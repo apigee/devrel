@@ -101,7 +101,8 @@ export ENV_GROUP_NAME='test'
 By default a subdomain will be created for every environment group
 e.g. test.1-2-3-4.nip.io (where 1.2.3.4 is the IP of the istio ingress)
 
-`INGRESS_TYPE` can be `external` (default) or `internal`
+`INGRESS_TYPE` can be `external` (default) ~~or `internal`~~
+(A known issue that prevents the creation of internal LBs at the moment.)
 
 ```sh
 export DNS_NAME="my-ingress-ip.nip.io"

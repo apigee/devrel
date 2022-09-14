@@ -12,8 +12,8 @@ for interacting with the Apigee Management APIs for Apigee X/hybrid and Edge.
 It also lets you deploy API proxies, shared flows and configuration to both
 stacks without writing any additional manifest files.
 
-Please note that Apigee Sackmesser only supports list, export and report operations for Apigee Private Cloud (OPDK) at this time.
-Support for other operations would be added soon.
+**Please note that for Apigee Private Cloud (OPDK), Sackmesser only supports list, export, and report operations at this time.
+Support for other operations will be added soon.**
 For interacting with the management API of Apigee X/hybrid only (without the
 need for backwards compatibility for Apigee Edge) you can also try the [apigeecli](https://github.com/apigee/apigeecli)
 commandline utility.
@@ -51,7 +51,7 @@ report
 
 Options:
 --googleapi (default), use apigee.googleapis.com (for X, hybrid)
---apigeeapi, use api.enterprise.apigee.com (for Edge), also set this flag if you are using OPDK
+--apigeeapi, use api.enterprise.apigee.com (for Edge); also set this flag if you are using Apigee Private Cloud (OPDK)
 -b,--base-path, overrides the default base path for the API proxy
 -d,--directory, path to the apiproxy or shared flow bundle to be deployed
 -e,--environment, Apigee environment name
@@ -68,8 +68,8 @@ Options:
 --debug, show verbose debug output
 --deployment-sa, GCP Service Account to associate with the deployment (X,hybrid only)
 --description, Human friendly proxy or shared flow description
---insecure, set this flag if you are using OPDK and http endpoint for Management API
---opdk, set this flag if you are using OPDK
+--insecure, set this flag if you are using Apigee Private Cloud (OPDK) and http endpoint for Management API
+--opdk, set this flag if you are using Apigee Private Cloud (OPDK)
 --skip-config, Skip configuration in org export
 ```
 
@@ -133,6 +133,12 @@ sackmesser export --googleapi -o "$APIGEE_X_ORG" -t "$APIGEE_TOKEN"
 
 # Apigee Edge
 sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PASS"
+
+# Apigee Private Cloud (OPDK) - Secure (with HTTPS); use `-e "$APIGEE_ENV"` to have Apigee Environment specific export
+sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PASS" --opdk --baseuri "$MANAGEMENT_SERVER_HTTPS_URL"
+
+# Apigee Private Cloud (OPDK) - Insecure (without HTTPS); use `-e "$APIGEE_ENV"` to have Apigee Environment specific export
+sackmesser export --apigeeapi -o "$APIGEE_ORG" -u "$APIGEE_USER" -p "$APIGEE_PASS" --opdk --baseuri "$MANAGEMENT_SERVER_IP:$MANAGEMENT_SERVER_PORT" --insecure
 ```
 
 ### Scenario: List all deployments in a specific org and environment
@@ -146,6 +152,13 @@ sackmesser list --googleapi -t "$APIGEE_TOKEN" organizations/$APIGEE_X_ORG/envir
 
 # Apigee Edge
 sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments
+
+# Apigee Private Cloud (OPDK) - Secure (with HTTPS)
+sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments --opdk --baseuri "$MANAGEMENT_SERVER_HTTPS_URL"
+
+# Apigee Private Cloud (OPDK) - Insecure (without HTTPS)
+sackmesser list --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" organizations/$APIGEE_ORG/environments/$APIGEE_ENV/deployments --opdk --baseuri "$MANAGEMENT_SERVER_IP:$MANAGEMENT_SERVER_PORT" --insecure
+
 ```
 
 ### Scenario: Clean up all proxies in a specific org
@@ -175,6 +188,12 @@ sackmesser report --googleapi -t "$TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
 
 # Apigee Edge
 sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV"
+
+# Apigee Private Cloud (OPDK) - Secure (with HTTPS)
+sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" --opdk --baseuri "$MANAGEMENT_SERVER_HTTPS_URL"
+
+# Apigee Private Cloud (OPDK) - Insecure (without HTTPS)
+sackmesser report --apigeeapi -u "$APIGEE_USER" -p "$APIGEE_PASS" -o "$APIGEE_ORG" -e "$APIGEE_ENV" --opdk --baseuri "$MANAGEMENT_SERVER_IP:$MANAGEMENT_SERVER_PORT" --insecure
 ```
 
 ## How does this compare to the Apigee Maven Plugin and other Apigee tooling

@@ -18,7 +18,7 @@
 <html>
   <head>
   <title>Web page - reCAPTCHA enterprise</title>
-  <script src="https://www.google.com/recaptcha/api.js?render={request.queryparam.sitekey}"></script>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render={request.queryparam.sitekey}"></script>
   <script>
       function copyToken() {
           var copyText = document.getElementById("textArea");
@@ -27,8 +27,8 @@
         }
       function getToken(e) {
         e.preventDefault();
-        grecaptcha.ready(function() {
-          grecaptcha.execute('{request.queryparam.sitekey}', {action:'home'}).then(function(token) {
+        grecaptcha.enterprise.ready(function() {
+          grecaptcha.enterprise.execute('{request.queryparam.sitekey}', {action:'home'}).then(function(token) {
              var text = document.createTextNode(token);
              var tag = document.createElement("textarea");
              tag.setAttribute("id", "textArea");
