@@ -46,10 +46,6 @@
                     <Name>RF-UnsupportedResponseType-Redirect</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.authorize.state1 Is null ) or( oidc.flow.authorize.state1 = "" )</Condition>
-                    <Name>RF-InvalidRequest-Redirect</Name>
-                </Step>
-                <Step>
                     <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
