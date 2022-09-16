@@ -1,8 +1,8 @@
 configuration-as-code:1512.vb_79d418d5fc8
-cucumber-reports:5.7.0
-git:4.11.1
+cucumber-reports:5.7.3
+git:4.11.5
 htmlpublisher:1.30
-junit:1.63
-mask-passwords:3.1
+junit:1119.1121.vc43d0fc45561
+mask-passwords:3.3
 token-macro:293.v283932a_0a_b_49
-workflow-aggregator:2.7
+workflow-aggregator:590.v6a_d052e5a_a_b_5
