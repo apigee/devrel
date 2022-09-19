@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/apigee/devrel/compare/v1.1.0...v1.1.1) (2022-09-16)
+
+
+### Bug Fixes
+
+* bump all jenkins plugin versions ([26fc286](https://github.com/apigee/devrel/commit/26fc2863dc5253e99467bb2d984981d88c7bbd58))
+* resolved jenkins cicd example dependency conflict ([6a2d1e9](https://github.com/apigee/devrel/commit/6a2d1e936742144175e8aa5365560685f5411609))
+
 ## [1.1.0](https://github.com/apigee/devrel/compare/v1.0.1...v1.1.0) (2022-09-01)
 
 
