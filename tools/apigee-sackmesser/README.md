@@ -13,7 +13,8 @@ It also lets you deploy API proxies, shared flows and configuration to both
 stacks without writing any additional manifest files.
 
 **Please note that for Apigee Private Cloud (OPDK), Sackmesser only supports list, export, and report operations at this time.
-Support for other operations will be added soon.**
+Support for other operations will be added soon.
+For Apigee Private Cloud (OPDK), on top of providing details for Proxies and SharedFlows Sackmesser report also provides details about Environment Configurations (Key Value Maps, Keystores, Target Servers, FlowHooks, References, Virtual Hosts and Caches) and Organization Configurations (API Products, Developers and Developer Apps)**
 For interacting with the management API of Apigee X/hybrid only (without the
 need for backwards compatibility for Apigee Edge) you can also try the [apigeecli](https://github.com/apigee/apigeecli)
 commandline utility.
