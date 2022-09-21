@@ -95,7 +95,7 @@ echo 'Set up developer app for the Product having the endpoint targetted in K8s 
 
 curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}"   -H "Content-Type:application/json"   "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps" -d \
     '{
-    "name":"envoy-adapter-app-2",
+    "name":"envoy-adapter-dev-app",
     "apiProducts": [
         "envoy-adapter-product-2"
         ]
