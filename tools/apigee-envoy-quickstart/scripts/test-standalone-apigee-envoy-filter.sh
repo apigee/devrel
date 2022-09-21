@@ -45,7 +45,7 @@ printf "\nExtract the consumer key\n"
 
 CONSUMER_KEY=$(curl -H "Authorization: ${TOKEN_TYPE} ${TOKEN}"  \
     -H "Content-Type:application/json" \
-    "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-app-2" | \
+    "${MGMT_HOST}/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-dev-app" | \
     jq '.credentials[0].consumerKey');CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2)
 export CONSUMER_KEY
 
