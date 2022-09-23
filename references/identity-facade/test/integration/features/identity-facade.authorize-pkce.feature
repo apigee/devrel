@@ -29,10 +29,12 @@ Feature:
     Then I am redirected to the Client App
     Then I receive an invalid_request error
     
-  Scenario: I should get an error if state is missing
+  Scenario: User Authorizes with state missing
     Given I navigate to the authorize page without a state parameter
+    When I sign in and consent
     Then I am redirected to the Client App
-    Then I receive an invalid_request error
+    And I receive an auth code in a query param
+    And I store the auth code in global scope
 
   Scenario: I should get an error if code_challenge is missing
     Given I navigate to the authorize page without a pkce code challenge
