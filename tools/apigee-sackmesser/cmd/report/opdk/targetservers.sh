@@ -14,8 +14,8 @@ fi
 echo "<div><table id=\"ts-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
 echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"id\">Name</th>" >> "$report_html"
-echo "<th data-sortable=\"true\" data-field=\"host\">host</th>" >> "$report_html"
-echo "<th data-sortable=\"true\" data-field=\"port\">port</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"host\">Host</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"port\">Port</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"enabled\">isEnabled</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
