@@ -1,4 +1,4 @@
-echo "<h3>FlowHooks</h3>" >> "$report_html"
+echo "<h3>Flow Hooks</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"
 
