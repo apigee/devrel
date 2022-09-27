@@ -410,7 +410,7 @@ echo "</tbody></table></div>" >> "$report_html"
 
 echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
-loginfo "Exporting Configurations"
+loginfo "Exporting Apigee Environment level configurations."
 
 if [ "$opdk" == "T" ]; then
     opdk_dir=$SCRIPT_FOLDER/opdk
@@ -424,7 +424,7 @@ if [ "$opdk" == "T" ]; then
 fi
 
 echo "<h2>Organization Configurations</h2>" >> "$report_html"
-loginfo "Exporting Org Configurations"
+loginfo "Exporting Apigee Organization level configurations."
 
 if [ "$opdk" == "T" ]; then
     opdk_dir=$SCRIPT_FOLDER/opdk
