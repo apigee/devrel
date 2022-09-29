@@ -46,17 +46,13 @@
                     <Name>RF-UnsupportedResponseType-Redirect</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.authorize.state1 Is null ) or( oidc.flow.authorize.state1 = "" )</Condition>
-                    <Name>RF-InvalidRequest-Redirect</Name>
-                </Step>
-                <Step>
                     <Condition>( oidc.flow.authorize.scope Is null ) or ( oidc.flow.authorize.scope = "" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
                 </Step>
                 <Step>
                     <Condition>(( oidc.flow.authorize.code_challenge Is null ) or ( oidc.flow.authorize.code_challenge = "" )) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
-                </Step> 
+                </Step>
                 <Step>
                     <Condition>( oidc.flow.authorize.code_challenge_method != "S256" ) and ( flow.pkce.enabled = "true" )</Condition>
                     <Name>RF-InvalidRequest-Redirect</Name>
@@ -138,7 +134,12 @@
             <Condition>(proxy.pathsuffix MatchesPath "/token") and (request.verb = "POST")</Condition>
             <Request>
                 <Step>
+                    <Condition>(request.header.authorization isnot null) and (request.header.authorization != "")</Condition>
                     <Name>BA-GetClientCredentials</Name>
+                </Step>
+                <Step>
+                    <Condition>(request.formparam.client_id isnot null) and (request.formparam.client_id != "")</Condition>
+                    <Name>EV-ClientCredentialsFromBody</Name>
                 </Step>
                 <Step>
                     <Name>VAK-VerifyAPIKey-ClientId</Name>

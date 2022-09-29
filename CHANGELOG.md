@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.2](https://github.com/apigee/devrel/compare/v1.1.1...v1.1.2) (2022-09-22)
+
+
+### Bug Fixes
+
+* improved error handling on x trial provisioning script ([c9bbafa](https://github.com/apigee/devrel/commit/c9bbafac7d15fafd73b6017ec7754f5c19c6b93c))
+
+## [1.1.1](https://github.com/apigee/devrel/compare/v1.1.0...v1.1.1) (2022-09-16)
+
+
+### Bug Fixes
+
+* bump all jenkins plugin versions ([26fc286](https://github.com/apigee/devrel/commit/26fc2863dc5253e99467bb2d984981d88c7bbd58))
+* resolved jenkins cicd example dependency conflict ([6a2d1e9](https://github.com/apigee/devrel/commit/6a2d1e936742144175e8aa5365560685f5411609))
+
 ## [1.1.0](https://github.com/apigee/devrel/compare/v1.0.1...v1.1.0) (2022-09-01)
 
 

@@ -23,6 +23,13 @@ discovery document of your IdP solution.
 - `TEST_IDP_APIGEE_CLIENT_SECRET`: the client_secret Apigee can use to
 connect to the IdP
 
+## Anti-forgery State Token
+In order to protect against [Cross-Site Request Forgery (CSRF)](https://www.rfc-editor.org/rfc/rfc6749#section-10.12) attacks, it is _strongly recommended_ that API consumers include the `state` parameter in requests to the /authorize endpoint.
+
+As stated in the [OAuth 2 specification](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1), the `state` parameter is "_An opaque value used by the client to maintain state between the request and callback.  The authorization server includes this value when redirecting the user-agent back to the client._".
+
+Applications should generate a random string and use it as a `state` value. After the /authorize request is sent, the user is redirected back to the application, and the state value will be included in this redirect. Applications compare this returned value with the random string generated earlier, and if the values match, approve the authentication response, else they need to deny it.
+
 ## PKCE: Proof Key for Code Exchange
 
 The identity facade can be configured to implement [PKCE](https://datatracker.ietf.org/doc/html/rfc7636).
