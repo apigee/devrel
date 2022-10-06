@@ -423,6 +423,16 @@ if [ "$opdk" == "T" ]; then
     source $opdk_dir/virtualhosts.sh
 fi
 
+if [ "$apiversion" = "google" ]; then
+    xdir=$SCRIPT_FOLDER/xhybrid
+    source $xdir/keyvaluemaps.sh
+    source $xdir/targetservers.sh
+    source $xdir/keystores.sh
+    source $xdir/caches.sh
+    source $xdir/flowhooks.sh
+    source $xdir/references.sh
+fi
+
 echo "<h2>Organization Configurations</h2>" >> "$report_html"
 loginfo "Exporting Apigee Organization level configurations."
 
@@ -431,6 +441,13 @@ if [ "$opdk" == "T" ]; then
     source $opdk_dir/apiproducts.sh
     source $opdk_dir/developers.sh
     source $opdk_dir/developerapps.sh
+fi
+
+if [ "$apiversion" = "google" ]; then
+    xdir=$SCRIPT_FOLDER/xhybrid
+    source $xdir/apiproducts.sh
+    source $xdir/developers.sh
+    source $xdir/developerapps.sh
 fi
 
 echo "</div>" >> "$report_html"
