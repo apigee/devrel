@@ -29,7 +29,7 @@ fi
 
 echo "<div><table id=\"flowhook-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
 echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
-echo "<th data-sortable=\"true\" data-field=\"id\">Name</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"id\">Flow Hook Point</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"sharedflow\">Shared Flow</th>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"contonerr\">Continue On Error</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
@@ -37,7 +37,7 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json | while read i; do 
-    flowhookName=$(echo "$i" | jq -r '.name')
+    flowHookPoint=$(echo "$i" | jq -r '.flowHookPoint')
     sharedFlow=$(echo "$i" | jq -r '.sharedFlow')
     _continueOnError=$(echo "$i" | jq -r '.continueOnError')
 
@@ -47,10 +47,10 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
         else
             continueOnError="❌"
     fi
-    if [ $flowhookName != null ]
+    if [ $flowHookPoint != null ]
         then
             echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-            echo "<td>$flowhookName</td>"  >> "$report_html"
+            echo "<td>$flowHookPoint</td>"  >> "$report_html"
             echo "<td>$sharedFlow</td>" >> "$report_html"
             echo "<td>$continueOnError</td>" >> "$report_html"
             echo "</tr>"  >> "$report_html"
