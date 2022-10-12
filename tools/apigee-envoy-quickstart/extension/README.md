@@ -48,7 +48,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. ### Set the namespace hosting istio-ingressgateway
     ```bash
-    export $ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
+    export ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
     ```  
 
 1. ### Execute the below if istio-ingressgateway is missing in the istio enabled cluster
@@ -144,6 +144,5 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Testing protected service via external IP...**
     ```bash
-    curl -i http://"$INGRESS_HOST"/headers -H "x-api-key: $CONSUMER_KEY" \
-    -H "Host: $TARGET_HOST"
+    curl -i http://"$INGRESS_HOST"/httpbin/headers -H "x-api-key: $CONSUMER_KEY"
     ```
