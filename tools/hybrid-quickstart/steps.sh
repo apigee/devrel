@@ -64,11 +64,9 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.8.0'
+    export APIGEE_HYBRID_VERSION='1.8.1'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
-    export KPT_VERSION='v0.34.0'
-    echo "- kpt version $KPT_VERSION"
-    export CERT_MANAGER_VERSION='v1.7.2'
+    export CERT_MANAGER_VERSION='v1.7.3'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
 
     OS_NAME=$(uname -s)
@@ -77,12 +75,10 @@ set_config_params() {
       echo "- 🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
       export JQ_VERSION='jq-1.6/jq-linux64'
-      export KPT_BINARY='kpt_linux_amd64-0.34.0.tar.gz'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "- 🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
       export JQ_VERSION='jq-1.6/jq-osx-amd64'
-      export KPT_BINARY='kpt_darwin_amd64-0.34.0.tar.gz'
       if ! [ -x "$(command -v timeout)" ]; then
         echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
         exit 2
@@ -681,17 +677,14 @@ EOF
 
 if [ "$CERT_TYPE" = "google-managed" ]; then
   echo "Setting Apigee Ingress IB to Internal because Ingress resource is used"
-# Apigee hybrid ingress is always created as type LoadBalancer. Ensure that the LB isn't external.
-# waiting for b/243908647
-# cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
-#   svcAnnotations:
-#     networking.gke.io/load-balancer-type: "Internal"
-# EOF
+cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
+  svcAnnotations:
+    networking.gke.io/load-balancer-type: "Internal"
+EOF
 else
 cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
-  # b/243908647
-  # svcAnnotations:
-  #   networking.gke.io/load-balancer-type: "$INGRESS_TYPE"
+  svcAnnotations:
+    networking.gke.io/load-balancer-type: "$INGRESS_TYPE"
   svcLoadBalancerIP: $INGRESS_IP
 EOF
 fi

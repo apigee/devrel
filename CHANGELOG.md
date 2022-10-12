@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/apigee/devrel/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+
+### Features
+
+* bump hybrid quickstart to 1.8.1 ([407ffe4](https://github.com/apigee/devrel/commit/407ffe4ef576e1a3ca26b6800ba67a6bd5944f9f))
+
+## [1.2.0](https://github.com/apigee/devrel/compare/v1.1.2...v1.2.0) (2022-09-28)
+
+
+### Features
+
+* reporting enhancements for OPDK ([ad3113a](https://github.com/apigee/devrel/commit/ad3113a0a69c9de73104bde19e45465bcb59567d))
+
 ## [1.1.2](https://github.com/apigee/devrel/compare/v1.1.1...v1.1.2) (2022-09-22)
 
 
