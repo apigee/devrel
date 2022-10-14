@@ -22,7 +22,6 @@ on:
   schedule:
     - cron: "0 0 * * *"
 jobs:
-
   license:
     name: License Headers
     runs-on: ubuntu-latest
@@ -58,7 +57,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
       - name: Install Linter dependencies
         run: npm install
       - name: Run Mega Linter
@@ -72,6 +71,18 @@ jobs:
           SPELL_MISSPELL_DISABLE_ERRORS: true
           SPELL_CSPELL_DISABLE_ERRORS: true
           COPYPASTE_JSCPD_DISABLE_ERRORS: true
-          LINTER_RULES_PATH: '.'
-          GROOVY_NPM_GROOVY_LINT_FILTER_REGEX_EXCLUDE: 'Jenkinsfile'
+          LINTER_RULES_PATH: "."
+          GROOVY_NPM_GROOVY_LINT_FILTER_REGEX_EXCLUDE: "Jenkinsfile"
           MARKDOWN_MARKDOWN_LINK_CHECK_DISABLE_ERRORS: true
+
+  commit-messages:
+    name: Conventional Commits Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v4
+        with:
+          configFile: .github/config/commitlint.config.js
+          failOnWarnings: false

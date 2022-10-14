@@ -42,7 +42,7 @@ create_apigee_envgroup "$ENV_GROUP_NAME"
 # attach an Apigee environment to an environment group
 add_env_to_envgroup "$ENV_NAME" "$ENV_GROUP_NAME"
 
-# configure an ingress IP and DNS entry for the env group hostname
+# # configure an ingress IP and DNS entry for the env group hostname
 configure_network "$ENV_GROUP_NAME"
 
 # create a minimal GKE cluster with a single node pool
@@ -50,9 +50,6 @@ create_gke_cluster
 
 # install certmanager
 install_certmanager
-
-# install Anthos service mesh
-install_asm
 
 # download the Apigeectl utility
 download_apigee_ctl
@@ -63,7 +60,7 @@ prepare_resources
 # create certificate for env group hostname
 create_cert "$ENV_GROUP_NAME"
 
-# # create all required service accounts and prepare workload identities
+# create all required service accounts and prepare workload identities
 create_sa
 
 # configure the Apigee runtime

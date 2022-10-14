@@ -406,8 +406,33 @@ do
     echo "</tr>"  >> "$report_html"
 done <   <(find "$export_folder/apigeelint/sharedflows/"*.json -print0)
 
-echo "</tbody></table></div></div>" >> "$report_html"
+echo "</tbody></table></div>" >> "$report_html"
 
+echo "<h2>Environment Configurations</h2>" >> "$report_html"
+
+loginfo "Exporting Apigee Environment level configurations."
+
+if [ "$opdk" == "T" ]; then
+    opdk_dir=$SCRIPT_FOLDER/opdk
+    source $opdk_dir/keyvaluemaps.sh
+    source $opdk_dir/targetservers.sh
+    source $opdk_dir/keystores.sh
+    source $opdk_dir/caches.sh
+    source $opdk_dir/flowhooks.sh
+    source $opdk_dir/references.sh
+    source $opdk_dir/virtualhosts.sh
+fi
+
+echo "<h2>Organization Configurations</h2>" >> "$report_html"
+loginfo "Exporting Apigee Organization level configurations."
+
+if [ "$opdk" == "T" ]; then
+    opdk_dir=$SCRIPT_FOLDER/opdk
+    source $opdk_dir/apiproducts.sh
+    source $opdk_dir/developers.sh
+    source $opdk_dir/developerapps.sh
+fi
+
+echo "</div>" >> "$report_html"
 cat "$SCRIPT_FOLDER/static/footer.html" >> "$report_html"
-
 loginfo "Sackmesser report is ready in: $report_html"

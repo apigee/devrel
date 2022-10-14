@@ -41,11 +41,17 @@
         <Name>EV-ExtractTokenValidity</Name>
     </Step>
     <Step>
+        <Name>DC-TokenValidity</Name>
+    </Step>
+    <Step>
         <Condition>flow.assessment.token_validity != true</Condition>
         <Name>RF-InvalidToken</Name>
     </Step>
     <Step>
         <Name>EV-ExtractRiskScore</Name>
+    </Step>
+    <Step>
+        <Name>DC-RiskScore</Name>
     </Step>
     <Step>
         <Condition>flow.assessment.risk_score LesserThan min_score</Condition>

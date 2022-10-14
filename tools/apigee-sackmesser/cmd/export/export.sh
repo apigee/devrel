@@ -23,7 +23,16 @@ source "$SCRIPT_FOLDER/../../lib/logutils.sh"
 
 mgmtAPIDownload() {
     loginfo "Sackmesser export (zip) $1"
-    curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
+    if [ "$opdk" == "T" ]; then
+        token=$(echo -n "$username":"$password" | base64)
+        if [ "$insecure" == "T" ]; then
+            curl -fsS -H "Authorization: Basic $token" "http://$baseuri/v1/$1" -o "$2"
+        else
+            curl -fsS -H "Authorization: Basic $token" "https://$baseuri/v1/$1" -o "$2"
+        fi
+    else 
+        curl -fsS -H "Authorization: Bearer $token" "https://$baseuri/v1/$1" -o "$2"
+    fi
 }
 
 urlencode() {
@@ -105,16 +114,24 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
     fi
 done
 
-jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
-jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
-jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
+if ls "$export_folder/temp/developers"/*.json 1> /dev/null 2>&1; then
+    jq -n '[inputs]' "$export_folder/temp/developers"/*.json > "$export_folder/config/resources/edge/org/developers.json"
+fi
+if ls "$export_folder/temp/apps"/*.json 1> /dev/null 2>&1; then
+    jq -n '[inputs] | add' "$export_folder/temp/apps"/*.json > "$export_folder/config/resources/edge/org/developerApps.json"
+fi
+if ls "$export_folder/temp/importKeys"/*.json 1> /dev/null 2>&1; then
+    jq -n '[inputs] | add' "$export_folder/temp/importKeys"/*.json > "$export_folder/config/resources/edge/org/importKeys.json"
+fi
 
 mkdir -p "$export_folder/temp/apiproducts"
 sackmesser list "organizations/$organization/apiproducts" | jq -r -c '.[]|.' | while read -r product; do
     loginfo "download API product: $product"
     sackmesser list "organizations/$organization/apiproducts/$(urlencode "$product")" > "$export_folder/temp/apiproducts/$product".json
 done
+if ls "$export_folder/temp/apiproducts"/*.json 1> /dev/null 2>&1; then
 jq -n '[inputs]' "$export_folder/temp/apiproducts"/*.json > "$export_folder/config/resources/edge/org/apiProducts.json"
+fi
 
 mkdir -p "$export_folder/temp/keyvaluemaps"
 sackmesser list "organizations/$organization/keyvaluemaps" | jq -r -c '.[]|.' | while read -r kvmname; do
