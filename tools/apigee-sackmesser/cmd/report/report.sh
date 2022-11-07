@@ -412,42 +412,39 @@ echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
 loginfo "Exporting Apigee Environment level configurations."
 
-if [ "$opdk" == "T" ]; then
-    opdk_dir=$SCRIPT_FOLDER/opdk
-    source $opdk_dir/keyvaluemaps.sh
-    source $opdk_dir/targetservers.sh
-    source $opdk_dir/keystores.sh
-    source $opdk_dir/caches.sh
-    source $opdk_dir/flowhooks.sh
-    source $opdk_dir/references.sh
-    source $opdk_dir/virtualhosts.sh
-fi
+helper_dir=$SCRIPT_FOLDER/helpers
 
-if [ "$apiversion" = "google" ]; then
-    xdir=$SCRIPT_FOLDER/xhybrid
-    source $xdir/keyvaluemaps.sh
-    source $xdir/targetservers.sh
-    source $xdir/keystores.sh
-    source $xdir/caches.sh
-    source $xdir/flowhooks.sh
-    source $xdir/references.sh
+if [ "$opdk" == "T" ]; then
+    source $helper_dir/keyvaluemaps.sh
+    source $helper_dir/targetservers.sh
+    source $helper_dir/keystores.sh
+    source $helper_dir/caches.sh
+    source $helper_dir/flowhooks.sh
+    source $helper_dir/references.sh
+    source $helper_dir/virtualhosts.sh
+
+elif [ "$apiversion" = "google" ]; then
+    source $helper_dir/keyvaluemaps.sh
+    source $helper_dir/targetservers.sh
+    source $helper_dir/keystores.sh
+    source $helper_dir/caches.sh
+    source $helper_dir/flowhooks.sh
+    source $helper_dir/references.sh
 fi
 
 echo "<h2>Organization Configurations</h2>" >> "$report_html"
 loginfo "Exporting Apigee Organization level configurations."
 
 if [ "$opdk" == "T" ]; then
-    opdk_dir=$SCRIPT_FOLDER/opdk
-    source $opdk_dir/apiproducts.sh
-    source $opdk_dir/developers.sh
-    source $opdk_dir/developerapps.sh
+    source $helper_dir/apiproducts.sh
+    source $helper_dir/developers.sh
+    source $helper_dir/developerapps.sh
 fi
 
 if [ "$apiversion" = "google" ]; then
-    xdir=$SCRIPT_FOLDER/xhybrid
-    source $xdir/apiproducts.sh
-    source $xdir/developers.sh
-    source $xdir/developerapps.sh
+    source $helper_dir/apiproducts.sh
+    source $helper_dir/developers.sh
+    source $helper_dir/developerapps.sh
 fi
 
 echo "</div>" >> "$report_html"
