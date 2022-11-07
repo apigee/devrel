@@ -19,8 +19,8 @@ echo "<h3>Keystores</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/keystore"
 
 sackmesser list "organizations/$organization/environments/$environment/keystores"| jq -r -c '.[]|.' | while read -r keystorename; do
-        sackmesser list "organizations/$organization/environments/$environment/keystores/$keystorename" > "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$keystorename".json)
+        sackmesser list "organizations/$organization/environments/$environment/keystores/$(urlencode "$keystorename")" > "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$(urlencode "$keystorename")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$(urlencode "$keystorename")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/keystore"/*.json 1> /dev/null 2>&1; then

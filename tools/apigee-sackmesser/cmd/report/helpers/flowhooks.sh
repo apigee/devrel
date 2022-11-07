@@ -19,8 +19,8 @@ echo "<h3>Flow Hooks</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"
 
 sackmesser list "organizations/$organization/environments/$environment/flowhooks"| jq -r -c '.[]|.' | while read -r flowhookname; do
-        sackmesser list "organizations/$organization/environments/$environment/flowhooks/$flowhookname" > "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$flowhookname".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$flowhookname".json)
+        sackmesser list "organizations/$organization/environments/$environment/flowhooks/$(urlencode "$flowhookname")" > "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$(urlencode "$flowhookname")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$(urlencode "$flowhookname")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"/*.json 1> /dev/null 2>&1; then

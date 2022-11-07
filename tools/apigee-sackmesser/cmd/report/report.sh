@@ -414,6 +414,10 @@ loginfo "Exporting Apigee Environment level configurations."
 
 helper_dir=$SCRIPT_FOLDER/helpers
 
+urlencode() {
+    echo "\"${*:1}\"" | jq -r '@uri'
+}
+
 if [ "$opdk" == "T" ]; then
     source $helper_dir/keyvaluemaps.sh
     source $helper_dir/targetservers.sh

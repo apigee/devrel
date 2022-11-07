@@ -19,8 +19,8 @@ echo "<h3>Caches</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/cache"
 
 sackmesser list "organizations/$organization/environments/$environment/caches"| jq -r -c '.[]|.' | while read -r cachename; do
-        sackmesser list "organizations/$organization/environments/$environment/caches/$cachename" > "$export_folder/$organization/config/resources/edge/env/$environment/cache/$cachename".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/cache/$cachename".json)
+        sackmesser list "organizations/$organization/environments/$environment/caches/$(urlencode "$cachename")" > "$export_folder/$organization/config/resources/edge/env/$environment/cache/$(urlencode "$cachename")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/cache/$(urlencode "$cachename")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/cache"/*.json 1> /dev/null 2>&1; then

@@ -19,8 +19,8 @@ echo "<h3>API Products</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/api-products"
 
 sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
-        sackmesser list "organizations/$organization/apiproducts/$apiProductName" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json)
+sackmesser list "organizations/$organization/apiproducts/$(urlencode "$apiProductName")" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/api-products"/*.json 1> /dev/null 2>&1; then

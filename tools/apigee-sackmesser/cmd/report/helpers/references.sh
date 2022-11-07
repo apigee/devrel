@@ -19,8 +19,8 @@ echo "<h3>References</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/reference"
 
 sackmesser list "organizations/$organization/environments/$environment/references"| jq -r -c '.[]|.' | while read -r referencename; do
-        sackmesser list "organizations/$organization/environments/$environment/references/$referencename" > "$export_folder/$organization/config/resources/edge/env/$environment/reference/$referencename".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/reference/$referencename".json)
+        sackmesser list "organizations/$organization/environments/$environment/references/$(urlencode "$referencename")" > "$export_folder/$organization/config/resources/edge/env/$environment/reference/$(urlencode "$referencename")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/reference/$(urlencode "$referencename")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/reference"/*.json 1> /dev/null 2>&1; then

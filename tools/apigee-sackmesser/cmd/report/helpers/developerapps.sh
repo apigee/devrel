@@ -16,10 +16,6 @@
 
 echo "<h3>Developer Apps</h3>" >> "$report_html"
 
-urlencode() {
-    echo "\"${*:1}\"" | jq -r '@uri'
-}
-
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/developerapps"
 
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do

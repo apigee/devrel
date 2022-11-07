@@ -20,8 +20,8 @@ echo "<p><strong>Note:</strong>If migrating from Apigee Private Cloud (OPDK) to 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/kvm"
 
 sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps"| jq -r -c '.[]|.' | while read -r kvmname; do
-        sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" > "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json)
+        sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps/$(urlencode "$kvmname")" > "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$(urlencode "$kvmname")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$(urlencode "$kvmname")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/kvm"/*.json 1> /dev/null 2>&1; then

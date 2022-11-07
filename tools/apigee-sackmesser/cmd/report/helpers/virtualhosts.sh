@@ -19,8 +19,8 @@ echo "<h3>Virtual Hosts</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost"
 
 sackmesser list "organizations/$organization/environments/$environment/virtualhosts"| jq -r -c '.[]|.' | while read -r virtualhostname; do
-        sackmesser list "organizations/$organization/environments/$environment/virtualhosts/$virtualhostname" > "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$virtualhostname".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$virtualhostname".json)
+        sackmesser list "organizations/$organization/environments/$environment/virtualhosts/$(urlencode "$virtualhostname")" > "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$(urlencode "$virtualhostname")".json
+        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$(urlencode "$virtualhostname")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost"/*.json 1> /dev/null 2>&1; then
