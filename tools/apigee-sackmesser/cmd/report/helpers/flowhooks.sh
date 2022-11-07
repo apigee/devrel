@@ -37,7 +37,12 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json | while read i; do 
-    flowhookName=$(echo "$i" | jq -r '.name')
+    if [ "$opdk" == "T" ]; then
+        flowhook=$(echo "$i" | jq -r '.name')
+    elif [ "$apiversion" = "google" ]; then
+        flowhook=$(echo "$i" | jq -r '.flowHookPoint')
+    fi
+    
     sharedFlow=$(echo "$i" | jq -r '.sharedFlow')
     _continueOnError=$(echo "$i" | jq -r '.continueOnError')
 
@@ -47,10 +52,10 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
         else
             continueOnError="❌"
     fi
-    if [ $flowhookName != null ]
+    if [ $flowhook != null ]
         then
             echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-            echo "<td>$flowhookName</td>"  >> "$report_html"
+            echo "<td>$flowhook</td>"  >> "$report_html"
             echo "<td>$sharedFlow</td>" >> "$report_html"
             echo "<td>$continueOnError</td>" >> "$report_html"
             echo "</tr>"  >> "$report_html"

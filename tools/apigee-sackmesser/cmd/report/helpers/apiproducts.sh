@@ -40,7 +40,11 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
     apiProductName=$(echo "$i" | jq -r '.name')
     envs=$(echo "$i" | jq -r '.environments[]')
-    proxies=$(echo "$i" | jq -r '.proxies[]')
+    if [ "$opdk" == "T" ]; then
+        proxies=$(echo "$i" | jq -r '.proxies[]')
+    elif [ "$apiversion" = "google" ]; then
+        proxies="X proxies"
+    fi
     approvalType=$(echo "$i" | jq -r '.approvalType')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
