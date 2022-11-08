@@ -418,38 +418,22 @@ urlencode() {
     echo "\"${*:1}\"" | jq -r '@uri'
 }
 
-if [ "$opdk" == "T" ]; then
-    source $helper_dir/keyvaluemaps.sh
-    source $helper_dir/targetservers.sh
-    source $helper_dir/keystores.sh
-    source $helper_dir/caches.sh
-    source $helper_dir/flowhooks.sh
-    source $helper_dir/references.sh
-    source $helper_dir/virtualhosts.sh
+source $helper_dir/keyvaluemaps.sh
+source $helper_dir/targetservers.sh
+source $helper_dir/keystores.sh
+source $helper_dir/caches.sh
+source $helper_dir/flowhooks.sh
+source $helper_dir/references.sh
 
-elif [ "$apiversion" = "google" ]; then
-    source $helper_dir/keyvaluemaps.sh
-    source $helper_dir/targetservers.sh
-    source $helper_dir/keystores.sh
-    source $helper_dir/caches.sh
-    source $helper_dir/flowhooks.sh
-    source $helper_dir/references.sh
+if [ "$opdk" == "T" ]; then
+    source $helper_dir/virtualhosts.sh
 fi
 
 echo "<h2>Organization Configurations</h2>" >> "$report_html"
 loginfo "Exporting Apigee Organization level configurations."
-
-if [ "$opdk" == "T" ]; then
-    source $helper_dir/apiproducts.sh
-    source $helper_dir/developers.sh
-    source $helper_dir/developerapps.sh
-fi
-
-if [ "$apiversion" = "google" ]; then
-    source $helper_dir/apiproducts.sh
-    source $helper_dir/developers.sh
-    source $helper_dir/developerapps.sh
-fi
+source $helper_dir/apiproducts.sh
+source $helper_dir/developers.sh
+source $helper_dir/developerapps.sh
 
 echo "</div>" >> "$report_html"
 cat "$SCRIPT_FOLDER/static/footer.html" >> "$report_html"

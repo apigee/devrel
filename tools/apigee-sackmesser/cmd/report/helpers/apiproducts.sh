@@ -38,12 +38,12 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
-    apiProductName=$(echo "$i" | jq -r '.name')
+    apiProductName=$(echo "$i" | jq '.name')
     envs=$(echo "$i" | jq -r '.environments[]')
     if [ "$opdk" == "T" ]; then
         proxies=$(echo "$i" | jq -r '.proxies[]')
     elif [ "$apiversion" = "google" ]; then
-        proxies="X proxies"
+        proxies=$(echo "$i" | jq -r '.operationGroup.operationConfigs[]' | jq '[.apiSource, .operations[].resource] | join(": ")')
     fi
     approvalType=$(echo "$i" | jq -r '.approvalType')
 
