@@ -408,6 +408,8 @@ done <   <(find "$export_folder/apigeelint/sharedflows/"*.json -print0)
 
 echo "</tbody></table></div>" >> "$report_html"
 
+highlightclass=""
+
 echo "<h2>Environment Configurations</h2>" >> "$report_html"
 
 loginfo "Exporting Apigee Environment level configurations."
