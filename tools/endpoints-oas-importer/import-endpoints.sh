@@ -43,7 +43,7 @@ jq_backends_match='[.paths | to_entries[] | .key as $path |
 
 jq_google_allow_match='.["x-google-allow"]'
 
-if [[ $oas == *.yaml ]]; then
+if [[ $oas == *.yaml || $oas == *.yml ]]; then
   oas_backends=$(yq -o json "$oas" | jq "$jq_backends_match")
   oas_google_allow=$(yq -o json "$oas" | jq -r "$jq_google_allow_match")
 elif [[ $oas == *.json ]]; then
