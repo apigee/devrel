@@ -1,0 +1,10 @@
+<Flow name="$FLOW_NAME">
+    <Description/>
+    <Request>
+        <Step>
+            <Name>$PATH_OP_POLICY</Name>
+        </Step>
+    </Request>
+    <Response/>
+    <Condition>(proxy.pathsuffix MatchesPath "$PATH_CONDITION") and (request.verb = "$VERB_CONDITION")</Condition>
+</Flow>

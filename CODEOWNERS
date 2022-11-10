@@ -24,14 +24,15 @@
 /references/recaptcha-enterprise        @joelgauci
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
+/tools/apigee-envoy-quickstart          @ganadurai
 /tools/apigee-openlegacy                @tomfi @joelgauci
 /tools/apigee-sackmesser                @danistrebel
 /tools/apigee-x-trial-provision         @yuriylesyuk @danistrebel
 /tools/decrypt-hybrid-assets            @yuriylesyuk
+/tools/endpoints-oas-importer           @danistrebel
 /tools/hybrid-quickstart                @danistrebel
 /tools/oas-apigee-mock                  @markjkelly
 /tools/oas-configurable-proxy           @danistrebel
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel
 /tools/sf-dependency-list               @yuriylesyuk
-/tools/apigee-envoy-quickstart          @ganadurai

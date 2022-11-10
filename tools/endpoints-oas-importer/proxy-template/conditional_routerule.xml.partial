@@ -1,0 +1,4 @@
+<RouteRule name="$FLOW_NAME">
+  <Condition>(proxy.pathsuffix MatchesPath "$PATH_CONDITION") and (request.verb = "$VERB_CONDITION")</Condition>
+  <TargetEndpoint>$TARGET_NAME</TargetEndpoint>
+</RouteRule>

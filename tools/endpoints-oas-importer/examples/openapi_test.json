@@ -1,0 +1,64 @@
+{
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+
+  "host": "api.example.com",
+  "info": {
+    "description": "Example OAS for Endpoints integration in Apigee.",
+    "title": "Examples - Dynamic Routing",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/ip": {
+      "get": {
+        "description": "Returns the requester's IP.",
+        "operationId": "getIp",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request IP."
+          }
+        },
+        "x-google-backend": {
+          "address": "https://httpbin.org",
+          "deadline": 7,
+          "jwt_audience": "ESPv2",
+          "path_translation": "APPEND_PATH_TO_ADDRESS",
+          "protocol": "h2"
+        }
+      }
+    },
+    "/ip/bar": {
+      "get": {
+        "description": "Returns the mock server JSON response.",
+        "operationId": "mockJSON",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Mock JSON."
+          }
+        },
+        "x-google-backend": {
+          "address": "https://mocktarget.apigee.net/json",
+          "deadline": 23,
+          "disable_auth": true,
+          "path_translation": "CONSTANT_ADDRESS",
+          "protocol": "http/1.1"
+        }
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0"
+}
