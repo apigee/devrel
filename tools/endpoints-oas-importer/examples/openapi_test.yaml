@@ -19,7 +19,7 @@ info:
   version: 1.0.0
   title: Examples - Dynamic Routing
 servers:
-- url: api.example.com
+  - url: api.example.com
 x-google-allow: all
 paths:
   "/headers":

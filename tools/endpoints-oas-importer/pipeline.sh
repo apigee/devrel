@@ -18,6 +18,13 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
+test_status() {
+    url=$1
+    expectedstatus=$2
+    statuscode=$(curl  -s -o /dev/null -w "%{http_code}" "$url")
+    if [ "$statuscode" != "$expectedstatus" ]; then echo "unexpected status code: $statuscode when calling $url" && exit "$statuscode"; fi
+}
+
 echo "Endpoints Proxy from YAML with x-google-allow: all"
 
 echo "Generating the proxy from an OAS"
@@ -30,14 +37,6 @@ sackmesser deploy --googleapi -d "$SCRIPTPATH"/generated/oas-import-headers \
   -n oas-import-headers
 
 echo "Testing if we get the expected responses"
-
-test_status() {
-    url=$1
-    expectedstatus=$2
-    statuscode=$(curl  -s -o /dev/null -w "%{http_code}" "$url")
-    if [ "$statuscode" != "$expectedstatus" ]; then echo "unexpected status code: $statuscode when calling $url" && exit "$statuscode"; fi
-}
-
 test_status "https://$APIGEE_X_HOSTNAME/headers" "200"
 test_status "https://$APIGEE_X_HOSTNAME/headers/bar" "200"
 test_status "https://$APIGEE_X_HOSTNAME/headers/foo" "200"
@@ -54,14 +53,6 @@ sackmesser deploy --googleapi -d "$SCRIPTPATH"/generated/oas-import-ip \
   -n oas-import-ip
 
 echo "Testing if we get the expected responses"
-
-test_status() {
-    url=$1
-    expectedstatus=$2
-    statuscode=$(curl  -s -o /dev/null -w "%{http_code}" "$url")
-    if [ "$statuscode" != "$expectedstatus" ]; then echo "unexpected status code: $statuscode when calling $url" && exit "$statuscode"; fi
-}
-
 test_status "https://$APIGEE_X_HOSTNAME/ip" "200"
 test_status "https://$APIGEE_X_HOSTNAME/ip/bar" "200"
 test_status "https://$APIGEE_X_HOSTNAME/ip/foo" "404"

@@ -136,8 +136,10 @@ cp -r "$SCRIPT_FOLDER/proxy-template/policies" "$proxy_bundle"
 export CONDITIONAL_FLOWS
 export CONDITIONAL_ROUTE_RULES
 
-if [ "$oas_google_allow" = "all" ]; then
+if [ "$oas_google_allow" != "all" ]; then
   export NOT_FOUND_STEP='<Step><Name>RF-NotFound</Name></Step>'
+else
+  echo "[WARN] OAS configured to allow unmatched paths"
 fi
 
 envsubst < "$SCRIPT_FOLDER/proxy-template/proxies/default.xml" > "$proxies_dir/default.xml"
