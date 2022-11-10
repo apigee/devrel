@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 
 while [ "$#" -gt 0 ]; do
