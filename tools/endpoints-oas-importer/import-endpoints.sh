@@ -97,7 +97,7 @@ for ((i=0; i<backend_length; i++)); do
     continue
   else
     #Conditional Flows
-    PATH_CONDITION=$(echo "$pathSuffix" | sed -E 's/{[^}]+}/\*/g')
+    PATH_CONDITION=$(echo "$pathSuffix" | sed -E 's/[{][^}]*[}]/\*/g')
     export PATH_CONDITION
     VERB_CONDITION=$(jq -r '.['"$i"'].method | ascii_upcase' <<< "$oas_backends")
     export VERB_CONDITION
