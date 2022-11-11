@@ -13,13 +13,14 @@
 # limitations under the License.
 
 ---
-openapi: 3.0.2
+swagger: "2.0"
 info:
   description: 'Example OAS for Endpoints integration in Apigee.'
   version: 1.0.0
   title: Examples - Dynamic Routing
-servers:
-  - url: api.example.com
+host: api.example.com
+schemes:
+  - "https"
 x-google-allow: all
 paths:
   "/headers":
@@ -35,13 +36,19 @@ paths:
         jwt_audience: ESPv2
         path_translation: APPEND_PATH_TO_ADDRESS
         protocol: h2
-  "/headers/bar":
+  "/headers/{headerId}/bar":
     get:
       description: Returns the mock server JSON response.
       operationId: mockJSON
       responses:
         '200':
           description: Mock JSON.
+      parameters:
+        - in: path
+          name: headerId
+          type: string
+          required: true
+          description: ID of the header to get
       x-google-backend:
         address: https://mocktarget.apigee.net/json
         deadline: 23

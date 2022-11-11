@@ -38,7 +38,7 @@ sackmesser deploy --googleapi -d "$SCRIPTPATH"/generated/oas-import-headers \
 
 echo "Testing if we get the expected responses"
 test_status "https://$APIGEE_X_HOSTNAME/headers" "200"
-test_status "https://$APIGEE_X_HOSTNAME/headers/bar" "200"
+test_status "https://$APIGEE_X_HOSTNAME/headers/my-header-id/bar" "200"
 test_status "https://$APIGEE_X_HOSTNAME/headers/foo" "200"
 
 echo "Endpoints Proxy from JSON with default x-google-allow"

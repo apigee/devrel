@@ -90,17 +90,18 @@ CONDITIONAL_FLOWS=""
 CONDITIONAL_ROUTE_RULES=""
 for ((i=0; i<backend_length; i++)); do
   path=$(jq -r '.['"$i"'].path' <<< "$oas_backends")
-  resource=${path#"$base_path"}
+  pathSuffix=${path#"$base_path"}
 
-  if [[ "$resource" == "$path" ]]; then
+  if [[ "$pathSuffix" == "$path" ]]; then
     echo "[WARN] $path in OAS didn't match the base path given ($base_path) and is therefore excluded from the proxy"
     continue
   else
     #Conditional Flows
-    export PATH_CONDITION=$resource
+    PATH_CONDITION=$(echo "$pathSuffix" | sed -E 's/{[^}]+}/\*/g')
+    export PATH_CONDITION
     VERB_CONDITION=$(jq -r '.['"$i"'].method | ascii_upcase' <<< "$oas_backends")
     export VERB_CONDITION
-    FLOW_NAME="$VERB_CONDITION-${PATH_CONDITION/[^0-9a-zA-Z]/}"
+    FLOW_NAME="$VERB_CONDITION-$(echo "$PATH_CONDITION" | sed 's/*/_/g' | sed 's/[^0-9a-zA-Z_]*//g')"
     export FLOW_NAME
 
     pathOp=$(jq -r '.['"$i"'].pathOp' <<< "$oas_backends")

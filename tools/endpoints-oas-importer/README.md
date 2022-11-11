@@ -21,7 +21,7 @@ Endpoints extensions to generate Apigee proxies.
 The endpoints importer expects the following parameters:
 
 ```txt
---oas/-o            the path of an OpenAPI 2.x / 3.0.x file
+--oas/-o            the path of an OpenAPI 2.0 file in json or yaml format
 --base-path/-b      the basepath that should be extracted from
                     the OAS paths and used in the proxy
 --name/-n           the name of the proxy to be created
