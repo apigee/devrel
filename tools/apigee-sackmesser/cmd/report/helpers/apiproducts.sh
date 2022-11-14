@@ -38,18 +38,18 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
-    apiProductName=$(echo "$i" | jq '.name')
+    apiProductName=$(echo "$i" | jq -r '.name')
     envs=$(echo "$i" | jq -r '.environments[]')
     if [ "$opdk" == "T" ]; then
         proxies=$(echo "$i" | jq -r '.proxies[]')
     elif [ "$apiversion" = "google" ]; then
-        proxies=$(echo "$i" | jq -r '.operationGroup.operationConfigs[]' | jq '[.apiSource, .operations[].resource] | join(": ")')
+        proxies=$(echo "$i" | jq -r '.operationGroup.operationConfigs[]' | jq -r '[.apiSource, .operations[].resource] | join(": ")')
     fi
     approvalType=$(echo "$i" | jq -r '.approvalType')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
     echo "<td>$apiProductName</td>"  >> "$report_html"
-    echo "<td>"$envs"</td>"  >> "$report_html"
+    echo "<td>$envs</td>"  >> "$report_html"
     echo "<td>$proxies</td>" >> "$report_html"
     echo "<td>$approvalType</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"
