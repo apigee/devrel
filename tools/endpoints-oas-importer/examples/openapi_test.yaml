@@ -22,6 +22,10 @@ host: api.example.com
 schemes:
   - "https"
 x-google-allow: all
+x-google-backend:
+  address: https://httpbin.org/anything
+  path_translation: APPEND_PATH_TO_ADDRESS
+  protocol: h2
 paths:
   "/headers":
     get:
@@ -55,3 +59,16 @@ paths:
         disable_auth: true
         path_translation: CONSTANT_ADDRESS
         protocol: http/1.1
+  "/headers/{headerId}/foo":
+    get:
+      description: Path entry with default backend.
+      operationId: Foo
+      responses:
+        '200':
+          description: Mock JSON.
+      parameters:
+        - in: path
+          name: headerId
+          type: string
+          required: true
+          description: ID of the header to get

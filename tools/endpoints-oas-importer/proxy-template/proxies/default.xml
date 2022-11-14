@@ -16,7 +16,9 @@
 -->
 <ProxyEndpoint name="default">
   <PreFlow name="PreFlow">
-    <Request />
+    <Request>
+      $DEFAULT_TARGET_PATH_OP
+    </Request>
     <Response />
   </PreFlow>
 
@@ -40,5 +42,7 @@
     <BasePath>$BASE_PATH</BasePath>
   </HTTPProxyConnection>
   $CONDITIONAL_ROUTE_RULES
-  <RouteRule name="no-target"></RouteRule>
+  <RouteRule name="default-target">
+    $DEFAULT_TARGET_ENDPOINT
+  </RouteRule>
 </ProxyEndpoint>

@@ -19,7 +19,8 @@ const pathOp = context.getVariable('oas.pathoperation');
 if (pathOp === 'CONSTANT_ADDRESS') {
     context.setVariable('target.copy.pathsuffix', 'false');
 } else if (pathOp === 'APPEND_PATH_TO_ADDRESS') {
-    const targetBaseUrl = context.getVariable('target.url')
-    const proxyBasePath = context.getVariable('proxy.basepath')
-    context.setVariable('target.url', targetBaseUrl + proxyBasePath);
+    const targetBaseUrl = context.getVariable('target.url');
+    const proxyBasePath = context.getVariable('proxy.basepath');
+    const proxyPathSuffix = context.getVariable('proxy.pathsuffix');
+    context.setVariable('target.url', targetBaseUrl + proxyBasePath + proxyPathSuffix);
 }

@@ -13,7 +13,10 @@ Endpoints extensions to generate Apigee proxies.
 
 ## What is currently supported
 
-* dynamic routing via `x-google-backend.address` and `x-google-backend.path_translation`
+* default target backend via `x-google-backend.address`
+  and `x-google-backend.path_translation`
+* path level dynamic routing via `x-google-backend.address`
+  and `x-google-backend.path_translation`
 * intercept unmatched paths via `x-google-allow`
 
 ## How to use it
