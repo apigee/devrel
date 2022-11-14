@@ -15,7 +15,7 @@
 # limitations under the License.
 
 echo "<h3>Key Value Maps</h3>" >> "$report_html"
-echo "<p><strong>Note:</strong>If migrating from Apigee Private Cloud (OPDK) to Apigee X/hybrid, Unencrypted KVMs will have to be converted to Encrypted KVMs.</p>" >> "$report_html"
+echo "<p><strong>Note</strong>If migrating from Apigee Private Cloud (OPDK) to Apigee X/hybrid, Unencrypted KVMs will have to be converted to Encrypted KVMs.</p>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/kvm"
 
