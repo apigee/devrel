@@ -48,7 +48,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. ### Set the namespace hosting istio-ingressgateway
     ```bash
-    export $ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
+    export ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
     ```  
 
 1. ### Execute the below if istio-ingressgateway is missing in the istio enabled cluster
@@ -85,11 +85,11 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Setup Gateway component**
     ```bash
-   cat <<EOF kubectl apply -n $ISTIO_GATEWAY_NS -f -
+   cat <<EOF | kubectl apply -n $ISTIO_GATEWAY_NS -f -
    apiVersion: networking.istio.io/v1alpha3
    kind: Gateway
    metadata:
-     name: httpbin-gateway
+     name: apigee-gateway
    spec:
      selector:
        istio: ingressgateway
@@ -99,7 +99,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
            name: http
            protocol: HTTP
          hosts:
-           - "$TARGET_HOST"
+           - "$INGRESS_HOST"
    EOF
     ```
 
@@ -109,18 +109,27 @@ This extension enables the exposure of deployed sample application (httpbin) ext
    apiVersion: networking.istio.io/v1alpha3
    kind: VirtualService
    metadata:
-     name: httpbin-ingress
+     name: envoy-adapter-ingress
    spec:
      hosts:
-     - "$TARGET_HOST"
+     - "$INGRESS_HOST"
      gateways:
-     - httpbin-gateway
+     - apigee-gateway
      http:
-     - route:
+     - match:
+       - uri:
+           prefix: /httpbin/
+       rewrite:
+         uri: /
+       route:
        - destination:
            host: $TARGET_SERVICE_NAME.$TARGET_SERVICE_NAMESPACE.svc.cluster.local
            port:
              number: 80
+         headers:
+           request:
+             add:
+               Host: $TARGET_HOST
    EOF
     ```
 
@@ -135,6 +144,5 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Testing protected service via external IP...**
     ```bash
-    curl -i http://"$INGRESS_HOST"/headers -H "x-api-key: $CONSUMER_KEY" \
-    -H "Host: $TARGET_HOST"
+    curl -i http://"$INGRESS_HOST"/httpbin/headers -H "x-api-key: $CONSUMER_KEY"
     ```
