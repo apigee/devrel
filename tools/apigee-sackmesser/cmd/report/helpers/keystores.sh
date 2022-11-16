@@ -20,7 +20,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/ke
 
 sackmesser list "organizations/$organization/environments/$environment/keystores"| jq -r -c '.[]|.' | while read -r keystorename; do
         sackmesser list "organizations/$organization/environments/$environment/keystores/$(urlencode "$keystorename")" > "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$(urlencode "$keystorename")".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/keystore/$(urlencode "$keystorename")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/keystore"/*.json 1> /dev/null 2>&1; then
@@ -38,13 +37,13 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/keystores".json | while read i; do 
-    keystoreName=$(echo "$i" | jq -r '.name')
+    name=$(echo "$i" | jq -r '.name')
     aliasCount=$(echo "$i" | jq -r '.aliases | length')
     keyCount=$(echo "$i" | jq -r '.keys | length')
     certCount=$(echo "$i" | jq -r '.certs | length')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$keystoreName</td>"  >> "$report_html"
+    echo "<td>$name</td>"  >> "$report_html"
     echo "<td>$keyCount</td>" >> "$report_html"
     echo "<td>$aliasCount</td>" >> "$report_html"
     echo "<td>$certCount</td>" >> "$report_html"

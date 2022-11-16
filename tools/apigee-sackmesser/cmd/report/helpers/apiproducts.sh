@@ -18,9 +18,8 @@ echo "<h3>API Products</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/api-products"
 
-sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
-sackmesser list "organizations/$organization/apiproducts/$(urlencode "$apiProductName")" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json)
+    sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
+        sackmesser list "organizations/$organization/apiproducts/$(urlencode "$apiProductName")" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/api-products"/*.json 1> /dev/null 2>&1; then
@@ -38,7 +37,7 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
-    apiProductName=$(echo "$i" | jq -r '.name')
+    name=$(echo "$i" | jq -r '.name')
     envs=$(echo "$i" | jq -r '.environments[]')
     if [ "$opdk" == "T" ]; then
         proxies=$(echo "$i" | jq -r '.proxies[]')
@@ -48,7 +47,7 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
     approvalType=$(echo "$i" | jq -r '.approvalType')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$apiProductName</td>"  >> "$report_html"
+    echo "<td>$name</td>"  >> "$report_html"
     echo "<td>$envs</td>"  >> "$report_html"
     echo "<td>$proxies</td>" >> "$report_html"
     echo "<td>$approvalType</td>" >> "$report_html"

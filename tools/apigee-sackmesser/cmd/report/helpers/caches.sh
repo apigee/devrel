@@ -34,9 +34,8 @@ else
     mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/cache"
 
     sackmesser list "organizations/$organization/environments/$environment/caches"| jq -r -c '.[]|.' | while read -r cachename; do
-            sackmesser list "organizations/$organization/environments/$environment/caches/$(urlencode "$cachename")" > "$export_folder/$organization/config/resources/edge/env/$environment/cache/$(urlencode "$cachename")".json
-            elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/cache/$(urlencode "$cachename")".json)
-        done
+        sackmesser list "organizations/$organization/environments/$environment/caches/$(urlencode "$cachename")" > "$export_folder/$organization/config/resources/edge/env/$environment/cache/$(urlencode "$cachename")".json
+    done
 
     if ls "$export_folder/$organization/config/resources/edge/env/$environment/cache"/*.json 1> /dev/null 2>&1; then
         jq -n '[inputs]' "$export_folder/$organization/config/resources/edge/env/$environment/cache"/*.json > "$export_folder/$organization/config/resources/edge/env/$environment/caches".json
@@ -53,7 +52,7 @@ else
     echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
     jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/caches".json | while read i; do 
-        cacheName=$(echo "$i" | jq -r '.name')
+        name=$(echo "$i" | jq -r '.name')
         _isDistributed=$(echo "$i" | jq -r '.distributed')
         _isPersistent=$(echo "$i" | jq -r '.persistent')
         timeout=$(echo "$i" | jq -r '.expirySettings.timeoutInSec.value')
@@ -73,7 +72,7 @@ else
         fi
 
         echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-        echo "<td>$cacheName</td>"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
         echo "<td>$isDistributed</td>" >> "$report_html"
         echo "<td>$isPersistent</td>" >> "$report_html"
         echo "<td>$timeout</td>" >> "$report_html"

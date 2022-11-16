@@ -20,7 +20,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/re
 
 sackmesser list "organizations/$organization/environments/$environment/references"| jq -r -c '.[]|.' | while read -r referencename; do
         sackmesser list "organizations/$organization/environments/$environment/references/$(urlencode "$referencename")" > "$export_folder/$organization/config/resources/edge/env/$environment/reference/$(urlencode "$referencename")".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/reference/$(urlencode "$referencename")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/reference"/*.json 1> /dev/null 2>&1; then
@@ -37,12 +36,12 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/references".json | while read i; do 
-    referenceName=$(echo "$i" | jq -r '.name')
+    name=$(echo "$i" | jq -r '.name')
     refers=$(echo "$i" | jq -r '.refers')
     resourceType=$(echo "$i" | jq -r '.resourceType')
     
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$referenceName</td>"  >> "$report_html"
+    echo "<td>$name</td>"  >> "$report_html"
     echo "<td>$refers</td>" >> "$report_html"
     echo "<td>$resourceType</td>" >> "$report_html"
     echo "</tr>"  >> "$report_html"

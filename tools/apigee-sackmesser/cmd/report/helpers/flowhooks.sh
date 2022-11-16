@@ -20,7 +20,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/fl
 
 sackmesser list "organizations/$organization/environments/$environment/flowhooks"| jq -r -c '.[]|.' | while read -r flowhookname; do
         sackmesser list "organizations/$organization/environments/$environment/flowhooks/$(urlencode "$flowhookname")" > "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$(urlencode "$flowhookname")".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$(urlencode "$flowhookname")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"/*.json 1> /dev/null 2>&1; then
@@ -38,9 +37,9 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json | while read i; do 
     if [ "$opdk" == "T" ]; then
-        flowhook=$(echo "$i" | jq -r '.name')
+        name=$(echo "$i" | jq -r '.name')
     elif [ "$apiversion" = "google" ]; then
-        flowhook=$(echo "$i" | jq -r '.flowHookPoint')
+        name=$(echo "$i" | jq -r '.flowHookPoint')
     fi
     
     sharedFlow=$(echo "$i" | jq -r '.sharedFlow')
@@ -52,10 +51,10 @@ jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment
         else
             continueOnError="❌"
     fi
-    if [ $flowhook != null ]
+    if [ $name != null ]
         then
             echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-            echo "<td>$flowhook</td>"  >> "$report_html"
+            echo "<td>$name</td>"  >> "$report_html"
             echo "<td>$sharedFlow</td>" >> "$report_html"
             echo "<td>$continueOnError</td>" >> "$report_html"
             echo "</tr>"  >> "$report_html"

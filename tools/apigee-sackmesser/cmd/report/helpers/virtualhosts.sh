@@ -20,7 +20,6 @@ mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/vi
 
 sackmesser list "organizations/$organization/environments/$environment/virtualhosts"| jq -r -c '.[]|.' | while read -r virtualhostname; do
         sackmesser list "organizations/$organization/environments/$environment/virtualhosts/$(urlencode "$virtualhostname")" > "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$(urlencode "$virtualhostname")".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost/$(urlencode "$virtualhostname")".json)
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/virtualhost"/*.json 1> /dev/null 2>&1; then
@@ -38,13 +37,13 @@ echo "</tr></thead>" >> "$report_html"
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/virtualhosts".json | while read i; do 
-    virtualhostName=$(echo "$i" | jq -r '.name')
+    name=$(echo "$i" | jq -r '.name')
     hostAliases=$(echo "$i" | jq -r '.hostAliases[]')
     port=$(echo "$i" | jq -r '.port')
     useBuiltInFreeTrialCert=$(echo "$i" | jq -r '.useBuiltInFreeTrialCert')
 
     echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$virtualhostName</td>"  >> "$report_html"
+    echo "<td>$name</td>"  >> "$report_html"
     echo "<td>$hostAliases</td>" >> "$report_html"
     echo "<td>$port</td>" >> "$report_html"
     echo "<td>$useBuiltInFreeTrialCert</td>" >> "$report_html"

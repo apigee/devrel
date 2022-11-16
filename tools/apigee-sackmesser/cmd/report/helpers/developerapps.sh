@@ -27,7 +27,6 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
         echo "$full_app" | jq 'del(.credentials)' > "$export_folder/$organization/config/resources/edge/env/$environment/developerapps/$appId".json
         echo "$full_app" | jq -r -c '.credentials[]' | while read -r credential; do
             appkey=$(echo "$credential" | jq -r '.consumerKey')
-            # echo "$credential" | jq  --arg APP_NAME "$appId" '. + { name: $APP_NAME } | . + { apiProducts: [.apiProducts[]?.apiproduct] }' > "$export_folder/$organization/config/resources/edge/env/$environment/developerapps/$appId".json
         done
     done
 done
