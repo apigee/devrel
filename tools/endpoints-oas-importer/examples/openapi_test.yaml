@@ -24,8 +24,8 @@ schemes:
 x-google-allow: all
 x-google-backend:
   address: https://httpbin.org/anything
-  path_translation: APPEND_PATH_TO_ADDRESS
   protocol: h2
+  disable_auth: true
 paths:
   "/headers":
     get:
@@ -36,10 +36,8 @@ paths:
           description: Request Headers.
       x-google-backend:
         address: https://httpbin.org
-        deadline: 7
-        jwt_audience: ESPv2
         path_translation: APPEND_PATH_TO_ADDRESS
-        protocol: h2
+        disable_auth: true
   "/headers/{headerId}/bar":
     get:
       description: Returns the mock server JSON response.
@@ -55,10 +53,8 @@ paths:
           description: ID of the header to get
       x-google-backend:
         address: https://mocktarget.apigee.net/json
-        deadline: 23
         disable_auth: true
         path_translation: CONSTANT_ADDRESS
-        protocol: http/1.1
   "/headers/{headerId}/foo":
     get:
       description: Path entry with default backend.

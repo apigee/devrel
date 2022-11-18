@@ -18,6 +18,7 @@ Endpoints extensions to generate Apigee proxies.
 * path level dynamic routing via `x-google-backend.address`
   and `x-google-backend.path_translation`
 * intercept unmatched paths via `x-google-allow`
+* authenticate with a Google ID token e.g. for Cloud Run backends
 
 ## How to use it
 

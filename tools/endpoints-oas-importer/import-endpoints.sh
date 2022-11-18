@@ -35,60 +35,106 @@ done
 
 # sanity check on the arguments
 if [ -z "$base_path" ]; then
-  echo "[ERROR] proxy base path not specified"
+  >&2 echo "[ERROR] proxy base path not specified"
   exit 1
 fi
 
 if [ -z "$oas" ]; then
-  echo "[ERROR] path ot OAS file not specified"
+  >&2 echo "[ERROR] path ot OAS file not specified"
   exit 1
 fi
 
 if [ -z "$proxy_name" ]; then
-  echo "[ERROR] proxy name not specified"
+  >&2 echo "[ERROR] proxy name not specified"
   exit 1
 fi
 
 if [[ ! -f $oas ]]; then
-  echo "[ERROR] the provided OAS file does not exist"
+  >&2 echo "[ERROR] the provided OAS file does not exist"
   exit 1
 fi
 
-# Parse the OAS File
+## helper functions
+
+# translate ESP path_operation to Apigee policy
+function translate_path_operation() {
+  pathOp=$1
+  defaultPathOp=$2
+  if [[ "$pathOp" == "APPEND_PATH_TO_ADDRESS" ]]; then
+    echo "<Step><Name>AM-AppendPath</Name></Step>"
+  elif [[ "$pathOp" == "CONSTANT_ADDRESS" ]]; then
+    echo "<Step><Name>AM-ConstantAddress</Name></Step>"
+  elif [[ "$pathOp" == "null" ]]; then
+    echo "<!-- No x-google-backend path_translation specified using default:--> $(translate_path_operation "$defaultPathOp")"
+  else
+    >&2 echo "[WARN] unknown path operation: $pathOp"
+    echo ''
+  fi
+}
+
+# create a target endpoint
+function target_endpoint() {
+  backend=$1
+  TARGET_URL=$(jq -r '.target' <<< "$backend")
+  if [ "$TARGET_URL" == "null" ];then
+    echo "<!-- No Target (no root x-google-backend in OAS) -->"
+  else
+    export TARGET_URL
+    if [[ "$(jq -r '.auth' <<< "$backend")" == "true" ]];then
+      target_auth="_auth"
+      OPTIONAL_AUTHENTICATION=$(envsubst < "$SCRIPT_FOLDER/proxy-template/id_token_auth.xml.partial")
+      export OPTIONAL_AUTHENTICATION
+    else
+      export OPTIONAL_AUTHENTICATION="<!-- Auth Disabled in OAS -->"
+    fi
+    TARGET_NAME="$(echo "$TARGET_URL" | sed 's/[^0-9a-zA-Z]*//g' | sed -E 's/^https?//g')$target_auth";
+    target_path="$targets_dir/$TARGET_NAME.xml"
+    export TARGET_NAME
+    if [[ ! -f "$target_path" ]]; then
+      envsubst < "$SCRIPT_FOLDER/proxy-template/targets/default.xml" > "$target_path"
+    fi
+    echo "<TargetEndpoint>$TARGET_NAME</TargetEndpoint>"
+  fi
+}
+
+## Parse the OAS File
+
 # shellcheck disable=SC2016
-jq_backends_match='[.paths | to_entries[] | .key as $path |
-  .value | to_entries[] | .value["x-google-backend"] as $backend |
-  {path: $path, method: .key, target: $backend.address, pathOp: $backend.path_translation, protocol: $backend.protocol}]'
+jq_backend_transform='any($backend.disable_auth!=true) as $auth |
+  {path: $path, method: .key, target: $backend.address, pathOp: $backend.path_translation, protocol: $backend.protocol, auth: $auth}'
+# shellcheck disable=SC2016
+jq_path_backends_match='.paths | to_entries[] | .key as $path | .value | to_entries[] | .value["x-google-backend"] as $backend'
+# shellcheck disable=SC2016
+jq_root_backend_match='.["x-google-backend"] as $backend | null as $path'
 jq_google_allow_match='.["x-google-allow"]'
-jq_root_google_backend_match='.["x-google-backend"]'
 
 if [[ $oas == *.yaml || $oas == *.yml ]]; then
-  oas_backends=$(yq -o json "$oas" | jq "$jq_backends_match")
+  oas_backends=$(yq -o json "$oas" | jq "[$jq_path_backends_match | $jq_backend_transform]")
+  oas_root_backend=$(yq -o json "$oas" | jq -r "$jq_root_backend_match | $jq_backend_transform")
   oas_google_allow=$(yq -o json "$oas" | jq -r "$jq_google_allow_match")
-  oas_google_root_backend=$(yq -o json "$oas" | jq -r "$jq_root_google_backend_match")
 elif [[ $oas == *.json ]]; then
-  oas_backends=$(jq "$jq_backends_match" "$oas")
+  oas_backends=$(jq -r "[$jq_path_backends_match | $jq_backend_transform]" "$oas")
+  oas_root_backend=$(jq -r "$jq_root_backend_match | $jq_backend_transform" "$oas")
   oas_google_allow=$(jq -r "$jq_google_allow_match" "$oas")
-  oas_google_root_backend=$(jq -r "$jq_root_google_backend_match" "$oas")
 else
-  echo "[ERROR] the provided OAS $oas has a wrong extension. Allowed extensions: [yaml,yml,json]"
+  >&2 echo "[ERROR] the provided OAS $oas has a wrong extension. Allowed extensions: [yaml,yml,json]"
   exit 1
 fi
 
 echo "[INFO] The following Cloud endpoint OAS extensions were found:"
 jq <<< "$oas_backends"
 
-# create generated output folder for proxy
+## create generated output folder for proxy
 proxy_output="./generated/$proxy_name"
 if [[ -d "$proxy_output" ]]; then
   if [[ $quiet_apply != "true" ]]; then
     read -p "[WARN] proxy with name $proxy_name already exists in generated ouput. Do you want to override it (Y/n)? " -n 1 -r
-    echo    # (optional) move to a new line
+    echo    # new line
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
       rm -rdf "$proxy_output"
     else
-      echo "[ERROR] aborted"
+      >&2 echo "[ERROR] aborted"
       exit 1
     fi
   else
@@ -105,12 +151,12 @@ mkdir -p "$targets_dir"
 cp -r "$SCRIPT_FOLDER/proxy-template/resources" "$proxy_bundle"
 cp -r "$SCRIPT_FOLDER/proxy-template/policies" "$proxy_bundle"
 
-# template proxy manifest
+## template proxy manifest
 export BASE_PATH=$base_path
 export PROXY_NAME=$proxy_name
 envsubst < "$SCRIPT_FOLDER/proxy-template/proxy.xml" > "$proxy_bundle/$proxy_name.xml"
 
-# template proxy resources
+## template proxy resources
 CONDITIONAL_FLOWS=""
 CONDITIONAL_ROUTE_RULES=""
 
@@ -131,35 +177,23 @@ for ((i=0; i<backend_length; i++)); do
     FLOW_NAME="$VERB_CONDITION-$(echo "$PATH_CONDITION" | sed 's/*/_/g' | sed 's/[^0-9a-zA-Z_]*//g')"
     export FLOW_NAME
 
-    pathOp=$(jq -r '.['"$i"'].pathOp' <<< "$oas_backends")
 
-    if [[ "$pathOp" == "APPEND_PATH_TO_ADDRESS" ]]; then
-      export PATH_OP="<Step><Name>AM-AppendPath</Name></Step>"
-    elif [[ "$pathOp" == "CONSTANT_ADDRESS" ]]; then
-      export PATH_OP="<Step><Name>AM-ConstantAddress</Name></Step>"
-    elif [[ "$pathOp" == "null" ]]; then
-      export PATH_OP="<!-- No x-google-backend path_translation specified -->"
+
+
+    # If path-specific target was set
+    if [[ "$(jq -r '.['"$i"'].target' <<< "$oas_backends")" != "null" ]];then
+      PATH_OP="$(translate_path_operation "$(jq -r '.['"$i"'].pathOp' <<< "$oas_backends")" 'CONSTANT_ADDRESS')"
+      export PATH_OP
+      TARGET_ENDPOINT="$(target_endpoint "$(jq -r '.['"$i"']' <<< "$oas_backends")")"
+      export TARGET_ENDPOINT
+      ROUTE_RULE=$(envsubst < "$SCRIPT_FOLDER/proxy-template/conditional_routerule.xml.partial")
+      CONDITIONAL_ROUTE_RULES="${CONDITIONAL_ROUTE_RULES}${ROUTE_RULE}"
     else
-      echo "[WARN] unknown path operation: $pathOp"
+      export PATH_OP="<!-- No path-specific backend defined in OAS -->"
     fi
 
     FLOW=$(envsubst < "$SCRIPT_FOLDER/proxy-template/conditional_flow.xml.partial")
     CONDITIONAL_FLOWS="${CONDITIONAL_FLOWS}${FLOW}"
-
-    # TargetEndpoints
-    TARGET_URL=$(jq -r '.['"$i"'].target' <<< "$oas_backends")
-    if [ "$TARGET_URL" == "null" ];then
-      continue
-    fi
-    export TARGET_URL
-    TARGET_NAME=$(echo "$TARGET_URL" | sed 's/[^0-9a-zA-Z]*//g' | sed -E 's/^https?//g');
-    export TARGET_NAME
-    if [[ ! -f "$targets_dir/$TARGET_NAME.xml" ]]; then
-      envsubst < "$SCRIPT_FOLDER/proxy-template/targets/default.xml" > "$targets_dir/$TARGET_NAME.xml"
-    fi
-    ROUTE_RULE=$(envsubst < "$SCRIPT_FOLDER/proxy-template/conditional_routerule.xml.partial")
-    CONDITIONAL_ROUTE_RULES="${CONDITIONAL_ROUTE_RULES}${ROUTE_RULE}"
-
   fi
 done
 export CONDITIONAL_FLOWS
@@ -169,31 +203,17 @@ export CONDITIONAL_ROUTE_RULES
 if [ "$oas_google_allow" != "all" ]; then
   export NOT_FOUND_STEP='<Step><Name>RF-NotFound</Name></Step>'
 else
-  echo "[WARN] OAS configured to allow unmatched paths"
+  >&2 echo "[WARN] OAS configured to allow unmatched paths"
 fi
 
-if [ "$oas_google_root_backend" != "null" ]; then
-  TARGET_NAME="default-target"
-  export TARGET_NAME
-  export DEFAULT_TARGET_ENDPOINT="<TargetEndpoint>$TARGET_NAME</TargetEndpoint>"
-  TARGET_URL=$(jq -r '.address' <<< "$oas_google_root_backend")
-  export TARGET_URL
-  envsubst < "$SCRIPT_FOLDER/proxy-template/targets/default.xml" > "$targets_dir/$TARGET_NAME.xml"
+DEFAULT_TARGET_ENDPOINT="$(target_endpoint "$oas_root_backend")"
+export DEFAULT_TARGET_ENDPOINT
 
-  pathOp=$(jq -r '.path_translation' <<< "$oas_google_root_backend")
-  if [[ "$pathOp" == "APPEND_PATH_TO_ADDRESS" ]]; then
-    export DEFAULT_TARGET_PATH_OP="<Step><Name>AM-AppendPath</Name></Step>"
-  elif [[ "$pathOp" == "CONSTANT_ADDRESS" ]]; then
-    export DEFAULT_TARGET_PATH_OP="<Step><Name>AM-ConstantAddress</Name></Step>"
-  else
-    echo "[WARN] unknown default path operation: $pathOp"
-  fi
-else
-  export DEFAULT_TARGET_ENDPOINT="<!-- No Target (no root x-google-backend in OAS) -->"
-fi
+DEFAULT_TARGET_PATH_OP="$(translate_path_operation "$(jq -r '.pathOp' <<< "$oas_root_backend")" 'APPEND_PATH_TO_ADDRESS')"
+export DEFAULT_TARGET_PATH_OP
 
 envsubst < "$SCRIPT_FOLDER/proxy-template/proxies/default.xml" > "$proxies_dir/default.xml"
 
-echo "[INFO] your proxy bundle is ready in $proxy_output"
-echo "[INFO] to deploy it to an Apigee org you can run the following command (assuming Apigee DevRel Sackmesser is in the path)"
+>&2 echo "[INFO] your proxy bundle is ready in $proxy_output"
+>&2 echo "[INFO] to deploy it to an Apigee org you can run the following command (assuming Apigee DevRel Sackmesser is in the path)"
 echo "\$ sackmesser deploy --googleapi -d \"$proxy_output\" -t \"\$APIGEE_TOKEN\" -o \"\$APIGEE_X_ORG\" -e \"\$APIGEE_X_ENV\" -n $PROXY_NAME"

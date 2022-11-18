@@ -26,7 +26,7 @@
         "x-google-backend": {
           "address": "https://httpbin.org",
           "deadline": 7,
-          "jwt_audience": "ESPv2",
+          "disable_auth": true,
           "path_translation": "APPEND_PATH_TO_ADDRESS",
           "protocol": "h2"
         }

@@ -30,5 +30,6 @@
   </PostFlow>
   <HTTPTargetConnection>
     <URL>$TARGET_URL</URL>
+    $OPTIONAL_AUTHENTICATION
   </HTTPTargetConnection>
 </TargetEndpoint>
