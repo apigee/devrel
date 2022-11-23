@@ -1,7 +1,8 @@
-    <!-- x-google-backend derived flow -->
+<!--OAS path derived flow -->
     <Flow name="$FLOW_NAME">
       <Description/>
       <Request>
+        $SECURITY_POLICIES
         $PATH_OP
       </Request>
       <Response/>

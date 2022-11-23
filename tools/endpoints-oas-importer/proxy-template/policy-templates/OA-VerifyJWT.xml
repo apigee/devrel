@@ -14,36 +14,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ProxyEndpoint name="default">
-  <PreFlow name="PreFlow">
-    <Request>
-      $DEFAULT_SECURITY_POLICIES
-      $DEFAULT_TARGET_PATH_OP
-    </Request>
-    <Response />
-  </PreFlow>
-
-  <Flows>
-    $CONDITIONAL_FLOWS
-
-    <Flow name="no-match">
-      <Request>
-        $NOT_FOUND_STEP
-      </Request>
-      <Response />
-    </Flow>
-  </Flows>
-
-  <PostFlow name="PostFlow">
-    <Request />
-    <Response />
-  </PostFlow>
-
-  <HTTPProxyConnection>
-    <BasePath>$BASE_PATH</BasePath>
-  </HTTPProxyConnection>
-  $CONDITIONAL_ROUTE_RULES
-  <RouteRule name="default-target">
-    $DEFAULT_TARGET_ENDPOINT
-  </RouteRule>
-</ProxyEndpoint>
+<VerifyJWT name="$SECURITY_POLICY_NAME">
+    <Algorithm>RS256</Algorithm>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <PublicKey>
+        <JWKS uri="$JWT_JWKS"/>
+    </PublicKey>
+    <Issuer>$JWT_ISSUER</Issuer>
+    <Audience>$JWT_AUDIENCE</Audience>
+</VerifyJWT>

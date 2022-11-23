@@ -80,9 +80,9 @@ function target_endpoint() {
     echo "<!-- No Target (no root x-google-backend in OAS) -->"
   else
     export TARGET_URL
-    if [[ "$(jq -r '.auth' <<< "$backend")" == "true" ]];then
+    if [[ "$(jq -r '.backend_auth' <<< "$backend")" == "true" ]];then
       target_auth="_auth"
-      OPTIONAL_AUTHENTICATION=$(envsubst < "$SCRIPT_FOLDER/proxy-template/id_token_auth.xml.partial")
+      OPTIONAL_AUTHENTICATION=$(envsubst < "$SCRIPT_FOLDER/proxy-template/policy-snippets/id_token_auth.xml.partial")
       export OPTIONAL_AUTHENTICATION
     else
       export OPTIONAL_AUTHENTICATION="<!-- Auth Disabled in OAS -->"
@@ -97,38 +97,77 @@ function target_endpoint() {
   fi
 }
 
+function client_authentication() {
+  security_setting=$1
+  security_definitions=$2
+
+  if [[ "$security_setting" == "null" || "$(jq '. | length' <<< "$security_setting")" -eq "0" ]]; then
+    echo "<!-- No security policies defined in OAS -->"
+  else
+    if [[ "$(jq '. | length' <<< "$security_setting")" -gt "1" ]]; then
+      >&2 echo "[WARN] Found more than one security setting. Using the first one to generate the apigee proxy. Manual edits on the proxy bundle might be needed"
+    fi
+    security_setting_name="$(jq -r '.[0] | to_entries | .[0].key' <<< "$security_setting")"
+    security_definition="$(jq -r --arg SEC_NAME "$security_setting_name" '.[$SEC_NAME]' <<< "$security_definitions")"
+    if [[ "$security_definition" == "null" ]]; then
+      >&2 echo "[ERROR] no matching security definition found for $security_setting_name"
+      echo "<!-- No security definition found for $security_setting_name-->"
+    else
+      SECURITY_POLICY_NAME="OA-VerifyJWT-$security_setting_name"
+      export SECURITY_POLICY_NAME
+      JWT_ISSUER="$(jq -r '.["x-google-issuer"]' <<< "$security_definition")"
+      export JWT_ISSUER
+      JWT_JWKS="$(jq -r '.["x-google-jwks_uri"]' <<< "$security_definition")"
+      export JWT_JWKS
+      JWT_AUDIENCE="$(jq -r '.["x-google-audiences"]' <<< "$security_definition")"
+      export JWT_AUDIENCE
+      envsubst < "$SCRIPT_FOLDER/proxy-template/policy-templates/OA-VerifyJWT.xml" > "$proxy_bundle/policies/$SECURITY_POLICY_NAME.xml"
+      echo "<Step><Name>$SECURITY_POLICY_NAME</Name></Step><Step><Name>AM-RemoveAuthHeader</Name></Step>"
+    fi
+  fi
+}
+
 ## Parse the OAS File
 
-# shellcheck disable=SC2016
-jq_backend_transform='any($backend.disable_auth!=true) as $auth |
-  {path: $path, method: .key, target: $backend.address, pathOp: $backend.path_translation, protocol: $backend.protocol, auth: $auth}'
-# shellcheck disable=SC2016
-jq_path_backends_match='.paths | to_entries[] | .key as $path | .value | to_entries[] | .value["x-google-backend"] as $backend'
-# shellcheck disable=SC2016
-jq_root_backend_match='.["x-google-backend"] as $backend | null as $path'
-jq_google_allow_match='.["x-google-allow"]'
-
+# normalizing yaml and json OAS file types
 if [[ $oas == *.yaml || $oas == *.yml ]]; then
-  oas_backends=$(yq -o json "$oas" | jq "[$jq_path_backends_match | $jq_backend_transform]")
-  oas_root_backend=$(yq -o json "$oas" | jq -r "$jq_root_backend_match | $jq_backend_transform")
-  oas_google_allow=$(yq -o json "$oas" | jq -r "$jq_google_allow_match")
+  oas_json_content=$(yq -o json "$oas")
 elif [[ $oas == *.json ]]; then
-  oas_backends=$(jq -r "[$jq_path_backends_match | $jq_backend_transform]" "$oas")
-  oas_root_backend=$(jq -r "$jq_root_backend_match | $jq_backend_transform" "$oas")
-  oas_google_allow=$(jq -r "$jq_google_allow_match" "$oas")
+  oas_json_content=$(cat "$oas")
 else
   >&2 echo "[ERROR] the provided OAS $oas has a wrong extension. Allowed extensions: [yaml,yml,json]"
   exit 1
 fi
 
-echo "[INFO] The following Cloud endpoint OAS extensions were found:"
-jq <<< "$oas_backends"
+# shellcheck disable=SC2016
+jq_backend_transform='any($backend.disable_auth!=true) as $auth |
+  {
+    path: $path,
+    method: .key,
+    target: $backend.address,
+    pathOp: $backend.path_translation,
+    protocol: $backend.protocol,
+    backend_auth: $auth,
+    client_auth: $security
+  }'
+# shellcheck disable=SC2016
+jq_path_match='.paths | to_entries[] | .key as $path | .value | to_entries[] | .value["x-google-backend"] as $backend | .value["security"] as $security'
+# shellcheck disable=SC2016
+jq_root_match='.["x-google-backend"] as $backend | null as $path | .["security"] as $security'
+
+oas_path_config=$(jq "[$jq_path_match | $jq_backend_transform]" <<< "$oas_json_content")
+oas_root_config=$(jq -r "$jq_root_match | $jq_backend_transform" <<< "$oas_json_content")
+oas_google_allow=$(jq -r '.["x-google-allow"]' <<< "$oas_json_content")
+oas_security_definitions=$(jq -r '.securityDefinitions' <<< "$oas_json_content")
+
+echo "[INFO] The following OAS extensions were found:"
+jq <<< "$oas_path_config"
 
 ## create generated output folder for proxy
 proxy_output="./generated/$proxy_name"
 if [[ -d "$proxy_output" ]]; then
   if [[ $quiet_apply != "true" ]]; then
-    read -p "[WARN] proxy with name $proxy_name already exists in generated ouput. Do you want to override it (Y/n)? " -n 1 -r
+    read -p "[WARN] proxy with name $proxy_name already exists in generated output. Do you want to override it (Y/n)? " -n 1 -r
     echo    # new line
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
@@ -160,39 +199,40 @@ envsubst < "$SCRIPT_FOLDER/proxy-template/proxy.xml" > "$proxy_bundle/$proxy_nam
 CONDITIONAL_FLOWS=""
 CONDITIONAL_ROUTE_RULES=""
 
-backend_length=$(jq '. | length' <<< "$oas_backends")
+backend_length=$(jq '. | length' <<< "$oas_path_config")
 for ((i=0; i<backend_length; i++)); do
-  path=$(jq -r '.['"$i"'].path' <<< "$oas_backends")
+  path=$(jq -r '.['"$i"'].path' <<< "$oas_path_config")
   pathSuffix=${path#"$base_path"}
 
   if [[ "$pathSuffix" == "$path" ]]; then
-    echo "[WARN] $path in OAS didn't match the base path given ($base_path) and is therefore excluded from the proxy"
+    >&2 echo "[WARN] $path in OAS didn't match the base path given ($base_path) and is therefore excluded from the proxy"
     continue
   else
     #Conditional Flows
     PATH_CONDITION=$(echo "$pathSuffix" | sed -E 's/[{][^}]*[}]/\*/g')
     export PATH_CONDITION
-    VERB_CONDITION=$(jq -r '.['"$i"'].method | ascii_upcase' <<< "$oas_backends")
+    VERB_CONDITION=$(jq -r '.['"$i"'].method | ascii_upcase' <<< "$oas_path_config")
     export VERB_CONDITION
     FLOW_NAME="$VERB_CONDITION-$(echo "$PATH_CONDITION" | sed 's/*/_/g' | sed 's/[^0-9a-zA-Z_]*//g')"
     export FLOW_NAME
 
-
-
-
-    # If path-specific target was set
-    if [[ "$(jq -r '.['"$i"'].target' <<< "$oas_backends")" != "null" ]];then
-      PATH_OP="$(translate_path_operation "$(jq -r '.['"$i"'].pathOp' <<< "$oas_backends")" 'CONSTANT_ADDRESS')"
+    # path-specific target
+    if [[ "$(jq -r '.['"$i"'].target' <<< "$oas_path_config")" != "null" ]];then
+      PATH_OP="$(translate_path_operation "$(jq -r '.['"$i"'].pathOp' <<< "$oas_path_config")" 'CONSTANT_ADDRESS')"
       export PATH_OP
-      TARGET_ENDPOINT="$(target_endpoint "$(jq -r '.['"$i"']' <<< "$oas_backends")")"
+      TARGET_ENDPOINT="$(target_endpoint "$(jq -r '.['"$i"']' <<< "$oas_path_config")")"
       export TARGET_ENDPOINT
-      ROUTE_RULE=$(envsubst < "$SCRIPT_FOLDER/proxy-template/conditional_routerule.xml.partial")
+      ROUTE_RULE=$(envsubst < "$SCRIPT_FOLDER/proxy-template/policy-snippets/conditional_routerule.xml.partial")
       CONDITIONAL_ROUTE_RULES="${CONDITIONAL_ROUTE_RULES}${ROUTE_RULE}"
     else
       export PATH_OP="<!-- No path-specific backend defined in OAS -->"
     fi
 
-    FLOW=$(envsubst < "$SCRIPT_FOLDER/proxy-template/conditional_flow.xml.partial")
+    # path-specific security
+    SECURITY_POLICIES="$(client_authentication "$(jq -r '.['"$i"'].client_auth' <<< "$oas_path_config")" "$oas_security_definitions")"
+    export SECURITY_POLICIES
+
+    FLOW=$(envsubst < "$SCRIPT_FOLDER/proxy-template/policy-snippets/conditional_flow.xml.partial")
     CONDITIONAL_FLOWS="${CONDITIONAL_FLOWS}${FLOW}"
   fi
 done
@@ -206,10 +246,13 @@ else
   >&2 echo "[WARN] OAS configured to allow unmatched paths"
 fi
 
-DEFAULT_TARGET_ENDPOINT="$(target_endpoint "$oas_root_backend")"
+DEFAULT_TARGET_ENDPOINT="$(target_endpoint "$oas_root_config")"
 export DEFAULT_TARGET_ENDPOINT
 
-DEFAULT_TARGET_PATH_OP="$(translate_path_operation "$(jq -r '.pathOp' <<< "$oas_root_backend")" 'APPEND_PATH_TO_ADDRESS')"
+DEFAULT_SECURITY_POLICIES="$(client_authentication "$(jq -r '.client_auth' <<< "$oas_root_config")" "$oas_security_definitions")"
+export DEFAULT_SECURITY_POLICIES
+
+DEFAULT_TARGET_PATH_OP="$(translate_path_operation "$(jq -r '.pathOp' <<< "$oas_root_config")" 'APPEND_PATH_TO_ADDRESS')"
 export DEFAULT_TARGET_PATH_OP
 
 envsubst < "$SCRIPT_FOLDER/proxy-template/proxies/default.xml" > "$proxies_dir/default.xml"
