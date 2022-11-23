@@ -37,22 +37,24 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/developers".json | while read i; do 
-    name=$(echo "$i" | jq -r '.userName')
-    firstName=$(echo "$i" | jq -r '.firstName')
-    lastName=$(echo "$i" | jq -r '.lastName')
-    email=$(echo "$i" | jq -r '.email')
-    status=$(echo "$i" | jq -r '.status')
-    apps=$(echo "$i" | jq -r '.apps[]')
-    approvalType=$(echo "$i" | jq -r '.approvalType')
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/developers".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/developers".json | while read i; do 
+        name=$(echo "$i" | jq -r '.userName')
+        firstName=$(echo "$i" | jq -r '.firstName')
+        lastName=$(echo "$i" | jq -r '.lastName')
+        email=$(echo "$i" | jq -r '.email')
+        status=$(echo "$i" | jq -r '.status')
+        apps=$(echo "$i" | jq -r '.apps[]')
+        approvalType=$(echo "$i" | jq -r '.approvalType')
 
-    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$name</td>"  >> "$report_html"
-    echo "<td>"$firstName" "$lastName"</td>"  >> "$report_html"
-    echo "<td>$email</td>"  >> "$report_html"
-    echo "<td>$status</td>"  >> "$report_html"
-    echo "<td>$apps</td>" >> "$report_html"
-    echo "</tr>"  >> "$report_html"
-done
+        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
+        echo "<td>"$firstName" "$lastName"</td>"  >> "$report_html"
+        echo "<td>$email</td>"  >> "$report_html"
+        echo "<td>$status</td>"  >> "$report_html"
+        echo "<td>$apps</td>" >> "$report_html"
+        echo "</tr>"  >> "$report_html"
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"

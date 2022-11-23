@@ -35,16 +35,18 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/references".json | while read i; do 
-    name=$(echo "$i" | jq -r '.name')
-    refers=$(echo "$i" | jq -r '.refers')
-    resourceType=$(echo "$i" | jq -r '.resourceType')
-    
-    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$name</td>"  >> "$report_html"
-    echo "<td>$refers</td>" >> "$report_html"
-    echo "<td>$resourceType</td>" >> "$report_html"
-    echo "</tr>"  >> "$report_html"
-done
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/references".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/references".json | while read i; do 
+        name=$(echo "$i" | jq -r '.name')
+        refers=$(echo "$i" | jq -r '.refers')
+        resourceType=$(echo "$i" | jq -r '.resourceType')
+        
+        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
+        echo "<td>$refers</td>" >> "$report_html"
+        echo "<td>$resourceType</td>" >> "$report_html"
+        echo "</tr>"  >> "$report_html"
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"

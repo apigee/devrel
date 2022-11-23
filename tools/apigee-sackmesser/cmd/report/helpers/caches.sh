@@ -51,33 +51,35 @@ else
 
     echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/caches".json | while read i; do 
-        name=$(echo "$i" | jq -r '.name')
-        _isDistributed=$(echo "$i" | jq -r '.distributed')
-        _isPersistent=$(echo "$i" | jq -r '.persistent')
-        timeout=$(echo "$i" | jq -r '.expirySettings.timeoutInSec.value')
+    if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/caches".json ]; then
+        jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/caches".json | while read i; do 
+            name=$(echo "$i" | jq -r '.name')
+            _isDistributed=$(echo "$i" | jq -r '.distributed')
+            _isPersistent=$(echo "$i" | jq -r '.persistent')
+            timeout=$(echo "$i" | jq -r '.expirySettings.timeoutInSec.value')
 
-        if [ $_isDistributed = true ]
-            then
-                isDistributed="✅"
-            else
-                isDistributed="❌"
-        fi
+            if [ $_isDistributed = true ]
+                then
+                    isDistributed="✅"
+                else
+                    isDistributed="❌"
+            fi
 
-        if [ $_isPersistent = true ]
-            then
-                isPersistent="✅"
-            else
-                isPersistent="❌"
-        fi
+            if [ $_isPersistent = true ]
+                then
+                    isPersistent="✅"
+                else
+                    isPersistent="❌"
+            fi
 
-        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-        echo "<td>$name</td>"  >> "$report_html"
-        echo "<td>$isDistributed</td>" >> "$report_html"
-        echo "<td>$isPersistent</td>" >> "$report_html"
-        echo "<td>$timeout</td>" >> "$report_html"
-        echo "</tr>"  >> "$report_html"
-    done
+            echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+            echo "<td>$name</td>"  >> "$report_html"
+            echo "<td>$isDistributed</td>" >> "$report_html"
+            echo "<td>$isPersistent</td>" >> "$report_html"
+            echo "<td>$timeout</td>" >> "$report_html"
+            echo "</tr>"  >> "$report_html"
+        done
+    fi
 fi
 
 echo "</tbody></table></div>" >> "$report_html"
