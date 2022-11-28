@@ -44,8 +44,7 @@ if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/dev
         lastName=$(echo "$i" | jq -r '.lastName')
         email=$(echo "$i" | jq -r '.email')
         status=$(echo "$i" | jq -r '.status')
-        apps=$(echo "$i" | jq -r '.apps[]')
-        approvalType=$(echo "$i" | jq -r '.approvalType')
+        apps=$(echo "$i" | jq -r '.apps[]?')
 
         echo "<tr class=\"$highlightclass\">"  >> "$report_html"
         echo "<td>$name</td>"  >> "$report_html"
