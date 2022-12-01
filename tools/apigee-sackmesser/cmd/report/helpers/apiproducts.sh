@@ -18,9 +18,8 @@ echo "<h3>API Products</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/api-products"
 
-sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
-        sackmesser list "organizations/$organization/apiproducts/$apiProductName" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$apiProductName".json)
+    sackmesser list "organizations/$organization/apiproducts"| jq -r -c '.[]|.' | while read -r apiProductName; do
+        sackmesser list "organizations/$organization/apiproducts/$(urlencode "$apiProductName")" > "$export_folder/$organization/config/resources/edge/env/$environment/api-products/$(urlencode "$apiProductName")".json
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/api-products"/*.json 1> /dev/null 2>&1; then
@@ -36,19 +35,24 @@ echo "<th data-sortable=\"true\" data-field=\"enabled\">Aproval Type</th>" >> "$
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
+        name=$(echo "$i" | jq -r '.name')
+        envs=$(echo "$i" | jq -r '.environments[]?')
+        if [ "$opdk" == "T" ]; then
+            proxies=$(echo "$i" | jq -r '.proxies[]')
+        elif [ "$apiversion" = "google" ]; then
+            proxies=$(echo "$i" | jq -r '.operationGroup.operationConfigs[]?' | jq -r '[.apiSource, .operations[].resource] | join(": ")')
+        fi
+        approvalType=$(echo "$i" | jq -r '.approvalType')
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/api-products".json | while read i; do 
-    apiProductName=$(echo "$i" | jq -r '.name')
-    envs=$(echo "$i" | jq -r '.environments[]')
-    proxies=$(echo "$i" | jq -r '.proxies[]')
-    approvalType=$(echo "$i" | jq -r '.approvalType')
-
-    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$apiProductName</td>"  >> "$report_html"
-    echo "<td>"$envs"</td>"  >> "$report_html"
-    echo "<td>$proxies</td>" >> "$report_html"
-    echo "<td>$approvalType</td>" >> "$report_html"
-    echo "</tr>"  >> "$report_html"
-done
+        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
+        echo "<td>$envs</td>"  >> "$report_html"
+        echo "<td>$proxies</td>" >> "$report_html"
+        echo "<td>$approvalType</td>" >> "$report_html"
+        echo "</tr>"  >> "$report_html"
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"

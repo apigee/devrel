@@ -16,10 +16,6 @@
 
 echo "<h3>Developer Apps</h3>" >> "$report_html"
 
-urlencode() {
-    echo "\"${*:1}\"" | jq -r '@uri'
-}
-
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/developerapps"
 
 sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | while read -r email; do
@@ -31,7 +27,6 @@ sackmesser list "organizations/$organization/developers" | jq -r -c '.[]|.' | wh
         echo "$full_app" | jq 'del(.credentials)' > "$export_folder/$organization/config/resources/edge/env/$environment/developerapps/$appId".json
         echo "$full_app" | jq -r -c '.credentials[]' | while read -r credential; do
             appkey=$(echo "$credential" | jq -r '.consumerKey')
-            # echo "$credential" | jq  --arg APP_NAME "$appId" '. + { name: $APP_NAME } | . + { apiProducts: [.apiProducts[]?.apiproduct] }' > "$export_folder/$organization/config/resources/edge/env/$environment/developerapps/$appId".json
         done
     done
 done
@@ -57,40 +52,42 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/developerapps".json | while read i; do 
-    name=$(echo "$i" | jq -r '.name')
-    status=$(echo "$i" | jq -r '.status')
-    developerId=$(echo "$i" | jq -r '.developerId')
-    appId=$(echo "$i" | jq -r '.appId')
-    appFamily=$(echo "$i" | jq -r '.appFamily')
-    callbackUrl=$(echo "$i" | jq -r '.callbackUrl')
-    accessType=$(echo "$i" | jq -r '.accessType')
-    createdAt=$(echo "$i" | jq -r '.createdAt' | date -u)
-    lastModifiedAt=$(echo "$i" | jq -r '.lastModifiedAt' | date -u)
-    _credentialsLoaded=$(echo "$i" | jq -r '.credentialsLoaded')
-    scopes=$(echo "$i" | jq -r '.scopes')
-    
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/developerapps".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/developerapps".json | while read i; do 
+        name=$(echo "$i" | jq -r '.name')
+        status=$(echo "$i" | jq -r '.status')
+        developerId=$(echo "$i" | jq -r '.developerId')
+        appId=$(echo "$i" | jq -r '.appId')
+        appFamily=$(echo "$i" | jq -r '.appFamily')
+        callbackUrl=$(echo "$i" | jq -r '.callbackUrl')
+        accessType=$(echo "$i" | jq -r '.accessType')
+        createdAt=$(echo "$i" | jq -r '.createdAt' | date -u)
+        lastModifiedAt=$(echo "$i" | jq -r '.lastModifiedAt' | date -u)
+        _credentialsLoaded=$(echo "$i" | jq -r '.credentialsLoaded')
+        scopes=$(echo "$i" | jq -r '.scopes')
+        
 
-    if [ $_credentialsLoaded = true ]
-        then
-            credentialsLoaded="✅"
-        else
-            credentialsLoaded="❌"
-    fi
+        if [ $_credentialsLoaded = true ]
+            then
+                credentialsLoaded="✅"
+            else
+                credentialsLoaded="❌"
+        fi
 
-    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$name</td>"  >> "$report_html"
-    echo "<td>$status</td>"  >> "$report_html"
-    echo "<td>$developerId</td>"  >> "$report_html"
-    echo "<td>$appId</td>" >> "$report_html"
-    echo "<td>$appFamily</td>" >> "$report_html"
-    echo "<td>$callbackUrl</td>" >> "$report_html"
-    echo "<td>$accessType</td>" >> "$report_html"
-    echo "<td>$createdAt</td>" >> "$report_html"
-    echo "<td>$lastModifiedAt</td>" >> "$report_html"
-    echo "<td>$credentialsLoaded</td>" >> "$report_html"
-    echo "<td>$scopes</td>" >> "$report_html"
-    echo "</tr>"  >> "$report_html"
-done
+        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
+        echo "<td>$status</td>"  >> "$report_html"
+        echo "<td>$developerId</td>"  >> "$report_html"
+        echo "<td>$appId</td>" >> "$report_html"
+        echo "<td>$appFamily</td>" >> "$report_html"
+        echo "<td>$callbackUrl</td>" >> "$report_html"
+        echo "<td>$accessType</td>" >> "$report_html"
+        echo "<td>$createdAt</td>" >> "$report_html"
+        echo "<td>$lastModifiedAt</td>" >> "$report_html"
+        echo "<td>$credentialsLoaded</td>" >> "$report_html"
+        echo "<td>$scopes</td>" >> "$report_html"
+        echo "</tr>"  >> "$report_html"
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"
