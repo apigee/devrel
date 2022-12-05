@@ -206,7 +206,7 @@ export IS_RECAPTCHA_MOCK_ENABLED
 envsubst < "$SCRIPTPATH"/templates/AM-SetReCaptchaMock.template.xml > "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml
 
 echo "[INFO] Deploying reCAPTCHA enterprise reference to Google API (For X/hybrid)"
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
 
 SA_EMAIL="apigee-recaptcha-enterprise-sa@$APIGEE_X_ORG.iam.gserviceaccount.com"
 
@@ -264,7 +264,7 @@ if [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
         --data "{ \"apiProducts\": [\"RecaptchaEnterprise\"] }" \
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/app-recaptcha-enterprise/keys/"$TEST_APP_CONSUMER_KEY"
 
-    
+
     cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test
 
 else
@@ -277,7 +277,7 @@ else
     # Generate 2 reCAPTCHA sitekeys: - Always 1 (score: 1) & Always 0 (score: 0)
     TMP0=$(gcloud recaptcha keys create --testing-score=0.0 --web --allow-all-domains --display-name="Always 0" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_0=$(echo "$TMP0" | cut -d'/' -f 4)
-    
+
     TMP1=$(gcloud recaptcha keys create --testing-score=1.0 --web --allow-all-domains --display-name="Always 1" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_1=$(echo "$TMP1" | cut -d'/' -f 4)
 

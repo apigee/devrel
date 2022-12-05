@@ -18,7 +18,7 @@ set -e
 
 SCRIPTPATH=$( (cd "$(dirname "$0")" && pwd ))
 
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 export APIGEE_TOKEN
 
 # deploy shared flows

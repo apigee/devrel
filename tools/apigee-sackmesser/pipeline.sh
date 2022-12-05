@@ -22,7 +22,7 @@ SCRIPT_FOLDER=$( (cd "$(dirname "$0")" && pwd ))
 "$SCRIPT_FOLDER"/build.sh -t apigee-sackmesser
 
 PATH="$PATH:$SCRIPT_FOLDER/bin"
-APIGEE_X_TOKEN=$(gcloud auth print-access-token)
+APIGEE_X_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 unset APIGEE_TOKEN
 
 # Test Sackmesser Deploy

@@ -29,7 +29,7 @@ sackmesser deploy --apigeeapi -d "$SCRIPTPATH" \
 (cd "$SCRIPTPATH" && TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm run integration-test)
 
 echo "Testing on Apigee X"
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy --googleapi -d "$SCRIPTPATH" \
   -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
   -n js-callout-v1

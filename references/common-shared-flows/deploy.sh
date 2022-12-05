@@ -44,7 +44,7 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 for SF in $sf_to_deploy; do
   if [ "$apiversion" = "--googleapi" ]; then
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
     sackmesser deploy -d "$SF" "$apiversion" "$async_flag" \
       -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
       --description "See Apigee DevRel references/common-shared-flows"
@@ -61,7 +61,7 @@ done
 
 if [ -n "$async_flag" ] && [ "$apiversion" = "--googleapi" ]; then
   for SF in $sf_to_deploy; do
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
     sackmesser await sharedflow "$(basename "$SF")" "$apiversion" \
       -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"
   done
