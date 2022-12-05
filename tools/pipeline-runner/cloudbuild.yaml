@@ -63,7 +63,7 @@ steps:
     args:
       - "-c"
       - |-
-        max_duration=6960 # cloud build timeout minus 4m
+        max_duration=8760 # cloud build timeout minus 4m
         if [ -n "$_PR_NUMBER" ]; then
           FULL_PIPELINE_REQUIRED=$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER" | jq '.body |= ascii_downcase | .body | contains("[x] pr requires full pipeline run")' )
           PROJECTS=$(list-repo-changes.sh)
@@ -140,7 +140,7 @@ availableSecrets:
 options:
   machineType: 'E2_HIGHCPU_8'
   logging: GCS_ONLY
-timeout: 7200s # 120min (needs to be updated with max_duration of pipeline)
+timeout: 9000s # 120min (needs to be updated with max_duration of pipeline)
 images: ['gcr.io/$PROJECT_ID/devrel-pipeline:latest']
 substitutions:
   _APIGEE_ORG: my-org
