@@ -1,0 +1,6 @@
+<!-- Authenticate using Google ID Token https://cloud.google.com/apigee/docs/api-platform/security/google-auth/overview -->
+    <Authentication>
+      <GoogleIDToken>
+        <Audience>$TARGET_URL</Audience>
+      </GoogleIDToken>
+    </Authentication>

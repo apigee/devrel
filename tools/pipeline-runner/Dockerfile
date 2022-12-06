@@ -53,6 +53,10 @@ COPY *.sh /usr/bin/
 # install apgieelint
 RUN npm install --global apigeelint@2.10.0
 
+# yq because the apk is too old
+RUN wget -q -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v4.29.2/yq_linux_amd64"
+RUN chmod +x /usr/local/bin/yq
+
 # Run script
 WORKDIR /home
 CMD ["run-pipelines.sh"]

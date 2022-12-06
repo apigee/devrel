@@ -1,0 +1,5 @@
+  <!-- x-google-backend derived route rule -->
+  <RouteRule name="$FLOW_NAME">
+    <Condition>(proxy.pathsuffix MatchesPath "$PATH_CONDITION") and (request.verb = "$VERB_CONDITION")</Condition>
+    $TARGET_ENDPOINT
+  </RouteRule>
