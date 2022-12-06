@@ -182,15 +182,11 @@ if [ "$debug" = "T" ]; then
     MVN_DEBUG="-X"
 fi
 
-if [ "$MVN_REDUCE_LOGS" = "T" ]; then
-    MVN_NTP="-ntp"
-fi
-
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
     logdebug "Deploy to apigee.googleapis.com"
-    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -209,7 +205,7 @@ elif [ "$apiversion" = "apigee" ]; then
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
     logdebug "Deploy to Edge API"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
