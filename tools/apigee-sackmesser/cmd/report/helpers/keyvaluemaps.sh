@@ -15,13 +15,12 @@
 # limitations under the License.
 
 echo "<h3>Key Value Maps</h3>" >> "$report_html"
-echo "<p><strong>Note:</strong>If migrating from Apigee Private Cloud (OPDK) to Apigee X/hybrid, Unencrypted KVMs will have to be converted to Encrypted KVMs.</p>" >> "$report_html"
+echo "<p><strong>Note</strong>If migrating from Apigee Private Cloud (OPDK) to Apigee X/hybrid, Unencrypted KVMs will have to be converted to Encrypted KVMs.</p>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/kvm"
 
 sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps"| jq -r -c '.[]|.' | while read -r kvmname; do
-        sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" > "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$kvmname".json)
+        sackmesser list "organizations/$organization/environments/$environment/keyvaluemaps/$(urlencode "$kvmname")" > "$export_folder/$organization/config/resources/edge/env/$environment/kvm/$(urlencode "$kvmname")".json
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/kvm"/*.json 1> /dev/null 2>&1; then
@@ -37,23 +36,25 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/kvms".json | while read i; do 
-    kvmName=$(echo "$i" | jq -r '.name')
-    _encrypted=$(echo "$i" | jq -r '.encrypted')
-    keyCount=$(echo "$i" | jq -r '.entry | length')
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/kvms".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/kvms".json | while read i; do 
+        name=$(echo "$i" | jq -r '.name')
+        _encrypted=$(echo "$i" | jq -r '.encrypted')
+        keyCount=$(echo "$i" | jq -r '.entry | length')
 
-    if [ $_encrypted = true ]
-        then
-            encrypted="✅"
-        else
-            encrypted="❌"
-    fi
+        if [ $_encrypted = true ]
+            then
+                encrypted="✅"
+            else
+                encrypted="❌"
+        fi
 
-    echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-    echo "<td>$kvmName</td>"  >> "$report_html"
-    echo "<td>"$encrypted"</td>"  >> "$report_html"
-    echo "<td>$keyCount</td>" >> "$report_html"
-    echo "</tr>"  >> "$report_html"
-done
+        echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+        echo "<td>$name</td>"  >> "$report_html"
+        echo "<td>"$encrypted"</td>"  >> "$report_html"
+        echo "<td>$keyCount</td>" >> "$report_html"
+        echo "</tr>"  >> "$report_html"
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"

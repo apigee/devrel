@@ -19,8 +19,7 @@ echo "<h3>Flow Hooks</h3>" >> "$report_html"
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"
 
 sackmesser list "organizations/$organization/environments/$environment/flowhooks"| jq -r -c '.[]|.' | while read -r flowhookname; do
-        sackmesser list "organizations/$organization/environments/$environment/flowhooks/$flowhookname" > "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$flowhookname".json
-        elem_count=$(jq '.entries? | length' "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$flowhookname".json)
+        sackmesser list "organizations/$organization/environments/$environment/flowhooks/$(urlencode "$flowhookname")" > "$export_folder/$organization/config/resources/edge/env/$environment/flowhook/$(urlencode "$flowhookname")".json
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/flowhook"/*.json 1> /dev/null 2>&1; then
@@ -36,25 +35,32 @@ echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
-jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json | while read i; do 
-    flowhookName=$(echo "$i" | jq -r '.name')
-    sharedFlow=$(echo "$i" | jq -r '.sharedFlow')
-    _continueOnError=$(echo "$i" | jq -r '.continueOnError')
+if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json ]; then
+    jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/flowhooks".json | while read i; do 
+        if [ "$opdk" == "T" ]; then
+            name=$(echo "$i" | jq -r '.name')
+        elif [ "$apiversion" = "google" ]; then
+            name=$(echo "$i" | jq -r '.flowHookPoint')
+        fi
+        
+        sharedFlow=$(echo "$i" | jq -r '.sharedFlow')
+        _continueOnError=$(echo "$i" | jq -r '.continueOnError')
 
-    if [ $_continueOnError = true ]
-        then
-            continueOnError="✅"
-        else
-            continueOnError="❌"
-    fi
-    if [ $flowhookName != null ]
-        then
-            echo "<tr class=\"$highlightclass\">"  >> "$report_html"
-            echo "<td>$flowhookName</td>"  >> "$report_html"
-            echo "<td>$sharedFlow</td>" >> "$report_html"
-            echo "<td>$continueOnError</td>" >> "$report_html"
-            echo "</tr>"  >> "$report_html"
-    fi            
-done
+        if [ $_continueOnError = true ]
+            then
+                continueOnError="✅"
+            else
+                continueOnError="❌"
+        fi
+        if [ $name != null ]
+            then
+                echo "<tr class=\"$highlightclass\">"  >> "$report_html"
+                echo "<td>$name</td>"  >> "$report_html"
+                echo "<td>$sharedFlow</td>" >> "$report_html"
+                echo "<td>$continueOnError</td>" >> "$report_html"
+                echo "</tr>"  >> "$report_html"
+        fi            
+    done
+fi
 
 echo "</tbody></table></div>" >> "$report_html"
