@@ -53,8 +53,8 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
     <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
     <project.root.dir>${basedir}</project.root.dir>
     <target.root.dir>${basedir}/target</target.root.dir>
-    <edge.apigee.plugin.version>1.3.2</edge.apigee.plugin.version>
-    <x.apigee.plugin.version>2.3.1</x.apigee.plugin.version>
+    <edge.apigee.plugin.version>1.3.3</edge.apigee.plugin.version>
+    <x.apigee.plugin.version>2.3.5</x.apigee.plugin.version>
   </properties>
   <!-- This is where you add the environment specific properties under various profile names -->
   <!-- For apigee.options, refer to "Advanced Configuration Options" under https://github.com/apigee/apigee-deploy-maven-plugin#pom-xml-sample -->

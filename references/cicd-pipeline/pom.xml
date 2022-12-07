@@ -75,8 +75,8 @@ limitations under the License.
 			<!-- Apigee X and hybrid -->
 			<id>googleapi</id>
 			<properties>
-				<apigee.plugin.version>2.3.1</apigee.plugin.version>
-				<apigee.config-plugin.version>2.3.0</apigee.config-plugin.version>
+				<apigee.plugin.version>2.3.5</apigee.plugin.version>
+				<apigee.config-plugin.version>2.4.4</apigee.config-plugin.version>
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 				<apigee.bearer>${token}</apigee.bearer> <!-- this takes precedence over service account file -->
 				<apigee.serviceaccount.file>${sa}</apigee.serviceaccount.file>
