@@ -47,7 +47,7 @@ if [ "$apiversion" = "--apigeeapi" ]; then
         --description "See Apigee DevRel references/common-shared-flows"
 else
     sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak
-    APIGEE_TOKEN=$(gcloud auth print-access-token)
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
     sackmesser deploy -d "$SCRIPTPATH" "$apiversion" \
         -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -h "$APIGEE_X_HOSTNAME" \
         --description "See Apigee DevRel references/common-shared-flows"

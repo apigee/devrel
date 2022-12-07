@@ -16,7 +16,7 @@
 PROJECT_ID=$(gcloud config get-value project)
 
 # Get an Apigee token
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 # delete developer and related artifacts (client apps)
 echo "[INFO] Deleting recaptcha enterprise developer and apps"

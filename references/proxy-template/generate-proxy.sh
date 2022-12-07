@@ -107,7 +107,7 @@ fi
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # get apigee token
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
     # create target server if does not exist
     response=$(curl -X GET \
