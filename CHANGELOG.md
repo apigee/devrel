@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.5.0](https://github.com/apigee/devrel/compare/v1.4.0...v1.5.0) (2022-12-06)
+
+
+### Features
+
+* add styling to kvm notes ([6c928da](https://github.com/apigee/devrel/commit/6c928da8ee8f516d57f152dc6a5ffc22aa14eb3a))
+* adding google authentication to templating ([802e7c4](https://github.com/apigee/devrel/commit/802e7c41660627ec343950afe63908ef8109f92c))
+* adding only caches listing capability for apigee x reporting ([b35ad02](https://github.com/apigee/devrel/commit/b35ad0267b9ff8d69d5dec42bf58b297d63e1f62))
+* allow for wildcard path matching in endpoints importer ([d66d197](https://github.com/apigee/devrel/commit/d66d1975a5ced754dde00f1571633c0a50f6d2ac))
+* cloud endpoints importer ([89a0258](https://github.com/apigee/devrel/commit/89a0258e578a901d90ba3ab3cd14713a731ebeef))
+* OAS client authentication ([50b489e](https://github.com/apigee/devrel/commit/50b489e51f4bc625cd662a0dd8d174d6806743ad))
+* root-level target backends ([22b4f52](https://github.com/apigee/devrel/commit/22b4f52b31be9054cc907667cf55e94fd5b994c8))
+
+
+### Bug Fixes
+
+* api products table formating ([657708a](https://github.com/apigee/devrel/commit/657708a0c58a52f1804ded7e24659367fe185cf7))
+* change yq version in pipeline-runner ([c8e7b80](https://github.com/apigee/devrel/commit/c8e7b80720512ccfe910f1cb470689cb3d32fd8a))
+* jq error for non existing files ([49a2379](https://github.com/apigee/devrel/commit/49a2379446f82bc44c07888c8e0ff9577ff98070))
+* jq error in apiproducts.sh ([dd17a62](https://github.com/apigee/devrel/commit/dd17a62cca27d2487e24ac4b2d9892bb6de10a30))
+* jq error on developers.sh ([1b2fdf7](https://github.com/apigee/devrel/commit/1b2fdf713d237a1bc775da864f10e2c039204dca))
+* refactor code ([852a2e9](https://github.com/apigee/devrel/commit/852a2e9e4e2e2426613bc977d6a5587416af5240))
+
 ## [1.4.0](https://github.com/apigee/devrel/compare/v1.3.0...v1.4.0) (2022-10-31)
 
 
