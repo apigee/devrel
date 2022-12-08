@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/apigee/devrel/compare/v1.5.0...v1.6.0) (2022-12-08)
+
+
+### Features
+
+* move sackmesser to Apigee API for CRUD on kvm entries in Apigee (breaking for hybrid &lt;1.8) ([93bb22e](https://github.com/apigee/devrel/commit/93bb22e73a8585c2260db6e102693811d5dca8a3))
+
+
+### Bug Fixes
+
+* force token refresh in pineline.sh ([978181e](https://github.com/apigee/devrel/commit/978181e9c77c3db364bb1b364fe13c077192bc61))
+* more aggressive gcloud token refreshes ([63ad536](https://github.com/apigee/devrel/commit/63ad53601671568b029ba9ce60a126d0b649ab87))
+* more aggressive token refresh for recaptcha example ([bdcdef2](https://github.com/apigee/devrel/commit/bdcdef241adff69573b8e97a73c435f1c9332832))
+
 ## [1.5.0](https://github.com/apigee/devrel/compare/v1.4.0...v1.5.0) (2022-12-06)
 
 
