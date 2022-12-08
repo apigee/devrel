@@ -42,22 +42,23 @@ fi
 
 latest_revision=$(sackmesser list "organizations/$organization/environments/$environment/deployments$sf_query_param" | jq -r -c --arg res_name "$res_name" ". | map(select(.name==\"$res_name\") | .revision) | max")
 
-elapsed=0
-max_elapsed=75 # max retries
+elapsed_retries=0
+max_retries=60 # max retries
+start_time=$SECONDS
 
 loginfo "Sackmesser await deployment of rev. $latest_revision for $res_type $res_name START (max retries $max_elapsed)"
 
 until [ "$deploy_state" = "READY" ] || [ "$deploy_state" = "deployed" ]; do
     deploy_state=$(sackmesser list "organizations/$organization/environments/$environment/$res_type_uri/$res_name/revisions/$latest_revision/deployments" | jq -r '.state')
-    logdebug "Sackmesser await $res_type $res_name: Status: $deploy_state"
+    loginfo "Sackmesser await $res_type $res_name: Status: $deploy_state"
 
-    elapsed=$((elapsed+1))
+    elapsed_retries=$((elapsed_retries+1))
 
-    if [ "$elapsed" -ge "$max_elapsed" ]; then
-        logerror "await $ref_type $ref_name has timed out after $elapsed retries"
+    if [ "$elapsed_retries" -ge "$max_retries" ]; then
+        logerror "Sackmesser await $res_type $res_name has timed out after $elapsed_retries retries ($(( SECONDS - start_time))s)"
         exit 1
     fi
-    sleep 1
+    sleep 3
 done
 
 loginfo "Sackmesser await deployment of rev. $latest_revision for $res_type $res_name DONE"
