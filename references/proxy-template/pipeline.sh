@@ -33,7 +33,7 @@ TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # deploy all common shared flows
-    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi --async)
 
     # clean up
     rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
@@ -64,7 +64,7 @@ fi
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # deploy all common shared flows
-    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi)
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi --async)
 
     # clean up
     rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
