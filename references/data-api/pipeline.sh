@@ -49,7 +49,7 @@ done
 
 mv "$PROXY_DIR/apiproxy/proxy.xml" "$PROXY_DIR/apiproxy/$PROXY_NAME.xml"
 
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -d "$PROXY_DIR" -t "$APIGEE_TOKEN" --deployment-sa "$SA_EMAIL"
 
 TEST_BASE_URI="$APIGEE_X_HOSTNAME/london/v1" npm run test

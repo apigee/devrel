@@ -269,7 +269,7 @@ generate_authz_url() {
         CODE_CHALLENGE_METHOD=""
         CODE_CHALLENGE=""
     fi
-    
+
     printf "\n"
     printf "##########################\n"
     printf "#### Authorization URL ###\n"
@@ -350,7 +350,7 @@ fi
 
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     echo "[INFO] Deploying Identitiy facade to Google API (For X/hybrid)"
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];
     then

@@ -18,7 +18,7 @@ set -e
 
 SCRIPTPATH=$( (cd "$(dirname "$0")" && pwd ))
 
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 export APIGEE_TOKEN
 
 # deploy shared flows
@@ -27,11 +27,13 @@ export APIGEE_TOKEN
 ARGS=$*
 SACKMESSER_ARGS="${ARGS:---googleapi}"
 
-sackmesser deploy \
-  -d healthcare-mock-v1 "$SACKMESSER_ARGS"
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 sackmesser deploy \
-  -d healthcare-v1 "$SACKMESSER_ARGS"
+  -d healthcare-mock-v1 "$SACKMESSER_ARGS" -t "$APIGEE_TOKEN"
+
+sackmesser deploy \
+  -d healthcare-v1 "$SACKMESSER_ARGS" -t "$APIGEE_TOKEN"
 
 npm i --no-fund --prefix healthcare-v1
 TEST_BASEPATH='/healthcare/v1' TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix healthcare-v1

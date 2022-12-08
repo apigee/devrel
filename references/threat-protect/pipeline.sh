@@ -37,7 +37,7 @@ fi
 
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     echo "[INFO] Deploying Identitiy facade to Google API (For X/hybrid)"
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
 
     sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$APIGEE_TOKEN" -d "$SCRIPTPATH"
     cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test

@@ -31,7 +31,7 @@ echo "Generating the proxy from an OAS"
 "$SCRIPTPATH/import-endpoints.sh" --oas ./examples/openapi_test.yaml -b /headers -n oas-import-headers -q
 
 echo "Deploying the generated proxy"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy --googleapi -d "$SCRIPTPATH"/generated/oas-import-headers \
   -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
   -n oas-import-headers
@@ -47,7 +47,7 @@ echo "Generating the proxy from an OAS"
 "$SCRIPTPATH/import-endpoints.sh" --oas ./examples/openapi_test.json -b /ip -n oas-import-ip -q
 
 echo "Deploying the generated proxy"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy --googleapi -d "$SCRIPTPATH"/generated/oas-import-ip \
   -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
   -n oas-import-ip

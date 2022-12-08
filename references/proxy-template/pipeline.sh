@@ -18,7 +18,7 @@ set -e
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
 # default proxy name and version
-PROXY=example 
+PROXY=example
 VERSION=v1
 
 # default target server URL
@@ -33,7 +33,7 @@ TARGET_URL="${TARGET_URL:-"$DEFAULT_TARGET_URL"}"
 if [ -z "$1" ] || [ "$1" = "--apigeeapi" ];then
 
     # deploy all common shared flows
-    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi)
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --apigeeapi --async)
 
     # clean up
     rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
@@ -64,14 +64,14 @@ fi
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
 
     # deploy all common shared flows
-    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi)
+    (cd "$SCRIPTPATH"/../common-shared-flows && sh deploy.sh all --googleapi --async)
 
     # clean up
     rm -rf "$SCRIPTPATH"/"$PROXY"-"$VERSION"
 
     # generate the proxy configuration
     echo "[INFO] Creating Proxy template and Target Server configuration"
-    
+
     PROXY="$PROXY" \
     VERSION="$VERSION" \
     VHOST="$VHOST" \
@@ -81,7 +81,7 @@ if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     echo "[INFO] Deploying Proxy Template to Google API (For X/hybrid)"
 
     # get apigee token
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
 
     # deploy Apigee artifacts: proxy and target server
     sackmesser deploy --googleapi \

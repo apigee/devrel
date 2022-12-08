@@ -23,6 +23,6 @@ TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net" npm test --prefix proxy-v1
 
 echo "Testing on Apigee X"
 mvn install -Papigee-x -Dapigee.env="$APIGEE_X_ENV" -Dapigee.org="$APIGEE_X_ORG" \
-  -Dapigee.bearer="$(gcloud auth print-access-token)" -B -ntp
+  -Dapigee.bearer="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')" -B -ntp
 
  TEST_HOST="$APIGEE_X_HOSTNAME" npm test --prefix proxy-v1

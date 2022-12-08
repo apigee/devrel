@@ -41,7 +41,7 @@ curl --fail "https://$APIGEE_ORG-$APIGEE_ENV.apigee.net/token-validation/v0/jwt"
 
 # Apigee X Pipeline
 "$SCRIPTPATH"/deploy.sh "$SCRIPTPATH/$SA_NAME-key.json" --googleapi
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy --googleapi -d "$SCRIPTPATH"/test/token-validation \
   -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" \
   -n token-validation-v0

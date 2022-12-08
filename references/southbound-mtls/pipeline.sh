@@ -48,7 +48,7 @@ TEST_HOST="$APIGEE_ORG-$APIGEE_ENV.apigee.net"
 
 # Apigee X
 
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
 
 cp "$SCRIPTPATH"/edge.template.json "$SCRIPTPATH"/edge.json
 sed -i.bak "s/@ENV_NAME@/$APIGEE_X_ENV/g" "$SCRIPTPATH"/edge.json && rm "$SCRIPTPATH"/edge.json.bak

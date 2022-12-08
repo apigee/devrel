@@ -35,8 +35,8 @@ RUN apk add --no-cache \
   ca-certificates \
   ttf-freefont
 
-# Reduce nighly log (requires maven 3.6.1+)
-ENV MVN_REDUCE_LOGS="T"
+# Reduce nighly log (note: -ntp requires maven 3.6.1+)
+RUN alias mvn='mvn -ntp'
 
 # install claat
 RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
