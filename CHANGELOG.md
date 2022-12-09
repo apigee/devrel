@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/apigee/devrel/compare/v1.6.0...v1.6.1) (2022-12-09)
+
+
+### Bug Fixes
+
+* bump hybrid quickstart to latest 1.8.3 ([a2bd699](https://github.com/apigee/devrel/commit/a2bd699370dfa5f63e144900e01be2d92b4b455d))
+
 ## [1.6.0](https://github.com/apigee/devrel/compare/v1.5.0...v1.6.0) (2022-12-08)
 
 
