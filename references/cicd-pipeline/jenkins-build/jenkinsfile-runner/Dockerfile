@@ -24,6 +24,9 @@ WORKDIR /usr/share/jenkins
 RUN jar -xf jenkins.war
 USER jenkins
 
+# Reduce nighly log (note: -ntp requires maven 3.6.1+)
+RUN alias mvn='mvn -ntp'
+
 COPY --from=filerunner --chown=jenkins /app /app
 WORKDIR /app/jenkins
 
