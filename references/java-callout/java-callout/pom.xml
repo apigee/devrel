@@ -43,7 +43,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
       <version>1.0.0</version>
       <scope>system</scope>
       <systemPath>
-      ${project.basedir}/src/main/resources/message-flow-1.0.0.jar</systemPath>
+      ${project.basedir}/apigee-lib/message-flow-1.0.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.apigee.edge</groupId>
@@ -51,7 +51,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
       <version>1.0.0</version>
       <scope>system</scope>
       <systemPath>
-      ${project.basedir}/src/main/resources/expressions-1.0.0.jar</systemPath>
+      ${project.basedir}/apigee-lib/expressions-1.0.0.jar</systemPath>
     </dependency>
   </dependencies>
   <build>

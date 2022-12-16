@@ -15,6 +15,12 @@
 
 set -e
 
+echo "Downloading Apigee lib jars"
+LIB_FOLDER="./java-callout/apigee-lib"
+mkdir -p "./java-callout/apigee-lib"
+(cd $LIB_FOLDER && curl -O "https://raw.githubusercontent.com/apigee/api-platform-samples/master/doc-samples/java-properties/lib/message-flow-1.0.0.jar")
+(cd $LIB_FOLDER && curl -O "https://raw.githubusercontent.com/apigee/api-platform-samples/master/doc-samples/java-properties/lib/expressions-1.0.0.jar")
+
 echo "Testing on Apigee Edge"
 mvn install -Papigee-edge -Dapigee.env="$APIGEE_ENV" -Dapigee.org="$APIGEE_ORG" \
   -Dapigee.username="$APIGEE_USER" -Dapigee.password="$APIGEE_PASS" -B -ntp
