@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM maven:3.6-alpine
+FROM alpine:3.17
 
 RUN apk add --no-cache \
+  bash \
+  curl \
+  maven \
+  openjdk17 \
   git \
   jq \
   libxml2-utils \
@@ -25,7 +29,6 @@ RUN apk add --no-cache \
 RUN npm install --global apigeelint@2.10.0
 
 COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
-COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
 
 RUN mkdir /opt/apigee
 
