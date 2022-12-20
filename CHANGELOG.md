@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/apigee/devrel/compare/v1.6.1...v1.7.0) (2022-12-20)
+
+
+### Features
+
+* bump sackmesser docker image to latest versions ([351279d](https://github.com/apigee/devrel/commit/351279d9b8870bf00ebb351912d2dd6707c21d6e))
+
+
+### Bug Fixes
+
+* reference Apigee jars for Java callout example ([565d928](https://github.com/apigee/devrel/commit/565d9284e6e069b5b82a8ee715ddd26f06fd7738))
+
 ## [1.6.1](https://github.com/apigee/devrel/compare/v1.6.0...v1.6.1) (2022-12-09)
 
 
