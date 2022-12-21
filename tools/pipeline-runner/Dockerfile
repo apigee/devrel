@@ -38,6 +38,8 @@ RUN apk add --no-cache \
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
 RUN alias mvn='mvn -ntp'
 
+ENV MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
 # install claat
 RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
 RUN chmod +x /usr/local/bin/claat
