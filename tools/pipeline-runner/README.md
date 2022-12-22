@@ -3,7 +3,10 @@
 The pipeline runner provides the runtime execution context and orchestration
 for running the pipelines of the individual Apigee DevRel projects.
 
-## Required Setup
+For instructions on how to use the pipeline runner for DevRel pipelines
+please see the [PIPELINES.md](../../PIPELINES.md) in the repo root.
+
+## Contributing
 
 If you want to run the pipeline runner in your own project then you need to
 run the `gcp-setup.sh` script to create the required secrets in Cloud Secret

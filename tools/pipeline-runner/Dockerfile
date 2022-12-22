@@ -36,16 +36,16 @@ RUN apk add --no-cache \
   ttf-freefont
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
-RUN alias mvn='mvn -ntp'
-
-ENV MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
+  printf '#!/bin/bash\n/usr/bin/_mvn -ntp "$@"' > /usr/bin/mvn && \
+  chmod +x /usr/bin/mvn
 
 # install claat
 RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
 RUN chmod +x /usr/local/bin/claat
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+  PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install --global puppeteer@5.2.1
 
