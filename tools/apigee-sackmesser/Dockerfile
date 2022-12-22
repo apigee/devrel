@@ -35,6 +35,11 @@ RUN mkdir /opt/apigee
 RUN addgroup -S apigee && adduser -S apigee -G apigee && \
   chown -R apigee /opt/devrel && chown -R apigee /opt/apigee
 
+# Reduce log (note: -ntp requires maven 3.6.1+)
+RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
+  printf '#!/bin/bash\n/usr/bin/_mvn -ntp "$@"' > /usr/bin/mvn && \
+  chmod +x /usr/bin/mvn
+
 USER apigee
 
 # Pre-warm maven cache for deploy

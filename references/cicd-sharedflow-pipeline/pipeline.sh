@@ -15,7 +15,6 @@
 # limitations under the License.
 
 set -e
-set -x
 
 # Apigee X/hybrid
 
