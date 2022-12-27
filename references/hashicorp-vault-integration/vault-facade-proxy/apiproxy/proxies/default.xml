@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2022 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<ProxyEndpoint name="default">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>KeyValueMapGetVaultToken</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <Flows>
+        <Flow name="Jwks">
+            <Condition>(proxy.pathsuffix MatchesPath "/jwks") and (request.verb = "GET")</Condition>
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>Assign-MessageReadVaultKeys</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>JavaCalloutVaultKeysToJwks</Name>
+                </Step>
+            </Response>
+        </Flow>
+        <Flow name="Login">
+            <Condition>(proxy.pathsuffix MatchesPath "/login") and (request.verb = "POST")</Condition>
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>AssignMessage.AssignVariablesFromForm</Name>
+                </Step>
+                <Step>
+                    <Name>AssignMessage.DefineJwtHeaderAndPaylod</Name>
+                </Step>
+                <Step>
+                    <Name>JavaCalloutUrlEncodeHeader</Name>
+                </Step>
+                <Step>
+                    <Name>JavaCallout.UrlEncodePayload</Name>
+                </Step>
+                <Step>
+                    <Name>AssignMessage.DefineJsonToSign</Name>
+                </Step>
+                <Step>
+                    <Name>JavaCallout.UrlEncodeJwsHeaderAndPayload</Name>
+                </Step>
+                <Step>
+                    <Name>AssignMessageVaultSignPayload</Name>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>ExtractVariables.Signature</Name>
+                </Step>
+                <Step>
+                    <Name>AssignMessage.JsonWithJwtToken</Name>
+                </Step>
+            </Response>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <HTTPProxyConnection>
+        <BasePath>/vault-facade</BasePath>
+    </HTTPProxyConnection>
+    <RouteRule name="default">
+        <TargetEndpoint>default</TargetEndpoint>
+    </RouteRule>
+</ProxyEndpoint>

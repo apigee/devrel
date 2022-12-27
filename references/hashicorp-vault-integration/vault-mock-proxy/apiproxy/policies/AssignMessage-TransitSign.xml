@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright 2022 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<AssignMessage continueOnError="false" enabled="true" name="AssignMessage-TransitSign">
+    <Set>
+        <Payload contentType="application/json">{
+  "request_id": "6dcdd067-111b-8dfd-f16e-01cefb72d938",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "key_version": 1,
+    "signature": "vault:v1:mCWue4BkGAHqcp-1vduPPoyY1i5L1qgdpe3YRpsOC-lAZYG1DK3sKHJ3HpeiTMDTd2n2EYWfvi4e1752nZI2GA"
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}</Payload>
+    </Set>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

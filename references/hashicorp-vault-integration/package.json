@@ -1,0 +1,11 @@
+{
+  "name": "js-callout",
+  "scripts": {
+    "test": "npm i --no-fund && npx cucumber-js test/integration/features"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.1",
+    "@panva/jose": "^1.9.3"
+  }
+}
