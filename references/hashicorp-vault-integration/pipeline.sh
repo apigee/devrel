@@ -60,14 +60,14 @@ if [ -z "$SKIP_MOCKING" ]; then
     # shellcheck disable=2005
     echo "$(awk  '/<Path>/{gsub(/<Path>/,"<Path>/vault-mock");print;next} //' "$TARGET_SERVER_DEF" )" > "$TARGET_SERVER_DEF"
 
-    sackmesser deploy --googleapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$MOCK_PROXY"
+    sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$MOCK_PROXY"
 fi
 
 envsubst < "$SCRIPTPATH/vault-facade-config/edge.json.tpl" > "$SCRIPTPATH/$VAULT_CONFIG/edge.json"
 
-sackmesser deploy --googleapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$VAULT_CONFIG"
+sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$VAULT_CONFIG"
 
-sackmesser deploy --googleapi -o "$APIGEE_ORG" -e "$APIGEE_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$VAULT_PROXY"
+sackmesser deploy --googleapi -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$TOKEN" -d "$SCRIPTPATH/$VAULT_PROXY"
 
 ## integration tests
 (cd "$SCRIPTPATH" && npm install --no-fund && TEST_HOSTNAME="$APIGEE_X_HOSTNAME" npm run test)
