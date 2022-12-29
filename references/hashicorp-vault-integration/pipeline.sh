@@ -29,6 +29,8 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 # Java Callout
 #
 
+"$SCRIPTPATH"/apigee-lib-install.sh "$SCRIPTPATH"/generated/apigee-lib
+
 (cd "$SCRIPTPATH"/vault-facade-callout && mvn package)
 
 #
@@ -48,7 +50,7 @@ mkdir -p $VAULT_CONFIG
 
 ## GENERATED: configure and deploy Vault Facade API Proxy
 export VAULT_PROXY=generated/vault-facade-proxy
-mkdir -p $VAULT_PROXY
+mkdir -p "$SCRIPTPATH"/ -p $VAULT_PROXY
 
 cp -R "$SCRIPTPATH"/vault-facade-proxy/* $VAULT_PROXY
 
@@ -57,7 +59,7 @@ cp vault-facade-callout/target/vault-keys-to-jwks-0.0.1.jar $VAULT_PROXY/apiprox
 
 if [ -z "$SKIP_MOCKING" ]; then
     ## GENERATED: generate config objects [targetserver and kvm]
-    export VAULT_HOSTNAME=$APIGEE_X_HOSTNAME
+    export VAULT_HOSTNAME="$APIGEE_X_HOSTNAME"
     export VAULT_PORT=443
     export VAULT_SSL_INFO='"sSLInfo": {
                     "enabled": true,
@@ -68,7 +70,7 @@ if [ -z "$SKIP_MOCKING" ]; then
 
 
     # adjuct for mocking
-    export TARGET_SERVER_DEF=$SCRIPTPATH/$VAULT_PROXY/apiproxy/targets/default.xml
+    export TARGET_SERVER_DEF="$SCRIPTPATH/$VAULT_PROXY/apiproxy/targets/default.xml"
     # shellcheck disable=2005
     echo "$(awk  '/<Path>/{gsub(/<Path>/,"<Path>/vault-mock");print;next} //' "$TARGET_SERVER_DEF" )" > "$TARGET_SERVER_DEF"
 
