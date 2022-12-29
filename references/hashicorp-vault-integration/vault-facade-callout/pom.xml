@@ -30,13 +30,13 @@
 
     <dependencies>
         <dependency>
-	        <groupId>com.apigee</groupId>
+	        <groupId>com.apigee.edge</groupId>
 	        <artifactId>expressions</artifactId>
 	        <version>1.0.0</version>
 	        <scope>provided</scope>
 	    </dependency>
 	    <dependency>
-	        <groupId>com.apigee</groupId>
+	        <groupId>com.apigee.edge</groupId>
 	        <artifactId>message-flow</artifactId>
 	        <version>1.0.0</version>
 	        <scope>provided</scope>
