@@ -24,9 +24,18 @@ set -e
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
+
+#
+# Java Callout
+#
+
+(cd "$SCRIPTPATH"/vault-facade-callout && mvn package)
+
+#
+# Vault Proxy
+#
+
 TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
-
-
 
 mkdir -p "$SCRIPTPATH/generated"
 
@@ -36,7 +45,15 @@ export MOCK_PROXY=vault-mock-proxy
 export VAULT_CONFIG=generated/vault-facade-config
 mkdir -p $VAULT_CONFIG
 
-export VAULT_PROXY=vault-facade-proxy
+
+## GENERATED: configure and deploy Vault Facade API Proxy
+export VAULT_PROXY=generated/vault-facade-proxy
+mkdir -p $VAULT_PROXY
+
+cp -R "$SCRIPTPATH"/vault-facade-proxy/* $VAULT_PROXY
+
+mkdir -p $VAULT_PROXY/apiproxy/resources/java
+cp vault-facade-callout/target/vault-keys-to-jwks-0.0.1.jar $VAULT_PROXY/apiproxy/resources/java
 
 if [ -z "$SKIP_MOCKING" ]; then
     ## GENERATED: generate config objects [targetserver and kvm]
@@ -49,11 +66,6 @@ if [ -z "$SKIP_MOCKING" ]; then
 
     export VAULT_TOKEN=dummy-token
 
-    ## GENERATED: configure and deploy Vault Facade API Proxy
-    export VAULT_PROXY=generated/vault-facade-proxy
-    mkdir -p $VAULT_PROXY
-
-    cp -R "$SCRIPTPATH"/vault-facade-proxy/* $VAULT_PROXY
 
     # adjuct for mocking
     export TARGET_SERVER_DEF=$SCRIPTPATH/$VAULT_PROXY/apiproxy/targets/default.xml
