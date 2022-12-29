@@ -23,7 +23,7 @@ fi
 if [ ! -f "$APIGEE_LIB/message-flow-1.0.0.jar" ]; then
     mkdir -p "$APIGEE_LIB"
 
-    curl  --output-dir "$APIGEE_LIB" -LO https://github.com/apigee/api-platform-samples/blob/5b67fe2c3ab23514b67d458a19b63159a2e3f2ab/doc-samples/java-hello/lib/message-flow-1.0.0.jar
+    curl  --output-dir "$APIGEE_LIB" -LO https://github.com/apigee/api-platform-samples/blob/5b67fe2c3ab23514b67d458a19b63159a2e3f2ab/doc-samples/java-hello/lib/message-flow-1.0.0.jar?raw=true
 
     mvn install:install-file -Dfile="$APIGEE_LIB/message-flow-1.0.0.jar" \
     -DgroupId=com.apigee.edge -DartifactId=message-flow -Dversion=1.0.0 -Dpackaging=jar -DgeneratePom=true
@@ -32,7 +32,7 @@ fi
 if [ ! -f "$APIGEE_LIB/expressions-1.0.0.jar" ]; then
     mkdir -p "$APIGEE_LIB"
 
-    curl  --output-dir "$APIGEE_LIB" -LO https://github.com/apigee/api-platform-samples/blob/5b67fe2c3ab23514b67d458a19b63159a2e3f2ab/doc-samples/java-hello/lib/expressions-1.0.0.jar
+    curl  --output-dir "$APIGEE_LIB" -LO https://github.com/apigee/api-platform-samples/blob/5b67fe2c3ab23514b67d458a19b63159a2e3f2ab/doc-samples/java-hello/lib/expressions-1.0.0.jar?raw=true
 
     mvn install:install-file -Dfile="$APIGEE_LIB/expressions-1.0.0.jar" \
     -DgroupId=com.apigee.edge -DartifactId=expressions -Dversion=1.0.0 -Dpackaging=jar -DgeneratePom=true
