@@ -1,8 +1,8 @@
 <!-- markdownlint-disable MD033 -->
 
-# Apigee Proxy and Hashicorp Vault Integration
+# Apigee Proxy and HashiCorp Vault Integration
 
-This repository demonstrates an interaction between an Apigee API proxy and Hashicorp Vault. The operation of signing JWT token is delegated to the Vault server that is used as an EaaS (Encryption as a Service) solution. The private key thus is locked in the Vault server and never exposed. The public keys used for signature verification are proxied from the Vault server and returned in a canonical JWKS format.
+This repository demonstrates an interaction between an Apigee API proxy and HashiCorp Vault. The operation of signing JWT token is delegated to the Vault server that is used as an EaaS (Encryption as a Service) solution. The private key thus is locked in the Vault server and never exposed. The public keys used for signature verification are proxied from the Vault server and returned in a canonical JWKS format.
 
 ## Technical Setup
 

@@ -59,8 +59,8 @@ further to fit a particular use case.
   popular API auth schemes
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
-- [Hashicorp Vault Integration](references/hashicorp-vault-integration) - A reference for
-  integrating Apigee Proxies with Hashicorp Vault for EaaS services
+- [HashiCorp Vault Integration](references/hashicorp-vault-integration) - A reference for
+  integrating Apigee Proxies with HashiCorp Vault for EaaS services
 
 ## Tools
 
