@@ -39,15 +39,15 @@ echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/ldapresources".json ]; then
     jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/ldapresources".json | while read i; do 
         name=$(echo "$i" | jq -r '.name')
-        admin=$(echo "$i" | jq -r '.admin')
-        connectPool=$(echo "$i" | jq -r '.connectPool')
-        connection=$(echo "$i" | jq -r '.connection')
+        admin=$(echo "$i" | jq -r '.admin' | jq -r 'keys[] as $k | "<li>\($k): \(.[$k] | .)</li>"')
+        connectPool=$(echo "$i" | jq -r '.connectPool' | jq -r 'keys[] as $k | "<li>\($k): \(.[$k] | .)</li>"')
+        connection=$(echo "$i" | jq -r '.connection' | jq -r 'keys[] as $k | "<li>\($k): \(.[$k] | .)</li>"')
 
         echo "<tr class=\"$highlightclass\">"  >> "$report_html"
         echo "<td>$name</td>"  >> "$report_html"
-        echo "<td>$admin</td>" >> "$report_html"
-        echo "<td>$connectPool</td>" >> "$report_html"
-        echo "<td>$connection</td>" >> "$report_html"
+        echo "<td><ul>$admin</ul></td>" >> "$report_html"
+        echo "<td><ul>$connectPool</ul></td>" >> "$report_html"
+        echo "<td><ul>$connection</ul></td>" >> "$report_html"
         echo "</tr>"  >> "$report_html"
     done
 fi
