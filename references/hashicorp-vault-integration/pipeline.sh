@@ -69,7 +69,7 @@ if [ -z "$SKIP_MOCKING" ]; then
     export VAULT_TOKEN=dummy-token
 
 
-    # adjuct for mocking
+    # adjust for mocking
     export TARGET_SERVER_DEF="$SCRIPTPATH/$VAULT_PROXY/apiproxy/targets/default.xml"
     # shellcheck disable=2005
     echo "$(awk  '/<Path>/{gsub(/<Path>/,"<Path>/vault-mock");print;next} //' "$TARGET_SERVER_DEF" )" > "$TARGET_SERVER_DEF"
