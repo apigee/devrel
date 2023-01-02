@@ -429,6 +429,12 @@ source $helper_dir/references.sh
 
 if [ "$opdk" == "T" ]; then
     source $helper_dir/virtualhosts.sh
+
+    echo "<h2>Unsupported API Configurations</h2>" >> "$report_html"
+    source $helper_dir/companies.sh
+    source $helper_dir/companyapps.sh
+    source $helper_dir/ldapresources.sh
+    source $helper_dir/users.sh
 fi
 
 echo "<h2>Organization Configurations</h2>" >> "$report_html"
