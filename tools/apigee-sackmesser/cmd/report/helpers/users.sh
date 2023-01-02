@@ -18,11 +18,9 @@ echo "<h3>Users</h3>" >> "$report_html"
 
 mkdir -p "$export_folder/$organization/config/resources/edge/env/$environment/user"
 
-sackmesser list "users"| jq -r -c '.[]|.[]' | while read -r username; do
-        email=$(echo "$username" | jq -r '.name')
-        # loginfo "users/$(urlencode $email)"
-        # sackmesser list --opdk "users/test@bar.com" > "$export_folder/$organization/config/resources/edge/env/$environment/user/$email".json
-        echo '{"emailID": "'$email'"}' > "$export_folder/$organization/config/resources/edge/env/$environment/user/$email".json
+sackmesser list "users"| jq -r -c '.[]|.[]' | while read -r userdetail; do
+        email=$(echo "$userdetail" | jq -r '.name')
+        sackmesser list "users/$email" > "$export_folder/$organization/config/resources/edge/env/$environment/user/$email".json
     done
 
 if ls "$export_folder/$organization/config/resources/edge/env/$environment/user"/*.json 1> /dev/null 2>&1; then
@@ -32,22 +30,22 @@ fi
 echo "<div><table id=\"user-lint\" data-toggle=\"table\" class=\"table\">" >> "$report_html"
 echo "<thead class=\"thead-dark\"><tr>" >> "$report_html"
 echo "<th data-sortable=\"true\" data-field=\"id\">Email</th>" >> "$report_html"
-# echo "<th data-sortable=\"true\" data-field=\"firstname\">First Name</th>" >> "$report_html"
-# echo "<th data-sortable=\"true\" data-field=\"lastname\">Last Name</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"firstname\">First Name</th>" >> "$report_html"
+echo "<th data-sortable=\"true\" data-field=\"lastname\">Last Name</th>" >> "$report_html"
 echo "</tr></thead>" >> "$report_html"
 
 echo "<tbody class=\"mdc-data-table__content\">" >> "$report_html"
 
 if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/users".json ]; then
     jq -c '.[]' "$export_folder/$organization/config/resources/edge/env/$environment/users".json | while read i; do 
-        emailId=$(echo "$i" | jq -r '.emailID')
-        # firstName=$(echo "$i" | jq -r '.firstName')
-        # lastName=$(echo "$i" | jq -r '.lastName')
+        emailId=$(echo "$i" | jq -r '.emailId')
+        firstName=$(echo "$i" | jq -r '.firstName')
+        lastName=$(echo "$i" | jq -r '.lastName')
 
         echo "<tr class=\"$highlightclass\">"  >> "$report_html"
         echo "<td>$emailId</td>"  >> "$report_html"
-        # echo "<td>$firstName</td>" >> "$report_html"
-        # echo "<td>$lastName</td>" >> "$report_html"
+        echo "<td>$firstName</td>" >> "$report_html"
+        echo "<td>$lastName</td>" >> "$report_html"
         echo "</tr>"  >> "$report_html"
     done
 fi
