@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.0](https://github.com/apigee/devrel/compare/v1.7.0...v1.8.0) (2023-02-08)
+
+
+### Features
+
+* added unsupported apis in report ([0f7e994](https://github.com/apigee/devrel/commit/0f7e994dc4bda25a58390d635704a083e0df37ee))
+
+
+### Bug Fixes
+
+* remove heading named unsupported ([c7b960f](https://github.com/apigee/devrel/commit/c7b960f448b2c3006e43a131bbff1f4d4e002fd1))
+* report data representation changed ([35cd4ca](https://github.com/apigee/devrel/commit/35cd4ca13d694a602bb142e335081684aa68050b))
+* user details in report ([173c65c](https://github.com/apigee/devrel/commit/173c65c9bce404109b440cbe3d6348d1bcee7633))
+
 ## [1.7.0](https://github.com/apigee/devrel/compare/v1.6.1...v1.7.0) (2022-12-20)
 
 
