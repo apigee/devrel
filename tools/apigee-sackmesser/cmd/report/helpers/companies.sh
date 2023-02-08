@@ -54,7 +54,7 @@ if [ -f "$export_folder/$organization/config/resources/edge/env/$environment/com
         echo "<td>$name</td>"  >> "$report_html"
         echo "<td>"$displayName"</td>"  >> "$report_html"
         echo "<td>$status</td>" >> "$report_html"
-         echo "<td>$apps</td>" >> "$report_html"
+        echo "<td>$apps</td>" >> "$report_html"
         echo "</tr>"  >> "$report_html"
     done
 fi
