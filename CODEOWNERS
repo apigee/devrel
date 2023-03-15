@@ -24,6 +24,7 @@
 /references/recaptcha-enterprise        @joelgauci
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
+/references/eventarc-apihub             @mat-613
 /tools/apigee-envoy-quickstart          @ganadurai
 /tools/apigee-openlegacy                @tomfi @joelgauci
 /tools/apigee-sackmesser                @danistrebel

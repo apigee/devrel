@@ -59,6 +59,8 @@ further to fit a particular use case.
   popular API auth schemes
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
+- [Eventarc + ApiHub integration](references/eventarc-apihub) - A reference for 
+  a workflow-based automation for Apigee X using API Hub and EventArc
 
 ## Tools
 
