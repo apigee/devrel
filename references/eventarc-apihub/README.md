@@ -20,6 +20,8 @@ We will always reference the Apigee X API management platform, but it is worth n
 
 ## High level design
 
+![High level design](./diagram.png "Diagram")
+
 ### Step 1: An API Developer creates or updates an API in the API hub
 Customers have shown a great interest in automating at scale the publication of API proxies in their fully managed Apigee X organization in correspondence of the publication from the developers of the specifications docs onto the Apigee API hub; the API proxies could be generated autonomously either as pass-through proxies (or as compliant and pre-populated by a given set of pre-configured Policy configurations and even a standard template including flow callouts to common organization and/or environment level resources).
 We want to define a sequence of events that can be autonomously generated and handled in occurrence of each. These events correspond to the first entry point for the API hub emitting an EventArc trigger when an API developer interacts with the API hub user interface; we will describe what happens next in Step 2.
