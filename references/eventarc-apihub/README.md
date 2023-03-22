@@ -59,6 +59,11 @@ There is one major benefit of this approach: Workflows instances will be trigger
 ### Step 8 (final): GCP Workflows notifies API Hub of the API deployment   
 As anticipated in the description of the Step 7, this represents the final step and this is the one that guarantees that the most up-to-date list and version of each published API in the API runtime gateway for the corresponding organization is presented to all (via UI and automation) users of the API hub. The Workflow has its own error handling logic, it is asynchronous and has eventual consistency design patterns so that even in case the API hub has a problem in receiving the notification immediately, this will not be discarded.
 
+## Reference description
+In the reference you will find tho directories:
+
+- /cloud-builder: it contains a custom builder for Google Cloud build that add all the tools required for the automation workflow to the Debian 11 container image
+- /workflows: it contains the Google Cloud Workflow templates that implement the two case of automation 
 
 ## External tools
 
