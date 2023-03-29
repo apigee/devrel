@@ -19,7 +19,7 @@ or use the pipeline.sh script to deploy a simple example.
 
 ```sh
 export APIGEE_X_ORG=<my-org>
-export APIGEE_X_ENG=<my-env>
+export APIGEE_X_ENV=<my-env>
 export APIGEE_X_HOSTNAME=<my-hostname>
 export DELETE_AFTER_TEST=false
 
