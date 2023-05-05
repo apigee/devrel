@@ -204,7 +204,6 @@ enable_all_apis() {
     logging.googleapis.com \
     meshca.googleapis.com \
     meshconfig.googleapis.com \
-    meshtelemetry.googleapis.com \
     monitoring.googleapis.com \
     pubsub.googleapis.com \
     stackdriver.googleapis.com \
