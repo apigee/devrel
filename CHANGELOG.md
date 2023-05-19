@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://github.com/apigee/devrel/compare/v1.8.0...v1.9.0) (2023-05-19)
+
+
+### Features
+
+* bump hybrid 1.9.2 plus local httpbin demo service ([da8b052](https://github.com/apigee/devrel/commit/da8b052b47b8809522daabefc720706477267491))
+
+
+### Bug Fixes
+
+* removing deprecated API, no longer needed for Apigee hybrid ([2cd7190](https://github.com/apigee/devrel/commit/2cd71903cf603d410f237c80b675fc440b7be44b))
+
 ## [1.8.0](https://github.com/apigee/devrel/compare/v1.7.0...v1.8.0) (2023-02-08)
 
 
