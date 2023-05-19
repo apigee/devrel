@@ -64,9 +64,9 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.8.3'
+    export APIGEE_HYBRID_VERSION='1.9.2'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
-    export CERT_MANAGER_VERSION='v1.7.3'
+    export CERT_MANAGER_VERSION='v1.11.1'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
 
     OS_NAME=$(uname -s)
@@ -675,10 +675,9 @@ ingressGateways:
 EOF
 
 if [ "$CERT_TYPE" = "google-managed" ]; then
-  echo "Setting Apigee Ingress IB to Internal because Ingress resource is used"
+  echo "Do not create a LB because the ingress resource is used to create a GCLB with a managed cert"
 cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
-  svcAnnotations:
-    networking.gke.io/load-balancer-type: "Internal"
+  svcType: ClusterIP
 EOF
 else
 cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
@@ -769,6 +768,8 @@ enable_trace() {
 
 deploy_example_proxy() {
   echo "🦄 Deploy Sample Proxy"
+
+  kubectl apply -f "$QUICKSTART_ROOT/example-proxy/resources.yaml"
 
   ENV_NAME=$1
   ENV_GROUP_NAME=$2
