@@ -104,7 +104,8 @@ technical or non-technical topic.
   deploying and testing a mock API, generated from an Open API Specification.
 - [Identity facade with Okta](labs/idp-okta-integration) [(web)](https://apigee.github.io/devrel/labs/idp-okta-integration)
   A 300 level lab that shows how to configure the Apigee Identity Facade with Okta IDP.
-
+- [Eventarc + ApiHub integration](labs/eventarc-apihub) - A lab for
+  a workflow-based automation for Apigee X using API Hub and EventArc
 ## Contributing
 
 See the [contributing instructions](./CONTRIBUTING.md) to get started.
