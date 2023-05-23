@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/apigee/devrel/compare/v1.9.0...v1.9.1) (2023-05-23)
+
+
+### Bug Fixes
+
+* **hybrid-quickstat:** add org-scoped UDCA SA binding ([eba3ab6](https://github.com/apigee/devrel/commit/eba3ab6d95d393785d43ae832d8ca85ecaa49e7c))
+
 ## [1.9.0](https://github.com/apigee/devrel/compare/v1.8.0...v1.9.0) (2023-05-19)
 
 
