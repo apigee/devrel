@@ -4,6 +4,7 @@
 /labs/bdd-proxy-development             @markjkelly
 /labs/best-practices-hackathon          @sauliuz @seymen
 /labs/idp-okta-integration              @teodlh
+/labs/eventarc-apihub                   @mat-613
 /references/cicd-pipeline               @danistrebel
 /references/cicd-sharedflow-pipeline    @ssvaidyanathan
 /references/cloud-logging-shared-flow   @danistrebel

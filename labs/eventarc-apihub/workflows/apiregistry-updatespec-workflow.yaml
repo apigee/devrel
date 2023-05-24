@@ -1,0 +1,84 @@
+# Copyright 2023 Google LLC
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#      http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+main:
+    params: [input]
+    steps:
+        - init:
+              assign:
+                  - project_id: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+                  - location_id: "global"
+        - checkServiceTipe:
+              switch:
+                  - condition: ${input.data.payload.mimeType == "application/x.openapi"}
+                    steps:
+                        - stepa:
+                              assign:
+                                  - service_type: "rest"
+                        - createBuildRest:
+                              call: googleapis.cloudbuild.v1.projects.builds.create
+                              args:
+                                  projectId: ${project_id}
+                                  parent: ${"projects/" + project_id + "/locations/" + location_id}
+                                  body:
+                                      steps:
+                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                            script: '${"curl -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +"  https://apigeeregistry.googleapis.com/v1/" + input.data.payload.name + ":getContents --output "+input.data.payload.filename}'
+                                          - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
+                                            script: '${"openapi2apigee generateApi "+input.api+" -s "+ input.data.payload.filename +" -d . -O true -B /"+input.api+"/"+input.version}'#TODO add targetEndpoint??
+                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                            script: '${"curl -X POST -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +" -F file=@" +input.api+"/"+ "apiproxy.zip \"https://apigee.googleapis.com/v1/organizations/" + project_id + "/apis?action=import&name="+input.api +"\""  }'
+                  - condition: ${input.data.payload.mimeType == "application/wsdl+xml"}
+                    steps:
+                        - stepb:
+                              assign:
+                                  - service_type: "soap"
+                        - createBuildSoap:
+                              switch:
+                                  - condition: ${text.split(input.data.payload.filename, ".")[1] != "zip"}
+                                    steps:
+                                        - createSoapPackageFromWsdl:
+                                              call: googleapis.cloudbuild.v1.projects.builds.create
+                                              args:
+                                                  projectId: ${project_id}
+                                                  parent: ${"projects/" + project_id + "/locations/" + location_id}
+                                                  body:
+                                                      steps:
+                                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                                            script: '${"curl -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +"  https://apigeeregistry.googleapis.com/v1/" + input.data.payload.name + ":getContents --output "+input.data.payload.filename}'
+                                                          - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
+                                                            script: '${"java -jar wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl="+ input.data.payload.filename + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.version}'#TODO  add targetEndpoint??
+                                                          - name: 'bash'
+                                                            script: 'mv *.zip package.zip'
+                                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                                            script: '${"curl -X POST -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +" -F file=@package.zip \"https://apigee.googleapis.com/v1/organizations/" + project_id + "/apis?action=import&name="+input.api +"\"" }'
+                                  - condition: ${text.split(input.data.payload.filename, ".")[1] == "zip"}
+                                    steps:
+                                        - createSoapPackageFromZip:
+                                              call: googleapis.cloudbuild.v1.projects.builds.create
+                                              args:
+                                                  projectId: ${project_id}
+                                                  parent: ${"projects/" + project_id + "/locations/" + location_id}
+                                                  body:
+                                                      steps:
+                                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                                            script: '${"curl -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +"  https://apigeeregistry.googleapis.com/v1/" + input.data.payload.name + ":getContents --output "+input.data.payload.filename}'
+                                                          - name: 'bash'
+                                                            script: '${"unzip "+input.data.payload.filename +" -d ./"+ text.split(input.data.payload.filename, ".")[0]}'
+                                                          - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
+                                                            script: '${"java -jar ../wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl=./"+ text.split(input.data.payload.filename, ".")[0]+"/service.wsdl" + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.version}' #TODO  add targetEndpoint??
+                                                          - name: 'bash'
+                                                            script: '${"rm " + input.data.payload.filename}'
+                                                          - name: 'bash'
+                                                            script: 'mv *.zip package.zip'
+                                                          - name: 'gcr.io/cloud-builders/gcloud'
+                                                            script: '${"curl -X POST -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +" -F file=@package.zip \"https://apigee.googleapis.com/v1/organizations/" + project_id + "/apis?action=import&name="+input.api +"\"" }'
+        - returnOutput:
+              return: ${service_type}
