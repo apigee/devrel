@@ -14,9 +14,9 @@ FROM debian:11
 WORKDIR /app
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    nodejs \
-    npm \
-    default-jre \
+    nodejs=12.22.12~dfsg-1~deb11u4 \
+    npm=7.5.2+ds-2 \
+    default-jre=2:1.11-72 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g openapi2apigee@1.2.0
