@@ -13,11 +13,14 @@ FROM debian:11
 
 WORKDIR /app
 
-RUN apt-get update
-RUN apt-get install nodejs npm -y
-RUN npm install -g openapi2apigee@1.2.0
-RUN apt-get install default-jre -y
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    nodejs \
+    npm \
+    default-jre \
+    && rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g openapi2apigee@1.2.0
 COPY wsdl2apigee-1.0.0-jar-with-dependencies.jar .
+
 ENTRYPOINT ["bash"]
 
