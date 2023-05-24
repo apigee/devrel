@@ -1,4 +1,4 @@
-# Eventarc Api Hub Lab
+# Eventarc API hub Lab
 
 Use [claat](https://github.com/googlecodelabs/tools) to
 generate static HTML site from the Markdown document.
