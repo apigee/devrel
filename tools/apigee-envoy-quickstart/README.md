@@ -136,7 +136,7 @@ The Apigee Envoy Quickstart Toolkit sets up the Envoy proxies with Apigee adapte
 1. **Run to install the quickstart toolkit.**
     ```bash
     cd ${DEVREL_HOME}/tools/apigee-envoy-quickstart/
-    ./aekitctl.sh --type istio-apigee-envoy --action install
+    ./aekitctl.sh --type standalone-apigee-envoy --action install
     ```
 
 1. **On successful run, it displays the commands (kubeclt run, curl) to validate the traffic intiated to the Envoy endpoints being protected by Apigee Adapter service.**
