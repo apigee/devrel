@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/apigee/devrel/compare/v1.9.1...v1.10.0) (2023-05-26)
+
+
+### Features
+
+* introducing eventarc apihub reference ([45e087d](https://github.com/apigee/devrel/commit/45e087d50e7088c339823cb47d6ecb7cdefdc60c), [a227b22](https://github.com/apigee/devrel/commit/a227b227364fd1641ba0549fc1b14a4c21d56041), [a4293be](https://github.com/apigee/devrel/commit/a4293be3c7fa9eb36dbfe1c68653c6cc61077418), [1705882](https://github.com/apigee/devrel/commit/17058829560253f727571c5979a05e990102ca26))
+
 ## [1.9.1](https://github.com/apigee/devrel/compare/v1.9.0...v1.9.1) (2023-05-23)
 
 
