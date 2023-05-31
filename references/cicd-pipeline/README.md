@@ -108,7 +108,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 # Required only for org-level config
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$CLOUD_BUILD_SA" \
-  --role="roles/apigee.orgAdmin"
+  --role="roles/apigee.admin"
 ```
 
 Configure the (externally reachable) hostname of your Apigee environment
