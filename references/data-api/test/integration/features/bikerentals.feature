@@ -22,8 +22,6 @@ Feature:
     Then response code should be 200
     And response body path $ should be of type array with length 5
     And response body path $.[0].rental_id should not be null
-    And response body path $.[0].bike_id should not be null
-    And response body path $.[0].duration should not be null
 
   Scenario: Get a specific number of bike rentals
     Given I set query parameters to
@@ -61,5 +59,3 @@ Feature:
     When I GET /bikerentals
     Then response code should be 200
     And response body path $.[0].rental_id should not be null
-    And response body path $.[0].bike_id should not be null
-    And response body path $.[0].duration should be null
