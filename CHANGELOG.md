@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/apigee/devrel/compare/v1.10.0...v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **data-api:** remove nullable fields from data-api test cases ([7767d7b](https://github.com/apigee/devrel/commit/7767d7bb86ad5823fb6a5b037a0a06c376f6dca5))
+
 ## [1.10.0](https://github.com/apigee/devrel/compare/v1.9.1...v1.10.0) (2023-05-26)
 
 
