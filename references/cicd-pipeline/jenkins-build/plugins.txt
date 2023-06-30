@@ -1,4 +1,4 @@
-configuration-as-code:1512.vb_79d418d5fc8
+configuration-as-code:1569.vb_72405b_80249
 cucumber-reports:5.7.3
 git:4.11.5
 htmlpublisher:1.30
