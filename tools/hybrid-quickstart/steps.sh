@@ -64,9 +64,9 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.9.2'
+    export APIGEE_HYBRID_VERSION='1.10.0'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
-    export CERT_MANAGER_VERSION='v1.11.1'
+    export CERT_MANAGER_VERSION='v1.12.2'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
 
     OS_NAME=$(uname -s)
@@ -74,11 +74,9 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "- 🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export JQ_VERSION='jq-1.6/jq-linux64'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "- 🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export JQ_VERSION='jq-1.6/jq-osx-amd64'
       if ! [ -x "$(command -v timeout)" ]; then
         echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
         exit 2
