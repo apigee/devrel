@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0](https://github.com/apigee/devrel/compare/v1.10.1...v1.11.0) (2023-07-05)
+
+
+### Features
+
+* bump hybrid quickstart to 1.10.0 ([7271b8f](https://github.com/apigee/devrel/commit/7271b8f6dd50ba1963463b9310e2840002a0c103))
+
+
+### Bug Fixes
+
+* bump jenkins version to 2.346.3 and update plugin version ([1f49f8c](https://github.com/apigee/devrel/commit/1f49f8c9ecfe8f80268b58aea9b63f7083332493))
+
 ## [1.10.1](https://github.com/apigee/devrel/compare/v1.10.0...v1.10.1) (2023-06-20)
 
 
