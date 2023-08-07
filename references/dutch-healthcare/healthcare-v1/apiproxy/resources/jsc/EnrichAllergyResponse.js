@@ -20,7 +20,7 @@ function onComplete(response,error) {
 
       // update response payload with new patient name
       var payload = JSON.parse(context.getVariable("response.content"));
-      payload.patient.display = response.content.asJSON.args.name;
+      payload.patient.display = response.content.substring(7, response.content.length-1)
       context.setVariable("response.content", JSON.stringify(payload))
 
      } else {
@@ -29,4 +29,4 @@ function onComplete(response,error) {
 }
 
 // Make an additional request
-httpClient.get("https://mocktarget.apigee.net/echo?name=Mediated Display Name", onComplete);
+httpClient.get("https://mocktarget.apigee.net/user?user=Mediated Display Name", onComplete);
