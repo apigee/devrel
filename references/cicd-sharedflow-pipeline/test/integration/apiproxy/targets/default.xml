@@ -28,6 +28,6 @@
     <Flows/>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>http://httpbin.org/get</URL>
+        <URL>https://mocktarget.apigee.net/echo</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

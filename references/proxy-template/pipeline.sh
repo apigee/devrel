@@ -22,7 +22,7 @@ PROXY=example
 VERSION=v1
 
 # default target server URL
-DEFAULT_TARGET_URL=https://httpbin.org/headers
+DEFAULT_TARGET_URL=https://mocktarget.apigee.net/echo
 
 # default Virtual Host
 VHOST=secure

@@ -29,4 +29,4 @@ function onComplete(response,error) {
 }
 
 // Make an additional request
-httpClient.get("https://httpbin.org/get?name=Mediated Display Name", onComplete);
+httpClient.get("https://mocktarget.apigee.net/echo?name=Mediated Display Name", onComplete);

@@ -139,7 +139,7 @@ following artifacts:
 
 - ```recaptcha-data-proxy-v1```: a data proxy, which calls the reCAPTCHA
 enterprise sharedflow.
-The target endpoint of this proxy is [httpbin.org](https://httpbin.org)
+The target endpoint of this proxy is [mocktarget.apigee.net/echo](https://mocktarget.apigee.net/echo)
 - ```recaptcha-deliver-token-v1```: an API proxy used to deliver an HTML page that
 includes a valid reCAPTCHA
 token (cf. [Option 2](#option-2-recaptcha-enterprise-is-used)
