@@ -1,0 +1,46 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'Clean temp container images'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        LIST_OF_IMAGES="$_IMAGES"
+        for IMAGE_URI in $${LIST_OF_IMAGES//;/ }; do
+          echo "Cleaning stale versions of: $$IMAGE_URI"
+          VERSIONS_TO_CLEAN=$(gcloud artifacts docker images list "$$IMAGE_URI" \
+            --include-tags \
+            --filter="UPDATE_TIME.date('%Y-%m-%d', Z)<=$(date --date="-${_IMAGE_RETENTION_MIN} days" +'%Y-%m-%d')" \
+            --format='value(VERSION)')
+
+          if [ -z "$$VERSIONS_TO_CLEAN" ]; then
+            echo "No versions older than $_IMAGE_RETENTION_MIN days to delete"
+          fi
+
+          for VERSION in $$VERSIONS_TO_CLEAN; do
+            echo "deleting image $$IMAGE_URI@$$VERSION"
+            if [ "$_DRY_RUN" != "true" ]; then
+              gcloud artifacts docker images delete $$IMAGE_URI@$$VERSION --quiet --async
+            fi
+          done
+        done
+substitutions:
+  _IMAGES: ""
+  _IMAGE_RETENTION_MIN: '7'
+  _DRY_RUN: 'false'
+timeout: 600s
