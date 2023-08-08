@@ -166,11 +166,11 @@ This test will simulate a three-legged [OAuth 2.0](https://cloud.google.com/apig
  - You can generate the authorization url using the command below.
 
 </code></pre>
-bash<br> export AUTH_URL=&#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&amp;response_type=code&amp;scope=openid email profile&amp;state=abcd-1234&amp;redirect_uri=https://httpbin.org/get&#34;<br> echo $AUTH_URL<pre><code>2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
+bash<br> export AUTH_URL=&#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&amp;response_type=code&amp;scope=openid email profile&amp;state=abcd-1234&amp;redirect_uri=https://mocktarget.apigee.net/echo&#34;<br> echo $AUTH_URL<pre><code>2. Apigee will redirect to Okta to generate an authorization code. Log in using the Okta credentials for the user created earlier.
 
  ![Okta Auth](assets/okta-auth-code-login.png)
 
-3. After successful authentication, Okta redirects to the Apigee callback URL (/v1/oauth20/callback), which controls the incoming query parameters, generate an authorization code (using the same value as the one provided by Okta) and performs a redirection on the client app redirect_uri `https://httpbin.org/get` providing the authorization_code and initial state parameters.
+3. After successful authentication, Okta redirects to the Apigee callback URL (/v1/oauth20/callback), which controls the incoming query parameters, generate an authorization code (using the same value as the one provided by Okta) and performs a redirection on the client app redirect_uri `https://mocktarget.apigee.net/echo` providing the authorization_code and initial state parameters.
 
  - In a real-world scenario, the redirection would be back to the client application and it would parse Okta&#39;s response to capture the authorization code
 
@@ -179,7 +179,7 @@ bash<br> export AUTH_URL=&#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?cl
 4. Pass the authorization code, client id, and base64 encoded string to Apigee Identity Facade to generate a Bearer token that will be used for API calls.
 
 </code></pre>
-bash<br> export AUTH_CODE={authorization code returned above}<br> export APIGEE_RESPONSE=$(curl -s –location –request POST &#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID&#34; \<br> –header &#34;Authorization: Basic $BASE64_ENCODED&#34; \<br> –header ‘Content-Type: application/x-www-form-urlencoded&#39; \<br> –data-urlencode ‘redirect_uri=https://httpbin.org/get&#39; \<br> –data-urlencode ‘grant_type=authorization_code&#39; \<br> –data-urlencode &#34;code=$AUTH_CODE&#34;)<br> echo $APIGEE_RESPONSE<br> export ACCESS_TOKEN=$(echo $APIGEE_RESPONSE | jq -r .access_token)<br> echo $ACCESS_TOKEN<pre><code>5. Apigee will respond with a Bearer token (access_token) which is saved to an environment variable
+bash<br> export AUTH_CODE={authorization code returned above}<br> export APIGEE_RESPONSE=$(curl -s –location –request POST &#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID&#34; \<br> –header &#34;Authorization: Basic $BASE64_ENCODED&#34; \<br> –header ‘Content-Type: application/x-www-form-urlencoded&#39; \<br> –data-urlencode ‘redirect_uri=https://mocktarget.apigee.net/echo&#39; \<br> –data-urlencode ‘grant_type=authorization_code&#39; \<br> –data-urlencode &#34;code=$AUTH_CODE&#34;)<br> echo $APIGEE_RESPONSE<br> export ACCESS_TOKEN=$(echo $APIGEE_RESPONSE | jq -r .access_token)<br> echo $ACCESS_TOKEN<pre><code>5. Apigee will respond with a Bearer token (access_token) which is saved to an environment variable
 
 6. Finally, call an endpoint protected by OAuth. The identity facade has /protected one configured to validate OAuth tokens.
 
@@ -229,7 +229,7 @@ The default Apigee install includes a /hello-world proxy. In this section we wil
 8. the environment variables
 
 </code></pre>
-bash<br> export APIGEE_CLIENT_ID=F3gGHZGtPPg6FcZqo0JwXFbV2NVkW0ILOXKte9HMFWJsOgR8<br> export APIGEE_SECRET=3m5VFXhQIcMO45dhK8YZ85Svw97iTIdiuBnIQMSPJQrZHQQrkQ1aPsYJ3gWVec41<br> export BASE64_ENCODED=$(echo -n $APIGEE_CLIENT_ID:$APIGEE_SECRET | base64)<br> export AUTH_URL=&#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&amp;response_type=code&amp;scope=openid email profile&amp;state=abcd-1234&amp;redirect_uri=https://httpbin.org/get&#34;<br> echo &#34;$AUTH_URL&#34;<pre><code> ![Auth URL](assets/test-api-authurl.png)
+bash<br> export APIGEE_CLIENT_ID=F3gGHZGtPPg6FcZqo0JwXFbV2NVkW0ILOXKte9HMFWJsOgR8<br> export APIGEE_SECRET=3m5VFXhQIcMO45dhK8YZ85Svw97iTIdiuBnIQMSPJQrZHQQrkQ1aPsYJ3gWVec41<br> export BASE64_ENCODED=$(echo -n $APIGEE_CLIENT_ID:$APIGEE_SECRET | base64)<br> export AUTH_URL=&#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/authorize?client_id=$APIGEE_CLIENT_ID&amp;response_type=code&amp;scope=openid email profile&amp;state=abcd-1234&amp;redirect_uri=https://mocktarget.apigee.net/echo&#34;<br> echo &#34;$AUTH_URL&#34;<pre><code> ![Auth URL](assets/test-api-authurl.png)
 
 9. Like before, visit the $AUTH_URL in a browser
 
@@ -241,7 +241,7 @@ bash<br> export APIGEE_CLIENT_ID=F3gGHZGtPPg6FcZqo0JwXFbV2NVkW0ILOXKte9HMFWJsOgR
 10. Run through the remaining authentication and API call steps
 
 </code></pre>
-bash<br> export AUTH_CODE={authorization code returned above}<br> export APIGEE_RESPONSE=$(curl -s –location –request POST &#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID&#34; --header &#34;Authorization: Basic $BASE64_ENCODED&#34; \<br> –header ‘Content-Type: application/x-www-form-urlencoded&#39; \<br> –data-urlencode ‘redirect_uri=https://httpbin.org/get&#39; \<br> –data-urlencode ‘grant_type=authorization_code&#39; \<br> –data-urlencode &#34;code=$AUTH_CODE&#34;)export ACCESS_TOKEN=$(echo $APIGEE_RESPONSE | jq -r .access_token)curl –location –request GET &#34;https://$APIGEE_X_HOSTNAME/hello-world&#34; \<br> –header &#34;Authorization: Bearer $ACCESS_TOKEN&#34;<br> ```<img alt="Proxy Test Results" src="img/aa4918273c4cd165.png">SummaryCongratulations! You&#39;ve now successfully integrated your Apigee environment with a 3rd party IDP, Okta, and secured your API using OAuthV2 tokens.</li>
+bash<br> export AUTH_CODE={authorization code returned above}<br> export APIGEE_RESPONSE=$(curl -s –location –request POST &#34;https://$APIGEE_X_HOSTNAME/v1/oauth20/token?client_id=$APIGEE_CLIENT_ID&#34; --header &#34;Authorization: Basic $BASE64_ENCODED&#34; \<br> –header ‘Content-Type: application/x-www-form-urlencoded&#39; \<br> –data-urlencode ‘redirect_uri=https://mocktarget.apigee.net/echo&#39; \<br> –data-urlencode ‘grant_type=authorization_code&#39; \<br> –data-urlencode &#34;code=$AUTH_CODE&#34;)export ACCESS_TOKEN=$(echo $APIGEE_RESPONSE | jq -r .access_token)curl –location –request GET &#34;https://$APIGEE_X_HOSTNAME/hello-world&#34; \<br> –header &#34;Authorization: Bearer $ACCESS_TOKEN&#34;<br> ```<img alt="Proxy Test Results" src="img/aa4918273c4cd165.png">SummaryCongratulations! You&#39;ve now successfully integrated your Apigee environment with a 3rd party IDP, Okta, and secured your API using OAuthV2 tokens.</li>
 </ol>
 
 
