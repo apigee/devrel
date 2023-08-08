@@ -16,6 +16,6 @@
     <Flows/>
     <PostFlow name="PostFlow"/>
     <HTTPTargetConnection>
-        <URL>https://httpbin.org</URL>
+        <URL>https://mocktarget.apigee.net/echo</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

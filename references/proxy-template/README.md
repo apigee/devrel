@@ -22,7 +22,7 @@ It also has the following features:
 port, ssl enabled or not) are based on the environment variable `TARGET_URL`
   - The path that is set in `TARGET_URL` is used to configure a conditional flow
 on the proxy template. This flow is used to test the TargetServer
-  - The default value of `TARGET_URL` is `https://httpbin.org/headers`
+  - The default value of `TARGET_URL` is `https://mocktarget.apigee.net/echo`
 
 ## Dependencies
 
