@@ -55,7 +55,7 @@ of the OIDC Mock IdP:
 The name of the client app is set to **dummy-client_app**
 The value of the callback url is not checked by the mock OIDC IdP,
 so you can choose the value, which is the most convenient for you
-like: [https://httpbin.org/get](https://httpbin.org/get)
+like: [https://mocktarget.apigee.net/echo](https://mocktarget.apigee.net/echo)
 
 **There is one exception**: should you need working with an invalid
 ```redirect_uri``` value, you can use the only value considered
@@ -175,7 +175,7 @@ Example:
     Method:
     GET
     URI:
-    /v1/openid-connect/authorize?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://httpbin.org/get
+    /v1/openid-connect/authorize?client_id=dummy-client_id-xxx&state=12345&scope=openid%20email&response_type=code&redirect_uri=https://mocktarget.apigee.net/echo
 
 Output:
 
@@ -240,7 +240,7 @@ Example:
     scope: openid email
     code: dummy-authcode-1606499443624
     state: 12345
-    redirect_uri: https://httpbin.org/get
+    redirect_uri: https://mocktarget.apigee.net/echo
     grant_type: authorization_code
 
 Output:

@@ -1,10 +1,10 @@
 # Apigee Envoy extension (for external access)
 
-This is an extension to the starter setup of apigee-envoy deployment within GKE container platform with Apigee X/Hybrid as API management platform. 
+This is an extension to the starter setup of apigee-envoy deployment within GKE container platform with Apigee X/Hybrid as API management platform.
 
 The [starter kit](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) deploys httpbin service configured with Envoy proxies as side car proxies. The Envoy proxy is enabled with apigee-adapter as step in the request path enforcing  Apigee provided authentication methods.
 
-This extension enables the exposure of deployed sample application (httpbin) externally via istio-ingressgateway. It showcases Apigee enabled envoy proxies can offer protection of API traffic intiated outside the mesh. 
+This extension enables the exposure of deployed sample application (httpbin) externally via istio-ingressgateway. It showcases Apigee enabled envoy proxies can offer protection of API traffic intiated outside the mesh.
 
 ![poc-setup](../assets/istio-apigee-envoy-external.png)
 
@@ -16,13 +16,13 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 ### Pre-requisities:
 
-1. Deployment of [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) of apigee-envoy adapter within Istio enabled Kubernetes platform. 
+1. Deployment of [quickstart setup](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform) of apigee-envoy adapter within Istio enabled Kubernetes platform.
 
 1. Ensure Kubernetes cluster is running with istio-ingressgateway and supports external load balancers.(Execute [step 4 and 5](#set-the-namespace-hosting-istio-ingressgateway) below to setup ingressgateway, if missing within the cluster)
 
 ### Installation:
 
-1. **Set environment variables.** 
+1. **Set environment variables.**
     ```bash
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     export GKE_PROJECT_ID=<gcp-project-id-hosting-the-cluster>
@@ -49,7 +49,7 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 1. ### Set the namespace hosting istio-ingressgateway
     ```bash
     export ISTIO_GATEWAY_NS=<namespace-hosting-ingressgateway>
-    ```  
+    ```
 
 1. ### Execute the below if istio-ingressgateway is missing in the istio enabled cluster
     ```bash
@@ -70,8 +70,8 @@ This extension enables the exposure of deployed sample application (httpbin) ext
 
 1. **Overwrite the service details that has to be exposed outside the mesh, if different from the service (httpbin application) deployed in the [starter kit](https://github.com/apigee/devrel/tree/main/tools/apigee-envoy-quickstart#envoy-with-apigee-adapter-as-containers-within-kubernetes-platform)**
     ```bash
-    export TARGET_HOST="httpbin.org"
-    export TARGET_SERVICE_NAME="httpbin"
+    export TARGET_HOST="mocktarget.apigee.net"
+    export TARGET_SERVICE_NAME="mocktarget"
     export TARGET_SERVICE_NAMESPACE="apigee"
     ```
 
@@ -139,10 +139,10 @@ This extension enables the exposure of deployed sample application (httpbin) ext
     -H "Content-Type:application/json" \
     "https://apigee.googleapis.com/v1/organizations/${APIGEE_ORG}/developers/test-envoy@google.com/apps/envoy-adapter-dev-app" | \
     jq '.credentials[0].consumerKey'); \
-    CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2); 
+    CONSUMER_KEY=$(echo "$CONSUMER_KEY"|cut -d '"' -f 2);
     ```
 
 1. **Testing protected service via external IP...**
     ```bash
-    curl -i http://"$INGRESS_HOST"/httpbin/headers -H "x-api-key: $CONSUMER_KEY"
+    curl -i http://"$INGRESS_HOST"/httpbin/echo -H "x-api-key: $CONSUMER_KEY"
     ```

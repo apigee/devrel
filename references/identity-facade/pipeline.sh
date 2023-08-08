@@ -206,7 +206,7 @@ generate_edge_json() {
                     "apiProducts": [
                         "IdentityFacade"
                     ],
-                    "callbackUrl": "https://httpbin.org/get",
+                    "callbackUrl": "https://mocktarget.apigee.net/echo",
                     "scopes": []
                 }
             ]
@@ -259,7 +259,7 @@ generate_authz_url() {
     RESPONSE_TYPE="&response_type=code"
     SCOPE="&scope=openid email profile"
     STATE="&state=abcd-1234"
-    REDIRECT_URI="&redirect_uri=https://httpbin.org/get"
+    REDIRECT_URI="&redirect_uri=https://mocktarget.apigee.net/echo"
 
     # is pkce enabled (=true) or not
     if [ "$4" = "true" ];then
