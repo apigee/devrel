@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.12.0](https://github.com/apigee/devrel/compare/v1.11.0...v1.12.0) (2023-08-08)
+
+
+### Features
+
+* cloud build job to delete stale image artifacts ([2e1e923](https://github.com/apigee/devrel/commit/2e1e923e46d5e8405edd513253c9ac83804c4d55))
+* fix semantic changes from httpbin to mocktarget ([87a376f](https://github.com/apigee/devrel/commit/87a376f93f041ec7d91c36ffc854250890d278cd))
+* remove hackish fix since mocktarget now supports query param args ([e4c2280](https://github.com/apigee/devrel/commit/e4c2280f3dc736bba4a05f9ba6f97c4c2afadb3f))
+* replace httpbin with mocktarget for identity facade and envoy quickstart ([b3fcfb9](https://github.com/apigee/devrel/commit/b3fcfb91a8afd126fca0588cd5c2e1375d243c24))
+* replace httpbin.org with mocktarget.apigee.net ([58a8185](https://github.com/apigee/devrel/commit/58a81857cb4fdff4edaa6542aeb32707eefb3d48))
+
 ## [1.11.0](https://github.com/apigee/devrel/compare/v1.10.1...v1.11.0) (2023-07-05)
 
 
