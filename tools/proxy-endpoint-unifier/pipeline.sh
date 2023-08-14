@@ -41,7 +41,8 @@ EOF
 python3 -m pip install -r "$SCRIPTPATH/requirements.txt"
 
 # Generate Gcloud Acccess Token
-export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)
+APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)
+export APIGEE_ACCESS_TOKEN
 
 # Execute Utility
 python3 "$SCRIPTPATH/main.py"

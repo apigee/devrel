@@ -1,7 +1,5 @@
-# Apigee OPDK to Apigee X/Hybrid API Proxy Endpoint Unifier
+# Apigee API Proxy Endpoint Unifier
 
-
-## Objective
 Apigee X has a limitation of hosting only 5 Proxy Endpoints per proxy.Apigee OPDK /Edge has no such limitaion.
 Objective is take a proxy bundle and smartly convert them into conditional flows and group them with other proxy endpoints.
 
