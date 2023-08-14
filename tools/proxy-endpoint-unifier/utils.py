@@ -22,21 +22,24 @@ import json
 import shutil
 import zipfile
 
+
 def parse_config(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
     return config
 
+
 def get_proxy_endpoint_count(cfg):
     try:
-        proxy_endpoint_count=cfg.getint('common','proxy_endpoint_count')
+        proxy_endpoint_count = cfg.getint('common', 'proxy_endpoint_count')
         if not (proxy_endpoint_count > 0 and proxy_endpoint_count <= 5):
-            print('ERRROR: proxy_endpoint_count should be > Zero(0)  &  < Five(5)')
+            print('ERROR: Proxy Endpoints should be > Zero(0)  &  < Five(5)')
             sys.exit(1)
     except ValueError:
         print('proxy_endpoint_count should be Numberic')
         sys.exit(1)
     return proxy_endpoint_count
+
 
 def create_dir(dir):
     try:
@@ -44,7 +47,8 @@ def create_dir(dir):
     except FileExistsError:
         print(f"INFO: {dir} already exists")
 
-def list_dir(dir,isok=False):
+
+def list_dir(dir, isok=False):
     try:
         return os.listdir(dir)
     except FileNotFoundError:
@@ -54,20 +58,22 @@ def list_dir(dir,isok=False):
         print(f"ERROR: Directory \"{dir}\" not found")
         sys.exit(1)
 
+
 def get_proxy_entrypoint(dir):
-    files=list_dir(dir)
-    ent = [] 
+    files = list_dir(dir)
+    ent = []
     for eachfile in files:
         if eachfile.endswith(".xml"):
             ent.append(eachfile)
-    if len(ent)==1:
-        return os.path.join(dir,ent[0])
+    if len(ent) == 1:
+        return os.path.join(dir, ent[0])
     else:
-        if len(ent)>1:
-            print(f"ERROR: Directory \"{dir}\" contains multiple xml files at root")
+        if len(ent) > 1:
+            print(f"ERROR: Directory \"{dir}\" contains multiple xml files at root")  # noqa
         else:
-            print(f"ERROR: Directory \"{dir}\" has no xml file at root")
+            print(f"ERROR: Directory \"{dir}\" has no xml file at root")  # noqa
     return None
+
 
 def parse_json(file):
     try:
@@ -77,6 +83,7 @@ def parse_json(file):
     except FileNotFoundError:
         print(f"ERROR: File \"{file}\" not found")
     return {}
+
 
 def parse_xml(file):
     try:
@@ -88,51 +95,54 @@ def parse_xml(file):
     return {}
 
 
-def write_json(file,data):
+def write_json(file, data):
     try:
-        with open(file,'w') as fl:
-            fl.write(json.dumps(data,indent=2))
+        with open(file, 'w') as fl:
+            fl.write(json.dumps(data, indent=2))
     except FileNotFoundError:
         print(f"ERROR: File \"{file}\" not found")
         return False
     return True
 
-def write_xml_from_dict(file,data):
+
+def write_xml_from_dict(file, data):
     try:
-        with open(file,'w') as fl:
-            fl.write(xmltodict.unparse(data,pretty=True))
+        with open(file, 'w') as fl:
+            fl.write(xmltodict.unparse(data, pretty=True))
     except FileNotFoundError:
         print(f"ERROR: File \"{file}\" not found")
         return False
     return True
+
 
 def parse_proxy_root(dir):
-    file=get_proxy_entrypoint(dir)
+    file = get_proxy_entrypoint(dir)
     if file is None:
         return {}
-    doc=parse_xml(file)
+    doc = parse_xml(file)
     return doc
 
-def read_proxy_artifacts(dir,entrypoint):    
-    APIProxy=entrypoint['APIProxy']
+
+def read_proxy_artifacts(dir, entrypoint):
+    APIProxy = entrypoint['APIProxy']
     # Check if proxy has multiple endpoints
     if isinstance(APIProxy['ProxyEndpoints']['ProxyEndpoint'], list):
         proxyName = entrypoint['APIProxy']['@name']
         proxy_dict = {
-            'ProxyEndpoints':{},
-            'TargetEndpoints':{},
-            'proxyName':proxyName
+            'ProxyEndpoints': {},
+            'TargetEndpoints': {},
+            'proxyName': proxyName
         }
-        ProxyEndpoints= APIProxy['ProxyEndpoints']['ProxyEndpoint']
-        ProxyEndpoints = ( [ProxyEndpoints] if isinstance(ProxyEndpoints,str) else ProxyEndpoints)
+        ProxyEndpoints = APIProxy['ProxyEndpoints']['ProxyEndpoint']
+        ProxyEndpoints = ([ProxyEndpoints] if isinstance(ProxyEndpoints,str) else ProxyEndpoints)  # noqa
         for each_pe in ProxyEndpoints:
-            proxy_dict['ProxyEndpoints'][each_pe]=parse_xml(os.path.join(dir,'proxies',f"{each_pe}.xml"))
+            proxy_dict['ProxyEndpoints'][each_pe] = parse_xml(os.path.join(dir,'proxies',f"{each_pe}.xml"))  # noqa
 
-        TargetEndpoints =APIProxy['TargetEndpoints']['TargetEndpoint']
-        TargetEndpoints = ([TargetEndpoints] if isinstance(TargetEndpoints,str) else TargetEndpoints)
+        TargetEndpoints = APIProxy['TargetEndpoints']['TargetEndpoint']
+        TargetEndpoints = ([TargetEndpoints] if isinstance(TargetEndpoints,str) else TargetEndpoints)  # noqa
         for each_te in TargetEndpoints:
-            proxy_dict['TargetEndpoints'][each_te]=parse_xml(os.path.join(dir,'targets',f"{each_te}.xml"))
-        
+            proxy_dict['TargetEndpoints'][each_te]=parse_xml(os.path.join(dir,'targets',f"{each_te}.xml"))  # noqa
+
     # Skip when proxy has one endpoints
     else:
         print(f"Skipping Proxy ==> {entrypoint['APIProxy']['@name']}")
@@ -141,44 +151,37 @@ def read_proxy_artifacts(dir,entrypoint):
 
 
 def get_all_policies_from_step(Step):
-    policies=[]
-    StepData=([Step] if isinstance(Step,dict) else Step)
+    policies = []
+    StepData = ([Step] if isinstance(Step, dict) else Step)
     for eachStep in StepData:
         policies.append(eachStep['Name'])
     return policies
 
-def get_all_policies_from_flow(Flow,fault_rule=False):
-    policies=[]
+
+def get_all_policies_from_flow(Flow, fault_rule=False):
+    policies = []
     if not fault_rule:
-        Request=([] if Flow['Request'] is None else 
-                (
-                    [Flow['Request']['Step']] if isinstance(Flow['Request']['Step'],dict) 
-                    else Flow['Request']['Step']
-                )
-                )
-        Response=([] if Flow['Response'] is None else 
-                (
-                    [Flow['Response']['Step']] if isinstance(Flow['Response']['Step'],dict) 
-                    else Flow['Response']['Step']
-                )
-                )
+        Request = ([] if Flow['Request'] is None else (
+                    [Flow['Request']['Step']] if isinstance(Flow['Request']['Step'], dict)  # noqa
+                    else Flow['Request']['Step']))
+        Response = ([] if Flow['Response'] is None else (
+                    [Flow['Response']['Step']] if isinstance(Flow['Response']['Step'], dict)  # noqa
+                    else Flow['Response']['Step']))
         for each_flow in Request:
             policies.extend(get_all_policies_from_step(each_flow))
         for each_flow in Response:
             policies.extend(get_all_policies_from_step(each_flow))
     else:
-        FaultRules = ([] if Flow is None else 
-                (
-                    [Flow['Step']] if isinstance(Flow['Step'],dict) 
-                    else Flow['Step']
-                )
-                )
+        FaultRules = ([] if Flow is None else (
+                    [Flow['Step']] if isinstance(Flow['Step'], dict)
+                    else Flow['Step']))
         for each_step in FaultRules:
             policies.extend(get_all_policies_from_step(each_step))
     return policies
 
-def get_all_policies_from_endpoint(endpointData,endpointType):
-    policies=[]
+
+def get_all_policies_from_endpoint(endpointData, endpointType):
+    policies = []
     policies.extend(
         get_all_policies_from_flow(
             endpointData[endpointType]['PreFlow']
@@ -191,13 +194,11 @@ def get_all_policies_from_endpoint(endpointData,endpointType):
     )
 
     Flows = (
-            [] 
-             if endpointData[endpointType]['Flows'] is None else 
-             (
-                [endpointData[endpointType]['Flows']['Flow']] 
-                if isinstance(
-                endpointData[endpointType]['Flows']['Flow'],dict) 
-                else 
+            [] if endpointData[endpointType]['Flows'] is None else (
+                [endpointData[endpointType]['Flows']['Flow']] if isinstance(
+                    endpointData[endpointType]['Flows']['Flow'],
+                    dict)
+                else
                 endpointData[endpointType]['Flows']['Flow']
             ))
 
@@ -207,17 +208,18 @@ def get_all_policies_from_endpoint(endpointData,endpointType):
                 eachFlow
             )
         )
-    if 'DefaultFaultRule' in  endpointData[endpointType]:
+    if 'DefaultFaultRule' in endpointData[endpointType]:
         policies.extend(
-            get_all_policies_from_flow(endpointData[endpointType]['DefaultFaultRule'],True)
+            get_all_policies_from_flow(endpointData[endpointType]['DefaultFaultRule'], True)  # noqa
         )
     return policies
 
+
 def get_target_endpoints(ProxyEndpointData):
-    target_endpoints=[]
-    routes = ( 
-            [ProxyEndpointData['RouteRule']] 
-            if isinstance(ProxyEndpointData['RouteRule'],dict) 
+    target_endpoints = []
+    routes = (
+            [ProxyEndpointData['RouteRule']]
+            if isinstance(ProxyEndpointData['RouteRule'], dict)
             else ProxyEndpointData['RouteRule']
         )
     for eachRoute in routes:
@@ -225,57 +227,51 @@ def get_target_endpoints(ProxyEndpointData):
             target_endpoints.append(eachRoute['TargetEndpoint'])
     return target_endpoints
 
+
 def get_proxy_objects_relationships(proxy_dict):
     proxy_object_map = {}
     ProxyEndpoints = proxy_dict['ProxyEndpoints']
-    for ProxyEndpoint,ProxyEndpointData in ProxyEndpoints.items():
-        proxy_object_map[ProxyEndpoint]={}
-
-        target_endpoints = get_target_endpoints(ProxyEndpointData['ProxyEndpoint'])
-        TargetEndpointsData = { te :proxy_dict['TargetEndpoints'][te] for te in target_endpoints}
+    for ProxyEndpoint, ProxyEndpointData in ProxyEndpoints.items():
+        proxy_object_map[ProxyEndpoint] = {}
+        target_endpoints = get_target_endpoints(ProxyEndpointData['ProxyEndpoint'])  # noqa
+        TargetEndpointsData = {te: proxy_dict['TargetEndpoints'][te] for te in target_endpoints}  # noqa
         policies = []
-        policies.extend(get_all_policies_from_endpoint(ProxyEndpointData,'ProxyEndpoint'))
-        for _,each_te in TargetEndpointsData.items():
-            policies.extend(get_all_policies_from_endpoint(each_te,'TargetEndpoint'))
-        proxy_object_map[ProxyEndpoint]={
-            'Policies' : policies,
-            'BasePath' : ProxyEndpointData['ProxyEndpoint']['HTTPProxyConnection']['BasePath'],
-            'TargetEndpoints' : target_endpoints,
+        policies.extend(get_all_policies_from_endpoint(ProxyEndpointData, 'ProxyEndpoint'))  # noqa
+        for _, each_te in TargetEndpointsData.items():
+            policies.extend(get_all_policies_from_endpoint(each_te, 'TargetEndpoint'))  # noqa
+        proxy_object_map[ProxyEndpoint] = {
+            'Policies': policies,
+            'BasePath': ProxyEndpointData['ProxyEndpoint']['HTTPProxyConnection']['BasePath'],  # noqa
+            'TargetEndpoints': target_endpoints,
         }
-    
     return proxy_object_map
 
+
 def get_api_path_groups(each_api_info):
-    api_path_group_map={}
-    for pe,pe_info in each_api_info.items():
+    api_path_group_map = {}
+    for pe, pe_info in each_api_info.items():
         if pe_info['BasePath'] is None:
             if '_null_' in api_path_group_map:
-                # api_path_group_map['_null_'].append({ pe :pe_info['BasePath']})
-                api_path_group_map['_null_'].append({ pe :None})
+                api_path_group_map['_null_'].append({pe: None})
             else:
-                # api_path_group_map['_null_']=[{ pe :pe_info['BasePath']}]
-                api_path_group_map['_null_']=[{ pe :None}]
+                api_path_group_map['_null_'] = [{pe: None}]
         else:
-            base_path_split=[ i for i in pe_info['BasePath'].split('/') if i!= ""]
+            base_path_split = [ i for i in pe_info['BasePath'].split('/') if i !=  ""]  # noqa
             if base_path_split[0] in api_path_group_map:
                 api_path_group_map[base_path_split[0]].append(
-                    # { pe :pe_info['BasePath']}
-                    { pe :base_path_split[0]}
-                    )
+                    {pe: base_path_split[0]})
             else:
-                # api_path_group_map[base_path_split[0]]=[{ pe :pe_info['BasePath']}]
-                api_path_group_map[base_path_split[0]]=[{ pe :base_path_split[0]}]
+                api_path_group_map[base_path_split[0]] = [{pe: base_path_split[0]}]  # noqa
     return api_path_group_map
 
 
-def group_paths_by_path(api_info,pe_count_limit):
+def group_paths_by_path(api_info, pe_count_limit):
     result = []
     paths = list(api_info.keys())
-    path_count=len(paths)
+    path_count = len(paths)
     if path_count > pe_count_limit:
-        # count=0
-        for i in range(0,path_count,pe_count_limit):
-            each_result=[]
+        for i in range(0, path_count, pe_count_limit):
+            each_result = []
             if i+pe_count_limit > path_count:
                 for k in paths[i:path_count]:
                     each_result.extend(api_info[k])
@@ -284,9 +280,9 @@ def group_paths_by_path(api_info,pe_count_limit):
                     each_result.extend(api_info[k])
             result.append(each_result)
     else:
-        each_result=[]
-        for _,v in api_info.items():
-              each_result.extend(v)
+        each_result = []
+        for _, v in api_info.items():
+            each_result.extend(v)
         result.append(each_result)
     return result
 
@@ -296,129 +292,140 @@ def bundle_path(each_group_bundle):
     for each_group in each_group_bundle:
         subgroups = {}
         for each_pe in each_group:
-            path=list(each_pe.values())[0]
-            proxy_ep=list(each_pe.keys())[0]
+            path = list(each_pe.values())[0]
+            proxy_ep = list(each_pe.keys())[0]
             if path in subgroups:
                 subgroups[path].append(proxy_ep)
             else:
-                subgroups[path]=[proxy_ep]
+                subgroups[path] = [proxy_ep]
         outer_group.append(subgroups)
     return outer_group
 
-def apply_condition(step,condition):
-    step_or_rule =  step.copy()
+
+def apply_condition(step, condition):
+    step_or_rule = step.copy()
     if 'Condition' in step_or_rule:
         if step_or_rule['Condition'] is None:
-            step_or_rule['Condition']=condition
+            step_or_rule['Condition'] = condition
         elif len(step_or_rule['Condition'].strip()) > 0:
             if step_or_rule['Condition'].strip().startswith('('):
-                step_or_rule['Condition']= f"{condition} and {step_or_rule['Condition']}"
+                step_or_rule['Condition'] = f"{condition} and {step_or_rule['Condition']}"  # noqa
             else:
-                step_or_rule['Condition']= f"{condition} and {step_or_rule['Condition']}"
+                step_or_rule['Condition'] = f"{condition} and {step_or_rule['Condition']}"  # noqa
         else:
-            step_or_rule['Condition']=condition
+            step_or_rule['Condition'] = condition
     else:
-        step_or_rule['Condition']=condition
+        step_or_rule['Condition'] = condition
     return step_or_rule
 
-def process_steps(step,condition):
+
+def process_steps(step, condition):
     processed_step = []
     if step is None:
         return processed_step
-    elif isinstance(step['Step'],dict):
-        processed_step = [ apply_condition(step['Step'],condition) ]
-        # processed_step = [ {'Step': apply_condition(step['Step'],condition)} ]
-    elif isinstance(step['Step'],list):
-        processed_step = [ apply_condition(i,condition) for i in step['Step'] ]
-        # processed_step = [ {'Step':apply_condition(i,condition)} for i in step['Step'] ]
+    elif isinstance(step['Step'], dict):
+        processed_step = [apply_condition(step['Step'], condition)]
+    elif isinstance(step['Step'], list):
+        processed_step = [apply_condition(i, condition) for i in step['Step']]
     else:
         return processed_step
     return processed_step
 
-def process_flow(flow,condition):
-    processed_flow=flow.copy()
+
+def process_flow(flow, condition):
+    processed_flow = flow.copy()
     if flow['Request'] is not None:
-        processed_flow['Request']['Step'] = process_steps(flow['Request'],condition)
+        processed_flow['Request']['Step'] = process_steps(flow['Request'],
+                                                          condition)
     if flow['Response'] is not None:
-        processed_flow['Response']['Step'] = process_steps(flow['Response'],condition)
-    processed_flow_with_condition = apply_condition(processed_flow,condition)
+        processed_flow['Response']['Step'] = process_steps(flow['Response'],
+                                                           condition)
+    processed_flow_with_condition = apply_condition(processed_flow,
+                                                    condition)
     return processed_flow_with_condition
 
-def process_route_rules(route_rules,condition):
-    processed_rr =[]
-    for each_rr in (route_rules if isinstance(route_rules,list) else [route_rules]):
-        each_processed_rr=apply_condition(each_rr,condition)
+
+def process_route_rules(route_rules, condition):
+    processed_rr = []
+    for each_rr in (route_rules if isinstance(route_rules, list)
+                    else [route_rules]):
+        each_processed_rr = apply_condition(each_rr, condition)
         processed_rr.append(each_processed_rr)
     return processed_rr
 
-def merge_proxy_endpoints(api_dict,basepath,pes):
-    merged_pe = {'ProxyEndpoint' : {}}
-    for each_pe,each_pe_info in api_dict['ProxyEndpoints'].items():
-        if each_pe in pes :
-            original_basepath = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['BasePath']
+
+def merge_proxy_endpoints(api_dict, basepath, pes):
+    merged_pe = {'ProxyEndpoint': {}}
+    for each_pe, each_pe_info in api_dict['ProxyEndpoints'].items():
+        if each_pe in pes:
+            original_basepath = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['BasePath']   # noqa
             # TODO : Build full Request path
-            condition=(original_basepath if original_basepath is None else f'(request.path Matches "{original_basepath}*")')
+            condition=(original_basepath if original_basepath is None else f'(request.path Matches "{original_basepath}*")')   # noqa
             copied_flows = (
-                None if each_pe_info['ProxyEndpoint']['Flows'] is None else each_pe_info['ProxyEndpoint']['Flows'].copy()
+                None if each_pe_info['ProxyEndpoint']['Flows'] is None else each_pe_info['ProxyEndpoint']['Flows'].copy()   # noqa
             )
-            original_flows = ([] if copied_flows is None else ([copied_flows['Flow']] if isinstance(copied_flows['Flow'],dict) else copied_flows['Flow']))
-            
-            if len(merged_pe['ProxyEndpoint'])==0:
-                merged_pe['ProxyEndpoint']={
-                        '@name': [], 
-                        'Description': None, 
-                        'FaultRules': None, 
+            original_flows = ([] if copied_flows is None else
+                              ([copied_flows['Flow']] if isinstance(copied_flows['Flow'],dict) else copied_flows['Flow']))  # noqa
+
+            if len(merged_pe['ProxyEndpoint']) == 0:
+                merged_pe['ProxyEndpoint'] = {
+                        '@name': [],
+                        'Description': None,
+                        'FaultRules': None,
                         'PreFlow': {
-                            '@name': 'PreFlow', 
-                            'Request': {'Step':[]}, 
-                            'Response': {'Step':[]}, 
-                        }, 
-                        'PostFlow': {
-                            '@name': 'PostFlow', 
-                            'Request': {'Step':[]}, 
-                            'Response': {'Step':[]}, 
+                            '@name': 'PreFlow',
+                            'Request': {'Step': []},
+                            'Response': {'Step': []},
                         },
-                        'Flows': {'Flow':[]}, 
-                        'HTTPProxyConnection': {'BasePath': '', 'Properties': {}, 'VirtualHost': ''}, 
+                        'PostFlow': {
+                            '@name': 'PostFlow',
+                            'Request': {'Step': []},
+                            'Response': {'Step': []},
+                        },
+                        'Flows': {'Flow': []},
+                        'HTTPProxyConnection': {'BasePath': '',
+                                                'Properties': {},
+                                                'VirtualHost': ''},
                         'RouteRule': []
                     }
-                
-                merged_pe['ProxyEndpoint']['Description'] = each_pe_info['ProxyEndpoint']['Description']
-                merged_pe['ProxyEndpoint']['FaultRules'] = each_pe_info['ProxyEndpoint']['FaultRules']
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['BasePath']=(basepath if basepath is None else f'/{basepath}')
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties']=each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['Properties']
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']=each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']
 
-            merged_pe['ProxyEndpoint']['@name'].append(each_pe_info['ProxyEndpoint']['@name'])
+                merged_pe['ProxyEndpoint']['Description'] = each_pe_info['ProxyEndpoint']['Description']  # noqa
+                merged_pe['ProxyEndpoint']['FaultRules'] = each_pe_info['ProxyEndpoint']['FaultRules']  # noqa
+                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['BasePath'] = (basepath if basepath is None else f'/{basepath}')  # noqa
+                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['Properties']  # noqa
+                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']  # noqa
+
+            merged_pe['ProxyEndpoint']['@name'].append(each_pe_info['ProxyEndpoint']['@name'])  # noqa
             merged_pe['ProxyEndpoint']['RouteRule'].extend(
-                    process_route_rules(each_pe_info['ProxyEndpoint']['RouteRule'],condition)
+                    process_route_rules(each_pe_info['ProxyEndpoint']['RouteRule'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PreFlow']['Request']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)
+                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PreFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)
+                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Request']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)
+                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)
+                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)  # noqa
             )
             for each_flow in original_flows:
                 merged_pe['ProxyEndpoint']['Flows']['Flow'].append(
-                    process_flow(each_flow,condition)
+                    process_flow(each_flow, condition)
                 )
-    merged_pe['ProxyEndpoint']['@name'] = "-".join(merged_pe['ProxyEndpoint']['@name'])
-
+    merged_pe['ProxyEndpoint']['@name'] = "-".join(merged_pe['ProxyEndpoint']['@name'])  # noqa
     return merged_pe
 
-def copy_folder(src,dst):
+
+def copy_folder(src, dst):
     try:
-        shutil.copytree(src, dst) 
+        shutil.copytree(src, dst)
     except FileNotFoundError as e:
         print(e)
         sys.exit(1)
+
 
 def delete_folder(src):
     try:
@@ -427,6 +434,7 @@ def delete_folder(src):
         print(f'Ignoring : {e}')
         return
 
+
 def delete_file(src):
     try:
         os.remove(src)
@@ -434,20 +442,22 @@ def delete_file(src):
         print(f'Ignoring : {e}')
         return
 
-def clean_up_artifacts(target_dir,artifacts_to_retains):
-    for file in list_dir(target_dir,True):
-        each_policy_file=file.split('.xml')[0]
+
+def clean_up_artifacts(target_dir, artifacts_to_retains):
+    for file in list_dir(target_dir, True):
+        each_policy_file = file.split('.xml')[0]
         if each_policy_file not in artifacts_to_retains:
             delete_file(f"{target_dir}/{file}")
 
-def filter_objects(obj_data,obj_type,targets):
+
+def filter_objects(obj_data, obj_type, targets):
     result = None
     if obj_data is None:
         return result
-    elif isinstance(obj_data[obj_type],str):
-        result = ({ obj_type: obj_data[obj_type] } if obj_data[obj_type] in targets else None )
-    elif isinstance(obj_data[obj_type],list):
-        result = { obj_type: [ v for v in obj_data[obj_type] if v in targets ] }
+    elif isinstance(obj_data[obj_type], str):
+        result = ({ obj_type: obj_data[obj_type] } if obj_data[obj_type] in targets else None )  # noqa
+    elif isinstance(obj_data[obj_type], list):
+        result = {obj_type: [v for v in obj_data[obj_type] if v in targets]}
     else:
         return result
     return result
@@ -457,38 +467,40 @@ def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
-            ziph.write(os.path.join(root, file), 
-                       os.path.relpath(os.path.join(root, file), 
+            ziph.write(os.path.join(root, file),
+                       os.path.relpath(os.path.join(root, file),
                                        os.path.join(path, '..')))
-            
-def clone_proxies(source_dir,target_dir,objects,merged_pes,proxy_bundle_directory):
-    target_dir=f"{target_dir}/apiproxy"
-    copy_folder(source_dir,target_dir)
-    file=get_proxy_entrypoint(target_dir)
-    root=parse_xml(file)
+
+
+def clone_proxies(source_dir, target_dir,
+                  objects, merged_pes, proxy_bundle_directory):
+    target_dir = f"{target_dir}/apiproxy"
+    copy_folder(source_dir, target_dir)
+    file = get_proxy_entrypoint(target_dir)
+    root = parse_xml(file)
     delete_file(file)
-    root['APIProxy']['@name']=objects['Name']
-    root['APIProxy']['Policies']= filter_objects(root['APIProxy']['Policies'],'Policy',objects['Policies'])
-    # root['APIProxy']['ProxyEndpoints']=filter_objects(root['APIProxy']['ProxyEndpoints'],'Policies',objects['ProxyEndpoints'])
-    root['APIProxy']['TargetEndpoints']=filter_objects(root['APIProxy']['TargetEndpoints'],'TargetEndpoint',objects['TargetEndpoints'])
-    # root['APIProxy']['Resources']=filter_objects(root['APIProxy']['Policies'],'Policies',objects['Policies'])
-    clean_up_artifacts(f"{target_dir}/policies",objects['Policies'])
-    clean_up_artifacts(f"{target_dir}/targets",objects['TargetEndpoints'])
+    root['APIProxy']['@name'] = objects['Name']
+    root['APIProxy']['Policies'] = filter_objects(
+        root['APIProxy']['Policies'], 'Policy', objects['Policies'])
+    root['APIProxy']['TargetEndpoints'] = filter_objects(
+        root['APIProxy']['TargetEndpoints'], 'TargetEndpoint', objects['TargetEndpoints'])  # noqa
+    clean_up_artifacts(f"{target_dir}/policies", objects['Policies'])
+    clean_up_artifacts(f"{target_dir}/targets", objects['TargetEndpoints'])
     for pe in objects['ProxyEndpoints']:
-        write_xml_from_dict(f"{target_dir}/proxies/{pe}.xml",merged_pes[pe])
-    clean_up_artifacts(f"{target_dir}/proxies",objects['ProxyEndpoints'])
-    # root['APIProxy']['ProxyEndpoints']=filter_objects(root['APIProxy']['ProxyEndpoints'],'ProxyEndpoint',objects['ProxyEndpoints'])
-    root['APIProxy']['ProxyEndpoints']= {'ProxyEndpoint' : ( objects['ProxyEndpoints'] if len(objects['ProxyEndpoints']) > 1 else objects['ProxyEndpoints'][0] )}
+        write_xml_from_dict(f"{target_dir}/proxies/{pe}.xml", merged_pes[pe])
+    clean_up_artifacts(f"{target_dir}/proxies", objects['ProxyEndpoints'])
+    root['APIProxy']['ProxyEndpoints'] = {'ProxyEndpoint': (
+        objects['ProxyEndpoints'] if len(objects['ProxyEndpoints']) > 1 else objects['ProxyEndpoints'][0] )}  # noqa
     transformed_file = file.split('/')
-    transformed_file[-1]=f"{objects['Name']}.xml"
-    write_xml_from_dict("/".join(transformed_file),root)
+    transformed_file[-1] = f"{objects['Name']}.xml"
+    write_xml_from_dict("/".join(transformed_file), root)
     delete_folder(f"{target_dir}/manifests")
-    with zipfile.ZipFile(f"{proxy_bundle_directory}/{objects['Name']}.zip", 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(f"{proxy_bundle_directory}/{objects['Name']}.zip", 'w', zipfile.ZIP_DEFLATED) as zipf:  # noqa
         zipdir(target_dir, zipf)
 
 
-def export_debug_log(files,log_path='logs'):
+def export_debug_log(files, log_path='logs'):
     create_dir(log_path)
-    for file,data in files.items():
-        file_name=f'{log_path}/{file}.json'
-        write_json(file_name,data)
+    for file, data in files.items():
+        file_name = f'{log_path}/{file}.json'
+        write_json(file_name, data)
