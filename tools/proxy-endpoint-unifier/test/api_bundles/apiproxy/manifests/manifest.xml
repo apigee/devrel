@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+    Copyright 2023 Google LLC
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+        http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <Manifest name="manifest">
     <Policies>
         <VersionInfo resourceName="ExtractVariables-3" version="SHA-512:cfe05a76f80902501c5a2f2799f7fc57358354c575e392963868ac3d9e943d4164a0716822cc37063116bc8a6091b0e4f97866c7876db9c24db8ec6313c3df25"/>
