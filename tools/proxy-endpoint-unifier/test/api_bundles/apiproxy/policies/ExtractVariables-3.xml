@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables name="ExtractVariables-3">
+    <Source>response</Source>
+    <JSONPayload>
+        <Variable name="latitude" type="float">
+            <JSONPath>$.results[0].geometry.location.lat</JSONPath>
+        </Variable>
+        <Variable name="longitude" type="float">
+            <JSONPath>$.results[0].geometry.location.lng</JSONPath>
+        </Variable>
+    </JSONPayload>
+    <VariablePrefix>geocoderesponse</VariablePrefix>
+</ExtractVariables>

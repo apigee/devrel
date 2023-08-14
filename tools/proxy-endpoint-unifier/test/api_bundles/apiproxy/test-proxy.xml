@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="3" name="test-proxy">
+    <Basepaths>/test-proxy</Basepaths>
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1691042549827</CreatedAt>
+    <CreatedBy>opdk@google.com</CreatedBy>
+    <Description></Description>
+    <DisplayName>test-proxy</DisplayName>
+    <LastModifiedAt>1691559297323</LastModifiedAt>
+    <LastModifiedBy>opdk@google.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:b3eda74a317897b887e184350e869b373215daca9325d2884f6f95da113decbb86f4f168760354e81f32aa1826ab7e7db3015562f5e655673b0ed017db143770:dc-1</ManifestVersion>
+    <Policies>
+        <Policy>ExtractVariables-3</Policy>
+        <Policy>Populate-Cache-1</Policy>
+        <Policy>Populate-Cache-without-expiry</Policy>
+        <Policy>Populate-Cache</Policy>
+        <Policy>Quota-1</Policy>
+        <Policy>Response-Cache</Policy>
+        <Policy>Statistics-Collector-1</Policy>
+    </Policies>
+    <ProxyEndpoints>
+        <ProxyEndpoint>ProxyEndpoint-1</ProxyEndpoint>
+        <ProxyEndpoint>ProxyEndpoint-2</ProxyEndpoint>
+        <ProxyEndpoint>ProxyEndpoint-3</ProxyEndpoint>
+        <ProxyEndpoint>ProxyEndpoint-4</ProxyEndpoint>
+        <ProxyEndpoint>ProxyEndpoint-5</ProxyEndpoint>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources/>
+    <Spec></Spec>
+    <TargetServers/>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

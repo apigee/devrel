@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PopulateCache async="false" continueOnError="false" enabled="true" name="Populate-Cache-1">
+    <DisplayName>Populate Cache-1</DisplayName>
+    <Properties/>
+    <CacheKey>
+        <Prefix>my </Prefix>
+        <KeyFragment>test</KeyFragment>
+    </CacheKey>
+    <CacheResource>test cache</CacheResource>
+    <Scope>Exclusive</Scope>
+    <ExpirySettings>
+        <TimeoutInSec>3600</TimeoutInSec>
+    </ExpirySettings>
+    <Source>request.content</Source>
+</PopulateCache>
