@@ -117,11 +117,8 @@ def read_proxy_artifacts(dir,entrypoint):
     APIProxy=entrypoint['APIProxy']
     # Check if proxy has multiple endpoints
     if isinstance(APIProxy['ProxyEndpoints']['ProxyEndpoint'], list):
-        # print(f"Processing Proxy ==> {entrypoint['APIProxy']['@name']}")
         proxyName = entrypoint['APIProxy']['@name']
         proxy_dict = {
-            # 'BasePaths':[],
-            # 'Policies':{},
             'ProxyEndpoints':{},
             'TargetEndpoints':{},
             'proxyName':proxyName
@@ -131,13 +128,6 @@ def read_proxy_artifacts(dir,entrypoint):
         for each_pe in ProxyEndpoints:
             proxy_dict['ProxyEndpoints'][each_pe]=parse_xml(os.path.join(dir,'proxies',f"{each_pe}.xml"))
 
-        """
-        proxy_dict['BasePaths']=APIProxy['BasePaths']
-        
-        for each_policy in APIProxy['Policies']['Policy']:
-            proxy_dict['Policies'][each_policy]=parse_xml(os.path.join(dir,'policies',f"{each_policy}.xml"))
-        """
-        # print(APIProxy['TargetEndpoints']['TargetEndpoint'])
         TargetEndpoints =APIProxy['TargetEndpoints']['TargetEndpoint']
         TargetEndpoints = ([TargetEndpoints] if isinstance(TargetEndpoints,str) else TargetEndpoints)
         for each_te in TargetEndpoints:
@@ -248,11 +238,9 @@ def get_proxy_objects_relationships(proxy_dict):
         for _,each_te in TargetEndpointsData.items():
             policies.extend(get_all_policies_from_endpoint(each_te,'TargetEndpoint'))
         proxy_object_map[ProxyEndpoint]={
-            # 'Policies' : get_all_policies_from_endpoint(ProxyEndpointData,'ProxyEndpoint'),
             'Policies' : policies,
             'BasePath' : ProxyEndpointData['ProxyEndpoint']['HTTPProxyConnection']['BasePath'],
             'TargetEndpoints' : target_endpoints,
-            # 'Resources' : []
         }
     
     return proxy_object_map
@@ -281,39 +269,7 @@ def get_api_path_groups(each_api_info):
 
 
 def group_paths_by_path(api_info,pe_count_limit):
-
-    """
-    {
-        "AMCatVehiculos": [
-        {
-            "PE-AMCatalogosVehiculos": "/AMCatVehiculos"
-        }
-        ],
-        "cotizadorflexibleapi": [
-        {
-            "PE-Acceso": "/cotizadorflexibleapi/api/acceso"
-        },
-        {
-            "PE-CotizadorExterno": "/cotizadorflexibleapi/api/CotizadorExterno"
-        },
-        {
-            "PE-Token": "/cotizadorflexibleapi/Token"
-        }
-        ],
-        "CotFlex": [
-        {
-            "PE-CotFlex": "/CotFlex"
-        }
-        ],
-        "WebConecta": [
-        {
-            "PE-WebConecta": "/WebConecta"
-        }
-        ]
-    }
-    """
     result = []
-    #['AMCatVehiculos', 'cotizadorflexibleapi', 'CotFlex', 'WebConecta']
     paths = list(api_info.keys())
     path_count=len(paths)
     if path_count > pe_count_limit:
@@ -333,29 +289,9 @@ def group_paths_by_path(api_info,pe_count_limit):
               each_result.extend(v)
         result.append(each_result)
     return result
-    # print(json.dumps(result,indent=2))
 
 
 def bundle_path(each_group_bundle):
-    """
-    [
-      {
-        "PE-AMCatalogosVehiculos": "AMCatVehiculos"
-      },
-      {
-        "PE-Acceso": "cotizadorflexibleapi"
-      },
-      {
-        "PE-CotizadorExterno": "cotizadorflexibleapi"
-      },
-      {
-        "PE-Token": "cotizadorflexibleapi"
-      },
-      {
-        "PE-CotFlex": "CotFlex"
-      }
-    ]
-    """
     outer_group = []
     for each_group in each_group_bundle:
         subgroups = {}
