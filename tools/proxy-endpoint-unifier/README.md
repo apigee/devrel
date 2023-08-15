@@ -1,32 +1,33 @@
 # Apigee API Proxy Endpoint Unifier
 
-Apigee X has a limitation of hosting only 5 Proxy Endpoints per proxy.Apigee OPDK /Edge has no such limitaion.
-Objective is take a proxy bundle and smartly convert them into conditional flows and group them with other proxy endpoints.
+Apigee X and hybrid have a limitation of hosting up to 5 Proxy Endpoints per API Proxy. Apigee Edge has no such limitation.
+The objective of this tool is to take a proxy bundle and intelligently convert its proxy endpoints into logically
+grouped conditional flows, in order to stay within the Proxy Endpoint limit.
 
 ## Disclaimer
-This is not an Officially Supported Google Product!
+This is not an officially supported Google product.
 
-## Pre-Requisites
-* python3.x
-* Please Install required Python Libs 
+## Prerequisites
+* `python3`
+* Please install the required Python dependencies
 ```
-    python3 -m pip install requirements.txt
+    python3 -m pip install -r requirements.txt
 ```
 * Please fill in `input.properties`
 ```
     [common]
     input_apis=apis                                     # Folder Containing Extracted Proxy Bundles
-    processed_apis=transformed                          # Folder to export transfored Proxies to 
-    proxy_bundle_directory=transformed_bundles          # Folder to export transfored Proxies Bundles (zip) to 
-    proxy_endpoint_count=4                              # Number of Proxy Endpoint to retain while transforming
+    processed_apis=transformed                          # Folder to export transformed Proxies to 
+    proxy_bundle_directory=transformed_bundles          # Folder to export transformed Proxies Bundles (zip) to 
+    proxy_endpoint_count=4                              # Number of Proxy Endpoints to retain while transforming (1-5)
     debug=false                                         # Flag to export debug logs
 
     [validate]
-    enabled=true                                        # Flag to enable Validation
-    gcp_project_id=apigee-payg-377208                   # Apigee X/Hybrid Project to run Validation
+    enabled=true                                        # Flag to enable proxy validation
+    gcp_project_id=xxx-xxx-xxx                          # Apigee Project for proxy validation
 ```
 
-* Please run below command to authenticate against Apigee X/Hybrid APIS if Validation  is enabled
+* If enabling validation, please run the following command to authenticate against Apigee APIs:
 
 ```
     export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)
@@ -34,7 +35,7 @@ This is not an Officially Supported Google Product!
 
 
 ## Running
-Run the Script as below
+Run the script as below
 ```
 python3 main.py
 ```
