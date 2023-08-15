@@ -29,6 +29,6 @@
     <Flows/>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>http://mocktarget.apigee.net/</URL>
+        <URL>https://mocktarget.apigee.net/</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

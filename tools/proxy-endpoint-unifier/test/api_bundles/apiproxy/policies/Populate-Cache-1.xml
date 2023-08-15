@@ -15,10 +15,10 @@
     <DisplayName>Populate Cache-1</DisplayName>
     <Properties/>
     <CacheKey>
-        <Prefix>my </Prefix>
+        <Prefix>my</Prefix>
         <KeyFragment>test</KeyFragment>
     </CacheKey>
-    <CacheResource>test cache</CacheResource>
+    <CacheResource>test-cache</CacheResource>
     <Scope>Exclusive</Scope>
     <ExpirySettings>
         <TimeoutInSec>3600</TimeoutInSec>
