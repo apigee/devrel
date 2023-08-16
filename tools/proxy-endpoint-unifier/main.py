@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import os
+import sys
 from xorhybrid import ApigeeXorHybrid
 import utils
 
@@ -110,6 +111,7 @@ def main():
         utils.export_debug_log(files)
 
     if validation_enabled:
+        errors = {}
         gcp_project_id = cfg['validate']['gcp_project_id']
         x = ApigeeXorHybrid(gcp_project_id)
         x.set_auth_header(os.getenv('APIGEE_ACCESS_TOKEN'))
@@ -117,8 +119,13 @@ def main():
         bundled_proxies = utils.list_dir(proxy_bundle_directory)
         for each_bundle in bundled_proxies:
             validation = x.validate_api('apis',f"{proxy_bundle_directory}/{each_bundle}")  # noqa
+            if not validation:
+                errors[each_bundle] = validation
             result[each_bundle] = validation
             print(f"{each_bundle}  ==> Validation : {validation}")
+        if len(errors) > 0:
+            print('ERROR: Some Validations have failed')
+            sys.exit(1)
 
 
 if __name__ == '__main__':

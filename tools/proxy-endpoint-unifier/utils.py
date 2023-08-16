@@ -75,6 +75,20 @@ def get_proxy_entrypoint(dir):
     return None
 
 
+def get_proxy_files(dir, file_type='proxies'):
+    target_dir = os.path.join(dir, file_type)
+    files = list_dir(target_dir)
+    xml_files = []
+    for eachfile in files:
+        if eachfile.endswith(".xml"):
+            xml_files.append(os.path.splitext(eachfile)[0])
+    if len(xml_files) == 0:
+        print(f"ERROR: Directory \"{target_dir}\" has no xml files")  # noqa
+        return []
+    else:
+        return xml_files
+
+
 def parse_json(file):
     try:
         with open(file) as fl:
@@ -120,6 +134,31 @@ def parse_proxy_root(dir):
     if file is None:
         return {}
     doc = parse_xml(file)
+    api_proxy = doc.get('APIProxy', {})
+    proxy_endpoints = api_proxy.get('ProxyEndpoints', {}).get('ProxyEndpoint', {})  # noqa
+    target_endpoints = api_proxy.get('TargetEndpoints', {}).get('TargetEndpoint', {})  # noqa
+    policies = api_proxy.get('Policies', {}).get('Policy', {})
+    if len(proxy_endpoints) == 0:
+        print('Proceeding with Filesystem parse of ProxyEndpoints')
+        doc['APIProxy']['ProxyEndpoints'] = {}
+        proxies = get_proxy_files(dir)
+        doc['APIProxy']['ProxyEndpoints']['ProxyEndpoint'] = proxies
+    else:
+        print('Skipping with Filesystem parse of ProxyEndpoints')
+    if len(target_endpoints) == 0:
+        print('Proceeding with Filesystem parse of TargetEndpoints')
+        doc['APIProxy']['TargetEndpoints'] = {}
+        targets = get_proxy_files(dir, 'targets')
+        doc['APIProxy']['TargetEndpoints']['TargetEndpoint'] = targets
+    else:
+        print('Skipping with Filesystem parse of TargetEndpoints')
+    if len(policies) == 0:
+        print('Proceeding with Filesystem parse of Policies')
+        doc['APIProxy']['Policies'] = {}
+        policies_list = get_proxy_files(dir, 'policies')
+        doc['APIProxy']['Policies']['Policy'] = policies_list
+    else:
+        print('Skipping with Filesystem parse of Policies')
     return doc
 
 
@@ -477,7 +516,8 @@ def clone_proxies(source_dir, target_dir,
     target_dir = f"{target_dir}/apiproxy"
     copy_folder(source_dir, target_dir)
     file = get_proxy_entrypoint(target_dir)
-    root = parse_xml(file)
+    # root = parse_xml(file)
+    root = parse_proxy_root(target_dir)
     delete_file(file)
     root['APIProxy']['@name'] = objects['Name']
     root['APIProxy']['Policies'] = filter_objects(
