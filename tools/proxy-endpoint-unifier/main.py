@@ -16,7 +16,7 @@
 
 import os
 import sys
-from xorhybrid import ApigeeXorHybrid
+from apigee import Apigee
 import utils
 
 
@@ -113,7 +113,7 @@ def main():
     if validation_enabled:
         errors = {}
         gcp_project_id = cfg['validate']['gcp_project_id']
-        x = ApigeeXorHybrid(gcp_project_id)
+        x = Apigee(gcp_project_id)
         x.set_auth_header(os.getenv('APIGEE_ACCESS_TOKEN'))
         result = {}
         bundled_proxies = utils.list_dir(proxy_bundle_directory)

@@ -16,9 +16,9 @@ This is not an officially supported Google product.
 * Please fill in `input.properties`
 ```
     [common]
-    input_apis=apis                                     # Folder Containing Extracted Proxy Bundles
+    input_apis=apis                                     # Folder Containing exported & unzipped Proxy Bundles
     processed_apis=transformed                          # Folder to export transformed Proxies to 
-    proxy_bundle_directory=transformed_bundles          # Folder to export transformed Proxies Bundles (zip) to 
+    proxy_bundle_directory=transformed_zipped_bundles   # Folder to export transformed Proxies Bundles (zip) to 
     proxy_endpoint_count=4                              # Number of Proxy Endpoints to retain while transforming (1-5)
     debug=false                                         # Flag to export debug logs
 
@@ -34,12 +34,14 @@ This is not an officially supported Google product.
 ```
 
 
-## Running
+## Usage
 Run the script as below
 ```
 python3 main.py
 ```
 
+## Limitations
+* This tool does not currently handle the resources within API proxies.
 
 ## Copyright
 

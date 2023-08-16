@@ -34,14 +34,14 @@ debug=true
 
 [validate]
 enabled=true
-gcp_project_id=$APIGEE_ORG
+gcp_project_id=$APIGEE_X_ORG
 EOF
 
 # Install Dependencies
 python3 -m pip install -r "$SCRIPTPATH/requirements.txt"
 
 # Generate Gcloud Acccess Token
-APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)
+APIGEE_ACCESS_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 export APIGEE_ACCESS_TOKEN
 
 # Execute Utility

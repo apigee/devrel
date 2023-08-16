@@ -18,7 +18,7 @@ import requests
 import os
 
 
-class ApigeeXorHybrid:
+class Apigee:
     def __init__(self, org):
         self.baseurl = f"https://apigee.googleapis.com/v1/organizations/{org}"
         self.auth_header = {}

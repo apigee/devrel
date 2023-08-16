@@ -36,7 +36,7 @@ def get_proxy_endpoint_count(cfg):
             print('ERROR: Proxy Endpoints should be > Zero(0)  &  < Five(5)')
             sys.exit(1)
     except ValueError:
-        print('proxy_endpoint_count should be Numberic')
+        print('proxy_endpoint_count should be a Number')
         sys.exit(1)
     return proxy_endpoint_count
 
@@ -53,7 +53,7 @@ def list_dir(dir, isok=False):
         return os.listdir(dir)
     except FileNotFoundError:
         if isok:
-            print(f"Ignoring : Directory \"{dir}\" not found")
+            print(f"Ignoring: Directory \"{dir}\" not found")
             return []
         print(f"ERROR: Directory \"{dir}\" not found")
         sys.exit(1)
