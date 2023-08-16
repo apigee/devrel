@@ -119,7 +119,7 @@ def main():
         bundled_proxies = utils.list_dir(proxy_bundle_directory)
         for each_bundle in bundled_proxies:
             validation = x.validate_api('apis',f"{proxy_bundle_directory}/{each_bundle}")  # noqa
-            if not validation:
+            if not isinstance(validation, bool):
                 errors[each_bundle] = validation
             result[each_bundle] = validation
             print(f"{each_bundle}  ==> Validation : {validation}")

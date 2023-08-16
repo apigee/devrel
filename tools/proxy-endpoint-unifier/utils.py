@@ -232,6 +232,14 @@ def get_all_policies_from_endpoint(endpointData, endpointType):
         )
     )
 
+    if (endpointType == 'ProxyEndpoint' and
+            'PostClientFlow' in endpointData[endpointType]):
+        policies.extend(
+            get_all_policies_from_flow(
+                endpointData[endpointType]['PostClientFlow']
+            )
+        )
+
     Flows = (
             [] if endpointData[endpointType]['Flows'] is None else (
                 [endpointData[endpointType]['Flows']['Flow']] if isinstance(
@@ -442,14 +450,23 @@ def merge_proxy_endpoints(api_dict, basepath, pes):
                 process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PreFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Response'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Request']['Step'].extend(
                 process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)  # noqa
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Response'],condition)  # noqa
             )
+            if 'PostClientFlow' in each_pe_info['ProxyEndpoint']:
+                merged_pe['ProxyEndpoint']['PostClientFlow'] = {
+                            '@name': 'PostClientFlow',
+                            'Request': {'Step': []},
+                            'Response': {'Step': []},
+                        }
+                merged_pe['ProxyEndpoint']['PostClientFlow']['Response']['Step'].extend(  # noqa
+                    process_steps(each_pe_info['ProxyEndpoint']['PostClientFlow']['Response'], None)  # noqa
+                )
             for each_flow in original_flows:
                 merged_pe['ProxyEndpoint']['Flows']['Flow'].append(
                     process_flow(each_flow, condition)

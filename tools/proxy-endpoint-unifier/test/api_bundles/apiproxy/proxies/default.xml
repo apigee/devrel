@@ -27,8 +27,20 @@
     </PreFlow>
     <PostFlow name="PostFlow">
         <Request/>
-        <Response/>
+        <Response>
+            <Step>
+                <Name>Populate-Cache-1</Name>
+            </Step>
+        </Response>
     </PostFlow>
+    <PostClientFlow>
+        <Request/>
+        <Response>
+            <Step>
+                <Name>Message-Logging-1</Name>
+            </Step>
+        </Response>
+    </PostClientFlow>
     <Flows/>
     <HTTPProxyConnection>
         <BasePath>/test-policy</BasePath>
