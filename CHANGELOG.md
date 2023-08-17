@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.13.0](https://github.com/apigee/devrel/compare/v1.12.0...v1.13.0) (2023-08-17)
+
+
+### Features
+
+* added missing licenses ([cf6d1ff](https://github.com/apigee/devrel/commit/cf6d1ff5cdb940de93b9fa9c7a97aaaaacd3dffa))
+* added pip package install to pipeline-runner ([06fd5fa](https://github.com/apigee/devrel/commit/06fd5fa70278c2b20c1defb6240389aa0811fcc0))
+* Added proxy-endpoint-unifier source ([d9489f2](https://github.com/apigee/devrel/commit/d9489f281a150604a2ebff532e7517e6fa6491e1))
+* added support for PostClientFlow ([d80c5b4](https://github.com/apigee/devrel/commit/d80c5b4b7e255ae7f0bba5d7221fa0f5c72495ab))
+* added test scripts for proxy-endpoint-unifier ([740316e](https://github.com/apigee/devrel/commit/740316e0c2a9413a47484a18c3a0d9c0fcd343a8))
+* added zip packaged to pipeline runner ([af3e94e](https://github.com/apigee/devrel/commit/af3e94ecb7a5c3851e478c0099c5a48d69c2c2dd))
+* addressed flake8 for main proxy-endpoint-unifier wrapper ([18badee](https://github.com/apigee/devrel/commit/18badeef1adad545e94bec8374cd22ca554990a9))
+* addressed flake8 for utils proxy-endpoint-unifier wrapper ([b812452](https://github.com/apigee/devrel/commit/b81245213b2653b7595652dfa79326e9d96f0355))
+* addressed flake8 for xorhybrid proxy-endpoint-unifier wrapper ([7ccef07](https://github.com/apigee/devrel/commit/7ccef07a097041fc323388433dce7f8abca32a8a))
+* fixed shell lint and updated README.md ([f3ff9a0](https://github.com/apigee/devrel/commit/f3ff9a01f28e9c015b16da09df61f98bb9b0f127))
+* modified pipeline.sh & README ([fd3ba09](https://github.com/apigee/devrel/commit/fd3ba097b36aa6f311160f1af690b57cde934470))
+* removed comments & added newlines in the proxy-endpoint-unifier wrapper ([b39a38f](https://github.com/apigee/devrel/commit/b39a38fed5bbb05f22c3e84771aca68cc0d6b938))
+* updated CODEOWNERS ([655e5af](https://github.com/apigee/devrel/commit/655e5aff29d6a0273fefbf87b919b5dc3a9cce09))
+* updated Licenses in the proxy-endpoint-unifier wrapper ([a7c8a03](https://github.com/apigee/devrel/commit/a7c8a030e40e55aede631d5df438265012ac7ddd))
+
+
+### Bug Fixes
+
+* added execute permissions on pipeline.sh ([cbae732](https://github.com/apigee/devrel/commit/cbae7326cf2475efddc21a018034cc85a40d0512))
+* added support for FS read when proxy root xml is empty ([f821756](https://github.com/apigee/devrel/commit/f82175625f80d44fdeb78f25788d5846c56042a2))
+* addressed PR comments ([d2db718](https://github.com/apigee/devrel/commit/d2db7181d950b742641b36ad9f2e55a63900cc92))
+* changes to proxy endpoint unifier readme ([b245415](https://github.com/apigee/devrel/commit/b245415ceac9fce9b5247d6261497058faf9fe79))
+* removing manifests , fixing Cache Policy & target endpoint ([5f92893](https://github.com/apigee/devrel/commit/5f92893d1fe0fdcc164feea9ff41d7595e6477d9))
+
 ## [1.12.0](https://github.com/apigee/devrel/compare/v1.11.0...v1.12.0) (2023-08-08)
 
 
