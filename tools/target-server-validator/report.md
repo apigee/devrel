@@ -3,6 +3,7 @@
 
 NAME | TARGET_SOURCE | HOST | PORT | ENV | STATUS | INFO
 --- | --- | --- | --- | --- | --- | ---
-httpbin | APIProxy | httpbin.org | 443 | _ORG_API_ | REACHABLE | TargetEndpoint : default
+git | APIProxy | api.github.com | 443 | _ORG_API_ | REACHABLE | TargetEndpoint : default
 mock | APIProxy | mocktarget.apigee.net | 443 | _ORG_API_ | REACHABLE | TargetEndpoint : default
-mock | APIProxy | httpbin.org | 443 | _ORG_API_ | REACHABLE | TargetEndpoint : tec
+mock_base | APIProxy | mocktarget.apigee.net | 443 | _ORG_API_ | REACHABLE | TargetEndpoint : default
+    

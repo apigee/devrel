@@ -19,10 +19,10 @@ import os
 import sys
 import configparser
 import zipfile
-import requests
 import csv
-import xmltodict
 from urllib.parse import urlparse
+import requests
+import xmltodict
 import urllib3
 from forcediphttpsadapter.adapters import ForcedIPHTTPSAdapter
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

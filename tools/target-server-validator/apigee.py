@@ -15,9 +15,9 @@
 # limitations under the License.
 
 
-import requests
 import os
 import sys
+import requests
 import shutil
 from time import sleep
 
@@ -41,9 +41,9 @@ class Apigee:
 
     def is_token_valid(self, token):
         url = f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}"  # noqa
-        r = requests.get(url)
-        if r.status_code == 200:
-            print(f"Token Validated for user {r.json()['email']}")
+        response = requests.get(url)
+        if response.status_code == 200:
+            print(f"Token Validated for user {response.json()['email']}")
             return True
         return False
 
@@ -205,31 +205,31 @@ class Apigee:
     def list_apis(self, api_type):
         url = f"{self.baseurl}/{api_type}"
         headers = self.auth_header.copy()
-        r = requests.get(url, headers=headers)
-        if r.status_code == 200:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
             if self.apigee_type == 'x':
-                if len(r.json()) == 0:
+                if len(response.json()) == 0:
                     return []
-                return [ p['name'] for p in r.json()['proxies' if api_type == 'apis' else 'sharedFlows']]  # noqa
-            return r.json()
+                return [ p['name'] for p in response.json()['proxies' if api_type == 'apis' else 'sharedFlows']]  # noqa
+            return response.json()
         else:
             return []
 
     def list_api_revisions(self, api_type, api_name):
         url = f"{self.baseurl}/{api_type}/{api_name}/revisions"
         headers = self.auth_header.copy()
-        r = requests.get(url, headers=headers)
-        if r.status_code == 200:
-            return r.json()
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
         else:
             return []
 
     def fetch_api_revision(self, api_type, api_name, revision, export_dir):  # noqa
         url = f"{self.baseurl}/{api_type}/{api_name}/revisions/{revision}?format=bundle"  # noqa
         headers = self.auth_header.copy()
-        r = requests.get(url, headers=headers, stream=True)
-        if r.status_code == 200:
-            self.write_proxy_bundle(export_dir, api_name, r.raw)
+        response = requests.get(url, headers=headers, stream=True)
+        if response.status_code == 200:
+            self.write_proxy_bundle(export_dir, api_name, response.raw)
             return True
         return False
 
