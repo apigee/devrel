@@ -23,20 +23,22 @@ from time import sleep
 
 
 class Apigee:
-
     def __init__(
-            self,
-            apigee_type="x",
-            base_url="https://apigee.googleapis.com/v1",
-            auth_type="oauth",
-            org="validate"):
+        self,
+        apigee_type="x",
+        base_url="https://apigee.googleapis.com/v1",
+        auth_type="oauth",
+        org="validate",
+    ):
         self.org = org
         self.baseurl = f"{base_url}/organizations/{org}"
         self.apigee_type = apigee_type
         self.auth_type = auth_type
         access_token = self.get_access_token()
         self.auth_header = {
-            'Authorization': 'Bearer {}'.format(access_token) if self.auth_type == 'oauth' else 'Basic {}'.format(access_token)  # noqa
+            "Authorization": "Bearer {}".format(access_token)
+            if self.auth_type == "oauth"
+            else "Basic {}".format(access_token)  # noqa
         }
 
     def is_token_valid(self, token):
@@ -48,27 +50,37 @@ class Apigee:
         return False
 
     def get_access_token(self):
-        token = os.getenv('APIGEE_ACCESS_TOKEN' if self.apigee_type == 'x' else 'APIGEE_OPDK_ACCESS_TOKEN')  # noqa
+        token = os.getenv(
+            "APIGEE_ACCESS_TOKEN"
+            if self.apigee_type == "x"
+            else "APIGEE_OPDK_ACCESS_TOKEN"
+        )
         if token is not None:
-            if self.apigee_type == 'x':
+            if self.apigee_type == "x":
                 if self.is_token_valid(token):
                     return token
                 else:
-                    print('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
+                    print(
+                        'please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! '  # noqa type: ignore
+                    )
                     sys.exit(1)
             else:
                 return token
         else:
-            if self.apigee_type == 'x':
-                print('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
+            if self.apigee_type == "x":
+                print(
+                    'please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! '  # noqa
+                )
             else:
-                print('please export APIGEE_OPDK_ACCESS_TOKEN')
+                print("please export APIGEE_OPDK_ACCESS_TOKEN")
             sys.exit(1)
 
     def set_auth_header(self):
         access_token = self.get_access_token()
         self.auth_header = {
-            'Authorization': 'Bearer {}'.format(access_token) if self.auth_type == 'oauth' else 'Basic {}'.format(access_token)  # noqa
+            "Authorization": "Bearer {}".format(access_token)
+            if self.auth_type == "oauth"
+            else "Basic {}".format(access_token)
         }
 
     def list_environments(self):
@@ -111,10 +123,15 @@ class Apigee:
         url = f"{self.baseurl}/apis?action=import&name={api_name}&validate=true"  # noqa
         proxy_bundle_name = os.path.basename(proxy_bundle_path)
         files = [
-        ('data',(proxy_bundle_name,open(proxy_bundle_path,'rb'),'application/zip'))  # noqa
+            (
+                "data",
+                (proxy_bundle_name, open(proxy_bundle_path, "rb"), "application/zip"),  # noqa
+            )
         ]
         headers = self.auth_header.copy()
-        response = requests.request("POST", url, headers=headers, data={}, files=files)  # noqa
+        response = requests.request(
+            "POST", url, headers=headers, data={}, files=files
+        )
         if response.status_code == 200:
             return True
         else:
@@ -122,17 +139,19 @@ class Apigee:
             return False
 
     def get_api_revisions_deployment(self, env, api_name, api_rev):  # noqa
-        url = url = f"{self.baseurl}/environments/{env}/apis/{api_name}/revisions/{api_rev}/deployments"  # noqa
+        url = (
+            url
+        ) = f"{self.baseurl}/environments/{env}/apis/{api_name}/revisions/{api_rev}/deployments"  # noqa
         headers = self.auth_header.copy()
         response = requests.request("GET", url, headers=headers, data={})
         if response.status_code == 200:
             resp = response.json()
-            api_deployment_status = resp.get('state', '')
-            if self.apigee_type == 'x':
-                if api_deployment_status == 'READY':
+            api_deployment_status = resp.get("state", "")
+            if self.apigee_type == "x":
+                if api_deployment_status == "READY":
                     return True
-            if self.apigee_type == 'opdk':
-                if api_deployment_status == 'deployed':
+            if self.apigee_type == "opdk":
+                if api_deployment_status == "deployed":
                     return True
             print(f"API {api_name} is in Status: {api_deployment_status} !")  # noqa
             return False
@@ -140,15 +159,17 @@ class Apigee:
             return False
 
     def deploy_api(self, env, api_name, api_rev):
-        url = url = f"{self.baseurl}/environments/{env}/apis/{api_name}/revisions/{api_rev}/deployments?override=true"  # noqa
+        url = (
+            url
+        ) = f"{self.baseurl}/environments/{env}/apis/{api_name}/revisions/{api_rev}/deployments?override=true"  # noqa
         headers = self.auth_header.copy()
         response = requests.request("POST", url, headers=headers, data={})
         if response.status_code == 200:
             return True
         else:
             resp = response.json()
-            if 'already deployed' in resp['error']['message']:
-                print('Proxy {} is already Deployed'.format(api_name))
+            if "already deployed" in resp["error"]["message"]:
+                print("Proxy {} is already Deployed".format(api_name))
                 return True
             return False
 
@@ -158,48 +179,64 @@ class Apigee:
         api_deployment_retry_count = 0
         api_exists = False
         if self.get_api(api_name):
-                print(f'Proxy with name {api_name} already exists in Apigee Org {self.org}')  # noqa
-                api_exists = True
+            print(
+                f"Proxy with name {api_name} already exists in Apigee Org {self.org}"  # noqa
+            )
+            api_exists = True
         else:
             if self.create_api(api_name, proxy_bundle_path):
-                print(f'Proxy has been imported with name {api_name} in Apigee Org {self.org}')  # noqa
+                print(
+                    f"Proxy has been imported with name {api_name} in Apigee Org {self.org}"  # noqa
+                )
                 api_exists = True
             else:
-                print(f'ERROR : Proxy {api_name} import failed !!! ')
+                print(f"ERROR : Proxy {api_name} import failed !!! ")
                 return False
         if api_exists:
             if self.deploy_api(env, api_name, api_rev):
-                print(f'Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}')  # noqa
+                print(
+                    f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}"  # noqa
+                )
                 while api_deployment_retry_count < api_deployment_retry:
-                    if self.get_api_revisions_deployment(env, api_name, api_rev):  # noqa
-                        print(f'Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds ')  # noqa
+                    if self.get_api_revisions_deployment(
+                        env, api_name, api_rev
+                    ):
+                        print(
+                            f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds "  # noqa
+                        )
                         return True
                     else:
-                        print(f"Checking API deployment status in {api_deployment_sleep} seconds")  # noqa
+                        print(
+                            f"Checking API deployment status in {api_deployment_sleep} seconds"  # noqa
+                        )
                         sleep(api_deployment_sleep)
                         api_deployment_retry_count += 1
             else:
-                print(f'ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!')  # noqa
+                print(
+                    f"ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!"  # noqa
+                )
                 return False
 
     def get_api_vhost(self, vhost_name, env):
-        if self.apigee_type == 'opdk':
+        if self.apigee_type == "opdk":
             url = f"{self.baseurl}/environments/{env}/virtualhosts/{vhost_name}"  # noqa
         else:
             url = f"{self.baseurl}/envgroups/{vhost_name}"
         headers = self.auth_header.copy()
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
-            if self.apigee_type == 'opdk':
-                hosts = response.json()['hostAliases']
+            if self.apigee_type == "opdk":
+                hosts = response.json()["hostAliases"]
             else:
-                hosts = response.json()['hostnames']
+                hosts = response.json()["hostnames"]
             if len(hosts) == 0:
-                print(f'ERROR: Vhost/Env Group {vhost_name} contains no domains')  # noqa
+                print(
+                    f"ERROR: Vhost/Env Group {vhost_name} contains no domains"  # noqa
+                )
                 return None
             return hosts
         else:
-            print(f'ERROR: Vhost/Env Group {vhost_name} contains no domains')  # noqa
+            print(f"ERROR: Vhost/Env Group {vhost_name} contains no domains")  # noqa
             return None
 
     def list_apis(self, api_type):
@@ -207,10 +244,15 @@ class Apigee:
         headers = self.auth_header.copy()
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            if self.apigee_type == 'x':
+            if self.apigee_type == "x":
                 if len(response.json()) == 0:
                     return []
-                return [ p['name'] for p in response.json()['proxies' if api_type == 'apis' else 'sharedFlows']]  # noqa
+                return [
+                    p["name"]
+                    for p in response.json()[
+                        "proxies" if api_type == "apis" else "sharedFlows"
+                    ]
+                ]  # noqa
             return response.json()
         else:
             return []
@@ -235,5 +277,5 @@ class Apigee:
 
     def write_proxy_bundle(self, export_dir, file_name, data):
         file_path = f"./{export_dir}/{file_name}.zip"
-        with open(file_path, 'wb') as fl:
+        with open(file_path, "wb") as fl:
             shutil.copyfileobj(data, fl)
