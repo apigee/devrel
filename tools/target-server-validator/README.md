@@ -1,14 +1,11 @@
 # Apigee Target Server Validator
 
-The objective of this tool to validate targets in Target Servers & Apigee API Proxy Bundles exported from Apigee OPDK/X/Hybrid.
+The objective of this tool to validate targets in Target Servers & Apigee API Proxy Bundles exported from Apigee.
 Validation is done by deploying a sample proxy which check if HOST & PORT is open from Apigee OPDK/X/Hybrid.
 
 > **NOTE**: Discovery of Targets in API Proxy & Sharedflows is limited to only parsing URL from `TargetEndpoint` & `ServiceCallout` Policy.
 
 > **NOTE**: Dynamic targets are **NOT** supported, Ex : `https://host.{request.formparam.region}.example.com}`
-
-## Disclaimer
-This is not an Officially Supported Google Product!
 
 ## Pre-Requisites
 * python3.x
@@ -59,7 +56,7 @@ smtp.gmail.com,465
 ```
 
 
-* Please run below command to authenticate against Apigee X/Hybrid APIS
+* Please run below command to authenticate against Apigee X/Hybrid APIs
 
 ```
     export APIGEE_OPDK_ACCESS_TOKEN=$(echo -n "<user>:<password>" | base64) # Access token for Apigee OPDK
@@ -75,16 +72,12 @@ smtp.gmail.com,465
 
 ## Usage
 
-Run the Script as below
+Run the script as below
 ```
 python3 main.py
 ```
 
 ## Report
-Validation Report : `report.md` OR `report.csv` can be accessed in same localtion as script.
+Validation Report: `report.md` OR `report.csv` can be found in the same directory as the script.
 
 Please check a [Sample report](report.md)
-
-## Copyright
-
-Copyright 2023 Google LLC. This software is provided as-is, without warranty or representation for any use or purpose. Your use of it is subject to your agreement with Google.
