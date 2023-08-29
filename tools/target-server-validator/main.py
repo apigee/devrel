@@ -17,7 +17,7 @@
 
 import os
 import sys
-from utils import (  # pylint: disable=import-error
+from utilities import (  # pylint: disable=import-error
     parse_config,
     create_proxy_bundle,
     run_validator_proxy,
@@ -32,7 +32,7 @@ from utils import (  # pylint: disable=import-error
     get_tes,
     get_row_host_port,
 )
-from apigee import Apigee  # pylint: disable=import-error
+from apigee_utils import Apigee  # pylint: disable=import-error
 
 
 def main():
