@@ -146,6 +146,8 @@ def main():
         cfg["validation"]["api_env"],
         cfg["validation"]["api_name"],
         f"{bundle_path}/{cfg['validation']['api_name']}.zip",
+        1,
+        cfg["validation"].getboolean("api_force_redeploy", False)
     ):
         print(f"Proxy: {cfg['validation']['api_name']} deployment failed.")
         sys.exit(1)

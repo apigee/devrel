@@ -133,10 +133,10 @@ class Apigee:
             "POST", url, headers=headers, data={}, files=files
         )
         if response.status_code == 200:
-            return True
-        else:
-            print(response.json())
-            return False
+            revision = response.json().get('revision', "1")
+            return True, revision
+        print(response.text)
+        return False, None
 
     def get_api_revisions_deployment(self, env, api_name, api_rev):  # noqa
         url = (
@@ -156,6 +156,7 @@ class Apigee:
             print(f"API {api_name} is in Status: {api_deployment_status} !")  # noqa
             return False
         else:
+            print(response.text)
             return False
 
     def deploy_api(self, env, api_name, api_rev):
@@ -171,9 +172,10 @@ class Apigee:
             if "already deployed" in resp["error"]["message"]:
                 print("Proxy {} is already Deployed".format(api_name))
                 return True
+            print(response.text)
             return False
 
-    def deploy_api_bundle(self, env, api_name, proxy_bundle_path, api_rev=1):  # noqa
+    def deploy_api_bundle(self, env, api_name, proxy_bundle_path, api_rev=1, api_force_redeploy=False):  # noqa
         api_deployment_retry = 60
         api_deployment_sleep = 5
         api_deployment_retry_count = 0
@@ -183,8 +185,11 @@ class Apigee:
                 f"Proxy with name {api_name} already exists in Apigee Org {self.org}"  # noqa
             )
             api_exists = True
-        else:
-            if self.create_api(api_name, proxy_bundle_path):
+            if api_force_redeploy:
+                api_exists = False
+        if not api_exists:
+            api_created, api_rev = self.create_api(api_name, proxy_bundle_path)
+            if api_created:
                 print(
                     f"Proxy has been imported with name {api_name} in Apigee Org {self.org}"  # noqa
                 )

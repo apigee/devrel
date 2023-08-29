@@ -18,6 +18,8 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 
+bash "$SCRIPTPATH/callout/build_java_callout.sh"
+
 # Clean up previously generated files
 rm -rf "$SCRIPTPATH/input.properties"
 rm -rf "$SCRIPTPATH/export"
@@ -46,6 +48,7 @@ proxy_export_dir=export
 skip_proxy_list=
 api_env=$APIGEE_X_ENV
 api_name=target_server_validator
+api_force_redeploy=true
 vhost_domain_name=$APIGEE_X_HOSTNAME
 vhost_ip=
 report_format=md

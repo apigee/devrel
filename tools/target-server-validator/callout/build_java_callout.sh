@@ -15,6 +15,7 @@
 # limitations under the License.
 
 
+JAVA_SRC_PATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 echo
 echo "This script downloads JAR files and installs them into the local Maven repo."
 echo
@@ -46,3 +47,6 @@ rm message-flow-1.0.0.jar
 echo
 echo done.
 echo
+
+cd "$JAVA_SRC_PATH" || exit 1
+mvn clean install

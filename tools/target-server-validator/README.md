@@ -9,11 +9,19 @@ Validation is done by deploying a sample proxy which check if HOST & PORT is ope
 
 ## Pre-Requisites
 * python3.x
-* Please Install required Python Libs 
+* Java
+* mvn
+* Please install required Python Libs 
 
 ```
-    python3 -m pip install requirements.txt
+python3 -m pip install requirements.txt
 ```
+* Please build the java callout jar by running the below command
+
+```
+bash callout/build_java_callout.sh
+```
+
 * Please fill in `input.properties`
 
 ```
@@ -38,6 +46,7 @@ skip_proxy_list=mock1,stream                # Comma sperated list of proxies to 
 proxy_export_dir=export                     # Export directory needed when check_proxies='true'
 api_env=dev                                 # Target Environment to deploy Validation API Proxy
 api_name=target_server_validator            # Target API Name of Validation API Proxy
+api_force_redeploy=false                    # set 'true' to Re-deploy Target API Proxy
 vhost_domain_name=devgroup                  # Target VHost or EnvGroup
 vhost_ip=<IP>                               # IP address corresponding to vhost_domain_name. Use if DNS record doesnt exist
 report_format=csv                           # Report Format. Choose csv or md (Markdown)
@@ -59,8 +68,8 @@ smtp.gmail.com,465
 * Please run below command to authenticate against Apigee X/Hybrid APIs
 
 ```
-    export APIGEE_OPDK_ACCESS_TOKEN=$(echo -n "<user>:<password>" | base64) # Access token for Apigee OPDK
-    export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)            # Access token for Apigee X
+export APIGEE_OPDK_ACCESS_TOKEN=$(echo -n "<user>:<password>" | base64) # Access token for Apigee OPDK
+export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)            # Access token for Apigee X
 ```
 
 ## Highlevel Working 
