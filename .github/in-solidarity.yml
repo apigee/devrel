@@ -14,3 +14,4 @@
 
 ignore:
   - "tools/hybrid-quickstart/steps.sh" # because the GKE cli uses 'master'
+  - "tools/target-server-validator/callout/build_setup.sh" # because https://github.com/apigee/api-platform-samples uses 'master' branch
