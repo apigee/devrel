@@ -7,3 +7,4 @@
 .vscode
 .DS_Store
 *.jar
+!edge-custom-policy-java-hello.jar
