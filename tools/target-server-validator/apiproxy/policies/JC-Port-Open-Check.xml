@@ -11,8 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<JavaCallout continueOnError="false" enabled="true" name="JC1">
-    <DisplayName>JC1</DisplayName>
+<JavaCallout continueOnError="false" enabled="true" name="JC-Port-Open-Check">
+    <DisplayName>JC-Port-Open-Check</DisplayName>
     <Properties/>
     <ClassName>com.apigeesample.PortOpenCheck</ClassName>
     <ResourceURL>java://edge-custom-policy-java-hello.jar</ResourceURL>

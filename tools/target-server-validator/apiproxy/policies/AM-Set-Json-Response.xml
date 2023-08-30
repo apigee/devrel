@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<AssignMessage name="set-json-response">
+<AssignMessage name="AM-Set-Json-Response">
     <Set>
         <Payload contentType="application/json">{
     "host":"{request.header.host_name}", 

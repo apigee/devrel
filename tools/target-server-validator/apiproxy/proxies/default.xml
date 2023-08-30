@@ -15,12 +15,12 @@
     <PreFlow name="PreFlow">
         <Request>
             <Step>
-                <Name>JC1</Name>
+                <Name>JC-Port-Open-Check</Name>
             </Step>
         </Request>
         <Response>
             <Step>
-                <Name>set-json-response</Name>
+                <Name>AM-Set-Json-Response</Name>
             </Step>
         </Response>
     </PreFlow>
