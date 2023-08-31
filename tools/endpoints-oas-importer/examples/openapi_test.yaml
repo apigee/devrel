@@ -1,0 +1,70 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+swagger: "2.0"
+info:
+  description: 'Example OAS for Endpoints integration in Apigee.'
+  version: 1.0.0
+  title: Examples - Dynamic Routing
+host: api.example.com
+schemes:
+  - "https"
+x-google-allow: all
+x-google-backend:
+  address: https://mocktarget.apigee.net/echo
+  protocol: h2
+  disable_auth: true
+paths:
+  "/headers":
+    get:
+      description: Returns the request headers.
+      operationId: getHeaders
+      responses:
+        '200':
+          description: Request Headers.
+      x-google-backend:
+        address: https://mocktarget.apigee.net/echo
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+  "/headers/{headerId}/bar":
+    get:
+      description: Returns the mock server JSON response.
+      operationId: mockJSON
+      responses:
+        '200':
+          description: Mock JSON.
+      parameters:
+        - in: path
+          name: headerId
+          type: string
+          required: true
+          description: ID of the header to get
+      x-google-backend:
+        address: https://mocktarget.apigee.net/json
+        disable_auth: true
+        path_translation: CONSTANT_ADDRESS
+  "/headers/{headerId}/foo":
+    get:
+      description: Path entry with default backend.
+      operationId: Foo
+      responses:
+        '200':
+          description: Mock JSON.
+      parameters:
+        - in: path
+          name: headerId
+          type: string
+          required: true
+          description: ID of the header to get

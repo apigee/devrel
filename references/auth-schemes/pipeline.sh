@@ -106,7 +106,7 @@ cat <<EOF >> "$SCRIPTPATH/edge.json"
 }
 EOF
 
-googleToken=$(gcloud auth print-access-token);
+googleToken="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')";
 
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 

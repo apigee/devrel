@@ -37,7 +37,7 @@ echo "Pipeline for product-recommendations - setup spanner"
 
 echo "Pipeline for product-recommendations - maven apigee install"
 # This performs end-to-end install, configuration and testing API.
-mvn -P eval clean install -Dbearer="$(gcloud auth print-access-token)" \
+mvn -P eval clean install -Dbearer="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')" \
     -DapigeeOrg="$APIGEE_X_ORG" \
     -DapigeeEnv="$APIGEE_X_ENV" \
     -DenvGroupHostname="$APIGEE_X_HOSTNAME" \
@@ -52,13 +52,13 @@ if [ $? != 0 ]; then
 fi
 
 echo "Pipeline for product-recommendations - maven apigee clean"
-mvn -P eval process-resources -Dbearer="$(gcloud auth print-access-token)" \
+mvn -P eval process-resources -Dbearer="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')" \
     -DapigeeOrg="$APIGEE_X_ORG" -DapigeeEnv="$APIGEE_X_ENV" -Dskip.integration=true \
     apigee-config:apps apigee-config:apiproducts apigee-config:developers -Dapigee.config.options=delete \
     apigee-enterprise:deploy -Dapigee.options=clean
 
 echo "Pipeline for product-recommendations - cleanup bigquery"
-./cleanup_bigquery.sh			
+./cleanup_bigquery.sh
 
 echo "Pipeline for product-recommendations - cleanup spanner"
 ./cleanup_spanner.sh

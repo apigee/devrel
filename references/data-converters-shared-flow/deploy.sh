@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 ../../tools/apigee-sackmesser/bin/sackmesser deploy -d "." --googleapi \
         -t "$APIGEE_TOKEN" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV"

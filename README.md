@@ -84,10 +84,15 @@ Apigee products.
 - [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
   A tool to generate configurable proxy archives from an OpenAPI
   Specification
+- [Cloud Endpoints OpenAPI Importer](tools/endpoints-oas-importer) -
+  A utility to generate Apigee Proxies based on OAS with Cloud Endpoints OAS
+  extensions
 - [Generate Shared Flows Dependency List](tools/sf-dependency-list) -
   A tool to generate topologically sorted Shared Flow dependencies.
 - [Apigee Envoy Quickstart Toolkit](tools/apigee-envoy-quickstart) -
   A tool to set up the sample deployments of Apigee Envoy.
+- [Apigee API Proxy Endpoint Unifier](tools/proxy-endpoint-unifier) -
+  A tool to unify/split proxy endpoints based on API basepath.
 
 ## Labs
 
@@ -101,7 +106,7 @@ technical or non-technical topic.
   deploying and testing a mock API, generated from an Open API Specification.
 - [Identity facade with Okta](labs/idp-okta-integration) [(web)](https://apigee.github.io/devrel/labs/idp-okta-integration)
   A 300 level lab that shows how to configure the Apigee Identity Facade with Okta IDP.
-
+- [Eventarc + API Hub integration](labs/eventarc-apihub) - A lab for a workflow-based automation to deploy proxies using API hub and Eventarc
 ## Contributing
 
 See the [contributing instructions](./CONTRIBUTING.md) to get started.

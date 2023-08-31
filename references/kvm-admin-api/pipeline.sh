@@ -16,7 +16,7 @@
 
 set -e
 
-TOKEN=$(gcloud auth print-access-token)
+TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 # Deploy the proxy
 mvn clean install -ntp -B -Pgoogleapi -Dorg="$APIGEE_X_ORG" -Denv="$APIGEE_X_ENV" \

@@ -17,7 +17,7 @@
 set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
-APIGEE_TOKEN=$(gcloud auth print-access-token)
+APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 DEVELOPER_EMAIL='oauth-admin-pipeline@example.com'
 DEVELOPER_APP='oauth-admin-app'

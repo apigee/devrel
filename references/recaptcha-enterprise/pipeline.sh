@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -206,7 +206,8 @@ export IS_RECAPTCHA_MOCK_ENABLED
 envsubst < "$SCRIPTPATH"/templates/AM-SetReCaptchaMock.template.xml > "$SCRIPTPATH"/sf-recaptcha-enterprise-v1/sharedflowbundle/policies/AM-SetReCaptchaMock.xml
 
 echo "[INFO] Deploying reCAPTCHA enterprise reference to Google API (For X/hybrid)"
-APIGEE_TOKEN=$(gcloud auth print-access-token);
+
+token() { echo -n "$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"; }
 
 SA_EMAIL="apigee-recaptcha-enterprise-sa@$APIGEE_X_ORG.iam.gserviceaccount.com"
 
@@ -218,12 +219,12 @@ fi
 
 # Create DataCollectors on Apigee for custom analytics data reports (risk score and token validity)
 curl --silent -X POST \
-    -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(token)" -H "Accept: application/json" -H "Content-Type: application/json" \
     --data '{"name":"dc_riskScore","description":"data collection of Enterprise reCAPTCHA risk score","type":"FLOAT"}' \
     https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
 
 curl --silent -X POST \
-    -H "Authorization: Bearer $APIGEE_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(token)" -H "Accept: application/json" -H "Content-Type: application/json" \
     --data '{"name":"dc_tokenValidity","description":"data collection of Enterprise reCAPTCHA token validity","type":"STRING"}' \
     https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/datacollectors || true
 
@@ -239,7 +240,7 @@ if [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
     sackmesser deploy --googleapi \
         -o "$APIGEE_X_ORG" \
         -e "$APIGEE_X_ENV" \
-        -t "$APIGEE_TOKEN" \
+        -t "$(token)" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/sf-recaptcha-enterprise-v1 \
         --deployment-sa "$SA_EMAIL"
@@ -248,23 +249,23 @@ if [ "$IS_RECAPTCHA_MOCK_ENABLED" = "true" ];then
     sackmesser deploy --googleapi \
         -o "$APIGEE_X_ORG" \
         -e "$APIGEE_X_ENV" \
-        -t "$APIGEE_TOKEN" \
+        -t "$(token)" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/recaptcha-data-proxy-v1
 
     # set developer app ('app-recaptcha-enterprise') credentials
     curl --fail --silent -X POST \
-        -H "Authorization: Bearer $APIGEE_TOKEN" -H "Content-Type:application/json" \
+        -H "Authorization: Bearer $(token)" -H "Content-Type:application/json" \
         --data "{ \"consumerKey\": \"$TEST_APP_CONSUMER_KEY\", \"consumerSecret\": \"$TEST_APP_CONSUMER_SECRET\" }" \
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/app-recaptcha-enterprise/keys/create
 
     # Set Recaptcha Enterprise product for developer app 'app-recaptcha-enterprise'
     curl --fail --silent -X POST \
-        -H "Authorization: Bearer $APIGEE_TOKEN" -H "Content-Type:application/json" \
+        -H "Authorization: Bearer $(token)" -H "Content-Type:application/json" \
         --data "{ \"apiProducts\": [\"RecaptchaEnterprise\"] }" \
         https://apigee.googleapis.com/v1/organizations/"$APIGEE_X_ORG"/developers/janedoe@example.com/apps/app-recaptcha-enterprise/keys/"$TEST_APP_CONSUMER_KEY"
 
-    
+
     cd "$SCRIPTPATH" && npm i --no-fund && TEST_HOST="$APIGEE_X_HOSTNAME" npm run test
 
 else
@@ -277,7 +278,7 @@ else
     # Generate 2 reCAPTCHA sitekeys: - Always 1 (score: 1) & Always 0 (score: 0)
     TMP0=$(gcloud recaptcha keys create --testing-score=0.0 --web --allow-all-domains --display-name="Always 0" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_0=$(echo "$TMP0" | cut -d'/' -f 4)
-    
+
     TMP1=$(gcloud recaptcha keys create --testing-score=1.0 --web --allow-all-domains --display-name="Always 1" --integration-type=score --format=json | jq -r .name)
     SITEKEY_ALWAYS_1=$(echo "$TMP1" | cut -d'/' -f 4)
 
@@ -288,7 +289,7 @@ else
     sackmesser deploy --googleapi \
         -o "$APIGEE_X_ORG" \
         -e "$APIGEE_X_ENV" \
-        -t "$APIGEE_TOKEN" \
+        -t "$(token)" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/sf-recaptcha-enterprise-v1 \
         --deployment-sa "$SA_EMAIL"
@@ -297,7 +298,7 @@ else
     sackmesser deploy --googleapi \
         -o "$APIGEE_X_ORG" \
         -e "$APIGEE_X_ENV" \
-        -t "$APIGEE_TOKEN" \
+        -t "$(token)" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/recaptcha-data-proxy-v1
 
@@ -305,7 +306,7 @@ else
     sackmesser deploy --googleapi \
         -o "$APIGEE_X_ORG" \
         -e "$APIGEE_X_ENV" \
-        -t "$APIGEE_TOKEN" \
+        -t "$(token)" \
         -h "$APIGEE_X_HOSTNAME" \
         -d "$SCRIPTPATH"/recaptcha-deliver-token-v1
 

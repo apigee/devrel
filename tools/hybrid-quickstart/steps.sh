@@ -64,9 +64,9 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.8.2'
+    export APIGEE_HYBRID_VERSION='1.10.0'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
-    export CERT_MANAGER_VERSION='v1.7.3'
+    export CERT_MANAGER_VERSION='v1.12.2'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
 
     OS_NAME=$(uname -s)
@@ -74,11 +74,9 @@ set_config_params() {
     if [[ "$OS_NAME" == "Linux" ]]; then
       echo "- 🐧 Using Linux binaries"
       export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-      export JQ_VERSION='jq-1.6/jq-linux64'
     elif [[ "$OS_NAME" == "Darwin" ]]; then
       echo "- 🍏 Using macOS binaries"
       export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      export JQ_VERSION='jq-1.6/jq-osx-amd64'
       if ! [ -x "$(command -v timeout)" ]; then
         echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
         exit 2
@@ -204,7 +202,6 @@ enable_all_apis() {
     logging.googleapis.com \
     meshca.googleapis.com \
     meshconfig.googleapis.com \
-    meshtelemetry.googleapis.com \
     monitoring.googleapis.com \
     pubsub.googleapis.com \
     stackdriver.googleapis.com \
@@ -622,6 +619,7 @@ create_sa() {
   create_k8s_sa_workload "apigee-connect-agent-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-watcher-$APIGEE_ORG_HASH-sa" "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-metrics-sa" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
@@ -676,10 +674,9 @@ ingressGateways:
 EOF
 
 if [ "$CERT_TYPE" = "google-managed" ]; then
-  echo "Setting Apigee Ingress IB to Internal because Ingress resource is used"
+  echo "Do not create a LB because the ingress resource is used to create a GCLB with a managed cert"
 cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
-  svcAnnotations:
-    networking.gke.io/load-balancer-type: "Internal"
+  svcType: ClusterIP
 EOF
 else
 cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
@@ -770,6 +767,8 @@ enable_trace() {
 
 deploy_example_proxy() {
   echo "🦄 Deploy Sample Proxy"
+
+  kubectl apply -f "$QUICKSTART_ROOT/example-proxy/resources.yaml"
 
   ENV_NAME=$1
   ENV_GROUP_NAME=$2

@@ -1,0 +1,10 @@
+<!--OAS path derived flow -->
+    <Flow name="$FLOW_NAME">
+      <Description/>
+      <Request>
+        $SECURITY_POLICIES
+        $PATH_OP
+      </Request>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "$PATH_CONDITION") and (request.verb = "$VERB_CONDITION")</Condition>
+    </Flow>

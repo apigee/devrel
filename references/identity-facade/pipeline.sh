@@ -206,7 +206,7 @@ generate_edge_json() {
                     "apiProducts": [
                         "IdentityFacade"
                     ],
-                    "callbackUrl": "https://httpbin.org/get",
+                    "callbackUrl": "https://mocktarget.apigee.net/echo",
                     "scopes": []
                 }
             ]
@@ -259,7 +259,7 @@ generate_authz_url() {
     RESPONSE_TYPE="&response_type=code"
     SCOPE="&scope=openid email profile"
     STATE="&state=abcd-1234"
-    REDIRECT_URI="&redirect_uri=https://httpbin.org/get"
+    REDIRECT_URI="&redirect_uri=https://mocktarget.apigee.net/echo"
 
     # is pkce enabled (=true) or not
     if [ "$4" = "true" ];then
@@ -269,7 +269,7 @@ generate_authz_url() {
         CODE_CHALLENGE_METHOD=""
         CODE_CHALLENGE=""
     fi
-    
+
     printf "\n"
     printf "##########################\n"
     printf "#### Authorization URL ###\n"
@@ -350,7 +350,7 @@ fi
 
 if [ -z "$1" ] || [ "$1" = "--googleapi" ];then
     echo "[INFO] Deploying Identitiy facade to Google API (For X/hybrid)"
-    APIGEE_TOKEN=$(gcloud auth print-access-token);
+    APIGEE_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
     if [ -z ${IDP_DISCOVERY_DOCUMENT+x} ];
     then

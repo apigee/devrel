@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM maven:3.6-alpine
+FROM alpine:3.17
 
 RUN apk add --no-cache \
+  bash \
+  curl \
+  maven \
+  openjdk17 \
   git \
   jq \
   libxml2-utils \
@@ -25,12 +29,16 @@ RUN apk add --no-cache \
 RUN npm install --global apigeelint@2.10.0
 
 COPY tools/apigee-sackmesser /opt/devrel/tools/apigee-sackmesser
-COPY references/kvm-admin-api /opt/devrel/references/kvm-admin-api
 
 RUN mkdir /opt/apigee
 
 RUN addgroup -S apigee && adduser -S apigee -G apigee && \
   chown -R apigee /opt/devrel && chown -R apigee /opt/apigee
+
+# Reduce log (note: -ntp requires maven 3.6.1+)
+RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
+  printf '#!/bin/bash\n/usr/bin/_mvn -ntp "$@"' > /usr/bin/mvn && \
+  chmod +x /usr/bin/mvn
 
 USER apigee
 

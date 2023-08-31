@@ -71,7 +71,7 @@ docker run \
 
 echo "[INFO] CICD Pipeline for Apigee X (Jenkins)"
 
-TOKEN=$(gcloud auth print-access-token)
+TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 docker run \
   -e APIGEE_USER="not-used" \

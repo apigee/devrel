@@ -33,17 +33,21 @@ RUN apk add --no-cache \
   freetype-dev \
   harfbuzz \
   ca-certificates \
-  ttf-freefont
+  ttf-freefont \
+  py-pip \
+  zip
 
-# Reduce nighly log (requires maven 3.6.1+)
-ENV MVN_REDUCE_LOGS="T"
+# Reduce nighly log (note: -ntp requires maven 3.6.1+)
+RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
+  printf '#!/bin/bash\n/usr/bin/_mvn -ntp "$@"' > /usr/bin/mvn && \
+  chmod +x /usr/bin/mvn
 
 # install claat
 RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
 RUN chmod +x /usr/local/bin/claat
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+  PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install --global puppeteer@5.2.1
 
@@ -52,6 +56,10 @@ COPY *.sh /usr/bin/
 
 # install apgieelint
 RUN npm install --global apigeelint@2.10.0
+
+# yq because the apk is too old
+RUN wget -q -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v4.29.2/yq_linux_amd64"
+RUN chmod +x /usr/local/bin/yq
 
 # Run script
 WORKDIR /home

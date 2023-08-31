@@ -47,7 +47,7 @@ cp -r "$SCRIPTPATH/cloud-run-v0-template" "$SCRIPTPATH/cloud-run-v0"
 sed -i.bak "s|CLOUD_RUN_URL|$CLOUD_RUN_URL|g" "$SCRIPTPATH/cloud-run-v0/apiproxy/targets/default.xml"
 rm "$SCRIPTPATH/cloud-run-v0/apiproxy/targets/default.xml.bak"
 
-TOKEN=$(gcloud auth print-access-token)
+TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 sackmesser deploy -d "$SCRIPTPATH/cloud-run-v0"  -t "$TOKEN" --deployment-sa "$SA_EMAIL"
 
 response=$(curl "https://${APIGEE_X_HOSTNAME}/cloud-run/v0")

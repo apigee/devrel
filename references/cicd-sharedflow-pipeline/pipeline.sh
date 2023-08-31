@@ -15,11 +15,10 @@
 # limitations under the License.
 
 set -e
-set -x
 
 # Apigee X/hybrid
 
-TOKEN=$(gcloud auth print-access-token)
+TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 
 # Deploy the sharedflow
 mvn clean install -Pgoogleapi -Dorg="$APIGEE_X_ORG" \

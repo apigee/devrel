@@ -22,11 +22,10 @@ function onComplete(response,error) {
       var payload = JSON.parse(context.getVariable("response.content"));
       payload.patient.display = response.content.asJSON.args.name;
       context.setVariable("response.content", JSON.stringify(payload))
-
      } else {
        throw error;
      }
 }
 
 // Make an additional request
-httpClient.get("https://httpbin.org/get?name=Mediated Display Name", onComplete);
+httpClient.get("https://mocktarget.apigee.net/echo?name=Mediated Display Name", onComplete);

@@ -6,4 +6,4 @@ Feature:
   Scenario: Successful Request
     When I GET /get
     Then response code should be 200
-    And response body path $.headers.X-Debug should be true
+    And response body path $.headers.x-debug should be true

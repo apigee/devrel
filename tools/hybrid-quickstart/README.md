@@ -141,8 +141,13 @@ Apigee hybrid organization and runtime. This typically takes between 15 and
 
 ## Clean up
 
-Delete the runtime resources (without deleting the Apigee Organization) to avoid
-paying for unused GKE clusters.
+This tool includes a script to automatically clean up the Apigee hybrid
+runtime resources (without deleting the Apigee Organization).
+
+**Note:** The cleanup script is designed to run on a standalone GCP project.
+If you provisioned the quickstart in a GCP project with other resources
+consider deleting the GCP resources manually to avoid accidentally deleting
+the resources that are needed by other services.
 
 ```sh
 ./destroy-runtime-gke.sh

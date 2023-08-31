@@ -26,6 +26,6 @@
     <Response/>
   </PostFlow>
   <HTTPTargetConnection>
-    <URL>https://httpbin.org</URL>
+    <URL>http://httpbin.example-backend.svc.cluster.local</URL>
   </HTTPTargetConnection>
 </TargetEndpoint>

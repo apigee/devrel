@@ -13,10 +13,16 @@
 # limitations under the License.
 
 
-FROM jenkins/jenkins:2.346-alpine
+FROM jenkins/jenkins:2.346.3-alpine
 
 USER root
 RUN apk update && apk add --no-cache git maven nodejs npm
+
+# Reduce log (note: -ntp requires maven 3.6.1+)
+RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
+  printf '#!/bin/bash\n/usr/bin/_mvn -ntp "$@"' > /usr/bin/mvn && \
+  chmod +x /usr/bin/mvn
+
 USER jenkins
 
 COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt

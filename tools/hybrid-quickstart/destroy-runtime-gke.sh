@@ -86,6 +86,18 @@ for mcrt in $(gcloud compute ssl-certificates list --format="value(name)" --filt
    gcloud compute ssl-certificates delete "$mcrt" -q
 done
 
+for firewall in $(gcloud compute firewall-rules list --filter="name~^k8s-fw-" --format='get(name)'); do
+   gcloud compute  firewall-rules delete "$firewall" -q
+done
+
+for hcfirewall in $(gcloud compute firewall-rules list --filter='name~-hc$' --format='get(name)'); do
+   gcloud compute  firewall-rules delete "$hcfirewall" -q
+done
+
+for firewall in $(gcloud compute firewall-rules list --filter="name~^$NETWORK" --format='get(name)'); do
+   gcloud compute  firewall-rules delete "$firewall" -q
+done
+
 if [ -n "$(gcloud compute routers nats list --region "$REGION" --router "rt-$REGION" --format json --format='get(name)')" ]; then
    gcloud compute routers nats delete "apigee-nat-$REGION" --router "rt-$REGION"  -q
 fi

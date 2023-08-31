@@ -63,7 +63,6 @@ if [ -f "$temp_folder"/edge.json ]; then
     loginfo "Preparing config $temp_folder/edge.json"
     export config_action='update'
     export config_file_path="$temp_folder"/edge.json
-    kvms=$(jq --arg APIGEE_ENV "$environment" -c '.envConfig[$APIGEE_ENV].kvms[]? | .' < "$temp_folder"/edge.json)
 
     if [ "$(jq '.orgConfig | has("importKeys")' "$temp_folder/edge.json")" = "true" ]; then
         loginfo "Found key import entry in file: $temp_folder/edge.json"
@@ -76,45 +75,10 @@ if [ -d "$temp_folder"/resources/edge ]; then
     export config_action='update'
     export config_dir_path="$temp_folder"/resources/edge
 
-    if [ -f "$temp_folder/resources/edge/env/$environment"/kvms.json ]; then
-        kvms=$(jq -c '.[] | .' < "$temp_folder/resources/edge/env/$environment"/kvms.json)
-    fi
-
     if [ -f "$temp_folder"/resources/edge/org/importKeys.json ]; then
         loginfo "Found key import file: $temp_folder/resources/edge/org/importKeys.json"
         import_keys_phase='install'
     fi
-fi
-
-if [ "$apiversion" = "google" ] && [ -n "$kvms" ]; then
-    echo "$kvms" | while read -r line; do
-        kvm=$(echo "$line" | jq -c 'del(.entry)')
-        kvmname=$(echo "$kvm" | jq -r '.name')
-        loginfo "X/hybrid patch: adding kvm: $kvmname"
-        curl -X POST --fail "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/keyvaluemaps" \
-            -H "Authorization: Bearer $token" \
-            -H "Content-Type: application/json" \
-            --data "$kvm" || logwarn "failed to create KVM. Assuming it already exists"
-
-        KVM_ADMIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" "https://apigee.googleapis.com/v1/organizations/$organization/environments/$environment/apis/kvm-admin-v1/deployments")
-
-        loginfo "kvm admin status $KVM_ADMIN_STATUS"
-
-        if [ "$KVM_ADMIN_STATUS" != "200" ];then
-            loginfo "creating kvm admin proxy"
-            "$SCRIPT_FOLDER/../../bin/sackmesser" deploy --googleapi -d "$SCRIPT_FOLDER/../../../../references/kvm-admin-api" -t "$token" \
-                -o "$organization" -e "$environment"
-        fi
-
-        echo "$line" | jq -c  '.entry[]? | .' | while read -r kvmentry; do
-            kvmentry=$(echo "$kvmentry" | jq '.["key"]=.name | del(.name)')
-            loginfo "adding entry: $(echo "$kvmentry" | jq '.key')"
-            curl -s -X POST -k --fail "https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname/entries" \
-                -H "Authorization: Bearer $token" \
-                -H "Content-Type: application/json" \
-                --data "$kvmentry" > /dev/null || ( logfatal "failed to add entry to KVM: https://$hostname/kvm-admin/v1/organizations/$organization/environments/$environment/keyvaluemaps/$kvmname" && exit 1 )
-        done
-    done
 fi
 
 skip_deployment=true #skip maven deploy unless bundle contains proxy or shared flow
@@ -182,15 +146,11 @@ if [ "$debug" = "T" ]; then
     MVN_DEBUG="-X"
 fi
 
-if [ "$MVN_REDUCE_LOGS" = "T" ]; then
-    MVN_NTP="-ntp"
-fi
-
 if [ "$apiversion" = "google" ]; then
     # install for apigee x/hybrid
     cp "$SCRIPT_FOLDER/pom-hybrid.xml" "$temp_folder/pom.xml"
     logdebug "Deploy to apigee.googleapis.com"
-    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \
@@ -209,7 +169,7 @@ elif [ "$apiversion" = "apigee" ]; then
     cp "$SCRIPT_FOLDER/pom-edge.xml" "$temp_folder/pom.xml"
     logdebug "Deploy to Edge API"
     sed -i.bak "s|<artifactId>.*</artifactId><!--used-by-edge-->|<artifactId>$bundle_name<\/artifactId>|g" "$temp_folder"/pom.xml && rm "$temp_folder"/pom.xml.bak
-    (cd "$temp_folder" && mvn install -B $MVN_DEBUG $MVN_NTP \
+    (cd "$temp_folder" && mvn install -B $MVN_DEBUG \
         -Dapitype="${api_type:-apiproxy}" \
         -Dorg="$organization" \
         -Denv="$environment" \

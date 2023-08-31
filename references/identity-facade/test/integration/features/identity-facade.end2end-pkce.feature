@@ -1,6 +1,6 @@
 @pkce @end2end
 Feature:
-  As a Client App 
+  As a Client App
   I want to access the protected resource of an API
   So that I can retrieve different types of information
 
@@ -14,11 +14,11 @@ Feature:
 
   Scenario: Generate Access Token
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       |	state	    | `state`		      |
       |	scope	    | `scope`		      |
       | code_verifier | `codeVerifier` |
