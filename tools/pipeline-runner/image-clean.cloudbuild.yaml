@@ -25,7 +25,7 @@ steps:
           echo "Cleaning stale versions of: $$IMAGE_URI"
           VERSIONS_TO_CLEAN=$(gcloud artifacts docker images list "$$IMAGE_URI" \
             --include-tags \
-            --filter="UPDATE_TIME.date('%Y-%m-%d', Z)<=$(date --date="-${_IMAGE_RETENTION_MIN} days" +'%Y-%m-%d')" \
+            --filter="UPDATE_TIME.date('%Y-%m-%d', Z)<=$(date --date="-${_IMAGE_RETENTION_MIN} days" +'%Y-%m-%d') AND -TAGS:*" \
             --format='value(VERSION)')
 
           if [ -z "$$VERSIONS_TO_CLEAN" ]; then
