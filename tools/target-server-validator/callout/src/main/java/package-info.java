@@ -19,4 +19,4 @@
  * @author anaik91
  * @version .01
  */
-package com.apigeesample;
+package com.apigee.devrel.apigee_target_server_validator;

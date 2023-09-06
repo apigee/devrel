@@ -157,10 +157,10 @@ def main():
 
     # Fetch API Northbound Endpoint
     print(
-        f"INFO: Fetching VHost with name {cfg['validation']['vhost_domain_name']} !"  # noqa
+        f"INFO: Fetching VHost with name {cfg['validation']['api_hostname']} !"  # noqa
     )
-    vhost_domain_name = cfg["validation"]["vhost_domain_name"]
-    vhost_ip = cfg["validation"].get("vhost_ip", "").strip()
+    vhost_domain_name = cfg["validation"]["api_hostname"]
+    vhost_ip = cfg["validation"].get("api_ip", "").strip()
     api_url = f"https://{vhost_domain_name}/validate_target_server"
     final_report = []
     _cached_hosts = {}
@@ -254,6 +254,7 @@ def main():
             )
 
     # Write CSV Report
+    # TODO: support relative report path
     if report_format == "csv":
         report_file = "report.csv"
         print(f"INFO: Dumping report to file {report_file}")

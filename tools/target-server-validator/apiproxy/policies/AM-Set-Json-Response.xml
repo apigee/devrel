@@ -16,7 +16,7 @@
         <Payload contentType="application/json">{
     "host":"{request.header.host_name}", 
     "port": "{request.header.port_number}", 
-    "status":"{REACHABLE_STATUS}"
+    "status":"{flow.reachableStatus}"
 }
 </Payload>
     </Set>

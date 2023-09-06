@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-package com.apigeesample;
+package com.apigee.devrel.apigee_target_server_validator;
 
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
@@ -24,6 +24,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import com.apigee.flow.execution.Action;
+
 
 /**
  * A callout that checks if a particular port is open on a specified host.
@@ -54,7 +56,7 @@ public class PortOpenCheck implements Execution {
         try {
           socket.close();
         } catch (IOException e) {
-          throw new RuntimeException("You should handle this error.", e);
+          throw new RuntimeException("Exception occured", e);
         }
       }
     }
@@ -75,10 +77,18 @@ public class PortOpenCheck implements Execution {
       int portnumber = Integer.parseInt(port);
       String status = available(hostname, portnumber);
       // messageContext.getMessage().setContent(Status);
-      messageContext.setVariable("REACHABLE_STATUS", status);
+      messageContext.setVariable("flow.reachableStatus", status);
       return ExecutionResult.SUCCESS;
     } catch (Exception e) {
-      return ExecutionResult.ABORT;
+      ExecutionResult executionResult = new ExecutionResult(false,
+        Action.ABORT);
+      //--Returns custom error message and header
+      executionResult.setErrorResponse(e.getMessage());
+      executionResult.addErrorResponseHeader("ExceptionClass",
+        e.getClass().getName());
+      //--Set flow variables -- may be useful for debugging.
+      messageContext.setVariable("JAVA_ERROR", e.getMessage());
+      return executionResult;
     }
   }
 }

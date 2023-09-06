@@ -11,20 +11,4 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<APIProxy revision="1" name="target_server_validator">
-    <DisplayName></DisplayName>
-    <Description></Description>
-    <CreatedAt>1682421435781</CreatedAt>
-    <LastModifiedAt>1682421435781</LastModifiedAt>
-    <BasePaths>/validate_target_server</BasePaths>
-    <Policies>
-        <Policy>JC1</Policy>
-        <Policy>set-json-response</Policy>
-    </Policies>
-    <ProxyEndpoints>
-        <ProxyEndpoint>default</ProxyEndpoint>
-    </ProxyEndpoints>
-    <Resources>
-        <Resource>java://edge-custom-policy-java-hello.jar</Resource>
-    </Resources>
-</APIProxy>
+<APIProxy name="target_server_validator"/>

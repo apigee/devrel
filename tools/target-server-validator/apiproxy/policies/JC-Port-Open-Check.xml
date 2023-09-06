@@ -12,8 +12,6 @@
     limitations under the License.
 -->
 <JavaCallout continueOnError="false" enabled="true" name="JC-Port-Open-Check">
-    <DisplayName>JC-Port-Open-Check</DisplayName>
-    <Properties/>
-    <ClassName>com.apigeesample.PortOpenCheck</ClassName>
-    <ResourceURL>java://edge-custom-policy-java-hello.jar</ResourceURL>
+    <ClassName>com.apigee.devrel.apigee_target_server_validator.PortOpenCheck</ClassName>
+    <ResourceURL>java://jc-target-server-validator.jar</ResourceURL>
 </JavaCallout>
