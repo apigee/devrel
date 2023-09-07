@@ -1,0 +1,50 @@
+@startuml
+
+title "Firestore Facade in Apigee X/hybrid"
+
+actor User as u
+entity "Client App" as b
+entity "Cloud\nFirestore database" as gfd
+box "Apigee API Platform" #LightBlue
+entity "API Proxy\nfirestore-data-proxy-v1" as fdp
+entity "SharedFlow\nsf-firestore-facade-lookup-v1" as ffl
+entity "SharedFlow\nsf-firestore-facade-populate-v1" as ffp
+end box
+participant "Backend" as backend
+
+u -> b: User interaction
+b -> b: App activity
+b -> fdp: Access the firestore facade api
+
+note over gfd,ffp: "Apigee API proxy and shared flows acting as a facade in front of Cloud Firestore db" 
+
+fdp -> ffl: Lookup data from the Cloud Firestore db based on base path, path suffix and encoding type (base64 only)
+ffl -> ffl: calculate the key cache\nkeyCache = encodingType( basePath + pathSuffix)
+ffl -> gfd: Lookup shared flow acting as a facade with Cloud Firestore, using the key cache\ncall is executed using an ID token
+gfd -> gfd: lookup in the Cloud Firestore db using key cache
+
+opt Data retrieved from Cloud Firestore
+    gfd -> ffl: data is retrieved from Cloud Firestore (lookp status)
+    ffl -> ffl: set context variables:\nflow.lookup.iscontent.cached = true \nflow.lookup.content.cached = "<json content retrieved from cache>" \nflow.lookup.status.code = 200
+    ffl -> fdp: shared flow response
+end
+
+opt Data is NOT retrieved from Cloud Firestore
+    gfd -> ffl: data is not retrieved from Cloud Firestore (lookp status)
+    ffl -> ffl: set context variables:\nflow.lookup.iscontent.cached = false \nflow.lookup.content.cached = "none" \nflow.lookup.status.code = 404
+    ffl -> fdp: shared flow response
+    fdp -> backend: request is forwarded to the backend API
+    backend -> fdp: backend response
+    fdp -> ffp: Populate data from the Cloud Firestore db based on base path, path suffix and encoding type (base64 only)
+    ffp -> ffp: calculate the key cache\nkeyCache = encodingType( basePath + pathSuffix)
+    ffp -> gfd: Populate shared flow acting as a facade with Cloud Firestore, using the key cache\ncall is executed using an ID token
+    gfd -> gfd: populate backend response in the Firestore db using key cache
+    gfd -> ffp: firestore populate status
+    ffp -> ffp: set context variables:\nflow.populate.content.cached = true \nflow.populate.status.code = 200 \nflow.populate.keycache = <keycache> \nflow.populate.documentid = <firestore documentId> \nflow.populate.collectionid = <firestore collectionId>
+    ffp -> fdp: shared flow response
+    
+end
+
+fdp -> b: JSON response is sent back to the app (200 OK)
+
+@enduml
