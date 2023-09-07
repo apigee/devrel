@@ -148,7 +148,7 @@ Using cURL, the request is the following:
 
     curl https://${APIGEE_X_HOSTNAME}/v1/firestore/users/123
 
-You can then access your Cloud Firestore instance to check that data (response
+Connect to your Cloud Firestore instance to check that data (response
 of the Apigee Mock API) have been insterted into your Cloud Firestore db (
 cf. **data** on the right side of the picture):
 
