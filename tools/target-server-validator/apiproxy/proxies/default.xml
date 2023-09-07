@@ -30,7 +30,7 @@
         <Response/>
     </PostFlow>
     <HTTPProxyConnection>
-        <BasePath>/validate_target_server</BasePath>
+        <BasePath>/validate-target-server</BasePath>
     </HTTPProxyConnection>
     <RouteRule name="noroute"/>
 </ProxyEndpoint>

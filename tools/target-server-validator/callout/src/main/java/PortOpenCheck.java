@@ -76,7 +76,6 @@ public class PortOpenCheck implements Execution {
       String port = messageContext.getMessage().getHeader("port_number");
       int portnumber = Integer.parseInt(port);
       String status = available(hostname, portnumber);
-      // messageContext.getMessage().setContent(Status);
       messageContext.setVariable("flow.reachableStatus", status);
       return ExecutionResult.SUCCESS;
     } catch (Exception e) {

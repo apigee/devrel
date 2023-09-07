@@ -41,6 +41,7 @@ def main():
     check_proxies = cfg["validation"].getboolean("check_proxies")
     proxy_export_dir = cfg["validation"]["proxy_export_dir"]
     report_format = cfg["validation"]["report_format"]
+    allow_insecure = cfg["validation"].getboolean("allow_insecure")
     if report_format not in ["csv", "md"]:
         report_format = "md"
 
@@ -169,7 +170,7 @@ def main():
     print("INFO: Running validation against All Target Servers")
     for each_ts in all_target_servers:
         status = run_validator_proxy(
-            api_url, vhost_domain_name, vhost_ip, each_ts["host"], each_ts["port"]  # noqa
+            api_url, vhost_domain_name, vhost_ip, each_ts["host"], each_ts["port"], allow_insecure  # noqa
         )
         final_report.append(
             [
@@ -210,6 +211,7 @@ def main():
                             vhost_ip,
                             each_target["host"],
                             each_target["port"],
+                            allow_insecure,
                         )
                         _cached_hosts[
                             f"{each_target['host']}:{each_target['port']}"
@@ -238,7 +240,7 @@ def main():
                 status = _cached_hosts[f"{each_host}:{each_port}"]
             else:
                 status = run_validator_proxy(
-                    api_url, vhost_domain_name, vhost_ip, each_host, each_port
+                    api_url, vhost_domain_name, vhost_ip, each_host, each_port, allow_insecure  # noqa
                 )
                 _cached_hosts[f"{each_host}:{each_port}"] = status
             final_report.append(

@@ -49,9 +49,10 @@ skip_proxy_list=
 api_env=$APIGEE_X_ENV
 api_name=target_server_validator
 api_force_redeploy=true
-vhost_domain_name=$APIGEE_X_HOSTNAME
-vhost_ip=
+api_hostname=$APIGEE_X_HOSTNAME
+api_ip=
 report_format=md
+allow_insecure=false
 EOF
 
 # Generate optional input csv file
@@ -59,7 +60,7 @@ cat > "$SCRIPTPATH/input.csv" << EOF
 HOST,PORT
 httpbin.org
 httpbin.org,443
-mocktarget.apigee.tom
+domaindoesntexist.apigee.tom
 smtp.gmail.com,465
 EOF
 

@@ -26,8 +26,6 @@ import xmltodict
 import urllib3
 from forcediphttpsadapter.adapters import ForcedIPHTTPSAdapter
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 
 def parse_config(config_file):
     config = configparser.ConfigParser()
@@ -55,19 +53,21 @@ def create_proxy_bundle(proxy_bundle_directory, api_name, target_dir):  # noqa
 
 
 def run_validator_proxy(
-    url, dns_host, vhost_ip, target_host, target_port="443"
-):  # noqa
+    url, dns_host, vhost_ip, target_host, target_port="443", allow_insecure=False):  # noqa
     headers = {
         "host_name": target_host,
         "port_number": str(target_port),
         "Host": dns_host,
     }
+    if allow_insecure:
+        print("INFO: Skipping Certificate Verification & disabling warnings because 'allow_insecure' is set to true")  # noqa
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     session = requests.Session()
     if len(vhost_ip) > 0:
         session.mount(
             f"https://{dns_host}", ForcedIPHTTPSAdapter(dest_ip=vhost_ip)
         )  # noqa
-    r = session.get(url, headers=headers, verify=False)
+    r = session.get(url, headers=headers, verify=(not allow_insecure))
     if r.status_code == 200:
         return r.json()["status"]
     return "STATUS_UNKNOWN"
