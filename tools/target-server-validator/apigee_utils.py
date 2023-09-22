@@ -115,9 +115,10 @@ class Apigee:
         headers = self.auth_header.copy()
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
-            return True
+            revision = response.json().get('revision', ['1'])
+            return True, revision
         else:
-            return False
+            return False, None
 
     def create_api(self, api_name, proxy_bundle_path):
         url = f"{self.baseurl}/apis?action=import&name={api_name}&validate=true"  # noqa
@@ -175,16 +176,18 @@ class Apigee:
             print(response.text)
             return False
 
-    def deploy_api_bundle(self, env, api_name, proxy_bundle_path, api_rev=1, api_force_redeploy=False):  # noqa
+    def deploy_api_bundle(self, env, api_name, proxy_bundle_path, api_force_redeploy=False):  # noqa
         api_deployment_retry = 60
         api_deployment_sleep = 5
         api_deployment_retry_count = 0
         api_exists = False
-        if self.get_api(api_name):
-            print(
-                f"Proxy with name {api_name} already exists in Apigee Org {self.org}"  # noqa
-            )
+        get_api_status, api_revs = self.get_api(api_name)
+        if get_api_status:
             api_exists = True
+            api_rev = api_revs[-1]
+            print(
+                f"Proxy with name {api_name} with revision {api_rev} already exists in Apigee Org {self.org}"  # noqa
+            )
             if api_force_redeploy:
                 api_exists = False
         if not api_exists:
@@ -198,29 +201,35 @@ class Apigee:
                 print(f"ERROR : Proxy {api_name} import failed !!! ")
                 return False
         if api_exists:
-            if self.deploy_api(env, api_name, api_rev):
-                print(
-                    f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}"  # noqa
-                )
-                while api_deployment_retry_count < api_deployment_retry:
-                    if self.get_api_revisions_deployment(
+            if self.get_api_revisions_deployment(
                         env, api_name, api_rev
                     ):
-                        print(
-                            f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds "  # noqa
-                        )
-                        return True
-                    else:
-                        print(
-                            f"Checking API deployment status in {api_deployment_sleep} seconds"  # noqa
-                        )
-                        sleep(api_deployment_sleep)
-                        api_deployment_retry_count += 1
+                print(f"INFO : Proxy {api_name} already active in to {env} in Apigee Org {self.org} !")  # noqa
+                return True
             else:
-                print(
-                    f"ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!"  # noqa
-                )
-                return False
+                if self.deploy_api(env, api_name, api_rev):
+                    print(
+                        f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}"  # noqa
+                    )
+                    while api_deployment_retry_count < api_deployment_retry:
+                        if self.get_api_revisions_deployment(
+                            env, api_name, api_rev
+                        ):
+                            print(
+                                f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds "  # noqa
+                            )
+                            return True
+                        else:
+                            print(
+                                f"Checking API deployment status in {api_deployment_sleep} seconds"  # noqa
+                            )
+                            sleep(api_deployment_sleep)
+                            api_deployment_retry_count += 1
+                else:
+                    print(
+                        f"ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!"  # noqa
+                    )
+                    return False
 
     def get_api_vhost(self, vhost_name, env):
         if self.apigee_type == "opdk":
