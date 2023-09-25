@@ -1,7 +1,5 @@
 **/node_modules/**
 **/generated/**
-target/
-export/
 .settings
 .project
 .classpath
