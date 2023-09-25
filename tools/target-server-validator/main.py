@@ -147,7 +147,6 @@ def main():
         cfg["validation"]["api_env"],
         cfg["validation"]["api_name"],
         f"{bundle_path}/{cfg['validation']['api_name']}.zip",
-        1,
         cfg["validation"].getboolean("api_force_redeploy", False)
     ):
         print(f"Proxy: {cfg['validation']['api_name']} deployment failed.")
@@ -162,7 +161,7 @@ def main():
     )
     vhost_domain_name = cfg["validation"]["api_hostname"]
     vhost_ip = cfg["validation"].get("api_ip", "").strip()
-    api_url = f"https://{vhost_domain_name}/validate_target_server"
+    api_url = f"https://{vhost_domain_name}/validate-target-server"
     final_report = []
     _cached_hosts = {}
 
