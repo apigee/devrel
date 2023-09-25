@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.14.0](https://github.com/apigee/devrel/compare/v1.13.0...v1.14.0) (2023-09-20)
+
+
+### Features
+
+* added javacallout build to pipeline ([4590268](https://github.com/apigee/devrel/commit/4590268294aa7057fdd73244168c1f8f40010a7e))
+* added the java-callout resource for target server validator ([143d27d](https://github.com/apigee/devrel/commit/143d27dc89e8b1ea635037196992d809eeed64f0))
+* Added wrappers for target-server-validator ([da88426](https://github.com/apigee/devrel/commit/da8842641e32ebd0896e6bbeaff7710f1ae1fb0b))
+* disabled mypy check ([ec60898](https://github.com/apigee/devrel/commit/ec6089814159e5f427aa5b75b9b9958afdcc5475))
+* renamed wrappers ([4f6b06f](https://github.com/apigee/devrel/commit/4f6b06f6befe2796439a494403fb696e51c0c4de))
+* updated in-solidarity.yml ([a83d4b0](https://github.com/apigee/devrel/commit/a83d4b018fcdb2fa71945e68e811c6d4967e420b))
+
+
+### Bug Fixes
+
+* addressed PR comments ([2d9387a](https://github.com/apigee/devrel/commit/2d9387af1f71b67b16e3c3aa8cd9301c22510ec3))
+* Fixed CODEOWNERS file ([733a807](https://github.com/apigee/devrel/commit/733a807788c39677bf93f83d204521c4f584fffc))
+* fixed CODEOWNERS, Readme ([18dfdb6](https://github.com/apigee/devrel/commit/18dfdb688f5749d1200afb051e09807d6d08a355))
+* fixed java , python lint issues ([541877d](https://github.com/apigee/devrel/commit/541877dd4555f6b3566ae92a5c882a76c9d1766d))
+* fixed policy naming & gitignore ([a56f446](https://github.com/apigee/devrel/commit/a56f446be3e740dec9b26d74966c653946ba9993))
+* fixed PR comments ([8efa176](https://github.com/apigee/devrel/commit/8efa176bae176173f7d239939b2c3ceb554df17d))
+* fixed pyline issues ([6d17716](https://github.com/apigee/devrel/commit/6d177168406a4a3e573301d329b0e11102e6af57))
+* fixed pylint errors ([f05d807](https://github.com/apigee/devrel/commit/f05d807f532782c221e295a768e7a3b79219ee42))
+* only try to delete untagged images ([38754e0](https://github.com/apigee/devrel/commit/38754e0c38f26509da42635b9802dcbbc3788d43))
+
 ## [1.13.0](https://github.com/apigee/devrel/compare/v1.12.0...v1.13.0) (2023-08-17)
 
 

@@ -622,7 +622,8 @@ create_sa() {
   create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
   create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-metrics-sa" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-metrics-apigee-telemetry" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
+  create_k8s_sa_workload "apigee-metrics-adapter-apigee-telemetry" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
 
   echo -n "🔛 Enabling runtime synchronizer"
     curl --fail -X POST -H "Authorization: Bearer $(token)" \
