@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/apigee/devrel/compare/v1.14.0...v1.15.0) (2023-09-25)
+
+
+### Features
+
+* updated gitingore ([a5c11b2](https://github.com/apigee/devrel/commit/a5c11b23f01531dbc6e44f3a74b935d014bba268))
+
+
+### Bug Fixes
+
+* added minor fixes to api re-deployment ([ef438a2](https://github.com/apigee/devrel/commit/ef438a21f762f5f60e61ae4e46e4bac9af6c6526))
+
 ## [1.14.0](https://github.com/apigee/devrel/compare/v1.13.0...v1.14.0) (2023-09-20)
 
 
