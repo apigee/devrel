@@ -14,6 +14,7 @@
 /references/data-converters-shared-flow @tyayers
 /references/dutch-healthcare            @seymen
 /references/gcp-sa-auth-shared-flow     @danistrebel
+/references/hashicorp-vault-integration @yuriylesyuk
 /references/identity-facade             @joelgauci
 /references/java-callout                @omidtahouri
 /references/js-callout                  @seymen

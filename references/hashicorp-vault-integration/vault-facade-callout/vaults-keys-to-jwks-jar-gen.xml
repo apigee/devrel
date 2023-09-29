@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright 2022 Google LLC
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<project default="create_run_jar" name="Create Runnable Jar for Project vault-keys-to-jwks with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
+    <!--ANT 1.7 is required-->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="/Users/yuriyl/eclipse-ws"/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/vaultkeystojwks.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="com.exco.vaultkeystojwks.VaultKeysToJwks"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ expressions-1.0.0.jar message-flow-1.0.0.jar bcprov-jdk15on-1.70.jar bcpkix-jdk15on-1.70.jar bcutil-jdk15on-1.70.jar nimbus-jose-jwt-9.25.4.jar jcip-annotations-1.0-1.jar gson-2.8.6.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="${dir.jarfile}/target/classes"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/com/apigee/expressions/1.0.0" includes="expressions-1.0.0.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/com/apigee/message-flow/1.0.0" includes="message-flow-1.0.0.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.70" includes="bcprov-jdk15on-1.70.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.70" includes="bcpkix-jdk15on-1.70.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/org/bouncycastle/bcutil-jdk15on/1.70" includes="bcutil-jdk15on-1.70.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/com/nimbusds/nimbus-jose-jwt/9.25.4" includes="nimbus-jose-jwt-9.25.4.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/com/github/stephenc/jcip/jcip-annotations/1.0-1" includes="jcip-annotations-1.0-1.jar"/>
+            <zipfileset dir="/Users/yuriyl/.m2/repository/com/google/code/gson/gson/2.8.6" includes="gson-2.8.6.jar"/>
+        </jar>
+    </target>
+</project>
