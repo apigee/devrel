@@ -15,7 +15,7 @@
     <PreFlow name="PreFlow">
         <Request>
             <Step>
-                <Name>FC-GetFromCache</Name>
+                <Name>FC-LookupExternalCache</Name>
             </Step>
             <Step>
                 <Condition>flow.lookup.iscontent.cached = "true"</Condition>
@@ -25,7 +25,7 @@
         <Response>
             <Step>
                 <Condition>(flow.lookup.iscontent.cached = "false") and (flow.lookup.status.code = 404)</Condition>
-                <Name>FC-SetContentInCache</Name>
+                <Name>FC-PopulateExternalCache</Name>
             </Step>
         </Response>
     </PreFlow>

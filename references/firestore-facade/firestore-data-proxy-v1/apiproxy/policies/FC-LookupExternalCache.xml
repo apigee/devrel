@@ -11,7 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FlowCallout name="FC-GetFromCache">
+<FlowCallout name="FC-LookupExternalCache">
     <Parameters>
         <Parameter name="encodingType">base64</Parameter>
         <Parameter name="basePath">{proxy.basepath}</Parameter>
