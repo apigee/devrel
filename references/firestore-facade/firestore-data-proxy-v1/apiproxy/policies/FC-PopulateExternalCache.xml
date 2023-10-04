@@ -11,7 +11,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FlowCallout name="FC-SetContentInCache">
+<FlowCallout name="FC-PopulateExternalCache">
     <Parameters>
         <Parameter name="encodedbasePath">{flow.basePath}</Parameter>
         <Parameter name="encodedpathSuffix">{flow.pathSuffix}</Parameter>
