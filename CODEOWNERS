@@ -13,6 +13,7 @@
 /references/data-api                    @danistrebel
 /references/data-converters-shared-flow @tyayers
 /references/dutch-healthcare            @seymen
+/references/firestore-facade            @joelgauci
 /references/gcp-sa-auth-shared-flow     @danistrebel
 /references/identity-facade             @joelgauci
 /references/java-callout                @omidtahouri
