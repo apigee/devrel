@@ -95,6 +95,8 @@ Apigee products.
   A tool to set up the sample deployments of Apigee Envoy.
 - [Apigee API Proxy Endpoint Unifier](tools/proxy-endpoint-unifier) -
   A tool to unify/split proxy endpoints based on API basepath.
+- [Apigee Target Server Validator](tools/target-server-validator) -
+  A tool to validate all targets in Target Servers & Apigee API Proxy Bundles.
 
 ## Labs
 

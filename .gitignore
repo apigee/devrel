@@ -1,6 +1,5 @@
 **/node_modules/**
 **/generated/**
-
 .settings
 .project
 .classpath

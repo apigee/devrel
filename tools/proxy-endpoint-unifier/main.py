@@ -16,8 +16,8 @@
 
 import os
 import sys
-from apigee import Apigee
-import utils
+from apigee import Apigee  # pylint: disable=import-error
+import utils  # pylint: disable=import-error
 
 
 def main():
