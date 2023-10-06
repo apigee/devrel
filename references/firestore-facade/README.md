@@ -6,13 +6,13 @@ from Firebase and Google Cloud.
 Apigee can act as a facade in front of Cloud Firestore, to implement the
 following use cases:
 
-- Long term storage: using Cloud Firestore to cache data on long term
+- Long term storage: using Cloud Firestore to cache documents on long term
 - Data as a Service (DaaS) pattern: some data of a Cloud Firestore database
 (db) are exposed as an API
 
 The use case that is proposed in the Firestore facade reference is the one
 based on long term storage.
-Indeed, in situations where you need a caching mechanim for data,
+Indeed, in situations where you need a caching mechanism for data,
 which must be cached for more than 30 days (max TTL for caching data in
 Apigee X) a storage solution is required.
 Cloud Firestore is the perfect solution to consider in case of long
@@ -21,12 +21,12 @@ term storage needs.
 ## How it works?
 
 Two Apigee **sharedflows** are used as a facade in front of a Cloud Firestore
-db. A **key cache** is used to lookup and populate data into the Cloud
+db. A **cache key** is used to lookup and populate data into the Cloud
 Firestore db.
 
-By default, the key cache is defined as the following:
+By default, the cache key is defined as the following:
 
-```keyCache = base64Encoding(basePath + '/' + pathSuffix)```
+```cacheKey = base64Encoding(basePath + '/' + pathSuffix)```
 
 This can be modified depending on the use case you need to implement
 
@@ -51,6 +51,7 @@ API endpoint (```sf-firestore-facade-lookup-v1``` and
 - [NodeJS](https://nodejs.org/en/) LTS version or above
 - An Apigee organization
 - [Google Cloud Platform](https://cloud.google.com/) (GCP)
+- **plantuml.1.2020.23.jar** (only if you want to execute ```generate-docs.sh```)
 
 This reference leverages Apigee and Cloud Firestore.
 Therefore, it is important to note that:
@@ -98,6 +99,10 @@ selected**.
 With this option, it is not possible to execute functional tests.
 Nevertheless, you can request the Firestore facade API using the
 HTTP client of your choice.
+
+Note that this reference implementation assumes the same GCP Project
+is used for Firestore. If that's not the case, please
+update the ```<URL>``` in the target endpoint.
 
 ## Script outputs
 

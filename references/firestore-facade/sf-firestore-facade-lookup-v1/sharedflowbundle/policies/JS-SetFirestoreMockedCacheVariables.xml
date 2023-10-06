@@ -11,6 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript name="JS-SetFirebaseCacheVariables">
-    <ResourceURL>jsc://JS-SetFirebaseCacheVariables.js</ResourceURL>
+<Javascript name="JS-SetFirestoreMockedCacheVariables">
+    <ResourceURL>jsc://JS-SetFirestoreMockedCacheVariables.js</ResourceURL>
 </Javascript>

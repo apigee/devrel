@@ -13,25 +13,25 @@
 
 // has a content been stored in firestore cache or not ?
 var isDataStoredInCache = (context.getVariable('servicecallout.SC-PopulateCache.failed').toString().toLowerCase() === 'true');
-// set variable *** flow.populate.iscontent.cached ***
-context.setVariable('flow.populate.iscontent.cached',!(isDataStoredInCache));
+// set variable *** flow.populate.success ***
+context.setVariable('flow.populate.success',!(isDataStoredInCache));
 
-var content = 'none';
+var content = null;
 if ( !(isDataStoredInCache) ) {
     // get content as a string
     content = JSON.parse(context.getVariable('firestoreCacheResponse.content')).fields.data.stringValue;
 }
-// set variable *** flow.populate.content.cached ***
-context.setVariable('flow.populate.content.cached',content);
+// set variable *** flow.populate.content ***
+context.setVariable('flow.populate.content',content);
 
 // set variable *** flow.populate.status.code ***
 context.setVariable('flow.populate.status.code',context.getVariable("firestoreCacheResponse.status.code"));
 
-// set variable *** flow.populate.keycache ***
-context.setVariable('flow.populate.keycache',context.getVariable("flow.basePath")+'/'+context.getVariable("flow.pathSuffix"));
+// set variable *** flow.populate.cachekey ***
+context.setVariable('flow.populate.cachekey',context.getVariable("flow.basePath")+'/'+context.getVariable("flow.pathSuffix"));
 
-// set variable *** flow.populate.documentid ***
-context.setVariable('flow.populate.documentid',context.getVariable("flow.pathSuffix"));
+// set variable *** flow.populate.extcache.documentid ***
+context.setVariable('flow.populate.extcache.documentid',context.getVariable("flow.pathSuffix"));
 
-// set variable *** flow.populate.collectionid ***
-context.setVariable('flow.populate.collectionid',context.getVariable("flow.basePath"));
+// set variable *** flow.populate.extcache.collectionid ***
+context.setVariable('flow.populate.extcache.collectionid',context.getVariable("flow.basePath"));

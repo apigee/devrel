@@ -13,16 +13,16 @@
 
 // has a content been retrieved from firestore cache or not ?
 var isDataRetrievedFromCache = (context.getVariable('servicecallout.SC-Lookup-FirestoreCache.failed').toString().toLowerCase() === 'true');
-// set variable *** flow.lookup.iscontent.cached ***
-context.setVariable('flow.lookup.iscontent.cached',!(isDataRetrievedFromCache));
+// set variable *** flow.lookup.hit ***
+context.setVariable('flow.lookup.hit',!(isDataRetrievedFromCache));
 
-var content = 'none';
+var content = null;
 if ( !(isDataRetrievedFromCache) ) {
     // get content as a string as this is what we want (a JSON stringified content!)
     content = JSON.parse(context.getVariable('firestoreCacheResponse.content')).fields.data.stringValue;
 }
-// set variable *** flow.lookup.content.cached ***
-context.setVariable('flow.lookup.content.cached',content);
+// set variable *** flow.lookup.content ***
+context.setVariable('flow.lookup.content',content);
 
 // set variable *** flow.lookup.status.code ***
 context.setVariable('flow.lookup.status.code',context.getVariable("firestoreCacheResponse.status.code"));

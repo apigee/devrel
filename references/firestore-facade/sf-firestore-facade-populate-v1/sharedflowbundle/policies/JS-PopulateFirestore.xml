@@ -11,6 +11,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<Javascript continueOnError="false" enabled="true" timeLimit="200" name="JS-PopulateFirebase">
-    <ResourceURL>jsc://JS-PopulateFirebase.js</ResourceURL>
+<Javascript continueOnError="false" enabled="true" timeLimit="200" name="JS-PopulateFirestore">
+    <ResourceURL>jsc://JS-PopulateFirestore.js</ResourceURL>
 </Javascript>

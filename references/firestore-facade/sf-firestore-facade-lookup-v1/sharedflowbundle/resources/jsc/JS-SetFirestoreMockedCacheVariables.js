@@ -11,8 +11,8 @@
   limitations under the License.
 */
 
-// set variable *** flow.lookup.iscontent.cached ***
-context.setVariable('flow.lookup.iscontent.cached','true');
+// set variable *** flow.lookup.hit ***
+context.setVariable('flow.lookup.hit','true');
 
 // mock content
 var content = {
@@ -21,8 +21,8 @@ var content = {
     code: "FIRESTORE-MOCK001"
 }
 
-// set variable *** flow.lookup.content.cached ***
-context.setVariable('flow.lookup.content.cached',JSON.stringify(content));
+// set variable *** flow.lookup.content ***
+context.setVariable('flow.lookup.content',JSON.stringify(content));
 
 // set variable *** flow.lookup.status.code ***
 context.setVariable('flow.lookup.status.code',200);

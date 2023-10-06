@@ -19,6 +19,6 @@
         <Name>SC-PopulateCache</Name>
     </Step>
     <Step>
-        <Name>JS-PopulateFirebase</Name>
+        <Name>JS-PopulateFirestore</Name>
     </Step>
 </SharedFlow>

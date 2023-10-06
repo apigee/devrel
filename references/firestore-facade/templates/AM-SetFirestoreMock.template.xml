@@ -13,7 +13,7 @@
 -->
 <AssignMessage name="AM-SetFirestoreMock">
     <AssignVariable>
-        <Name>flow.firestore.demo.enabled</Name>
+        <Name>flow.firestore.mock.enabled</Name>
         <Value>$IS_FIRESTORE_MOCK_ENABLED</Value>
     </AssignVariable>
     <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>

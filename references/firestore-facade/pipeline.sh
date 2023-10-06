@@ -33,7 +33,6 @@ envsubst < "$SCRIPTPATH"/templates/AM-SetFirestoreMock.template.xml > "$SCRIPTPA
 
 echo "[INFO] Deploying Google Firestore reference to Google API (For X/hybrid)"
 
-#token() { echo -n "$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"; }
 TOKEN=$(gcloud auth print-access-token)
 
 SA_EMAIL="apigee-firestore-sa@$APIGEE_X_ORG.iam.gserviceaccount.com"

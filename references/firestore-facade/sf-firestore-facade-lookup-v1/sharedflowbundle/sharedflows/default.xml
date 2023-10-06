@@ -20,15 +20,15 @@
         <Name>AM-Base64EncodePathInfo</Name>
     </Step>
     <Step>
-        <Condition>flow.firestore.demo.enabled != "true"</Condition>
+        <Condition>flow.firestore.mock.enabled != "true"</Condition>
         <Name>SC-Lookup-FirestoreCache</Name>
     </Step>
     <Step>
-        <Condition>flow.firestore.demo.enabled != "true"</Condition>
-        <Name>JS-SetFirebaseCacheVariables</Name>
+        <Condition>flow.firestore.mock.enabled != "true"</Condition>
+        <Name>JS-SetFirestoreCacheVariables</Name>
     </Step>
     <Step>
-        <Condition>flow.firestore.demo.enabled = "true"</Condition>
-        <Name>JS-SetFirebaseMockedCacheVariables</Name>
+        <Condition>flow.firestore.mock.enabled = "true"</Condition>
+        <Name>JS-SetFirestoreMockedCacheVariables</Name>
     </Step>
 </SharedFlow>

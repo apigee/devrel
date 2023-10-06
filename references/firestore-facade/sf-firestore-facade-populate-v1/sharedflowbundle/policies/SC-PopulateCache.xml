@@ -17,9 +17,6 @@
             <Headers>
                 <Header name="Accept">application/json</Header>
             </Headers>
-            <QueryParams>
-                <QueryParam name="documentId">{flow.pathSuffix}</QueryParam>
-            </QueryParams>
             <Verb>POST</Verb>
             <Payload contentType="application/json">{"fields": {"data": {"stringValue": "{flow.jsonContentAsString}"}}}</Payload>
         </Set>

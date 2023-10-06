@@ -14,7 +14,7 @@
 <AssignMessage name="AM-SetResponse">
     <AssignVariable>
         <Name>message.content</Name>
-        <Ref>flow.lookup.content.cached</Ref>
+        <Ref>flow.lookup.content</Ref>
     </AssignVariable>
     <AssignVariable>
         <Name>message.header.content-type</Name>

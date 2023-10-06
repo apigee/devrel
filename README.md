@@ -60,7 +60,7 @@ further to fit a particular use case.
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
 - [Firestore Facade](references/firestore-facade) - Reference implementation
-  for a storage/long term caching solution based on Firestore
+  for a long term caching/storage solution based on Cloud Firestore
 
 ## Tools
 
