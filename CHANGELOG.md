@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.15.1](https://github.com/apigee/devrel/compare/v1.15.0...v1.15.1) (2023-10-18)
+
+
+### Bug Fixes
+
+* change policy name for consistency ([31e3895](https://github.com/apigee/devrel/commit/31e3895f26041a4f3465ec7426838e94c52cdfc1))
+* failing nightly because of jenkins version incompatibility ([d0ffaf1](https://github.com/apigee/devrel/commit/d0ffaf1d27ad0eee6981abb77b3b1c2ffa028bad))
+* fix javax-mail-api jenksin pugin version ([adcbd19](https://github.com/apigee/devrel/commit/adcbd195535026ee768757911a14939d86cbbcb6))
+* modification after review of the reference ([1815507](https://github.com/apigee/devrel/commit/18155077fbd5316a18ac6e2f9a67952239f7c527))
+* rename flow callout policies for consistency ([5eabb2b](https://github.com/apigee/devrel/commit/5eabb2bf1bc85f3060a1a3e4e07abb9aa0a5c25f))
+
 ## [1.15.0](https://github.com/apigee/devrel/compare/v1.14.0...v1.15.0) (2023-09-25)
 
 
