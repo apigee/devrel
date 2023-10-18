@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-FROM jenkins/jenkins:2.346.3-alpine
+FROM jenkins/jenkins:2.346.3-lts-alpine
 
 USER root
 RUN apk update && apk add --no-cache git maven nodejs npm
@@ -26,7 +26,7 @@ RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
 USER jenkins
 
 COPY --chown=jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --jenkins-version 2.346.3 --latest false
 
 COPY --chown=jenkins jenkins.yml /var/jenkins_home/casc_configs/jenkins.yaml
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
