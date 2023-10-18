@@ -23,7 +23,7 @@ schemes:
   - "https"
 x-google-allow: all
 x-google-backend:
-  address: https://httpbin.org/anything
+  address: https://mocktarget.apigee.net/echo
   protocol: h2
   disable_auth: true
 paths:
@@ -35,7 +35,7 @@ paths:
         '200':
           description: Request Headers.
       x-google-backend:
-        address: https://httpbin.org
+        address: https://mocktarget.apigee.net/echo
         path_translation: APPEND_PATH_TO_ADDRESS
         disable_auth: true
   "/headers/{headerId}/bar":

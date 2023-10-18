@@ -1,5 +1,82 @@
 # Changelog
 
+## [1.15.0](https://github.com/apigee/devrel/compare/v1.14.0...v1.15.0) (2023-09-25)
+
+
+### Features
+
+* updated gitingore ([a5c11b2](https://github.com/apigee/devrel/commit/a5c11b23f01531dbc6e44f3a74b935d014bba268))
+
+
+### Bug Fixes
+
+* added minor fixes to api re-deployment ([ef438a2](https://github.com/apigee/devrel/commit/ef438a21f762f5f60e61ae4e46e4bac9af6c6526))
+
+## [1.14.0](https://github.com/apigee/devrel/compare/v1.13.0...v1.14.0) (2023-09-20)
+
+
+### Features
+
+* added javacallout build to pipeline ([4590268](https://github.com/apigee/devrel/commit/4590268294aa7057fdd73244168c1f8f40010a7e))
+* added the java-callout resource for target server validator ([143d27d](https://github.com/apigee/devrel/commit/143d27dc89e8b1ea635037196992d809eeed64f0))
+* Added wrappers for target-server-validator ([da88426](https://github.com/apigee/devrel/commit/da8842641e32ebd0896e6bbeaff7710f1ae1fb0b))
+* disabled mypy check ([ec60898](https://github.com/apigee/devrel/commit/ec6089814159e5f427aa5b75b9b9958afdcc5475))
+* renamed wrappers ([4f6b06f](https://github.com/apigee/devrel/commit/4f6b06f6befe2796439a494403fb696e51c0c4de))
+* updated in-solidarity.yml ([a83d4b0](https://github.com/apigee/devrel/commit/a83d4b018fcdb2fa71945e68e811c6d4967e420b))
+
+
+### Bug Fixes
+
+* addressed PR comments ([2d9387a](https://github.com/apigee/devrel/commit/2d9387af1f71b67b16e3c3aa8cd9301c22510ec3))
+* Fixed CODEOWNERS file ([733a807](https://github.com/apigee/devrel/commit/733a807788c39677bf93f83d204521c4f584fffc))
+* fixed CODEOWNERS, Readme ([18dfdb6](https://github.com/apigee/devrel/commit/18dfdb688f5749d1200afb051e09807d6d08a355))
+* fixed java , python lint issues ([541877d](https://github.com/apigee/devrel/commit/541877dd4555f6b3566ae92a5c882a76c9d1766d))
+* fixed policy naming & gitignore ([a56f446](https://github.com/apigee/devrel/commit/a56f446be3e740dec9b26d74966c653946ba9993))
+* fixed PR comments ([8efa176](https://github.com/apigee/devrel/commit/8efa176bae176173f7d239939b2c3ceb554df17d))
+* fixed pyline issues ([6d17716](https://github.com/apigee/devrel/commit/6d177168406a4a3e573301d329b0e11102e6af57))
+* fixed pylint errors ([f05d807](https://github.com/apigee/devrel/commit/f05d807f532782c221e295a768e7a3b79219ee42))
+* only try to delete untagged images ([38754e0](https://github.com/apigee/devrel/commit/38754e0c38f26509da42635b9802dcbbc3788d43))
+
+## [1.13.0](https://github.com/apigee/devrel/compare/v1.12.0...v1.13.0) (2023-08-17)
+
+
+### Features
+
+* added missing licenses ([cf6d1ff](https://github.com/apigee/devrel/commit/cf6d1ff5cdb940de93b9fa9c7a97aaaaacd3dffa))
+* added pip package install to pipeline-runner ([06fd5fa](https://github.com/apigee/devrel/commit/06fd5fa70278c2b20c1defb6240389aa0811fcc0))
+* Added proxy-endpoint-unifier source ([d9489f2](https://github.com/apigee/devrel/commit/d9489f281a150604a2ebff532e7517e6fa6491e1))
+* added support for PostClientFlow ([d80c5b4](https://github.com/apigee/devrel/commit/d80c5b4b7e255ae7f0bba5d7221fa0f5c72495ab))
+* added test scripts for proxy-endpoint-unifier ([740316e](https://github.com/apigee/devrel/commit/740316e0c2a9413a47484a18c3a0d9c0fcd343a8))
+* added zip packaged to pipeline runner ([af3e94e](https://github.com/apigee/devrel/commit/af3e94ecb7a5c3851e478c0099c5a48d69c2c2dd))
+* addressed flake8 for main proxy-endpoint-unifier wrapper ([18badee](https://github.com/apigee/devrel/commit/18badeef1adad545e94bec8374cd22ca554990a9))
+* addressed flake8 for utils proxy-endpoint-unifier wrapper ([b812452](https://github.com/apigee/devrel/commit/b81245213b2653b7595652dfa79326e9d96f0355))
+* addressed flake8 for xorhybrid proxy-endpoint-unifier wrapper ([7ccef07](https://github.com/apigee/devrel/commit/7ccef07a097041fc323388433dce7f8abca32a8a))
+* fixed shell lint and updated README.md ([f3ff9a0](https://github.com/apigee/devrel/commit/f3ff9a01f28e9c015b16da09df61f98bb9b0f127))
+* modified pipeline.sh & README ([fd3ba09](https://github.com/apigee/devrel/commit/fd3ba097b36aa6f311160f1af690b57cde934470))
+* removed comments & added newlines in the proxy-endpoint-unifier wrapper ([b39a38f](https://github.com/apigee/devrel/commit/b39a38fed5bbb05f22c3e84771aca68cc0d6b938))
+* updated CODEOWNERS ([655e5af](https://github.com/apigee/devrel/commit/655e5aff29d6a0273fefbf87b919b5dc3a9cce09))
+* updated Licenses in the proxy-endpoint-unifier wrapper ([a7c8a03](https://github.com/apigee/devrel/commit/a7c8a030e40e55aede631d5df438265012ac7ddd))
+
+
+### Bug Fixes
+
+* added execute permissions on pipeline.sh ([cbae732](https://github.com/apigee/devrel/commit/cbae7326cf2475efddc21a018034cc85a40d0512))
+* added support for FS read when proxy root xml is empty ([f821756](https://github.com/apigee/devrel/commit/f82175625f80d44fdeb78f25788d5846c56042a2))
+* addressed PR comments ([d2db718](https://github.com/apigee/devrel/commit/d2db7181d950b742641b36ad9f2e55a63900cc92))
+* changes to proxy endpoint unifier readme ([b245415](https://github.com/apigee/devrel/commit/b245415ceac9fce9b5247d6261497058faf9fe79))
+* removing manifests , fixing Cache Policy & target endpoint ([5f92893](https://github.com/apigee/devrel/commit/5f92893d1fe0fdcc164feea9ff41d7595e6477d9))
+
+## [1.12.0](https://github.com/apigee/devrel/compare/v1.11.0...v1.12.0) (2023-08-08)
+
+
+### Features
+
+* cloud build job to delete stale image artifacts ([2e1e923](https://github.com/apigee/devrel/commit/2e1e923e46d5e8405edd513253c9ac83804c4d55))
+* fix semantic changes from httpbin to mocktarget ([87a376f](https://github.com/apigee/devrel/commit/87a376f93f041ec7d91c36ffc854250890d278cd))
+* remove hackish fix since mocktarget now supports query param args ([e4c2280](https://github.com/apigee/devrel/commit/e4c2280f3dc736bba4a05f9ba6f97c4c2afadb3f))
+* replace httpbin with mocktarget for identity facade and envoy quickstart ([b3fcfb9](https://github.com/apigee/devrel/commit/b3fcfb91a8afd126fca0588cd5c2e1375d243c24))
+* replace httpbin.org with mocktarget.apigee.net ([58a8185](https://github.com/apigee/devrel/commit/58a81857cb4fdff4edaa6542aeb32707eefb3d48))
+
 ## [1.11.0](https://github.com/apigee/devrel/compare/v1.10.1...v1.11.0) (2023-07-05)
 
 

@@ -1,6 +1,6 @@
 @pkce @token
 Feature:
-  As a Client App 
+  As a Client App
   I want to access the protected resource of an API
   So that I can retrieve different types of information
 
@@ -13,11 +13,11 @@ Feature:
     And I store the state parameter in global scope
 
   Scenario: Generate Access Token
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | `clientId`              |
       | client_secret | `clientSecret`          |
@@ -26,11 +26,11 @@ Feature:
     And I store the value of body path $.access_token as userToken in global scope
 
   Scenario: I should get an error if client_id is invalid
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | invalid-client          |
       | client_secret | `clientSecret`          |
@@ -39,11 +39,11 @@ Feature:
     And response body should be valid json
 
   Scenario: I should get an error if client_secret is invalid
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | `clientId`              |
       | client_secret | invalid-client          |
@@ -52,7 +52,7 @@ Feature:
     And response body path $.error should be invalid_client
 
   Scenario: I should get an error if redirect_uri is missing or invalid
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
@@ -63,13 +63,13 @@ Feature:
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be invalid_request
-  
+
   Scenario: I should get an error if authorization code is invalid
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | invalid-code            |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | `clientId`              |
       | client_secret | `clientSecret`          |
@@ -78,10 +78,10 @@ Feature:
     And response body should be valid json
 
   Scenario: I should get an error if authorization code is missing
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | `clientId`              |
       | client_secret | `clientSecret`          |
@@ -90,11 +90,11 @@ Feature:
     And response body path $.error should be invalid_grant
 
   Scenario: I should get an error if grant_type is not authorization_code
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | xxx           |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
       | client_id     | `clientId`              |
       | client_secret | `clientSecret`          |
@@ -111,11 +111,11 @@ Feature:
     And I store the state parameter in global scope
 
   Scenario: I should get an error if code_verifier is wrong or missing
-    Given I set form parameters to 
+    Given I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier| xxx |
       | client_id     | `clientId`              |
       | client_secret | `clientSecret`          |

@@ -59,6 +59,8 @@ further to fit a particular use case.
   popular API auth schemes
 - [reCAPTCHA enterprise](references/recaptcha-enterprise) - A reference for
   API protection against bot leveraging reCAPTCHA enterprise
+- [Firestore Facade](references/firestore-facade) - Reference implementation
+  for a long term caching/storage solution based on Cloud Firestore
 
 ## Tools
 
@@ -91,6 +93,10 @@ Apigee products.
   A tool to generate topologically sorted Shared Flow dependencies.
 - [Apigee Envoy Quickstart Toolkit](tools/apigee-envoy-quickstart) -
   A tool to set up the sample deployments of Apigee Envoy.
+- [Apigee API Proxy Endpoint Unifier](tools/proxy-endpoint-unifier) -
+  A tool to unify/split proxy endpoints based on API basepath.
+- [Apigee Target Server Validator](tools/target-server-validator) -
+  A tool to validate all targets in Target Servers & Apigee API Proxy Bundles.
 
 ## Labs
 

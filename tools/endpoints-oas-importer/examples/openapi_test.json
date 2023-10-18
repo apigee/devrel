@@ -24,7 +24,7 @@
           }
         },
         "x-google-backend": {
-          "address": "https://httpbin.org",
+          "address": "https://mocktarget.apigee.net/echo",
           "deadline": 7,
           "disable_auth": true,
           "path_translation": "APPEND_PATH_TO_ADDRESS",
