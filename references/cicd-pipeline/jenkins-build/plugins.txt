@@ -2,6 +2,7 @@ configuration-as-code:1569.vb_72405b_80249
 cucumber-reports:5.7.3
 git:4.11.5
 htmlpublisher:1.30
+javax-mail-api:1.6.2-8
 junit:1119.1121.vc43d0fc45561
 mask-passwords:3.3
 token-macro:293.v283932a_0a_b_49
