@@ -53,11 +53,10 @@ def create_proxy_bundle(proxy_bundle_directory, api_name, target_dir):  # noqa
 
 
 def run_validator_proxy(
-    url, dns_host, vhost_ip, target_host, target_port="443", allow_insecure=False):  # noqa
+    url, dns_host, vhost_ip, batch, allow_insecure=False):  # noqa
     headers = {
-        "host_name": target_host,
-        "port_number": str(target_port),
         "Host": dns_host,
+        "Content-Type": "application/json"
     }
     if allow_insecure:
         print("INFO: Skipping Certificate Verification & disabling warnings because 'allow_insecure' is set to true")  # noqa
@@ -67,10 +66,14 @@ def run_validator_proxy(
         session.mount(
             f"https://{dns_host}", ForcedIPHTTPSAdapter(dest_ip=vhost_ip)
         )  # noqa
-    r = session.get(url, headers=headers, verify=(not allow_insecure))
-    if r.status_code == 200:
-        return r.json()["status"]
-    return "STATUS_UNKNOWN"
+    try:
+        response = session.post(url, data=batch, verify=(not allow_insecure), headers=headers)  # noqa
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"error": f"An error occurred: {response.text}"}
+    except Exception as e:
+        return {"error": f"An error occurred: {e}"}
 
 
 def delete_file(file_name):

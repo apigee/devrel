@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JSONThreatProtection continueOnError="false" enabled="true" name="JSON-Threat-Protection">
+    <DisplayName>JSON Threat Protection</DisplayName>
+    <Properties/>
+    <ArrayElementCount>5</ArrayElementCount>
+    <Source>request</Source>
+</JSONThreatProtection>

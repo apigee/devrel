@@ -17,6 +17,7 @@
 
 import os
 import sys
+import json
 from utilities import (  # pylint: disable=import-error
     parse_config,
     create_proxy_bundle,
@@ -69,6 +70,7 @@ def main():
         for each_ts in target_servers:
             ts_info = SourceApigee.get_target_server(each_env, each_ts)
             ts_info["env"] = each_env
+            ts_info["extracted_from"] = "TargetServer"
             all_target_servers.append(ts_info)
 
     # Fetch Targets in APIs & Shared Flows from Source Apigee
@@ -165,28 +167,6 @@ def main():
     final_report = []
     _cached_hosts = {}
 
-    # Run Target Server Validation
-    print("INFO: Running validation against All Target Servers")
-    for each_ts in all_target_servers:
-        status = run_validator_proxy(
-            api_url, vhost_domain_name, vhost_ip, each_ts["host"], each_ts["port"], allow_insecure  # noqa
-        )
-        final_report.append(
-            [
-                each_ts["name"],
-                "TargetServer",
-                each_ts["host"],
-                str(each_ts["port"]),
-                each_ts["env"],
-                status,
-                " & ".join(list(set(proxy_targets[each_ts["name"]])))
-                if each_ts["name"] in proxy_targets
-                else "No References in any API",
-            ]
-        )
-
-    # Run Validation on Targets configured in Proxies
-    print("INFO: Running validation against All Targets discovered in Proxies")
     for each_api_type, apis in proxy_hosts.items():
         for each_api, each_targets in apis.items():
             for each_target in each_targets:
@@ -194,66 +174,96 @@ def main():
                     not has_templating(each_target["host"])
                     and not each_target["target_server"]
                 ):
-                    if (
-                        f"{each_target['host']}:{each_target['port']}" in _cached_hosts  # noqa
-                    ):
-                        print(
-                            "INFO: Fetching validation status from cached hosts"  # noqa
-                        )
-                        status = _cached_hosts[
-                            f"{each_target['host']}:{each_target['port']}"  # noqa
-                        ]
+                    each_target["env"] = "_ORG_API_"
+                    if each_api_type == "apis":
+                        each_target["extracted_from"] = "APIProxy"
                     else:
-                        status = run_validator_proxy(
-                            api_url,
-                            vhost_domain_name,
-                            vhost_ip,
-                            each_target["host"],
-                            each_target["port"],
-                            allow_insecure,
-                        )
-                        _cached_hosts[
-                            f"{each_target['host']}:{each_target['port']}"
-                        ] = status
-                    final_report.append(
-                        [
-                            each_api,
-                            "APIProxy"
-                            if each_api_type == "apis"
-                            else "SharedFlow",
-                            each_target["host"],
-                            str(each_target["port"]),
-                            "_ORG_API_",
-                            status,
-                            each_target["source"],
-                        ]
-                    )
+                        each_target["extracted_from"] = "SharedFlow"
+                    each_target["name"] = each_api
+                    each_target["info"] = each_target["source"]
+                    all_target_servers.append(each_target)
+
     if cfg["validation"].getboolean("check_csv"):
         csv_file = cfg["csv"]["file"]
         default_port = cfg["csv"]["default_port"]
         csv_rows = read_csv(csv_file)
         for each_row in csv_rows:
             each_host, each_port = get_row_host_port(each_row, default_port)
-            if f"{each_host}:{each_port}" in _cached_hosts:
-                print("INFO: Fetching validation status from cached hosts")
-                status = _cached_hosts[f"{each_host}:{each_port}"]
-            else:
-                status = run_validator_proxy(
-                    api_url, vhost_domain_name, vhost_ip, each_host, each_port, allow_insecure  # noqa
-                )
-                _cached_hosts[f"{each_host}:{each_port}"] = status
-            final_report.append(
-                [
-                    each_host,
-                    "Input CSV",
-                    each_host,
-                    each_port,
-                    "_NA_",
-                    status,
-                    "_NA_",
-                ]
-            )
+            ts_csv_info = {}
+            ts_csv_info["host"] = each_host
+            ts_csv_info["port"] = each_port
+            ts_csv_info["name"] = each_host
+            ts_csv_info["info"] = "_NA_"
+            ts_csv_info["env"] = "_NA_"
+            ts_csv_info["extracted_from"] = "Input CSV"
+            all_target_servers.append(ts_csv_info)
 
+    batch_size = 5
+    batches = []
+    new_structure = {"host_port": []}
+
+    for entry in all_target_servers:
+        host = entry.get('host', '')
+        port = entry.get('port', '')
+
+        if host and port:
+            new_entry = {'host': host, 'port': str(port), 'name': entry.get('name', ''), 'env': entry.get('env', ''), 'extracted_from': entry.get('extracted_from', ''),'info': entry.get('info', '')}  # noqa
+            entry['port'] = str(port)
+            new_structure.get('host_port', []).append(new_entry)
+
+            if len(new_structure['host_port']) == batch_size:
+                batches.append(new_structure)
+                new_structure = {'host_port': []}
+
+    if new_structure:
+        batches.append(new_structure)
+
+    for batch in batches:
+        updated_batch = {'host_port': []}
+        host_ports = batch.get('host_port', [])
+        for host_port in host_ports:
+            if f"{host_port.get('host','')}:{host_port.get('port','')}" in _cached_hosts:  # noqa
+                status = _cached_hosts[f"{host_port.get('host','')} : {host_port.get('port','')}"]  # noqa
+                final_report.append(
+                    [
+                        host_port.get('name', ''),
+                        host_port.get('extracted_from', ''),
+                        host_port.get('host', ''),
+                        host_port.get('port', ''),
+                        host_port.get('env', ''),
+                        status,
+                        host_port["info"] if host_port.get("info") else " & ".join(  # noqa
+                            list(set(proxy_targets[host_port["name"]])))
+                        if host_port["name"] in proxy_targets
+                        else "No References in any API",
+                    ]
+                )
+            else:
+                updated_batch.get('host_port', []).append(host_port)
+
+        response = run_validator_proxy(
+            api_url, vhost_domain_name, vhost_ip, json.dumps(updated_batch), allow_insecure  # noqa
+        )
+        if response.get("error"):
+            print(response["error"])
+        else:
+            outputs = response.get("hostname_portnumbers_status", [])
+            for output in outputs:
+                _cached_hosts[f'{output["host"]}:{output["port"]}'] = output["status"]  # noqa
+                final_report.append(
+                    [
+                        output["name"],
+                        output["extracted_from"],
+                        output["host"],
+                        output["port"],
+                        output["env"],
+                        output["status"],
+                        output["info"] if output.get("info") else " & ".join(
+                            list(set(proxy_targets[output["name"]])))
+                        if output["name"] in proxy_targets
+                        else "No References in any API",
+                    ]
+                )
     # Write CSV Report
     # TODO: support relative report path
     if report_format == "csv":

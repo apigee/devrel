@@ -24,7 +24,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.7</java.version>
+    <javaxjson.version>1.1.4</javaxjson.version>
+    <java.version>1.8</java.version>
     <apiproxy.java.rsrc.dir>../apiproxy/resources/java</apiproxy.java.rsrc.dir>
     <testng.version>6.8.7</testng.version> <!-- current: 6.9.4 -->
     <jmockit.version>1.7</jmockit.version>
@@ -69,6 +70,12 @@ do it manually by running these commands:
       <groupId>com.apigee.edge</groupId>
       <artifactId>expressions</artifactId>
       <version>1.0.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.1.4</version>
     </dependency>
 
   </dependencies>
@@ -134,7 +141,7 @@ do it manually by running these commands:
           <execution>
             <phase>package</phase>
             <configuration>
-              <tasks>
+              <target>
                 <copy todir="${apiproxy.java.rsrc.dir}">
                   <fileset dir="${project.build.directory}">
                     <include name="${project.artifactId}.jar"/>
@@ -145,7 +152,7 @@ do it manually by running these commands:
                   </fileset>
                   <mapper type="flatten"/>
                 </copy>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>

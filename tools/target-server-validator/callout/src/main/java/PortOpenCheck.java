@@ -15,6 +15,7 @@
 
 package com.apigee.devrel.apigee_target_server_validator;
 
+import com.google.apigee.json.JavaxJson;
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
 import com.apigee.flow.execution.spi.Execution;
@@ -25,7 +26,13 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import com.apigee.flow.execution.Action;
-
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.Json;
 
 /**
  * A callout that checks if a particular port is open on a specified host.
@@ -61,7 +68,23 @@ public class PortOpenCheck implements Execution {
       }
     }
   }
+  private static String convertMapToJson(Map<String, List<Map<String, String>>> result) {
+          JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
+          List<Map<String, String>> listMap = result.get("hostname_portnumbers_status");
+          for (Map<String, String> map : listMap) {
+              JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+              for (Map.Entry<String, String> entry : map.entrySet()) {
+                  jsonObjectBuilder.add(entry.getKey(), entry.getValue());
+              }
+              jsonArrayBuilder.add(jsonObjectBuilder);
+          }
+
+          return Json.createObjectBuilder()
+                  .add("hostname_portnumbers_status", jsonArrayBuilder)
+                  .build()
+                  .toString();
+      }
   /**
    * Executes the callout.
    *
@@ -72,12 +95,34 @@ public class PortOpenCheck implements Execution {
   public ExecutionResult execute(final MessageContext messageContext,
     final ExecutionContext executionContext) {
     try {
-      String hostname = messageContext.getMessage().getHeader("host_name");
-      String port = messageContext.getMessage().getHeader("port_number");
-      int portnumber = Integer.parseInt(port);
-      String status = available(hostname, portnumber);
-      messageContext.setVariable("flow.reachableStatus", status);
-      return ExecutionResult.SUCCESS;
+      String payload = (String) messageContext.getVariable("request.content");
+      if (payload != null) {
+        Map<String, List<Map<String, String>>> result = new HashMap<>();
+        result.put("hostname_portnumbers_status", new ArrayList<>());
+        Map<String,List<Map<String,String>>> outerMap  = JavaxJson.fromJson(payload,Map.class);
+        for (Map.Entry<String, List<Map<String, String>>> entry : outerMap.entrySet()) {
+            String hostname_portnumbers = entry.getKey();
+            List<Map<String, String>> list_map_host_port = entry.getValue();
+
+            for (Map<String, String> host_port : list_map_host_port) {
+                String hostName = (String) host_port.get("host");
+                String portNumber = (String) host_port.get("port");
+                Integer portNumberint = Integer.parseInt(portNumber);
+                String status = available(hostName, portNumberint);
+                Map<String, String> newEntry = new HashMap<>();
+                newEntry.put("status",status);
+                newEntry.putAll(host_port);
+
+                result.get("hostname_portnumbers_status").add(newEntry);
+            }
+        }
+        String jsonResult = convertMapToJson(result);
+        messageContext.setVariable("flow.result", jsonResult);
+        return ExecutionResult.SUCCESS;
+      } else {
+        messageContext.setVariable("ERROR", "set payload");
+        return ExecutionResult.ABORT;
+      }
     } catch (Exception e) {
       ExecutionResult executionResult = new ExecutionResult(false,
         Action.ABORT);
@@ -89,5 +134,5 @@ public class PortOpenCheck implements Execution {
       messageContext.setVariable("JAVA_ERROR", e.getMessage());
       return executionResult;
     }
-  }
+}
 }

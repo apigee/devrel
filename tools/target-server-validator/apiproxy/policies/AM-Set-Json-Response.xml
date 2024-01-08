@@ -13,11 +13,6 @@
 -->
 <AssignMessage name="AM-Set-Json-Response">
     <Set>
-        <Payload contentType="application/json">{
-    "host":"{request.header.host_name}", 
-    "port": "{request.header.port_number}", 
-    "status":"{flow.reachableStatus}"
-}
-</Payload>
+        <Payload contentType="application/json">{flow.result}</Payload>
     </Set>
 </AssignMessage>
