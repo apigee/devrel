@@ -71,7 +71,7 @@ def run_validator_proxy(
         if response.status_code == 200:
             return response.json()
         else:
-            return {"error": f"An error occurred: {response.text}"}
+            return {"error": f"An error occurred: {response.json().get('error','')}"}  # noqa
     except Exception as e:
         return {"error": f"An error occurred: {e}"}
 

@@ -222,7 +222,7 @@ def main():
         updated_batch = {'host_port': []}
         host_ports = batch.get('host_port', [])
         for host_port in host_ports:
-            if f"{host_port.get('host','')}:{host_port.get('port','')}" in _cached_hosts:  # noqa
+            if f"{host_port.get('host','')} : {host_port.get('port','')}" in _cached_hosts:  # noqa
                 status = _cached_hosts[f"{host_port.get('host','')} : {host_port.get('port','')}"]  # noqa
                 final_report.append(
                     [
@@ -249,7 +249,7 @@ def main():
         else:
             outputs = response.get("hostname_portnumbers_status", [])
             for output in outputs:
-                _cached_hosts[f'{output["host"]}:{output["port"]}'] = output["status"]  # noqa
+                _cached_hosts[f'{output["host"]} : {output["port"]}'] = output["status"]  # noqa
                 final_report.append(
                     [
                         output["name"],
