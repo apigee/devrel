@@ -21,19 +21,17 @@ import json
 from utilities import (  # pylint: disable=import-error
     parse_config,
     create_proxy_bundle,
-    run_validator_proxy,
     delete_file,
     read_csv,
     write_csv_report,
     write_md_report,
     create_dir,
-    unzip_file,
-    parse_proxy_hosts,
     has_templating,
-    get_tes,
     get_row_host_port,
+    run_parallel,
 )
 from apigee_utils import Apigee  # pylint: disable=import-error
+from base_logger import logger
 
 
 def main():
@@ -63,12 +61,15 @@ def main():
 
     environments = SourceApigee.list_environments()
     all_target_servers = []
+
     # Fetch Target Servers from  Source Apigee@
-    print("INFO: exporting Target Servers !")
+    logger.info("exporting Target Servers !")
     for each_env in environments:
         target_servers = SourceApigee.list_target_servers(each_env)
-        for each_ts in target_servers:
-            ts_info = SourceApigee.get_target_server(each_env, each_ts)
+        args = ((each_env, each_ts) for each_ts in target_servers)
+        results = run_parallel(SourceApigee.fetch_env_target_servers_parallel, args)  # noqa
+        for result in results:
+            ts, ts_info = result
             ts_info["env"] = each_env
             ts_info["extracted_from"] = "TargetServer"
             all_target_servers.append(ts_info)
@@ -80,9 +81,7 @@ def main():
         skip_proxy_list = (
             cfg["validation"].get("skip_proxy_list", "").split(",")
         )
-        print(
-            "INFO: exporting proxies to be analyzed ! this may take a while !"
-        )
+        logger.info("exporting proxies to be analyzed ! this may take a while !")  # noqa
         api_types = ["apis", "sharedflows"]
         api_revision_map = {}
         for each_api_type in api_types:
@@ -101,71 +100,66 @@ def main():
                         -1
                     ]
                 else:
-                    print(f"INFO : Skipping API {each_api}")
-        for each_api_type, each_api_type_data in api_revision_map.items():
-            proxy_hosts[each_api_type] = {}
-            for each_api, each_api_rev in each_api_type_data["proxies"].items():  # noqa
-                print(
-                    f"Exporting API : {each_api} with revision : {each_api_rev} "  # noqa
-                )
-                SourceApigee.fetch_api_revision(
-                    each_api_type,
-                    each_api,
-                    each_api_rev,
-                    api_revision_map[each_api_type]["export_dir"],
-                )
-                print(
-                    f"Unzipping API : {each_api} with revision : {each_api_rev} "  # noqa
-                )
-                unzip_file(
-                    f"{api_revision_map[each_api_type]['export_dir']}/{each_api}.zip",  # noqa
-                    f"{api_revision_map[each_api_type]['export_dir']}/{each_api}",  # noqa
-                )
-                parsed_proxy_hosts = parse_proxy_hosts(
-                    f"{api_revision_map[each_api_type]['export_dir']}/{each_api}/apiproxy"  # noqa
-                )
+                    logger.info(f"Skipping API {each_api}")
+
+        args = (
+            (
+                each_api_type,
+                each_api,
+                each_api_rev,
+                api_revision_map[each_api_type]["export_dir"]
+            )
+            for each_api_type, each_api_type_data in api_revision_map.items()
+            for each_api, each_api_rev in each_api_type_data["proxies"].items()
+        )
+        logger.debug("Exporting proxy target servers")
+        results = run_parallel(SourceApigee.fetch_api_proxy_ts_parallel, args)
+
+        for result in results:
+            each_api_type, each_api, parsed_proxy_hosts, proxy_ts = result
+            if proxy_hosts.get(each_api_type):
                 proxy_hosts[each_api_type][each_api] = parsed_proxy_hosts
-                proxy_tes = get_tes(parsed_proxy_hosts)
-                for each_te in proxy_tes:
-                    if each_te in proxy_targets:
-                        proxy_targets[each_te].append(
-                            f"{each_api_type} - {each_api}"
-                        )
-                    else:
-                        proxy_targets[each_te] = [
-                            f"{each_api_type} - {each_api}"
-                        ]
-    # Validate Targets against Target Apigee
+            else:
+                proxy_hosts[each_api_type] = {}
+                proxy_hosts[each_api_type][each_api] = parsed_proxy_hosts
+
+            for each_te in proxy_ts:
+                if each_te in proxy_targets:
+                    proxy_targets[each_te].append(
+                        f"{each_api_type} - {each_api}"
+                    )
+                else:
+                    proxy_targets[each_te] = [
+                        f"{each_api_type} - {each_api}"
+                    ]
+        logger.debug("Exporting proxy target servers done")
 
     bundle_path = os.path.dirname(os.path.abspath(__file__))
 
     # Create Validation Proxy Bundle
-    print("INFO: Creating proxy bundle !")
+    logger.info("Creating proxy bundle !")
     create_proxy_bundle(bundle_path, cfg["validation"]["api_name"], "apiproxy")
 
     # Deploy Validation Proxy Bundle
-    print("INFO: Deploying proxy bundle !")
+    logger.info("Deploying proxy bundle !")
     if not TargetApigee.deploy_api_bundle(
         cfg["validation"]["api_env"],
         cfg["validation"]["api_name"],
         f"{bundle_path}/{cfg['validation']['api_name']}.zip",
         cfg["validation"].getboolean("api_force_redeploy", False)
     ):
-        print(f"Proxy: {cfg['validation']['api_name']} deployment failed.")
+        logger.error(f"Proxy: {cfg['validation']['api_name']} deployment failed.")  # noqa
         sys.exit(1)
     # CleanUp Validation Proxy Bundle
-    print("INFO: Cleaning Up local proxy bundle !")
+    logger.info(f"Cleaning Up local proxy bundle !")  # noqa
     delete_file(f"{bundle_path}/{cfg['validation']['api_name']}.zip")
 
     # Fetch API Northbound Endpoint
-    print(
-        f"INFO: Fetching VHost with name {cfg['validation']['api_hostname']} !"  # noqa
-    )
+    logger.info(f"Fetching VHost with name {cfg['validation']['api_hostname']} !")  # noqa
     vhost_domain_name = cfg["validation"]["api_hostname"]
     vhost_ip = cfg["validation"].get("api_ip", "").strip()
     api_url = f"https://{vhost_domain_name}/validate-target-server"
     final_report = []
-    _cached_hosts = {}
 
     for each_api_type, apis in proxy_hosts.items():
         for each_api, each_targets in apis.items():
@@ -218,62 +212,21 @@ def main():
     if new_structure:
         batches.append(new_structure)
 
-    for batch in batches:
-        updated_batch = {'host_port': []}
-        host_ports = batch.get('host_port', [])
-        for host_port in host_ports:
-            if f"{host_port.get('host','')} : {host_port.get('port','')}" in _cached_hosts:  # noqa
-                status = _cached_hosts[f"{host_port.get('host','')} : {host_port.get('port','')}"]  # noqa
-                final_report.append(
-                    [
-                        host_port.get('name', ''),
-                        host_port.get('extracted_from', ''),
-                        host_port.get('host', ''),
-                        host_port.get('port', ''),
-                        host_port.get('env', ''),
-                        status,
-                        host_port["info"] if host_port.get("info") else " & ".join(  # noqa
-                            list(set(proxy_targets[host_port["name"]])))
-                        if host_port["name"] in proxy_targets
-                        else "No References in any API",
-                    ]
-                )
-            else:
-                updated_batch.get('host_port', []).append(host_port)
+    args = ((api_url,vhost_domain_name,vhost_ip, json.dumps(batch),allow_insecure, proxy_targets) for batch in batches)  # noqa
+    output_reports = run_parallel(SourceApigee.call_validator_proxy_parallel, args)  # noqa
+    for output in output_reports:
+        final_report.extend(output)
 
-        response = run_validator_proxy(
-            api_url, vhost_domain_name, vhost_ip, json.dumps(updated_batch), allow_insecure  # noqa
-        )
-        if response.get("error"):
-            print(response["error"])
-        else:
-            outputs = response.get("hostname_portnumbers_status", [])
-            for output in outputs:
-                _cached_hosts[f'{output["host"]} : {output["port"]}'] = output["status"]  # noqa
-                final_report.append(
-                    [
-                        output["name"],
-                        output["extracted_from"],
-                        output["host"],
-                        output["port"],
-                        output["env"],
-                        output["status"],
-                        output["info"] if output.get("info") else " & ".join(
-                            list(set(proxy_targets[output["name"]])))
-                        if output["name"] in proxy_targets
-                        else "No References in any API",
-                    ]
-                )
     # Write CSV Report
     # TODO: support relative report path
     if report_format == "csv":
         report_file = "report.csv"
-        print(f"INFO: Dumping report to file {report_file}")
+        logger.info(f"Dumping report to file {report_file}")
         write_csv_report(report_file, final_report)
 
     if report_format == "md":
         report_file = "report.md"
-        print(f"INFO: Dumping report to file {report_file}")
+        logger.info(f"Dumping report to file {report_file}")
         write_md_report(report_file, final_report)
 
 
