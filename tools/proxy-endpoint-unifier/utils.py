@@ -135,24 +135,28 @@ def parse_proxy_root(dir):
         return {}
     doc = parse_xml(file)
     api_proxy = doc.get('APIProxy', {})
+    keys = ['Policies', 'ProxyEndpoints', 'Resources', 'Spec', 'TargetServers', 'TargetEndpoints' ]  # noqa
+    for each_key in keys:
+        if api_proxy[each_key] is None:
+            api_proxy[each_key] = {}
     proxy_endpoints = api_proxy.get('ProxyEndpoints', {}).get('ProxyEndpoint', {})  # noqa
     target_endpoints = api_proxy.get('TargetEndpoints', {}).get('TargetEndpoint', {})  # noqa
     policies = api_proxy.get('Policies', {}).get('Policy', {})
-    if len(proxy_endpoints) == 0:
+    if len(proxy_endpoints) != 0:
         print('Proceeding with Filesystem parse of ProxyEndpoints')
         doc['APIProxy']['ProxyEndpoints'] = {}
         proxies = get_proxy_files(dir)
         doc['APIProxy']['ProxyEndpoints']['ProxyEndpoint'] = proxies
     else:
         print('Skipping with Filesystem parse of ProxyEndpoints')
-    if len(target_endpoints) == 0:
+    if len(target_endpoints) != 0:
         print('Proceeding with Filesystem parse of TargetEndpoints')
         doc['APIProxy']['TargetEndpoints'] = {}
         targets = get_proxy_files(dir, 'targets')
         doc['APIProxy']['TargetEndpoints']['TargetEndpoint'] = targets
     else:
         print('Skipping with Filesystem parse of TargetEndpoints')
-    if len(policies) == 0:
+    if len(policies) != 0:
         print('Proceeding with Filesystem parse of Policies')
         doc['APIProxy']['Policies'] = {}
         policies_list = get_proxy_files(dir, 'policies')
