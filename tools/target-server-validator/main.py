@@ -53,7 +53,7 @@ def main():
     )
 
     TargetApigee = Apigee(
-        "x" if "apigee.googleapis.com" in cfg["source"]["baseurl"] else "opdk",
+        "x" if "apigee.googleapis.com" in cfg["target"]["baseurl"] else "opdk",
         cfg["target"]["baseurl"],
         cfg["target"]["auth_type"],
         cfg["target"]["org"],
