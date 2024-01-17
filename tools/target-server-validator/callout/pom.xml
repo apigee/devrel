@@ -71,7 +71,11 @@ do it manually by running these commands:
       <artifactId>expressions</artifactId>
       <version>1.0.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.1.4</version>
+    </dependency>
     <dependency>
       <groupId>javax.json</groupId>
       <artifactId>javax.json-api</artifactId>
@@ -145,10 +149,15 @@ do it manually by running these commands:
                 <copy todir="${apiproxy.java.rsrc.dir}">
                   <fileset dir="${project.build.directory}">
                     <include name="${project.artifactId}.jar"/>
-                    <!-- copy any required dependencies tht are not
-                    already included in the Edge runtime: -->
-
-                    <!--                    -->
+                  </fileset>
+                  <mapper type="flatten"/>
+                </copy>
+                
+                <!-- Copy the javax jar files -->
+                <copy todir="${apiproxy.java.rsrc.dir}">
+                  <fileset dir="${project.build.directory}/lib">
+                    <include name="javax.json-1.1.4.jar"/>
+                    <include name="javax.json-api-1.1.4.jar"/>
                   </fileset>
                   <mapper type="flatten"/>
                 </copy>
