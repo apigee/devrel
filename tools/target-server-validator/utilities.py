@@ -104,6 +104,8 @@ def read_csv(file_name):
             rows = csv.reader(file)
             for each_row in rows:
                 read_rows.append(each_row)
+        if len(read_rows) != 0:
+            read_rows.pop(0)
     except FileNotFoundError:
         logger.warning(f"File {file_name} not found ! ")
     return read_rows

@@ -233,7 +233,10 @@ def main():
 
     output_reports = run_parallel(source_apigee.call_validator_proxy_parallel, args)  # noqa
     for output in output_reports:
-        final_report.extend(output)
+        if isinstance(output, list):
+            final_report.extend(output)
+        else:
+            logger.error(output.get("error", "Unknown Error occured while calling proxy"))  # noqa
 
     # Write CSV Report
     # TODO: support relative report path

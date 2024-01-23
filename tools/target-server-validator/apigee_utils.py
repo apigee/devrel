@@ -313,7 +313,7 @@ class Apigee:
                 )
             return report
         else:
-            logger.error(f"Error while calling the validator proxy - {response.get('error','unknown error')}")  # noqa
+            return {"error": f"Error while calling the validator proxy - {response.get('error','unknown error')} with payload {arg_tuple[3]}"}  # noqa
 
     def write_proxy_bundle(self, export_dir, file_name, data):
         file_path = f"./{export_dir}/{file_name}.zip"
