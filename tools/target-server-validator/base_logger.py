@@ -20,14 +20,14 @@ class CustomFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"  # noqa
+    logging_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"  # noqa
 
     FORMATS = {
-        logging.DEBUG: grey + format + reset,
-        logging.INFO: grey + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.DEBUG: grey + logging_format + reset,
+        logging.INFO: grey + logging_format + reset,
+        logging.WARNING: yellow + logging_format + reset,
+        logging.ERROR: red + logging_format + reset,
+        logging.CRITICAL: bold_red + logging_format + reset
     }
 
     def format(self, record):
@@ -37,7 +37,7 @@ class CustomFormatter(logging.Formatter):
 
 
 logger = logging.getLogger("TargetServerValidator")
-logger.setLevel(getattr(logging, LOGLEVEL))  # Add this line
+logger.setLevel(getattr(logging, LOGLEVEL))
 
 if LOG_HANDLER == "File":
     ch = logging.FileHandler(LOG_FILE_PATH, mode="a")

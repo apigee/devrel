@@ -24,7 +24,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <javaxjson.version>1.1.4</javaxjson.version>
     <java.version>1.8</java.version>
     <apiproxy.java.rsrc.dir>../apiproxy/resources/java</apiproxy.java.rsrc.dir>
     <testng.version>6.8.7</testng.version> <!-- current: 6.9.4 -->
@@ -72,16 +71,10 @@ do it manually by running these commands:
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
-      <version>1.1.4</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
     </dependency>
-    <dependency>
-      <groupId>javax.json</groupId>
-      <artifactId>javax.json-api</artifactId>
-      <version>1.1.4</version>
-    </dependency>
-
   </dependencies>
 
   <build>
@@ -153,11 +146,9 @@ do it manually by running these commands:
                   <mapper type="flatten"/>
                 </copy>
                 
-                <!-- Copy the javax jar files -->
                 <copy todir="${apiproxy.java.rsrc.dir}">
                   <fileset dir="${project.build.directory}/lib">
-                    <include name="javax.json-1.1.4.jar"/>
-                    <include name="javax.json-api-1.1.4.jar"/>
+                    <include name="gson-2.10.1.jar"/>
                   </fileset>
                   <mapper type="flatten"/>
                 </copy>

@@ -43,9 +43,9 @@ class Apigee:
         self.auth_type = auth_type
         access_token = self.get_access_token()
         self.auth_header = {
-            "Authorization": "Bearer {}".format(access_token)
+            "Authorization": f"Bearer {access_token}"
             if self.auth_type == "oauth"
-            else "Basic {}".format(access_token)  # noqa
+            else f"Basic {access_token}"  # noqa
         }
 
     def is_token_valid(self, token):
@@ -139,7 +139,7 @@ class Apigee:
         if response.status_code == 200:
             revision = response.json().get('revision', "1")
             return True, revision
-        logger.debug(f"{response.text}")
+        logger.debug(response.text)
         return False, None
 
     def get_api_revisions_deployment(self, env, api_name, api_rev):  # noqa
@@ -160,7 +160,7 @@ class Apigee:
             logger.debug(f"API {api_name} is in Status: {api_deployment_status} !")  # noqa
             return False
         else:
-            logger.debug(f"{response.text}")
+            logger.debug(response.text)
             return False
 
     def deploy_api(self, env, api_name, api_rev):
@@ -294,12 +294,9 @@ class Apigee:
 
     def call_validator_proxy_parallel(self, arg_tuple):
         response = run_validator_proxy(arg_tuple[0], arg_tuple[1], arg_tuple[2], arg_tuple[3], arg_tuple[4])  # noqa
-        if response.get("error"):
-            logger.error(f"Error while calling the validator proxy - {response['error']}")  # noqa
-        else:
+        if isinstance(response, list):
             report = []
-            outputs = response.get("hostname_portnumbers_status", [])
-            for output in outputs:
+            for output in response:
                 report.append(
                     [
                         output["name"],
@@ -315,6 +312,8 @@ class Apigee:
                     ]
                 )
             return report
+        else:
+            logger.error(f"Error while calling the validator proxy - {response.get('error','unknown error')}")  # noqa
 
     def write_proxy_bundle(self, export_dir, file_name, data):
         file_path = f"./{export_dir}/{file_name}.zip"

@@ -45,31 +45,31 @@ def main():
         report_format = "md"
 
     # Intialize Source & Target Apigee
-    SourceApigee = Apigee(
+    source_apigee = Apigee(
         "x" if "apigee.googleapis.com" in cfg["source"]["baseurl"] else "opdk",
         cfg["source"]["baseurl"],
         cfg["source"]["auth_type"],
         cfg["source"]["org"],
     )
 
-    TargetApigee = Apigee(
+    target_apigee = Apigee(
         "x" if "apigee.googleapis.com" in cfg["target"]["baseurl"] else "opdk",
         cfg["target"]["baseurl"],
         cfg["target"]["auth_type"],
         cfg["target"]["org"],
     )
 
-    environments = SourceApigee.list_environments()
+    environments = source_apigee.list_environments()
     all_target_servers = []
 
     # Fetch Target Servers from  Source Apigee@
     logger.info("exporting Target Servers !")
     for each_env in environments:
-        target_servers = SourceApigee.list_target_servers(each_env)
+        target_servers = source_apigee.list_target_servers(each_env)
         args = ((each_env, each_ts) for each_ts in target_servers)
-        results = run_parallel(SourceApigee.fetch_env_target_servers_parallel, args)  # noqa
+        results = run_parallel(source_apigee.fetch_env_target_servers_parallel, args)  # noqa
         for result in results:
-            ts, ts_info = result
+            _, ts_info = result
             ts_info["env"] = each_env
             ts_info["extracted_from"] = "TargetServer"
             all_target_servers.append(ts_info)
@@ -92,11 +92,11 @@ def main():
             )
             create_dir(proxy_export_dir + f"/{each_api_type}")
 
-            for each_api in SourceApigee.list_apis(each_api_type):
+            for each_api in source_apigee.list_apis(each_api_type):
                 if each_api not in skip_proxy_list:
                     api_revision_map[each_api_type]["proxies"][
                         each_api
-                    ] = SourceApigee.list_api_revisions(each_api_type, each_api)[  # noqa
+                    ] = source_apigee.list_api_revisions(each_api_type, each_api)[  # noqa
                         -1
                     ]
                 else:
@@ -107,13 +107,13 @@ def main():
                 each_api_type,
                 each_api,
                 each_api_rev,
-                api_revision_map[each_api_type]["export_dir"]
+                each_api_type_data["export_dir"]
             )
             for each_api_type, each_api_type_data in api_revision_map.items()
             for each_api, each_api_rev in each_api_type_data["proxies"].items()
         )
         logger.debug("Exporting proxy target servers")
-        results = run_parallel(SourceApigee.fetch_api_proxy_ts_parallel, args)
+        results = run_parallel(source_apigee.fetch_api_proxy_ts_parallel, args)
 
         for result in results:
             each_api_type, each_api, parsed_proxy_hosts, proxy_ts = result
@@ -142,7 +142,7 @@ def main():
 
     # Deploy Validation Proxy Bundle
     logger.info("Deploying proxy bundle !")
-    if not TargetApigee.deploy_api_bundle(
+    if not target_apigee.deploy_api_bundle(
         cfg["validation"]["api_env"],
         cfg["validation"]["api_name"],
         f"{bundle_path}/{cfg['validation']['api_name']}.zip",
@@ -151,7 +151,7 @@ def main():
         logger.error(f"Proxy: {cfg['validation']['api_name']} deployment failed.")  # noqa
         sys.exit(1)
     # CleanUp Validation Proxy Bundle
-    logger.info(f"Cleaning Up local proxy bundle !")  # noqa
+    logger.info("Cleaning Up local proxy bundle !")  # noqa
     delete_file(f"{bundle_path}/{cfg['validation']['api_name']}.zip")
 
     # Fetch API Northbound Endpoint
@@ -194,26 +194,44 @@ def main():
 
     batch_size = 5
     batches = []
-    new_structure = {"host_port": []}
+    new_structure = []
 
     for entry in all_target_servers:
         host = entry.get('host', '')
         port = entry.get('port', '')
 
         if host and port:
-            new_entry = {'host': host, 'port': str(port), 'name': entry.get('name', ''), 'env': entry.get('env', ''), 'extracted_from': entry.get('extracted_from', ''),'info': entry.get('info', '')}  # noqa
-            entry['port'] = str(port)
-            new_structure.get('host_port', []).append(new_entry)
+            new_entry = {
+                'host': host,
+                'port': str(port),
+                'name': entry.get('name', ''),
+                'env': entry.get('env', ''),
+                'extracted_from': entry.get('extracted_from', ''),
+                'info': entry.get('info', '')
+            }
 
-            if len(new_structure['host_port']) == batch_size:
+            new_structure.append(new_entry)
+
+            if len(new_structure) == batch_size:
                 batches.append(new_structure)
-                new_structure = {'host_port': []}
+                new_structure = []
 
     if new_structure:
         batches.append(new_structure)
 
-    args = ((api_url,vhost_domain_name,vhost_ip, json.dumps(batch),allow_insecure, proxy_targets) for batch in batches)  # noqa
-    output_reports = run_parallel(SourceApigee.call_validator_proxy_parallel, args)  # noqa
+    args = (
+        (
+            api_url,
+            vhost_domain_name,
+            vhost_ip,
+            json.dumps(batch),
+            allow_insecure,
+            proxy_targets
+        )
+        for batch in batches
+    )
+
+    output_reports = run_parallel(source_apigee.call_validator_proxy_parallel, args)  # noqa
     for output in output_reports:
         final_report.extend(output)
 

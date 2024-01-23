@@ -85,6 +85,39 @@ Run the script as below
 python3 main.py
 ```
 
+This script deploys an API proxy to validate if the target servers are reachable or not. To use the API proxy, make sure your payloads adhere to the following format:
+
+```json
+[
+    {
+        "host": "example.com",
+        "port": 443
+    },
+    {
+        "host": "example2.com",
+        "port": 443
+    },
+    // Add up to 8 more host-port combinations as needed
+]
+```
+
+The response will look like this - 
+```json
+[
+    {
+        "host": "example.com",
+        "port": 443,
+        "status" : "REACHABLE"
+    },
+    {
+        "host": "example2.com",
+        "port": 443,
+         "status" : "UNKNOWN_HOST"
+    },
+    // and so on 
+]
+```
+
 ## Report
 Validation Report: `report.md` OR `report.csv` can be found in the same directory as the script.
 
