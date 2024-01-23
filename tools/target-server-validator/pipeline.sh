@@ -65,7 +65,11 @@ smtp.gmail.com,465
 EOF
 
 # Install Dependencies
-python3 -m pip install -r "$SCRIPTPATH/requirements.txt"
+VENV_PATH="$SCRIPTPATH/venv"
+python3 -m venv "$VENV_PATH"
+# shellcheck source=/dev/null
+. "$VENV_PATH/bin/activate"
+pip install -r "$SCRIPTPATH/requirements.txt"
 
 # Generate Gcloud Acccess Token
 APIGEE_ACCESS_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
@@ -78,3 +82,7 @@ python3 main.py
 
 # Display Report
 cat "$SCRIPTPATH/report.md"
+
+# deactivate venv & cleanup
+deactivate
+rm -rf "$VENV_PATH"
