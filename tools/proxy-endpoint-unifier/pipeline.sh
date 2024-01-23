@@ -38,15 +38,19 @@ gcp_project_id=$APIGEE_X_ORG
 EOF
 
 # Install Dependencies
-python3 -m pip install -r "$SCRIPTPATH/requirements.txt"
+VENV_PATH="$SCRIPTPATH/venv"
+python3 -m venv "$VENV_PATH"
+# shellcheck source=/dev/null
+. "$VENV_PATH/bin/activate"
+pip install -r "$SCRIPTPATH/requirements.txt"
 
 # Generate Gcloud Acccess Token
 APIGEE_ACCESS_TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
 export APIGEE_ACCESS_TOKEN
 
 # Building API Proxy Bundle for Proxy containing more than 5 Proxy Endpoints
-cd "$SCRIPTPATH/test/api_bundles"
-rm -rf "$SCRIPTPATH/test/api_bundles/test.zip"
+cd "$SCRIPTPATH/test/api_bundles/test-proxy"
+rm -rf "$SCRIPTPATH/test/api_bundles/test-proxy/test.zip"
 echo "Building original proxy bundle"
 zip -q -r test.zip apiproxy/
 cd "$SCRIPTPATH"
@@ -57,9 +61,13 @@ python3 -c "import os, sys ,json; \
             from apigee import Apigee; \
             x = Apigee(os.getenv('APIGEE_X_ORG')); \
             x.set_auth_header(os.getenv('APIGEE_ACCESS_TOKEN')); \
-            r=x.validate_api('apis','test/api_bundles/test.zip'); \
+            r=x.validate_api('apis','test/api_bundles/test-proxy/test.zip'); \
             print(json.dumps(r,indent=2))"
 rm -rf "$SCRIPTPATH/test/api_bundles/test.zip"
 
 # Running and Validating API Proxy Bundle after splitting the proxies
 python3 "$SCRIPTPATH/main.py"
+
+# deactivate venv & cleanup
+deactivate
+rm -rf "$VENV_PATH"
