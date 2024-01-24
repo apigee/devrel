@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.16.0](https://github.com/apigee/devrel/compare/v1.15.1...v1.16.0) (2024-01-24)
+
+
+### Features
+
+* added run_parallel functions and logger for logging ([75ad51c](https://github.com/apigee/devrel/commit/75ad51c6c24c1fb8d669c72e87e99c2ce458ad78))
+* added support for multiple proxy split ([2e30f5e](https://github.com/apigee/devrel/commit/2e30f5e2dac846b9dd001b3470da6d8b6de152ad))
+* moved proxy bundle ([7c50710](https://github.com/apigee/devrel/commit/7c50710e679f13e3850dcb3957f88f3527367f3a))
+* request payload converted to json & added json threat protection policy ([4bf4115](https://github.com/apigee/devrel/commit/4bf41157e659bcee0525e4a7ea49120167f31940))
+
+
+### Bug Fixes
+
+* added venv in pipeline.sh ([1db14cc](https://github.com/apigee/devrel/commit/1db14cc9f33fa94d500f96ea44c8f111d09fc3e0))
+* added virtualenv to pipeline.sh ([a9ccfe8](https://github.com/apigee/devrel/commit/a9ccfe8339ecdde042a83a83761e1a4bcb6a201d))
+* deleted jar files and updated dependencies ([5b5b4e5](https://github.com/apigee/devrel/commit/5b5b4e5212cb8a6bddd98494227b9b6bde2df9e9))
+* fixed _cached_hosts issue ([0131a34](https://github.com/apigee/devrel/commit/0131a3446db32c334a77e471d5b2e3d6b303170e))
+* fixed the target proxy Apigee type ([3b0dcc5](https://github.com/apigee/devrel/commit/3b0dcc5b3a5751a048537a0d2830724afc028127))
+* removed csv headers from read rows ([83f4c98](https://github.com/apigee/devrel/commit/83f4c9865ee8ce496251d47a967229503f798791))
+* updated library to gson ([4f0be35](https://github.com/apigee/devrel/commit/4f0be35687e5bdb89ab6e5f3f4043dd5345cd9c5))
+
 ## [1.15.1](https://github.com/apigee/devrel/compare/v1.15.0...v1.15.1) (2023-10-18)
 
 
