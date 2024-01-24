@@ -32,14 +32,13 @@ def main():
     utils.create_dir(proxy_bundle_directory)
     proxy_endpoint_count = utils.get_proxy_endpoint_count(cfg)
     proxies = utils.list_dir(proxy_dir)
-
     final_dict = {}
     processed_dict = {}
 
     for each_dir in proxies:
         each_proxy_dict = utils.read_proxy_artifacts(
-                        f"{proxy_dir}/{each_dir}",
-                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}")
+                        f"{proxy_dir}/{each_dir}/apiproxy",
+                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}/apiproxy")
                             )
         if len(each_proxy_dict) > 0:
             each_proxy_rel = utils.get_proxy_objects_relationships(
@@ -91,7 +90,7 @@ def main():
     for each_api, grouped_api in bundled_group.items():
         for index, each_group in enumerate(grouped_api):
             utils.clone_proxies(
-                    f"{proxy_dir}/{each_api}",
+                    f"{proxy_dir}/{each_api}/apiproxy",
                     f"{proxy_dest_dir}/{each_api}_{index}",
                     merged_objects[f"{each_api}_{index}"],
                     merged_pes,

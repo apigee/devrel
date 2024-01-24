@@ -25,7 +25,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import com.apigee.flow.execution.Action;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 /**
  * A callout that checks if a particular port is open on a specified host.
@@ -72,12 +75,26 @@ public class PortOpenCheck implements Execution {
   public ExecutionResult execute(final MessageContext messageContext,
     final ExecutionContext executionContext) {
     try {
-      String hostname = messageContext.getMessage().getHeader("host_name");
-      String port = messageContext.getMessage().getHeader("port_number");
-      int portnumber = Integer.parseInt(port);
-      String status = available(hostname, portnumber);
-      messageContext.setVariable("flow.reachableStatus", status);
-      return ExecutionResult.SUCCESS;
+      String payload = (String) messageContext.getVariable("request.content");
+      if (payload != null) {
+        Gson gson = new Gson();
+        JsonArray hostPortArray = gson.fromJson(payload, JsonArray.class);
+        for (JsonElement jsonElement : hostPortArray) {
+            JsonObject hostPortEntry = jsonElement.getAsJsonObject();
+            String host = hostPortEntry.get("host").getAsString();
+            Integer port = hostPortEntry.get("port").getAsInt();
+            String status = available(host, port);
+            hostPortEntry.addProperty("status", status);
+        }
+        String results =  gson.toJson(hostPortArray);
+        messageContext.setVariable("flow.result", results);
+        return ExecutionResult.SUCCESS;
+      } else {
+        ExecutionResult executionResult = new ExecutionResult(false,
+         Action.ABORT);
+        executionResult.setErrorResponse("No payload received");
+        return executionResult;
+      }
     } catch (Exception e) {
       ExecutionResult executionResult = new ExecutionResult(false,
         Action.ABORT);
@@ -87,7 +104,7 @@ public class PortOpenCheck implements Execution {
         e.getClass().getName());
       //--Set flow variables -- may be useful for debugging.
       messageContext.setVariable("JAVA_ERROR", e.getMessage());
-      return executionResult;
+    return executionResult;
     }
   }
 }
