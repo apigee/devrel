@@ -25,6 +25,8 @@ import requests
 import xmltodict
 import urllib3
 from forcediphttpsadapter.adapters import ForcedIPHTTPSAdapter
+import concurrent.futures
+from base_logger import logger
 
 
 def parse_config(config_file):
@@ -53,31 +55,34 @@ def create_proxy_bundle(proxy_bundle_directory, api_name, target_dir):  # noqa
 
 
 def run_validator_proxy(
-    url, dns_host, vhost_ip, target_host, target_port="443", allow_insecure=False):  # noqa
+    url, dns_host, vhost_ip, batch, allow_insecure=False):  # noqa
     headers = {
-        "host_name": target_host,
-        "port_number": str(target_port),
         "Host": dns_host,
+        "Content-Type": "application/json"
     }
     if allow_insecure:
-        print("INFO: Skipping Certificate Verification & disabling warnings because 'allow_insecure' is set to true")  # noqa
+        logger.info("Skipping Certificate Verification & disabling warnings because 'allow_insecure' is set to true")  # noqa
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     session = requests.Session()
     if len(vhost_ip) > 0:
         session.mount(
             f"https://{dns_host}", ForcedIPHTTPSAdapter(dest_ip=vhost_ip)
         )  # noqa
-    r = session.get(url, headers=headers, verify=(not allow_insecure))
-    if r.status_code == 200:
-        return r.json()["status"]
-    return "STATUS_UNKNOWN"
+    try:
+        response = session.post(url, data=batch, verify=(not allow_insecure), headers=headers)  # noqa
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"error": f"{response.json().get('error','')}"}  # noqa
+    except Exception as e:
+        return {"error": f"{e}"}
 
 
 def delete_file(file_name):
     try:
         os.remove(file_name)
     except FileNotFoundError:
-        print(f"File {file_name} doesnt exist")
+        logger.warning(f"File {file_name} doesnt exist")
 
 
 def write_csv_report(
@@ -99,8 +104,10 @@ def read_csv(file_name):
             rows = csv.reader(file)
             for each_row in rows:
                 read_rows.append(each_row)
+        if len(read_rows) != 0:
+            read_rows.pop(0)
     except FileNotFoundError:
-        print(f"WARN: {file_name} not found ! ")
+        logger.warning(f"File {file_name} not found ! ")
     return read_rows
 
 
@@ -128,7 +135,7 @@ def create_dir(dir):
     try:
         os.makedirs(dir)
     except FileExistsError:
-        print(f"INFO: {dir} already exists")
+        logger.info(f"{dir} already exists")
 
 
 def list_dir(dir, soft=False):
@@ -137,7 +144,7 @@ def list_dir(dir, soft=False):
     except FileNotFoundError:
         if soft:
             return []
-        print(f'ERROR: Directory "{dir}" not found')
+        logger.error(f"Directory '{dir}' not found")
         sys.exit(1)
 
 
@@ -152,7 +159,7 @@ def parse_xml(file):
             doc = xmltodict.parse(fl.read())
         return doc
     except FileNotFoundError:
-        print(f'ERROR: File "{file}" not found')
+        logger.error(f"File '{file}' not found")
     return {}
 
 
@@ -236,9 +243,28 @@ def get_tes(data):
 def get_row_host_port(row, default_port=443):
     host, port = None, None
     if len(row) == 0:
-        print("WARN: Input row has no host ")
+        logger.warning("Input row has no host.")
     if len(row) == 1:
         host, port = row[0], default_port
     if len(row) > 1:
         host, port = row[0], row[1]
     return host, port
+
+
+def run_parallel(func, args, workers=10):
+    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:  # noqa
+        future_list = {executor.submit(func, arg) for arg in args}
+
+    data = []
+    for future in concurrent.futures.as_completed(future_list):
+        try:
+            data.append(future.result())
+        except Exception:
+            exception_info = future.exception()
+            if exception_info is not None:
+                error_message = str(exception_info)
+                logger.error(f"Error message: {error_message}")
+            else:
+                logger.info("No exception information available.")
+            logger.error(f"{future} generated an exception")
+    return data

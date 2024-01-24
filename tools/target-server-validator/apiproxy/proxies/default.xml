@@ -15,6 +15,9 @@
     <PreFlow name="PreFlow">
         <Request>
             <Step>
+                <Name>JSON-Threat-Protection</Name>
+            </Step>
+            <Step>
                 <Name>JC-Port-Open-Check</Name>
             </Step>
         </Request>

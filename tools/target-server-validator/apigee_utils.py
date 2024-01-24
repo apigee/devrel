@@ -20,6 +20,13 @@ import sys
 import requests
 import shutil
 from time import sleep
+from utilities import (  # pylint: disable=import-error
+    run_validator_proxy,
+    unzip_file,
+    parse_proxy_hosts,
+    get_tes,
+)
+from base_logger import logger
 
 
 class Apigee:
@@ -36,16 +43,16 @@ class Apigee:
         self.auth_type = auth_type
         access_token = self.get_access_token()
         self.auth_header = {
-            "Authorization": "Bearer {}".format(access_token)
+            "Authorization": f"Bearer {access_token}"
             if self.auth_type == "oauth"
-            else "Basic {}".format(access_token)  # noqa
+            else f"Basic {access_token}"  # noqa
         }
 
     def is_token_valid(self, token):
         url = f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}"  # noqa
         response = requests.get(url)
         if response.status_code == 200:
-            print(f"Token Validated for user {response.json()['email']}")
+            logger.info(f"Token Validated for user {response.json()['email']}")
             return True
         return False
 
@@ -60,19 +67,15 @@ class Apigee:
                 if self.is_token_valid(token):
                     return token
                 else:
-                    print(
-                        'please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! '  # noqa type: ignore
-                    )
+                    logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
                     sys.exit(1)
             else:
                 return token
         else:
             if self.apigee_type == "x":
-                print(
-                    'please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! '  # noqa
-                )
+                logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
             else:
-                print("please export APIGEE_OPDK_ACCESS_TOKEN")
+                logger.error('please export APIGEE_OPDK_ACCESS_TOKEN')
             sys.exit(1)
 
     def set_auth_header(self):
@@ -136,7 +139,7 @@ class Apigee:
         if response.status_code == 200:
             revision = response.json().get('revision', "1")
             return True, revision
-        print(response.text)
+        logger.debug(response.text)
         return False, None
 
     def get_api_revisions_deployment(self, env, api_name, api_rev):  # noqa
@@ -154,10 +157,10 @@ class Apigee:
             if self.apigee_type == "opdk":
                 if api_deployment_status == "deployed":
                     return True
-            print(f"API {api_name} is in Status: {api_deployment_status} !")  # noqa
+            logger.debug(f"API {api_name} is in Status: {api_deployment_status} !")  # noqa
             return False
         else:
-            print(response.text)
+            logger.debug(response.text)
             return False
 
     def deploy_api(self, env, api_name, api_rev):
@@ -171,9 +174,9 @@ class Apigee:
         else:
             resp = response.json()
             if "already deployed" in resp["error"]["message"]:
-                print("Proxy {} is already Deployed".format(api_name))
+                logger.info(f"Proxy {api_name} is already Deployed")
                 return True
-            print(response.text)
+            logger.debug(f"{response.text}")
             return False
 
     def deploy_api_bundle(self, env, api_name, proxy_bundle_path, api_force_redeploy=False):  # noqa
@@ -185,50 +188,38 @@ class Apigee:
         if get_api_status:
             api_exists = True
             api_rev = api_revs[-1]
-            print(
-                f"Proxy with name {api_name} with revision {api_rev} already exists in Apigee Org {self.org}"  # noqa
-            )
+            logger.warning(f"Proxy with name {api_name} with revision {api_rev} already exists in Apigee Org {self.org}")  # noqa
             if api_force_redeploy:
                 api_exists = False
         if not api_exists:
             api_created, api_rev = self.create_api(api_name, proxy_bundle_path)
             if api_created:
-                print(
-                    f"Proxy has been imported with name {api_name} in Apigee Org {self.org}"  # noqa
-                )
+                logger.info(f"Proxy has been imported with name {api_name} in Apigee Org {self.org}")  # noqa
                 api_exists = True
             else:
-                print(f"ERROR : Proxy {api_name} import failed !!! ")
+                logger.error(f"ERROR : Proxy {api_name} import failed !!! ")
                 return False
         if api_exists:
             if self.get_api_revisions_deployment(
                         env, api_name, api_rev
                     ):
-                print(f"INFO : Proxy {api_name} already active in to {env} in Apigee Org {self.org} !")  # noqa
+                logger.info(f"Proxy {api_name} already active in to {env} in Apigee Org {self.org} !")  # noqa
                 return True
             else:
                 if self.deploy_api(env, api_name, api_rev):
-                    print(
-                        f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}"  # noqa
-                    )
+                    logger.info(f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}")  # noqa
                     while api_deployment_retry_count < api_deployment_retry:
                         if self.get_api_revisions_deployment(
                             env, api_name, api_rev
                         ):
-                            print(
-                                f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds "  # noqa
-                            )
+                            logger.debug(f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds ")  # noqa
                             return True
                         else:
-                            print(
-                                f"Checking API deployment status in {api_deployment_sleep} seconds"  # noqa
-                            )
+                            logger.debug(f"Checking API deployment status in {api_deployment_sleep} seconds")  # noqa
                             sleep(api_deployment_sleep)
                             api_deployment_retry_count += 1
                 else:
-                    print(
-                        f"ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!"  # noqa
-                    )
+                    logger.error(f"ERROR : Proxy deployment  to {env} in Apigee Org {self.org} Failed !!")  # noqa
                     return False
 
     def get_api_vhost(self, vhost_name, env):
@@ -244,13 +235,11 @@ class Apigee:
             else:
                 hosts = response.json()["hostnames"]
             if len(hosts) == 0:
-                print(
-                    f"ERROR: Vhost/Env Group {vhost_name} contains no domains"  # noqa
-                )
+                logger.error(f"Vhost/Env Group {vhost_name} contains no domains")  # noqa
                 return None
             return hosts
         else:
-            print(f"ERROR: Vhost/Env Group {vhost_name} contains no domains")  # noqa
+            logger.error(f"Vhost/Env Group {vhost_name} contains no domains")
             return None
 
     def list_apis(self, api_type):
@@ -288,6 +277,43 @@ class Apigee:
             self.write_proxy_bundle(export_dir, api_name, response.raw)
             return True
         return False
+
+    def fetch_api_proxy_ts_parallel(self, arg_tuple):
+        self.fetch_api_revision(arg_tuple[0], arg_tuple[1], arg_tuple[2], arg_tuple[3])  # noqa
+        unzip_file(
+                    f"{arg_tuple[3]}/{arg_tuple[1]}.zip",  # noqa
+                    f"{arg_tuple[3]}/{arg_tuple[1]}",  # noqa
+                )
+        parsed_proxy_hosts = parse_proxy_hosts(f"{arg_tuple[3]}/{arg_tuple[1]}/apiproxy")  # noqa
+        proxy_tes = get_tes(parsed_proxy_hosts)
+        return arg_tuple[0], arg_tuple[1], parsed_proxy_hosts, proxy_tes
+
+    def fetch_env_target_servers_parallel(self, arg_tuple):
+        ts_info = self.get_target_server(arg_tuple[0], arg_tuple[1])
+        return arg_tuple[1], ts_info
+
+    def call_validator_proxy_parallel(self, arg_tuple):
+        response = run_validator_proxy(arg_tuple[0], arg_tuple[1], arg_tuple[2], arg_tuple[3], arg_tuple[4])  # noqa
+        if isinstance(response, list):
+            report = []
+            for output in response:
+                report.append(
+                    [
+                        output["name"],
+                        output["extracted_from"],
+                        output["host"],
+                        output["port"],
+                        output["env"],
+                        output["status"],
+                        output["info"] if output.get("info") else " & ".join(
+                            list(set(arg_tuple[5][output["name"]])))
+                        if output["name"] in arg_tuple[5]
+                        else "No References in any API",
+                    ]
+                )
+            return report
+        else:
+            return {"error": f"Error while calling the validator proxy - {response.get('error','unknown error')} with payload {arg_tuple[3]}"}  # noqa
 
     def write_proxy_bundle(self, export_dir, file_name, data):
         file_path = f"./{export_dir}/{file_name}.zip"
