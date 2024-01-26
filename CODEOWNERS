@@ -18,7 +18,6 @@
 /references/identity-facade             @joelgauci
 /references/java-callout                @omidtahouri
 /references/js-callout                  @seymen
-/references/kvm-admin-api               @danistrebel
 /references/oauth-admin-api             @danistrebel
 /references/oidc-mock                   @joelgauci
 /references/product-recommendations-api @kurtkanaskie
