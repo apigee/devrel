@@ -1,6 +1,6 @@
 @End-to-EndTests
 Feature:
-  As a Client App 
+  As a Client App
   I want to get an access token from an identity provider
   So that I can retrieve different types of information
 
@@ -14,11 +14,11 @@ Feature:
 
   Scenario: Generate Access Token
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value 			|
       | grant_type  | authorization_code 	|
       | code        | `authCode`              	|
-      | redirect_uri| https://httpbin.org/get 	|
+      | redirect_uri| https://mocktarget.apigee.net/echo 	|
       |	state	      | `state`			|
       | scope	      | openid email address    |
     When I POST to /token
@@ -31,7 +31,7 @@ Feature:
     Then response code should be 200
     And response body path $.email should be (.+@example.com)
 
-  Scenario: Client App Accesses Introspection Endpoint 
+  Scenario: Client App Accesses Introspection Endpoint
     Given I have basic authentication credentials `clientId` and `clientSecret`
     And I set form parameters to
       | parameter   | value	  |

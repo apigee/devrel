@@ -1,6 +1,6 @@
 @pkce @token
 Feature:
-  As a Client App 
+  As a Client App
   I want to access the protected resource of an API
   So that I can retrieve different types of information
 
@@ -14,11 +14,11 @@ Feature:
 
   Scenario: Generate Access Token
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 200
@@ -26,11 +26,11 @@ Feature:
 
   Scenario: I should get an error if client_id is invalid
     Given I have basic authentication credentials invalid-client_id and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 401
@@ -38,11 +38,11 @@ Feature:
 
   Scenario: I should get an error if client_secret is invalid
     Given I have basic authentication credentials `clientId` and invalid-client_secret
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 401
@@ -50,7 +50,7 @@ Feature:
 
   Scenario: I should get an error if redirect_uri is missing or invalid
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
@@ -59,14 +59,14 @@ Feature:
     When I POST to /token
     Then response code should be 400
     And response body path $.error should be invalid_request
-  
+
   Scenario: I should get an error if authorization code is invalid
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | invalid-code            |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 404
@@ -74,10 +74,10 @@ Feature:
 
   Scenario: I should get an error if authorization code is missing
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 400
@@ -85,11 +85,11 @@ Feature:
 
   Scenario: I should get an error if grant_type is not authorization_code
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | xxx           |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier | `codeVerifier` |
     When I POST to /token
     Then response code should be 400
@@ -105,11 +105,11 @@ Feature:
 
   Scenario: I should get an error if code_verifier is wrong or missing
     Given I have basic authentication credentials `clientId` and `clientSecret`
-    And I set form parameters to 
+    And I set form parameters to
       | parameter   | value		      |
       | grant_type  | authorization_code      |
       | code        | `authCode`              |
-      | redirect_uri| https://httpbin.org/get |
+      | redirect_uri| https://mocktarget.apigee.net/echo |
       | code_verifier| xxx |
     When I POST to /token
     Then response code should be 400

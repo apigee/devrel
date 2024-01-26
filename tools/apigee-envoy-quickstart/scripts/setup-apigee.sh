@@ -30,7 +30,7 @@ then
         "value" : "public"
     }, {
         "name" : "apigee-remote-service-targets",
-        "value" : "httpbin.org"
+        "value" : "mocktarget.apigee.net"
     } ],
     "description" : "API Product for api proxies in Envoy",
     "environments": [
@@ -66,7 +66,7 @@ else
             "quota": {}
         },
         {
-            "apiSource": "httpbin.org",
+            "apiSource": "mocktarget.apigee.net",
             "operations": [
             {
                 "resource": "/headers"

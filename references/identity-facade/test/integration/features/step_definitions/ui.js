@@ -40,7 +40,7 @@ Given('I navigate to the authorize page', async function() {
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope
+    + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope
     + pkceQueryParams)
 })
 
@@ -53,7 +53,7 @@ Given('I navigate to the authorize page with query params that must be sanitized
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + '    ' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri= https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope
+    + '&redirect_uri= https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope
     + pkceQueryParams)
 })
 
@@ -66,7 +66,7 @@ Given('I navigate to the authorize page with an invalid response type', async fu
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=xxx&state=' + state +'&scope=' + scope
+    + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=xxx&state=' + state +'&scope=' + scope
     + pkceQueryParams)
 })
 
@@ -79,7 +79,7 @@ Given('I navigate to the authorize page without a scope parameter', async functi
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state
+    + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state
     + pkceQueryParams)
 })
 
@@ -92,7 +92,7 @@ Given('I navigate to the authorize page without a state parameter', async functi
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-    + '&redirect_uri=https://httpbin.org/get&response_type=code&scope=' + scope
+    + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&scope=' + scope
     + pkceQueryParams)
 })
 
@@ -106,7 +106,7 @@ if (isPkceEnabled) {
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-      + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope
+      + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope
       + '&code_challenge=' + this.apickli.scenarioVariables.codeChallenge + '&code_challenge_method=xxx')
   })
 
@@ -118,7 +118,7 @@ if (isPkceEnabled) {
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-      + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope
+      + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope
       + '&code_challenge=' + this.apickli.scenarioVariables.codeChallenge)
   })
 
@@ -130,7 +130,7 @@ if (isPkceEnabled) {
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
-      + '&redirect_uri=https://httpbin.org/get&response_type=code&state=' + state +'&scope=' + scope
+      + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope
       + '&code_challenge_method=S256')
   })
 }
@@ -157,7 +157,7 @@ When('I sign in and consent', async function() {
 })
 
 Then('I am redirected to the Client App', function() {
-  assert.notStrictEqual(this.page.url().indexOf('https://httpbin.org/get'), -1);
+  assert.notStrictEqual(this.page.url().indexOf('https://mocktarget.apigee.net/echo'), -1);
 })
 
 Then('I receive an auth code in a query param', function() {

@@ -1,0 +1,60 @@
+@startuml
+
+title "Firestore Facade in Apigee X/hybrid"
+
+actor User as u
+entity "Client App" as b
+entity "Cloud\nFirestore database" as gfd
+entity "Cloud\nKMS" as kms
+box "Apigee API Platform" #LightBlue
+entity "API Proxy\nfirestore-data-proxy-v1" as fdp
+entity "SharedFlow\nsf-firestore-facade-lookup-v1" as ffl
+entity "SharedFlow\nsf-firestore-facade-populate-v1" as ffp
+end box
+participant "Backend" as backend
+
+u -> b: User interaction
+b -> b: App activity
+b -> fdp: Access the firestore facade api
+
+note over gfd,ffp: "Apigee API proxy and shared flows acting as a facade in front of Cloud Firestore db" 
+
+fdp -> ffl: Lookup data from the Cloud Firestore db based on base path, path suffix and encoding type (base64 only)
+ffl -> ffl: calculate the cache key\ncacheKey = encodingType( basePath + pathSuffix)
+ffl -> gfd: Lookup shared flow acting as a facade with Cloud Firestore, using the cache key\ncall is executed using an ID token
+gfd -> gfd: lookup in the Cloud Firestore db using cache key
+
+opt Data retrieved from Cloud Firestore
+    gfd -> ffl: (encrypted) data is retrieved from Cloud Firestore (lookup status)
+    ffl -> ffl: extract the encrypted dek from the response (encDek)
+    ffl -> kms: call cloud kms api to decrypt the encrypted dek
+    kms -> ffl: return the decrypted dek
+    ffl -> ffl: decrypt the encrypted content using the dek (decrypted)
+    ffl -> ffl: set context variables:\nflow.lookup.hit = true \nflow.lookup.content = "<json content retrieved from cache>" \nflow.lookup.status.code = 200
+    ffl -> fdp: shared flow response
+end
+
+opt Data is NOT retrieved from Cloud Firestore
+    gfd -> ffl: data is not retrieved from Cloud Firestore (lookp status)
+    ffl -> ffl: set context variables:\nflow.lookup.hit = false \nflow.lookup.content = "none" \nflow.lookup.status.code > 399
+    ffl -> fdp: shared flow response
+    fdp -> backend: request is forwarded to the backend API
+    backend -> fdp: backend response
+    fdp -> fdp: generate a random encryption key
+    fdp -> fdp: encrypt the content of the response
+    fdp -> kms: call cloud kms api to encrypt the encrypted dek
+    kms -> fdp: return the encrypted dek
+    fdp -> fdp: prepare the content to be cached = encrypted content + encrypted dek (envelope encryption pattern)
+    fdp -> ffp: Populate data from the Cloud Firestore db based on base path, path suffix and encoding type (base64 only)
+    ffp -> ffp: calculate the cache key\ncacheKey = encodingType( basePath + pathSuffix)
+    ffp -> gfd: Populate shared flow acting as a facade with Cloud Firestore, using the cache key\ncall is executed using an ID token
+    gfd -> gfd: populate backend response in the Firestore db using cache key
+    gfd -> ffp: firestore populate status
+    ffp -> ffp: set context variables:\nflow.populate.content = true \nflow.populate.status.code = 200 \nflow.populate.cachekey = <cacheKey> \nflow.populate.extcache.documentid = <firestore documentId> \nflow.populate.extcache.collectionid = <firestore collectionId>
+    ffp -> fdp: shared flow response
+    
+end
+
+fdp -> b: JSON response is sent back to the app (200 OK)
+
+@enduml

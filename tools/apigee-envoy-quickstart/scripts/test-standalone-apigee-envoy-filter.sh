@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-testHttpbin() {
+testMocktarget() {
     printf "\nTesting deployed envoy proxy with apigee adapter\n"
     RESULT=1
-    OUTPUT=$(curl -i http://localhost:8080/headers -H 'Host: httpbin.org' \
+    OUTPUT=$(curl -i http://localhost:8080/echo -H 'Host: mocktarget.apigee.net' \
         -H "x-api-key: $CONSUMER_KEY" | grep HTTP)
     printf "\n%s" "$OUTPUT"
     if [[ "$OUTPUT" == *"200"* ]]; then
@@ -26,13 +26,13 @@ testHttpbin() {
     return $RESULT
 }
 
-testCIRunnerHttpbin() {
+testCIRunnerMocktarget() {
     printf "\nTesting deployed envoy proxy with apigee adapter for CI runner build\n"
     envoyproxy_cntnr_name=$(docker ps -a --format "{{ json . }}" | \
                             jq ' select( .Image | contains("envoyproxy")) | .Names ' | \
                             tr -d '"')
     RESULT=1
-    OUTPUT=$(docker exec -it "$envoyproxy_cntnr_name" curl -i http://localhost:8080/headers -H 'Host: httpbin.org' \
+    OUTPUT=$(docker exec -it "$envoyproxy_cntnr_name" curl -i http://localhost:8080/echo -H 'Host: mocktarget.apigee.net' \
         -H "x-api-key: $CONSUMER_KEY" | grep HTTP)
     printf "\n%s" "$OUTPUT"
     if [[ "$OUTPUT" == *"200"* ]]; then
@@ -53,12 +53,12 @@ printf "\nWait for few minutes for the Envoy and Apigee adapter to have the setu
 
 printf "\n\n"
 
-echo curl -i http://localhost:8080/headers -H "\"Host: httpbin.org\""  \
+echo curl -i http://localhost:8080/echo -H "\"Host: mocktarget.apigee.net\""  \
 -H "\"x-api-key: $CONSUMER_KEY\""
 
 printf "\n"
 
-printf "\nTry with and without sending the x-api-key header. This proves the httpbin target is protected by the Envoy container which has the Envoy filter configured to connect to Apigee adapter running as container that executes the key verification with the Apigee runtime\n"
+printf "\nTry with and without sending the x-api-key header. This proves the mock target is protected by the Envoy container which has the Envoy filter configured to connect to Apigee adapter running as container that executes the key verification with the Apigee runtime\n"
 
 
 printf "\nWaiting for envoy proxy to be ready.."
@@ -66,28 +66,28 @@ sleep 20
 printf "\nTesting envoy endpoint.."
 
 if [[ -z $PIPELINE_TEST ]]; then
-  testHttpbin;
+  testMocktarget;
 else
-  testCIRunnerHttpbin
+  testCIRunnerMocktarget
 fi
 RESULT=$?
 
 counter=0;
 while [ $RESULT -ne 0 ] && [ $counter -lt 5 ]; do
-  printf "\n\nTesting the httpbin application %s of 5\n" "$counter"
+  printf "\n\nTesting the mocktarget application %s of 5\n" "$counter"
   sleep 20
   if [[ -z $PIPELINE_TEST ]]; then
-    testHttpbin;
+    testMocktarget;
   else
-    testCIRunnerHttpbin
+    testCIRunnerMocktarget
   fi
   RESULT=$?
   counter=$((counter+1))
 done
 
 if [ $RESULT -eq 0 ]; then
-  printf "\nValidation of the apigee envoy quickstart engine successful\n" 
+  printf "\nValidation of the apigee envoy quickstart engine successful\n"
 else
-  printf "\nValidation of the apigee envoy quickstart engine NOT successful\n" 
+  printf "\nValidation of the apigee envoy quickstart engine NOT successful\n"
 fi
 

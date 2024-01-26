@@ -33,7 +33,9 @@ RUN apk add --no-cache \
   freetype-dev \
   harfbuzz \
   ca-certificates \
-  ttf-freefont
+  ttf-freefont \
+  py-pip \
+  zip
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
 RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
