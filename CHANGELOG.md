@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/apigee/devrel/compare/v1.16.0...v1.17.0) (2024-01-26)
+
+
+### Features
+
+* bump MVN plugin versions in sackmesser ([bdc8ca9](https://github.com/apigee/devrel/commit/bdc8ca9cd112224e9d03a4c3663496dd874822d3))
+* remove kvm-admin API polyfill as it's now supported in the product for a while ([524afe6](https://github.com/apigee/devrel/commit/524afe65966a50ecb4d27871bbfc8cabf4538966))
+
 ## [1.16.0](https://github.com/apigee/devrel/compare/v1.15.1...v1.16.0) (2024-01-24)
 
 
