@@ -81,9 +81,6 @@ Apigee products.
   A kickstart script to integrate OpenLegacy, Apigee and Cloud Run
 - [OpenAPI to Apigee Mock Proxy](tools/oas-apigee-mock) -
   A utility to generate an Apigee Proxy bundle with mock responses from a spec
-- [OpenAPI to Configurable Proxy](tools/oas-configurable-proxy) -
-  A tool to generate configurable proxy archives from an OpenAPI
-  Specification
 - [Cloud Endpoints OpenAPI Importer](tools/endpoints-oas-importer) -
   A utility to generate Apigee Proxies based on OAS with Cloud Endpoints OAS
   extensions
