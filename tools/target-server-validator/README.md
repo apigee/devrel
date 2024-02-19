@@ -25,30 +25,35 @@ bash callout/build_java_callout.sh
 
 ```
 [source]
-baseurl=https://x.x.x.x/v1                  # Apigee Base URL. e.g http://management-api.apigee-opdk.corp:8080
-org=xxx-xxxx-xxx-xxxxx                      # Apigee Org ID
-auth_type=basic                             # API Auth type basic | oauth
+baseurl=https://x.x.x.x/v1                        # Apigee Base URL. e.g http://management-api.apigee-opdk.corp:8080
+org=xxx-xxxx-xxx-xxxxx                            # Apigee Org ID
+auth_type=basic                                   # API Auth type basic | oauth
 
 [target]
-baseurl=https://apigee.googleapis.com/v1    # Apigee Base URL
-org=xxx-xxxx-xxx-xxxxx                      # Apigee Org ID
-auth_type=oauth                             # API Auth type basic | oauth
+baseurl=https://apigee.googleapis.com/v1          # Apigee Base URL
+org=xxx-xxxx-xxx-xxxxx                            # Apigee Org ID
+auth_type=oauth                                   # API Auth type basic | oauth
 
 [csv]
-file=input.csv                              # Path to input CSV. Note: CSV needs HOST & PORT columns
-default_port=443                            # default port if port is not provided in CSV
+file=input.csv                                    # Path to input CSV. Note: CSV needs HOST & PORT columns
+default_port=443                                  # default port if port is not provided in CSV
 
 [validation]
-check_csv=true                              # 'true' to validate Targets in input csv
-check_proxies=true                          # 'true' to validate Proxy Targets else 'false'
-skip_proxy_list=mock1,stream                # Comma sperated list of proxies to skip validation;
-proxy_export_dir=export                     # Export directory needed when check_proxies='true'
-api_env=dev                                 # Target Environment to deploy Validation API Proxy
-api_name=target_server_validator            # Target API Name of Validation API Proxy
-api_force_redeploy=false                    # set 'true' to Re-deploy Target API Proxy
-api_hostname=example.apigee.com             # Target VirtualHost or EnvGroup Domain Name
-api_ip=<IP>                                 # IP address corresponding to api_hostname. Use if DNS record doesnt exist
-report_format=csv                           # Report Format. Choose csv or md (defaults to md)
+check_csv=true                                    # 'true' to validate Targets in input csv
+check_proxies=true                                # 'true' to validate Proxy Targets else 'false'
+skip_proxy_list=mock1,stream                      # Comma sperated list of proxies to skip validation;
+proxy_export_dir=export                           # Export directory needed when check_proxies='true'
+api_env=dev                                       # Target Environment to deploy Validation API Proxy
+api_name=target_server_validator                  # Target API Name of Validation API Proxy
+api_force_redeploy=false                          # set 'true' to Re-deploy Target API Proxy
+api_hostname=example.apigee.com                   # Target VirtualHost or EnvGroup Domain Name
+api_ip=<IP>                                       # IP address corresponding to api_hostname. Use if DNS record doesnt exist
+report_format=csv                                 # Report Format. Choose csv or md (defaults to md)
+
+[cloud_monitoring]
+stack_driver=true                                 # set 'true' to push target server's host and status to stack driver
+project_id=xxx-xxx-xx                             # Project id of GCP project where the data will be pushed
+metric_name=custom.googleapis.com/<metric_name>   # Replace <metric_name> with custom metric name
 ```
 
 * Sample input CSV with target servers
@@ -112,7 +117,7 @@ The response will look like this -
     {
         "host": "example2.com",
         "port": 443,
-         "status" : "UNKNOWN_HOST"
+        "status" : "UNKNOWN_HOST"
     },
     // and so on 
 ]

@@ -18,3 +18,4 @@
 xmltodict==0.13.0
 requests==2.31.0
 forcediphttpsadapter==1.0.2
+google-cloud-monitoring==2.19.1

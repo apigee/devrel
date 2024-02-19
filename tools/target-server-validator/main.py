@@ -18,6 +18,7 @@
 import os
 import sys
 import json
+import time
 from utilities import (  # pylint: disable=import-error
     parse_config,
     create_proxy_bundle,
@@ -29,6 +30,8 @@ from utilities import (  # pylint: disable=import-error
     has_templating,
     get_row_host_port,
     run_parallel,
+    create_custom_metric,
+    report_metric,
 )
 from apigee_utils import Apigee  # pylint: disable=import-error
 from base_logger import logger
@@ -40,6 +43,7 @@ def main():
     check_proxies = cfg["validation"].getboolean("check_proxies")
     proxy_export_dir = cfg["validation"]["proxy_export_dir"]
     report_format = cfg["validation"]["report_format"]
+    stack_driver = cfg["stack_driver"]["stack_driver"]
     allow_insecure = cfg["validation"].getboolean("allow_insecure")
     if report_format not in ["csv", "md"]:
         report_format = "md"
@@ -249,6 +253,14 @@ def main():
         report_file = "report.md"
         logger.info(f"Dumping report to file {report_file}")
         write_md_report(report_file, final_report)
+
+    if stack_driver:
+        project_id = cfg["stack_driver"]["project_id"]
+        metric_name = cfg["stack_driver"]["metric_name"]
+        logger.info("Dumping data to stack driver")
+        descriptor = create_custom_metric(project_id, metric_name)
+        time.sleep(5)
+        report_metric(project_id, descriptor, final_report)
 
 
 if __name__ == "__main__":

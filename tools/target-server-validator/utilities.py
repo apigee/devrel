@@ -21,6 +21,10 @@ import configparser
 import zipfile
 import csv
 from urllib.parse import urlparse
+import time
+from google.api import label_pb2 as ga_label
+from google.cloud import monitoring_v3
+from google.api import metric_pb2 as ga_metric
 import requests
 import xmltodict
 import urllib3
@@ -268,3 +272,60 @@ def run_parallel(func, args, workers=10):
                 logger.info("No exception information available.")
             logger.error(f"{future} generated an exception")
     return data
+
+
+def create_custom_metric(project_id, metric_name):
+    client = monitoring_v3.MetricServiceClient()
+    project_name = f"projects/{project_id}"
+
+    # Create metric descriptor
+    descriptor = ga_metric.MetricDescriptor()
+    descriptor.type = metric_name
+    descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
+    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.BOOL
+    descriptor.labels.extend([
+        ga_label.LabelDescriptor(key='hostname', value_type='STRING'),
+        ga_label.LabelDescriptor(key='status', value_type='STRING')
+    ])
+    try:
+        descriptor = client.create_metric_descriptor(name=project_name, metric_descriptor=descriptor)  # noqa
+        return descriptor
+    except Exception as e:
+        logger.error(f"Error while creating the metric descriptor. ERROR-INFO: {e}")  # noqa
+    return None
+
+
+def report_metric(project_id, metric_descriptor, sample_data):
+    client = monitoring_v3.MetricServiceClient()
+    project_name = f"projects/{project_id}"
+
+    series = monitoring_v3.TimeSeries()
+
+    # Check if metric descriptor exists
+    if not metric_descriptor:
+        logger.error("Error while pushing the data to stackdriver. ERROR-INFO: Metric descriptor does not exist.")  # noqa
+        return
+
+    series.metric.type = metric_descriptor.type
+    series.resource.type = 'global'
+
+    now = time.time()
+    seconds = int(now)
+    nanos = int((now - seconds) * 10 ** 9)
+    interval = monitoring_v3.TimeInterval({'end_time': {'seconds': seconds, 'nanos': nanos}})  # noqa
+
+    try:
+        for data in sample_data:
+            status = True if data[5] == 'REACHABLE' else False
+
+            point = monitoring_v3.Point({'interval': interval, 'value': {'bool_value': status}})  # noqa
+            series.metric.labels['hostname'] = data[2]
+            series.metric.labels['status'] = data[5]
+            series.points = [point]
+
+            client.create_time_series(name=project_name, time_series=[series])
+            logger.debug(f"Pushed to stackdriver - {data[2]} {data[5]}")
+
+        logger.info("Successfully pushed data to stackdriver")
+    except Exception as e:
+        logger.error(f"Error while pushing the data to stackdriver. ERROR-INFO: {e}")  # noqa
