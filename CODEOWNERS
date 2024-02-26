@@ -18,7 +18,6 @@
 /references/identity-facade             @joelgauci
 /references/java-callout                @omidtahouri
 /references/js-callout                  @seymen
-/references/kvm-admin-api               @danistrebel
 /references/oauth-admin-api             @danistrebel
 /references/oidc-mock                   @joelgauci
 /references/product-recommendations-api @kurtkanaskie
@@ -34,7 +33,6 @@
 /tools/endpoints-oas-importer           @danistrebel
 /tools/hybrid-quickstart                @danistrebel
 /tools/oas-apigee-mock                  @markjkelly
-/tools/oas-configurable-proxy           @danistrebel
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel
 /tools/sf-dependency-list               @yuriylesyuk
