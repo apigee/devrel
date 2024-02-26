@@ -25,6 +25,9 @@ import time
 from google.api import label_pb2 as ga_label
 from google.cloud import monitoring_v3
 from google.api import metric_pb2 as ga_metric
+from google.cloud import monitoring_dashboard_v1
+from google.cloud import monitoring_v3
+from google.protobuf import duration_pb2
 import requests
 import xmltodict
 import urllib3
@@ -282,7 +285,7 @@ def create_custom_metric(project_id, metric_name):
     descriptor = ga_metric.MetricDescriptor()
     descriptor.type = metric_name
     descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
-    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.BOOL
+    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.DOUBLE
     descriptor.labels.extend([
         ga_label.LabelDescriptor(key='hostname', value_type='STRING'),
         ga_label.LabelDescriptor(key='status', value_type='STRING')
@@ -294,6 +297,13 @@ def create_custom_metric(project_id, metric_name):
         logger.error(f"Error while creating the metric descriptor. ERROR-INFO: {e}")  # noqa
     return None
 
+def get_status_int(status):
+    if status == "REACHABLE":
+        return 1
+    elif status == "NOT_REACHABLE":
+        return 0.5
+    elif status == "UNKNOWN_HOST":
+        return 0
 
 def report_metric(project_id, metric_descriptor, sample_data):
     client = monitoring_v3.MetricServiceClient()
@@ -316,16 +326,85 @@ def report_metric(project_id, metric_descriptor, sample_data):
 
     try:
         for data in sample_data:
-            status = True if data[5] == 'REACHABLE' else False
-
-            point = monitoring_v3.Point({'interval': interval, 'value': {'bool_value': status}})  # noqa
+            point = monitoring_v3.Point({'interval': interval, 'value': {'double_value': get_status_int(data[5])}})  # noqa
             series.metric.labels['hostname'] = data[2]
             series.metric.labels['status'] = data[5]
             series.points = [point]
 
             client.create_time_series(name=project_name, time_series=[series])
             logger.debug(f"Pushed to stackdriver - {data[2]} {data[5]}")
-
         logger.info("Successfully pushed data to stackdriver")
     except Exception as e:
         logger.error(f"Error while pushing the data to stackdriver. ERROR-INFO: {e}")  # noqa
+
+
+def create_alert_policy(project_name, policy_name, metric_name, notification_channel_id):
+    client = monitoring_v3.AlertPolicyServiceClient()
+    conditions = [
+        monitoring_v3.AlertPolicy.Condition(
+            display_name="Target Server Validator Policy",
+            condition_threshold=monitoring_v3.AlertPolicy.Condition.MetricThreshold(
+                filter=f"resource.type = \"global\" AND metric.type = \"{metric_name}\"",
+                comparison=monitoring_v3.ComparisonType.COMPARISON_LT,
+                threshold_value=0.75,
+                duration=duration_pb2.Duration(seconds=0),
+                aggregations=[
+                    monitoring_v3.Aggregation(
+                        alignment_period=duration_pb2.Duration(seconds=300),
+                        per_series_aligner=monitoring_v3.Aggregation.Aligner.ALIGN_NEXT_OLDER,
+                        cross_series_reducer=monitoring_v3.Aggregation.Reducer.REDUCE_NONE,
+                    )
+                ],
+                trigger=monitoring_v3.AlertPolicy.Condition.Trigger(
+                    count=1,
+                )
+            ),
+        )
+    ]
+
+    notification_channels = [f"projects/apigee-hybrid-testing-415007/notificationChannels/{notification_channel_id}"]
+    policy = monitoring_v3.AlertPolicy(
+        display_name=policy_name,
+        conditions=conditions,
+        notification_channels=notification_channels,
+        combiner=monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
+    )
+
+    created_policy = client.create_alert_policy(
+        name=project_name,
+        alert_policy=policy
+    )
+    logger.info(f"Created alert policy: {created_policy.name}")
+    return created_policy.name
+
+
+def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_id):
+    client = monitoring_dashboard_v1.DashboardsServiceClient()
+    request = monitoring_dashboard_v1.ListDashboardsRequest(parent=f"projects/{project_id}")
+    
+    existing_dashboards = client.list_dashboards(request=request).dashboards
+    for dashboard in existing_dashboards:
+        if dashboard.display_name == dashboard_title:
+            logger.info(f"Dashboard '{dashboard_title}' already exists. Skipping creation.")
+            return
+
+    dashboard = monitoring_dashboard_v1.Dashboard()
+    dashboard.display_name = dashboard_title
+    grid_layout = monitoring_dashboard_v1.GridLayout(
+        widgets=[]
+    )
+    dashboard.grid_layout = grid_layout
+
+    #create alerting policy
+    project_name=f"projects/{project_id}"
+    alert_policy_name = create_alert_policy(project_name, policy_name, metric_name, notification_channel_id)
+    widget = monitoring_dashboard_v1.Widget()
+    widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)
+    dashboard.grid_layout.widgets.append(widget)
+
+    request = monitoring_dashboard_v1.CreateDashboardRequest(
+        parent=f"projects/{project_id}",
+        dashboard=dashboard,
+    )
+    response = client.create_dashboard(request=request)
+    logger.info(f"Dashboard created: {response.name}")

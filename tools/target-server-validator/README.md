@@ -50,8 +50,8 @@ api_hostname=example.apigee.com                   # Target VirtualHost or EnvGro
 api_ip=<IP>                                       # IP address corresponding to api_hostname. Use if DNS record doesnt exist
 report_format=csv                                 # Report Format. Choose csv or md (defaults to md)
 
-[cloud_monitoring]
-stack_driver=true                                 # set 'true' to push target server's host and status to stack driver
+[gcp_metrics]
+enable_gcp_metrics=true                           # set 'true' to push target server's host and status to stack driver
 project_id=xxx-xxx-xx                             # Project id of GCP project where the data will be pushed
 metric_name=custom.googleapis.com/<metric_name>   # Replace <metric_name> with custom metric name
 ```

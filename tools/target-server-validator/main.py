@@ -32,6 +32,7 @@ from utilities import (  # pylint: disable=import-error
     run_parallel,
     create_custom_metric,
     report_metric,
+    create_custom_dashboard,
 )
 from apigee_utils import Apigee  # pylint: disable=import-error
 from base_logger import logger
@@ -42,8 +43,8 @@ def main():
     cfg = parse_config("input.properties")
     check_proxies = cfg["validation"].getboolean("check_proxies")
     proxy_export_dir = cfg["validation"]["proxy_export_dir"]
+    enable_gcp_metrics = cfg["gcp_metrics"].getboolean("enable_gcp_metrics")
     report_format = cfg["validation"]["report_format"]
-    stack_driver = cfg["stack_driver"]["stack_driver"]
     allow_insecure = cfg["validation"].getboolean("allow_insecure")
     if report_format not in ["csv", "md"]:
         report_format = "md"
@@ -242,25 +243,31 @@ def main():
         else:
             logger.error(output.get("error", "Unknown Error occured while calling proxy"))  # noqa
 
-    # Write CSV Report
-    # TODO: support relative report path
-    if report_format == "csv":
-        report_file = "report.csv"
-        logger.info(f"Dumping report to file {report_file}")
-        write_csv_report(report_file, final_report)
-
-    if report_format == "md":
+    if enable_gcp_metrics:
+        project_id = cfg["gcp_metrics"]["project_id"]
+        metric_name = cfg["gcp_metrics"]["metric_name"]
+        enable_dashboard = cfg["gcp_metrics"]["enable_dashboard"]
+        logger.info("Dumping data to stack driver")
+        descriptor = create_custom_metric(project_id, metric_name)
+        report_metric(project_id, descriptor, final_report)
+        if enable_dashboard:
+            logger.info(f"Creating dashboard in project {project_id}")
+            dashboard_title=cfg["gcp_metrics"]["dashboard_title"]
+            alert_policy_name=cfg["gcp_metrics"]["alert_policy_name"]
+            notification_channel_id = cfg["gcp_metrics"]["notification_channel_id"]
+            create_custom_dashboard(project_id, dashboard_title, metric_name, alert_policy_name, notification_channel_id)
+    
+    elif report_format == "md":
         report_file = "report.md"
         logger.info(f"Dumping report to file {report_file}")
         write_md_report(report_file, final_report)
-
-    if stack_driver:
-        project_id = cfg["stack_driver"]["project_id"]
-        metric_name = cfg["stack_driver"]["metric_name"]
-        logger.info("Dumping data to stack driver")
-        descriptor = create_custom_metric(project_id, metric_name)
-        time.sleep(5)
-        report_metric(project_id, descriptor, final_report)
+    
+    # Write CSV Report
+    # TODO: support relative report path
+    elif report_format == "csv":
+        report_file = "report.csv"
+        logger.info(f"Dumping report to file {report_file}")
+        write_csv_report(report_file, final_report)
 
 
 if __name__ == "__main__":
