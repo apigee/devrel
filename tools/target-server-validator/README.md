@@ -11,6 +11,7 @@ Validation is done by deploying a sample proxy which check if HOST & PORT is ope
 * Python3.x
 * Java
 * Maven
+3.9.6
 * Please install the required Python dependencies
 ```
     python3 -m pip install -r requirements.txt
@@ -25,35 +26,44 @@ bash callout/build_java_callout.sh
 
 ```
 [source]
-baseurl=https://x.x.x.x/v1                        # Apigee Base URL. e.g http://management-api.apigee-opdk.corp:8080
-org=xxx-xxxx-xxx-xxxxx                            # Apigee Org ID
-auth_type=basic                                   # API Auth type basic | oauth
+baseurl=https://x.x.x.x/v1                       # Apigee Base URL. e.g http://management-api.apigee-opdk.corp:8080
+org=xxx-xxxx-xxx-xxxxx                           # Apigee Org ID
+auth_type=basic                                  # API Auth type basic | oauth
 
 [target]
-baseurl=https://apigee.googleapis.com/v1          # Apigee Base URL
-org=xxx-xxxx-xxx-xxxxx                            # Apigee Org ID
-auth_type=oauth                                   # API Auth type basic | oauth
+baseurl=https://apigee.googleapis.com/v1         # Apigee Base URL
+org=xxx-xxxx-xxx-xxxxx                           # Apigee Org ID
+auth_type=oauth                                  # API Auth type basic | oauth
 
 [csv]
-file=input.csv                                    # Path to input CSV. Note: CSV needs HOST & PORT columns
-default_port=443                                  # default port if port is not provided in CSV
+file=input.csv                                   # Path to input CSV. Note: CSV needs HOST & PORT columns
+default_port=443                                 # default port if port is not provided in CSV
 
 [validation]
-check_csv=true                                    # 'true' to validate Targets in input csv
-check_proxies=true                                # 'true' to validate Proxy Targets else 'false'
-skip_proxy_list=mock1,stream                      # Comma sperated list of proxies to skip validation;
-proxy_export_dir=export                           # Export directory needed when check_proxies='true'
-api_env=dev                                       # Target Environment to deploy Validation API Proxy
-api_name=target_server_validator                  # Target API Name of Validation API Proxy
-api_force_redeploy=false                          # set 'true' to Re-deploy Target API Proxy
-api_hostname=example.apigee.com                   # Target VirtualHost or EnvGroup Domain Name
-api_ip=<IP>                                       # IP address corresponding to api_hostname. Use if DNS record doesnt exist
-report_format=csv                                 # Report Format. Choose csv or md (defaults to md)
+check_csv=true                                   # 'true' to validate Targets in input csv
+check_proxies=true                               # 'true' to validate Proxy Targets else 'false'
+skip_proxy_list=mock1,stream                     # Comma separated list of proxies to skip validation;
+proxy_export_dir=export                          # Export directory needed when check_proxies='true'
+api_env=dev                                      # Target Environment to deploy Validation API Proxy
+api_name=target_server_validator                 # Target API Name of Validation API Proxy
+api_force_redeploy=false                         # set 'true' to Re-deploy Target API Proxy
+api_hostname=example.apigee.com                  # Target VirtualHost or EnvGroup Domain Name
+api_ip=<IP>                                      # IP address corresponding to api_hostname. Use if DNS record doesnt exist
+report_format=csv                                # Report Format. Choose csv or md (defaults to md)
 
 [gcp_metrics]
-enable_gcp_metrics=true                           # set 'true' to push target server's host and status to stack driver
-project_id=xxx-xxx-xx                             # Project id of GCP project where the data will be pushed
-metric_name=custom.googleapis.com/<metric_name>   # Replace <metric_name> with custom metric name
+enable_gcp_metrics=true                          # set 'true' to push target server's host and status to stack driver
+project_id=xxx-xxx-xxx                           # Project id of GCP project where the data will be pushed
+metric_name=custom.googleapis.com/<metric_name>  # Replace <metric_name> with custom metric name
+enable_dashboard=true                            # set 'true' to create the dashboard with alerting policy
+dashboard_title=Apigee Target Server Monitoring Dashboard  # Monitoring Dashboard Title
+alert_policy_name=Apigee Target Server Validator Policy    # Alerting Policy Name
+notification_channel_id=xxxxxxxx                 # Notification Channel id
+
+[gcs_bucket]
+bucket_name=target-server-validator-gcs          # GCS bucket name for storing the --scan output
+bucket_project_id=xx-xxx-xx                      # GCS bucket project id
+file_path_in_bucket=scan_output.txt              # path to output file
 ```
 
 * Sample input CSV with target servers
@@ -81,16 +91,32 @@ export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)            # Access
 * Export Proxy Bundle 
 * Parse Each Proxy Bundle for Target
 * Run Validate API against each Target (optional)
-* Generate csv/md Report
+* Generate csv/md Report or push data to GCP Monitoring Dashboard
 
 ## Usage
 
-Run the script as below
+The script supports the below arguments
+
+* `--onboard`               Toggle to onboard validator proxy, custom metric descriptors and dashboard
+* `--scan`                  Toggle to read all resources
+* `--monitor`               Toggle to check the status of target servers and push to GCP Logging
+
+To onboard, run
 ```
-python3 main.py
+python3 main.py --onboard
 ```
 
-This script deploys an API proxy to validate if the target servers are reachable or not. To use the API proxy, make sure your payloads adhere to the following format:
+To scan, run
+```
+python3 main.py --scan
+```
+
+To monitor, run
+```
+python3 main.py --monitor
+```
+
+--onboard deploys an API proxy to validate if the target servers are reachable or not. To use the API proxy, make sure your payloads adhere to the following format:
 
 ```json
 [
@@ -127,3 +153,8 @@ The response will look like this -
 Validation Report: `report.md` OR `report.csv` can be found in the same directory as the script.
 
 Please check a [Sample report](report.md)
+
+## GCP Monitoring Dashboard
+The script can also create a GCP Monitoring Dashboard with an alerting widget like shown below:
+
+![GCP Monitoring Dashboard](images/dashboard.png)

@@ -17,6 +17,7 @@
 
 import os
 import sys
+import json
 import configparser
 import zipfile
 import csv
@@ -26,8 +27,8 @@ from google.api import label_pb2 as ga_label
 from google.cloud import monitoring_v3
 from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_dashboard_v1
-from google.cloud import monitoring_v3
 from google.protobuf import duration_pb2
+from google.cloud import storage
 import requests
 import xmltodict
 import urllib3
@@ -277,9 +278,20 @@ def run_parallel(func, args, workers=10):
     return data
 
 
+def get_metric_descriptor(project_id, metric_name):
+    descriptor_name = f"projects/{project_id}/metricDescriptors/{metric_name}"
+
+    client = monitoring_v3.MetricServiceClient()
+    try:
+        descriptor = client.get_metric_descriptor(name=descriptor_name)
+        return descriptor
+    except Exception as e:
+        logger.error(f"Error while getting the existing metric descriptor. ERROR-INFO: {e}")  # noqa
+        return None
+
+
 def create_custom_metric(project_id, metric_name):
     client = monitoring_v3.MetricServiceClient()
-    project_name = f"projects/{project_id}"
 
     # Create metric descriptor
     descriptor = ga_metric.MetricDescriptor()
@@ -291,11 +303,12 @@ def create_custom_metric(project_id, metric_name):
         ga_label.LabelDescriptor(key='status', value_type='STRING')
     ])
     try:
-        descriptor = client.create_metric_descriptor(name=project_name, metric_descriptor=descriptor)  # noqa
+        descriptor = client.create_metric_descriptor(name=f"projects/{project_id}", metric_descriptor=descriptor)  # noqa
         return descriptor
     except Exception as e:
         logger.error(f"Error while creating the metric descriptor. ERROR-INFO: {e}")  # noqa
     return None
+
 
 def get_status_int(status):
     if status == "REACHABLE":
@@ -305,9 +318,9 @@ def get_status_int(status):
     elif status == "UNKNOWN_HOST":
         return 0
 
+
 def report_metric(project_id, metric_descriptor, sample_data):
     client = monitoring_v3.MetricServiceClient()
-    project_name = f"projects/{project_id}"
 
     series = monitoring_v3.TimeSeries()
 
@@ -331,28 +344,29 @@ def report_metric(project_id, metric_descriptor, sample_data):
             series.metric.labels['status'] = data[5]
             series.points = [point]
 
-            client.create_time_series(name=project_name, time_series=[series])
+            client.create_time_series(name=f"projects/{project_id}", time_series=[series])  # noqa
             logger.debug(f"Pushed to stackdriver - {data[2]} {data[5]}")
         logger.info("Successfully pushed data to stackdriver")
     except Exception as e:
         logger.error(f"Error while pushing the data to stackdriver. ERROR-INFO: {e}")  # noqa
 
 
-def create_alert_policy(project_name, policy_name, metric_name, notification_channel_id):
+def create_alert_policy(project_id, policy_name, metric_name, notification_channel_id):  # noqa
     client = monitoring_v3.AlertPolicyServiceClient()
     conditions = [
         monitoring_v3.AlertPolicy.Condition(
             display_name="Target Server Validator Policy",
-            condition_threshold=monitoring_v3.AlertPolicy.Condition.MetricThreshold(
-                filter=f"resource.type = \"global\" AND metric.type = \"{metric_name}\"",
+            condition_threshold=monitoring_v3.AlertPolicy.Condition.MetricThreshold(  # noqa
+                filter=f"resource.type = \"global\" AND metric.type = \"{metric_name}\"",  # noqa
                 comparison=monitoring_v3.ComparisonType.COMPARISON_LT,
                 threshold_value=0.75,
-                duration=duration_pb2.Duration(seconds=0),
+                duration=duration_pb2.Duration(seconds=60),
                 aggregations=[
                     monitoring_v3.Aggregation(
-                        alignment_period=duration_pb2.Duration(seconds=300),
-                        per_series_aligner=monitoring_v3.Aggregation.Aligner.ALIGN_NEXT_OLDER,
-                        cross_series_reducer=monitoring_v3.Aggregation.Reducer.REDUCE_NONE,
+                        alignment_period=duration_pb2.Duration(seconds=120),
+                        per_series_aligner=monitoring_v3.Aggregation.Aligner.ALIGN_NEXT_OLDER,  # noqa
+                        cross_series_reducer=monitoring_v3.Aggregation.Reducer.REDUCE_NONE,  # noqa
+                        group_by_fields=["metric.label.hostname"],
                     )
                 ],
                 trigger=monitoring_v3.AlertPolicy.Condition.Trigger(
@@ -362,7 +376,7 @@ def create_alert_policy(project_name, policy_name, metric_name, notification_cha
         )
     ]
 
-    notification_channels = [f"projects/apigee-hybrid-testing-415007/notificationChannels/{notification_channel_id}"]
+    notification_channels = [f"projects/{project_id}/notificationChannels/{notification_channel_id}"]  # noqa
     policy = monitoring_v3.AlertPolicy(
         display_name=policy_name,
         conditions=conditions,
@@ -371,21 +385,21 @@ def create_alert_policy(project_name, policy_name, metric_name, notification_cha
     )
 
     created_policy = client.create_alert_policy(
-        name=project_name,
+        name=f"projects/{project_id}",
         alert_policy=policy
     )
     logger.info(f"Created alert policy: {created_policy.name}")
     return created_policy.name
 
 
-def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_id):
+def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_id):  # noqa
     client = monitoring_dashboard_v1.DashboardsServiceClient()
-    request = monitoring_dashboard_v1.ListDashboardsRequest(parent=f"projects/{project_id}")
-    
+    request = monitoring_dashboard_v1.ListDashboardsRequest(parent=f"projects/{project_id}")  # noqa
+
     existing_dashboards = client.list_dashboards(request=request).dashboards
     for dashboard in existing_dashboards:
         if dashboard.display_name == dashboard_title:
-            logger.info(f"Dashboard '{dashboard_title}' already exists. Skipping creation.")
+            logger.info(f"Dashboard '{dashboard_title}' already exists. Skipping creation.")  # noqa
             return
 
     dashboard = monitoring_dashboard_v1.Dashboard()
@@ -395,11 +409,10 @@ def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_nam
     )
     dashboard.grid_layout = grid_layout
 
-    #create alerting policy
-    project_name=f"projects/{project_id}"
-    alert_policy_name = create_alert_policy(project_name, policy_name, metric_name, notification_channel_id)
+    # create alerting policy
+    alert_policy_name = create_alert_policy(project_id, policy_name, metric_name, notification_channel_id)  # noqa
     widget = monitoring_dashboard_v1.Widget()
-    widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)
+    widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)  # noqa
     dashboard.grid_layout.widgets.append(widget)
 
     request = monitoring_dashboard_v1.CreateDashboardRequest(
@@ -408,3 +421,27 @@ def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_nam
     )
     response = client.create_dashboard(request=request)
     logger.info(f"Dashboard created: {response.name}")
+
+
+def gcs_upload_json(project_id, bucket_name, destination_blob_name, json_data):
+    try:
+        storage_client = storage.Client(project=project_id)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
+        blob.upload_from_string(json.dumps(json_data))
+        logger.info(f'Scan output uploaded to gs://{bucket_name}/{destination_blob_name}')  # noqa
+    except Exception as error:
+        logger.error(f"Output data not pushed to GCS. ERROR-INFO - {error}")
+
+
+def download_json_from_gcs(project_id, bucket_name, source_blob_name):
+    try:
+        storage_client = storage.Client(project=project_id)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        json_string = blob.download_as_string()
+        json_data = json.loads(json_string)
+        return json_data
+    except Exception as error:
+        logger.error(f"Target Servers output data couldn't be fetched. ERROR-INFO - {error}")  # noqa
+        return None
