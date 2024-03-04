@@ -66,6 +66,15 @@ bucket_project_id=xx-xxx-xx                      # GCS bucket project id
 file_path_in_bucket=scan_output.txt              # path to output file
 ```
 
+To get the notification channel id, use the following command
+
+```
+gcloud beta monitoring channels list --project=<project_id>
+```
+
+This command will display all available notification channels within your project. You can select the appropriate one based on your requirements. Locate the notification channel ID under the `name` field in the format `projects/<project_id>/notificationChannels/<notification_channel_id>`, and insert it into the input.properties file.
+
+
 * Sample input CSV with target servers
 > **NOTE:** You need to set `check_csv=true` in the `validation` section of `input.properties`
 

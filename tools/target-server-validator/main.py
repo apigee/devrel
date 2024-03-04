@@ -172,7 +172,7 @@ def main():
                 for each_api_type, each_api_type_data in api_revision_map.items()  # noqa
                 for each_api, each_api_rev in each_api_type_data["proxies"].items()  # noqa
             )
-            logger.debug("Exporting proxy target servers")
+            logger.info("Exporting proxy target servers")
             results = run_parallel(source_apigee.fetch_api_proxy_ts_parallel, parallel_args)  # noqa
 
             for result in results:
@@ -192,7 +192,7 @@ def main():
                         proxy_targets[each_te] = [
                             f"{each_api_type} - {each_api}"
                         ]
-            logger.debug("Exporting proxy target servers done")
+            logger.info("Exporting proxy target servers done")
 
         # Fetch API Northbound Endpoint
         logger.info(f"Fetching VHost with name {cfg['validation']['api_hostname']} !")  # noqa

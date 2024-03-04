@@ -212,7 +212,7 @@ class Apigee:
                         if self.get_api_revisions_deployment(
                             env, api_name, api_rev
                         ):
-                            logger.debug(f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds ")  # noqa
+                            logger.info(f"Proxy {api_name} active in runtime after {api_deployment_retry_count*api_deployment_sleep} seconds ")  # noqa
                             return True
                         else:
                             logger.debug(f"Checking API deployment status in {api_deployment_sleep} seconds")  # noqa
