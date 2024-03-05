@@ -36,6 +36,8 @@ from utilities import (  # pylint: disable=import-error
     get_metric_descriptor,
     gcs_upload_json,
     download_json_from_gcs,
+    write_json_to_file,
+    read_json_from_file,
 )
 from apigee_utils import Apigee  # pylint: disable=import-error
 from base_logger import logger
@@ -59,15 +61,12 @@ def main():
     enable_gcp_metrics = cfg["gcp_metrics"].getboolean("enable_gcp_metrics")
     report_format = cfg["validation"]["report_format"]
     allow_insecure = cfg["validation"].getboolean("allow_insecure")
-    project_id = cfg["gcp_metrics"]["project_id"]
+    metrics_project_id = cfg["gcp_metrics"]["project_id"]
     metric_name = cfg["gcp_metrics"]["metric_name"]
     enable_dashboard = cfg["gcp_metrics"]["enable_dashboard"]
-    vhost_domain_name = cfg["validation"]["api_hostname"]
-    vhost_ip = cfg["validation"].get("api_ip", "").strip()
-    api_url = f"https://{vhost_domain_name}/validate-target-server"
-    bucket_name = cfg["gcs_bucket"]["bucket_name"]
-    file_path_in_bucket = cfg["gcs_bucket"]["file_path_in_bucket"]
-    bucket_project_id = cfg["gcs_bucket"]["bucket_project_id"]
+    state_file = cfg["target_server_state_file"]["state_file"]
+    gcs_project_id = cfg["target_server_state_file"]["gcs_project_id"]
+
     if report_format not in ["csv", "md"]:
         report_format = "md"
 
@@ -109,14 +108,14 @@ def main():
         # create metric descriptor and dashboard
         if enable_gcp_metrics:
             logger.info("Creating metric descriptor")
-            descriptor = create_custom_metric(project_id, metric_name)
-            # report_metric(project_id, descriptor, final_report)
+            descriptor = create_custom_metric(metrics_project_id, metric_name)
+
             if enable_dashboard:
-                logger.info(f"Creating dashboard in project {project_id}")
+                logger.info(f"Creating dashboard in project {metrics_project_id}")  # noqa
                 dashboard_title = cfg["gcp_metrics"]["dashboard_title"]
                 alert_policy_name = cfg["gcp_metrics"]["alert_policy_name"]
                 notification_channel_id = cfg["gcp_metrics"]["notification_channel_id"]  # noqa
-                create_custom_dashboard(project_id, dashboard_title, metric_name, alert_policy_name, notification_channel_id)  # noqa
+                create_custom_dashboard(metrics_project_id, dashboard_title, metric_name, alert_policy_name, notification_channel_id)  # noqa
 
     if args.scan:
         environments = source_apigee.list_environments()
@@ -194,9 +193,6 @@ def main():
                         ]
             logger.info("Exporting proxy target servers done")
 
-        # Fetch API Northbound Endpoint
-        logger.info(f"Fetching VHost with name {cfg['validation']['api_hostname']} !")  # noqa
-
         for each_api_type, apis in proxy_hosts.items():
             for each_api, each_targets in apis.items():
                 for each_target in each_targets:
@@ -233,18 +229,41 @@ def main():
             "proxy_targets": proxy_targets
         }
 
-        # upload output to gcs
-        gcs_upload_json(bucket_project_id, bucket_name, file_path_in_bucket, scan_output)  # noqa
+        # upload scan output
+        if state_file.startswith("file"):
+            file_path = state_file.replace("file://", "")
+            write_json_to_file(file_path, scan_output)
+        elif state_file.startswith("gs"):
+            bucket_data = state_file.split('/')
+            bucket_name = bucket_data[2]
+            file_path = '/'.join(bucket_data[3:])
+
+            gcs_upload_json(gcs_project_id, bucket_name, file_path, scan_output)  # noqa
 
     if args.monitor:
-        # Download scan ouput from gcs
-        scan_output = download_json_from_gcs(bucket_project_id, bucket_name, file_path_in_bucket)  # noqa
+
+        # extract scan outout
+        if state_file.startswith("file"):
+            file_path = state_file.replace("file://", "")
+            scan_output = read_json_from_file(file_path)
+        elif state_file.startswith("gs"):
+            bucket_data = state_file.split('/')
+            bucket_name = bucket_data[2]
+            file_path = '/'.join(bucket_data[3:])
+
+            scan_output = download_json_from_gcs(gcs_project_id, bucket_name, file_path)  # noqa
 
         if not scan_output:
             return
 
         all_target_servers = scan_output["all_target_servers"]
         proxy_targets = scan_output["proxy_targets"]
+
+        # Fetch API Northbound Endpoint
+        logger.info(f"Fetching VHost with name {cfg['validation']['api_hostname']} !")  # noqa
+        vhost_domain_name = cfg["validation"]["api_hostname"]
+        vhost_ip = cfg["validation"].get("api_ip", "").strip()
+        api_url = f"https://{vhost_domain_name}/validate-target-server"
 
         batch_size = 5
         batches = []
@@ -296,9 +315,9 @@ def main():
         if enable_gcp_metrics:
             logger.info("Dumping data to stack driver")
             # get metric descriptor
-            descriptor = get_metric_descriptor(project_id, metric_name)
+            descriptor = get_metric_descriptor(metrics_project_id, metric_name)
             if descriptor:
-                report_metric(project_id, descriptor, final_report)
+                report_metric(metrics_project_id, descriptor, final_report)
             else:
                 logger.error("Couldn't push data to stackdriver because the the existing metric descriptor couldn't be fetched.")  # noqa
 

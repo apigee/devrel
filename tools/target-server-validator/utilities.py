@@ -23,6 +23,7 @@ import zipfile
 import csv
 from urllib.parse import urlparse
 import time
+import concurrent.futures
 from google.api import label_pb2 as ga_label
 from google.cloud import monitoring_v3
 from google.api import metric_pb2 as ga_metric
@@ -33,7 +34,6 @@ import requests
 import xmltodict
 import urllib3
 from forcediphttpsadapter.adapters import ForcedIPHTTPSAdapter
-import concurrent.futures
 from base_logger import logger
 
 
@@ -445,3 +445,15 @@ def download_json_from_gcs(project_id, bucket_name, source_blob_name):
     except Exception as error:
         logger.error(f"Target Servers output data couldn't be fetched. ERROR-INFO - {error}")  # noqa
         return None
+
+
+def write_json_to_file(file_path, data):
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+
+
+def read_json_from_file(file_path):
+    with open(file_path, 'r') as f:
+        scan_output = json.load(f)
+
+    return scan_output

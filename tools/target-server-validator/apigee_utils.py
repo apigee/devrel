@@ -20,6 +20,8 @@ import sys
 import requests
 import shutil
 from time import sleep
+import google.auth
+import google.auth.transport.requests
 from utilities import (  # pylint: disable=import-error
     run_validator_proxy,
     unzip_file,
@@ -57,6 +59,18 @@ class Apigee:
         return False
 
     def get_access_token(self):
+        try:
+            credentials, project_id = google.auth.default()
+            request = google.auth.transport.requests.Request()
+            credentials.refresh(request)
+            access_token = credentials.token
+            if self.is_token_valid(access_token):
+                return access_token
+            logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first or set the Application Default Credentials using "gcloud auth application-default login" !! ')  # noqa
+        except Exception as e:
+            logger.debug(f"Couldn't find the default credentials. ERROR-INFO :{e}")  # noqa
+
+        logger.debug("Checking env variable value.")
         token = os.getenv(
             "APIGEE_ACCESS_TOKEN"
             if self.apigee_type == "x"
@@ -67,15 +81,15 @@ class Apigee:
                 if self.is_token_valid(token):
                     return token
                 else:
-                    logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
+                    logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first or set the Application Default Credentials using "gcloud auth application-default login" !! ')  # noqa
                     sys.exit(1)
             else:
                 return token
         else:
             if self.apigee_type == "x":
-                logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first !! ')  # noqa
+                logger.error('please run "export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)" first or set the Application Default Credentials using "gcloud auth application-default login" !! ')  # noqa
             else:
-                logger.error('please export APIGEE_OPDK_ACCESS_TOKEN')
+                logger.error('please export APIGEE_OPDK_ACCESS_TOKEN or set the Application Default Credentials using "gcloud auth application-default login"')  # noqa
             sys.exit(1)
 
     def set_auth_header(self):

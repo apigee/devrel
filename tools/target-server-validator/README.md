@@ -60,10 +60,10 @@ dashboard_title=Apigee Target Server Monitoring Dashboard  # Monitoring Dashboar
 alert_policy_name=Apigee Target Server Validator Policy    # Alerting Policy Name
 notification_channel_id=xxxxxxxx                 # Notification Channel id
 
-[gcs_bucket]
-bucket_name=target-server-validator-gcs          # GCS bucket name for storing the --scan output
-bucket_project_id=xx-xxx-xx                      # GCS bucket project id
-file_path_in_bucket=scan_output.txt              # path to output file
+[target_server_state_file]
+state_file=gs://bucket_name/path/to/file/scan_output.json  # GCS Bucket path to store --scan output
+# state_file=file://scan_output.json             # File path to store --scan output (only one can be used either GCS or file)
+gcs_project_id=xxx-xxxx-xxx-xxxxx                # GCS bucket project id
 ```
 
 To get the notification channel id, use the following command
@@ -88,7 +88,14 @@ smtp.gmail.com,465
 ```
 
 
-* Please run below commands to authenticate, based on the Apigee flavours you are using.
+* Please run below commands to authenticate, 
+
+```
+gcloud auth application-default set-quota-project <project_id>
+```
+You can skip the quota-project if you want.
+
+Another way to authenticate is to use the environmnet variables based on the Apigee flavours.
 
 ```
 export APIGEE_OPDK_ACCESS_TOKEN=$(echo -n "<user>:<password>" | base64) # Access token for Apigee OPDK
