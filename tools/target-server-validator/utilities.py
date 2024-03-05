@@ -448,12 +448,18 @@ def download_json_from_gcs(project_id, bucket_name, source_blob_name):
 
 
 def write_json_to_file(file_path, data):
-    with open(file_path, 'w') as f:
-        json.dump(data, f)
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f)
+        logger.info(f"Successfully written data to {file_path}")
+    except Exception as e:
+        logger.error(f"Data not written to {file_path}. ERROR-INFO: {e}")
 
 
 def read_json_from_file(file_path):
-    with open(file_path, 'r') as f:
-        scan_output = json.load(f)
-
-    return scan_output
+    try:
+        with open(file_path, 'r') as f:
+            scan_output = json.load(f)
+            return scan_output
+    except Exception as e:
+        logger.error(f"Data couldn't be fetched from {file_path}. ERROR-INFO: {e}") # noqa

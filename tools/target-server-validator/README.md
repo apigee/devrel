@@ -113,14 +113,15 @@ export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)            # Access
 
 The script supports the below arguments
 
-* `--onboard`               Toggle to onboard validator proxy, custom metric descriptors and dashboard
-* `--scan`                  Toggle to read all resources
-* `--monitor`               Toggle to check the status of target servers and push to GCP Logging
+* `--onboard`               option to create validator proxy, custom metric descriptors and dashboard
+* `--scan`                  option to fetch target servers from Environment target servers, api proxies & csv file
+* `--monitor`               option to check the status of target servers and generate report or push to GCP metrics
 
 To onboard, run
 ```
 python3 main.py --onboard
 ```
+Make sure you have build the java callout jar before running onboard.
 
 To scan, run
 ```
