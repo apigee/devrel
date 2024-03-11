@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ set_config_params() {
     export CONTROL_PLANE_CIDR=${CONTROL_PLANE_CIDR:-'172.16.0.16/28'}
     echo "- GKE control plane CIDR (private cluster only) $CONTROL_PLANE_CIDR"
 
-
     printf "\n🔧 Apigee hybrid Configuration:\n"
     export ENV_NAME=${ENV_NAME:="test1"}
     echo "- Environment Name $ENV_NAME"
@@ -64,28 +63,12 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.10.0'
+    export APIGEE_HYBRID_VERSION='1.12.0'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
-    export CERT_MANAGER_VERSION='v1.12.2'
+    export CHARTS_REPO=oci://us-docker.pkg.dev/apigee-release/apigee-hybrid-helm-charts
+    echo "- Repository for Helm charts $CHARTS_REPO"
+    export CERT_MANAGER_VERSION='v1.13.5'
     echo "- Cert Manager version $CERT_MANAGER_VERSION"
-
-    OS_NAME=$(uname -s)
-
-    if [[ "$OS_NAME" == "Linux" ]]; then
-      echo "- 🐧 Using Linux binaries"
-      export APIGEE_CTL='apigeectl_linux_64.tar.gz'
-    elif [[ "$OS_NAME" == "Darwin" ]]; then
-      echo "- 🍏 Using macOS binaries"
-      export APIGEE_CTL='apigeectl_mac_64.tar.gz'
-      if ! [ -x "$(command -v timeout)" ]; then
-        echo "Please install the timeout command for macOS. E.g. 'brew install coreutils'"
-        exit 2
-      fi
-    else
-      echo "💣 Only Linux and macOS are supported at this time. You seem to be running on $OS_NAME."
-      exit 2
-    fi
-
 
     printf "\n🔧 Derived config parameters\n"
     echo "- GCP Project $PROJECT_ID"
@@ -111,8 +94,8 @@ set_config_params() {
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:-$PWD}"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
-    export APIGEECTL_HOME=$QUICKSTART_TOOLS/apigeectl/apigeectl_$APIGEE_HYBRID_VERSION
-    export HYBRID_HOME=$QUICKSTART_ROOT/hybrid-files
+    export HYBRID_HOME=$QUICKSTART_ROOT/generated
+    export HELM_CHARTS_ROOT="$QUICKSTART_ROOT/helm-charts"
 
     echo "- Script root from: $QUICKSTART_ROOT"
 }
@@ -210,7 +193,7 @@ enable_all_apis() {
 
 create_apigee_org() {
 
-    echo "🚀 Create Apigee ORG - $PROJECT_ID"
+    echo "🚀 Create Apigee Org in $PROJECT_ID"
 
     if check_existing_apigee_resource "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID" ; then
       echo "(skipping org creation, already exists)"
@@ -236,10 +219,10 @@ create_apigee_org() {
       }" \
     "https://apigee.googleapis.com/v1/organizations?parent=projects/$PROJECT_ID"
 
-    echo -n "⏳ Waiting for Apigeectl Org Creation "
+    echo -n "⏳ Waiting for Apigee Org Creation "
     wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID | grep -q \"subscriptionType\"; echo \$?" "Organization $PROJECT_ID is created."
 
-    echo "✅ Created Org '$PROJECT_ID'"
+    echo "✅ Created Apigee Org in '$PROJECT_ID'"
 }
 
 create_apigee_env() {
@@ -257,7 +240,7 @@ create_apigee_env() {
       -d "{\"name\":\"$ENV_NAME\"}" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments"
 
-    echo -n "⏳ Waiting for Apigeectl Env Creation "
+    echo -n "⏳ Waiting for Apigee Environment creation"
     wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\"  https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/environments/$ENV_NAME | grep -q \"$ENV_NAME\"; echo \$?" "Environment $ENV_NAME of Organization $PROJECT_ID is created."
 
     echo "✅ Created Env '$ENV_NAME'"
@@ -281,7 +264,7 @@ create_apigee_envgroup() {
       }" \
       "https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups"
 
-    echo -n "⏳ Waiting for Apigeectl Env Creation "
+    echo -n "⏳ Waiting for Apigee Environment Group creation"
     wait_for_ready "0" "curl --silent -H \"Authorization: Bearer $(token)\" -H \"Content-Type: application/json\" https://apigee.googleapis.com/v1/organizations/$PROJECT_ID/envgroups/$ENV_GROUP_NAME | grep -q $ENV_GROUP_NAME; echo \$?" "Environment Group $ENV_GROUP_NAME of Organization $PROJECT_ID is created."
 
     echo "✅ Created Env Group '$ENV_GROUP_NAME'"
@@ -439,7 +422,6 @@ create_gke_cluster() {
     kubectl create clusterrolebinding cluster-admin-binding \
       --clusterrole cluster-admin --user "$(gcloud config get-value account)" || true
 
-
     echo "✅ GKE set up"
 }
 
@@ -451,40 +433,24 @@ install_certmanager() {
   sleep 120
 }
 
-download_apigee_ctl() {
-    echo "📥 Setup Apigeectl"
+download_helm_charts() {
+  echo "📥 Setup Helm Charts"
 
-    APIGEECTL_ROOT="$QUICKSTART_TOOLS/apigeectl"
+  # remove existing helm charts if exists
+  if [ -d "$HELM_CHARTS_ROOT" ]; then rm -rf "$HELM_CHARTS_ROOT"; fi
+  
+  mkdir -p "$HELM_CHARTS_ROOT"
 
-    # Remove existing apigeectl
-    if [ -d "$APIGEECTL_ROOT" ]; then rm -rf "$APIGEECTL_ROOT"; fi
-    mkdir -p "$APIGEECTL_ROOT"
+  helm pull $CHARTS_REPO/apigee-operator --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-datastore --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-env --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-ingress-manager --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-org --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-redis --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-telemetry --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
+  helm pull $CHARTS_REPO/apigee-virtualhost --version $APIGEE_HYBRID_VERSION --untar --untardir $HELM_CHARTS_ROOT
 
-    curl --fail -L \
-      -o "$APIGEECTL_ROOT/apigeectl.tar.gz" \
-      "https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/$APIGEE_HYBRID_VERSION/$APIGEE_CTL"
-
-    tar xvzf "$APIGEECTL_ROOT/apigeectl.tar.gz" -C "$APIGEECTL_ROOT"
-    rm "$APIGEECTL_ROOT/apigeectl.tar.gz"
-
-    mv "$APIGEECTL_ROOT"/apigeectl_*_64 "$APIGEECTL_HOME"
-    echo "✅ Apigeectl set up in $APIGEECTL_HOME"
-}
-
-prepare_resources() {
-    echo "🛠️ Configure Apigee hybrid"
-
-    if [ -d "$HYBRID_HOME" ]; then rm -rf "$HYBRID_HOME"; fi
-    mkdir -p "$HYBRID_HOME"
-
-    mkdir -p "$HYBRID_HOME/overrides"
-    mkdir  -p "$HYBRID_HOME/service-accounts"
-    ln -s "$APIGEECTL_HOME/tools" "$HYBRID_HOME/tools"
-    ln -s "$APIGEECTL_HOME/config" "$HYBRID_HOME/config"
-    ln -s "$APIGEECTL_HOME/templates" "$HYBRID_HOME/templates"
-    ln -s "$APIGEECTL_HOME/plugins" "$HYBRID_HOME/plugins"
-
-    echo "✅ Hybrid Config Setup"
+  echo "✅ Downloaded all Helm Charts to $HELM_CHARTS_ROOT"
 }
 
 create_cert() {
@@ -496,28 +462,29 @@ create_cert() {
   fi
 
   echo "🙈 Creating self-signed cert - $ENV_GROUP_NAME"
-  mkdir  -p "$HYBRID_HOME/certs"
+  CERTS_DIR="$HELM_CHARTS_ROOT/apigee-virtualhost/certs"
+  mkdir  -p $CERTS_DIR
 
   CA_CERT_NAME="quickstart-ca"
 
   # create CA cert if not exist
-  if [ -f "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" ]; then
+  if [ -f "$CERTS_DIR/$CA_CERT_NAME.crt" ]; then
     echo "CA already exists! Reusing that one."
   else
-    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -out "$HYBRID_HOME/certs/$CA_CERT_NAME.crt"
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj "/CN=$DNS_NAME/O=Apigee Quickstart" -keyout "$CERTS_DIR/$CA_CERT_NAME.key" -out "$CERTS_DIR/$CA_CERT_NAME.crt"
   fi
 
-  openssl req -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
+  openssl req -out "$CERTS_DIR/$ENV_GROUP_NAME.csr" -newkey rsa:2048 -nodes -keyout "$CERTS_DIR/$ENV_GROUP_NAME.key" -subj "/CN=$ENV_GROUP_NAME.$DNS_NAME/O=Apigee Quickstart"
 
-  openssl x509 -req -days 365 -CA "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" -CAkey "$HYBRID_HOME/certs/$CA_CERT_NAME.key" -set_serial 0 -in "$HYBRID_HOME/certs/$ENV_GROUP_NAME.csr" -out "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt"
+  openssl x509 -req -days 365 -CA "$CERTS_DIR/$CA_CERT_NAME.crt" -CAkey "$CERTS_DIR/$CA_CERT_NAME.key" -set_serial 0 -in "$CERTS_DIR/$ENV_GROUP_NAME.csr" -out "$CERTS_DIR/$ENV_GROUP_NAME.crt"
 
-  cat "$HYBRID_HOME/certs/$ENV_GROUP_NAME.crt" "$HYBRID_HOME/certs/$CA_CERT_NAME.crt" > "$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt"
+  cat "$CERTS_DIR/$ENV_GROUP_NAME.crt" "$CERTS_DIR/$CA_CERT_NAME.crt" > "$CERTS_DIR/$ENV_GROUP_NAME.fullchain.crt"
 
   kubectl create ns apigee || echo "Couldn't create namespace Apigee. Does it already exist?"
 
   kubectl create secret tls tls-hybrid-ingress \
-    --cert="$HYBRID_HOME/certs/$ENV_GROUP_NAME.fullchain.crt" \
-    --key="$HYBRID_HOME/certs/$ENV_GROUP_NAME.key" \
+    --cert="$CERTS_DIR/$ENV_GROUP_NAME.fullchain.crt" \
+    --key="$CERTS_DIR/$ENV_GROUP_NAME.key" \
     -n apigee --dry-run=client -o yaml | kubectl apply -f -
 
   if [ "$CERT_TYPE" = "google-managed" ];then
@@ -604,26 +571,22 @@ create_k8s_sa_workload() {
 
 create_sa() {
 
+  CREATE_SA_TOOL="$HELM_CHARTS_ROOT"/apigee-operator/etc/tools/create-service-account
+  
   # make sure we don't download the service account keys
-  sed -i -e 's/download_key_file="y"/download_key_file="n"/g' "$APIGEECTL_HOME/tools/create-service-account"
-  sed -i -e 's/read -r download_key_file/# key download is not necessary for workload ID/g' "$APIGEECTL_HOME/tools/create-service-account"
+  sed -i -e 's/download_key_file="y"/download_key_file="n"/g' $CREATE_SA_TOOL
+  sed -i -e 's/read -r download_key_file/# key download is not necessary for workload ID/g' $CREATE_SA_TOOL
+  
+  chmod +x $CREATE_SA_TOOL
 
-  yes | "$APIGEECTL_HOME"/tools/create-service-account -e prod -d "$HYBRID_HOME/service-accounts"
-
-  APIGEE_ORG_HASH="$("$APIGEECTL_HOME"/apigeectl encode --org "$PROJECT_ID" 2>&1 | tail -1 | xargs | sed -e "s/^apigee-udca-//")"
-  APIGEE_ORG_ENV_HASH="$("$APIGEECTL_HOME"/apigeectl encode --org "$PROJECT_ID" --env "$ENV_NAME" 2>&1 | tail -1 | xargs | sed -e "s/^apigee-udca-//")"
-
-  create_k8s_sa_workload "apigee-cassandra-schema-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-cassandra-user-setup-$APIGEE_ORG_HASH-sa" "apigee-cassandra@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-mart-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-connect-agent-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-watcher-$APIGEE_ORG_HASH-sa" "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-metrics-apigee-telemetry" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
-  create_k8s_sa_workload "apigee-metrics-adapter-apigee-telemetry" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
+  $CREATE_SA_TOOL --profile apigee-cassandra --env prod --dir $HELM_CHARTS_ROOT/apigee-datastore
+  $CREATE_SA_TOOL --profile apigee-logger --env prod --dir $HELM_CHARTS_ROOT/apigee-telemetry
+  $CREATE_SA_TOOL --profile apigee-mart --env prod --dir $HELM_CHARTS_ROOT/apigee-org
+  $CREATE_SA_TOOL --profile apigee-metrics --env prod --dir $HELM_CHARTS_ROOT/apigee-telemetry
+  $CREATE_SA_TOOL --profile apigee-runtime --env prod --dir $HELM_CHARTS_ROOT/apigee-env
+  $CREATE_SA_TOOL --profile apigee-synchronizer --env prod --dir $HELM_CHARTS_ROOT/apigee-env
+  $CREATE_SA_TOOL --profile apigee-udca --env prod --dir $HELM_CHARTS_ROOT/apigee-org
+  $CREATE_SA_TOOL --profile apigee-watcher --env prod --dir $HELM_CHARTS_ROOT/apigee-org
 
   echo -n "🔛 Enabling runtime synchronizer"
     curl --fail -X POST -H "Authorization: Bearer $(token)" \
@@ -632,16 +595,29 @@ create_sa() {
     -d "{\"identities\":[\"serviceAccount:apigee-synchronizer@${PROJECT_ID}.iam.gserviceaccount.com\"]}"
 }
 
+install_crds() {
+  echo "🛠️ Installing Apigee hybrid CRDs"
+
+  kubectl apply -k "$HELM_CHARTS_ROOT/apigee-operator/etc/crds/default/" \
+    --server-side \
+    --force-conflicts \
+    --validate=false
+
+  echo "✅ Installed Apigee hybrid CRDs"
+}
+
 configure_runtime() {
   ENV_NAME=$1
   ENV_GROUP_NAME=$2
   echo "Configure Overrides"
 
-  cat << EOF > "$HYBRID_HOME"/overrides/overrides.yaml
+  cat << EOF > "$HELM_CHARTS_ROOT"/overrides.yaml
 gcp:
   projectID: $PROJECT_ID
   region: "$AX_REGION" # Analytics Region
-  workloadIdentityEnabled: true
+  workloadIdentity:
+    enabled: true
+
 # Apigee org name.
 org: $PROJECT_ID
 # Kubernetes cluster name details
@@ -649,38 +625,66 @@ k8sCluster:
   name: $GKE_CLUSTER_NAME
   region: "$REGION"
 
+namespace: apigee
+
+# explictly set node pool names until b/325582303 is resolved
+nodeSelector:
+  requiredForScheduling: false
+#  apigeeData:
+#    value: default-pool
+#  apigeeRuntime:
+#    value: default-pool
+
+instanceID: "$GKE_CLUSTER_NAME-$REGION"
+
+envs:
+  - name: $ENV_NAME
+    gsa:
+      runtime: apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com
+      synchronizer: apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com
+      udca: apigee-udca@$PROJECT_ID.iam.gserviceaccount.com
+
+udca:
+  gsa: apigee-udca@$PROJECT_ID.iam.gserviceaccount.com
+
+watcher:
+  gsa: apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com
+
+mart:
+  gsa: apigee-mart@$PROJECT_ID.iam.gserviceaccount.com
+
+connectAgent:
+  gsa: apigee-mart@$PROJECT_ID.iam.gserviceaccount.com
+
+metrics:
+  enabled: true
+  gsa: apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com
+
+logger:
+  enabled: true
+  gsa: apigee-logger@$PROJECT_ID.iam.gserviceaccount.com
+
 virtualhosts:
   - name: $ENV_GROUP_NAME
     sslSecret: tls-hybrid-ingress
     additionalGateways: ["apigee-wildcard"]
     selector:
       app: apigee-ingressgateway
-
-instanceID: "$GKE_CLUSTER_NAME-$REGION"
-
-envs:
-  - name: $ENV_NAME
-
-logger:
-  enabled: false
-
-ao:
-  args:
-    disableIstioConfigInAPIServer: true
+      ingress_name: apigee-ingress
 
 ingressGateways:
 - name: apigee-ingress
-  replicaCountMin: 2
-  replicaCountMax: 4
+  replicaCountMin: 1
+  replicaCountMax: 2
 EOF
 
 if [ "$CERT_TYPE" = "google-managed" ]; then
   echo "Do not create a LB because the ingress resource is used to create a GCLB with a managed cert"
-cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
+cat << EOF >> "$HELM_CHARTS_ROOT"/overrides.yaml
   svcType: ClusterIP
 EOF
 else
-cat << EOF >> "$HYBRID_HOME"/overrides/overrides.yaml
+cat << EOF >> "$HELM_CHARTS_ROOT"/overrides.yaml
   svcAnnotations:
     networking.gke.io/load-balancer-type: "$INGRESS_TYPE"
   svcLoadBalancerIP: $INGRESS_IP
@@ -689,41 +693,188 @@ fi
 
 }
 
-apigeectl_init() {
-  echo -n "🏃 Running apigeectl init"
-  "$APIGEECTL_HOME"/apigeectl init -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-init.yaml
-}
-
-apigeectl_apply() {
-  echo -n "🏃 Running apigeectl apply"
-  timeout 300 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
-  "$APIGEECTL_HOME"/apigeectl apply -f "$HYBRID_HOME"/overrides/overrides.yaml --print-yaml > "$HYBRID_HOME"/generated/apigee-runtime.yaml
-}
-
 install_wildcard_gateway() {
   timeout 300 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
   kubectl apply -f "$HYBRID_HOME"/generated/wildcard-gateway.yaml
 }
 
+check_cluster_readiness() {
+  echo "🔎 Running cluster readiness check..."
+
+  mkdir -p $HYBRID_HOME
+
+  cat << EOF > "$HYBRID_HOME"/apigee-k8s-cluster-ready-check.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-k8s-cluster-ready-check
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-check-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  namespace: default
+  name: apigee-k8s-cluster-ready-check
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: apigee-k8s-cluster-ready-check
+spec:
+  template:
+    spec:
+      hostNetwork: true
+      serviceAccountName: apigee-k8s-cluster-ready-check
+      containers:
+        - name: manager
+          image: gcr.io/apigee-release/hybrid/apigee-operators:$APIGEE_HYBRID_VERSION
+          command:
+            - /manager
+          args:
+          - --k8s-cluster-ready-check
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          securityContext:
+            runAsGroup: 998
+            runAsNonRoot: true
+            runAsUser: 999
+      restartPolicy: Never
+  backoffLimit: 1
+EOF
+  
+  kubectl apply -f "$HYBRID_HOME"/apigee-k8s-cluster-ready-check.yaml
+  echo "- ⏳ Waiting for jobs/apigee-k8s-cluster-ready-check to complete..."
+  timeout 180 bash -c 'until kubectl wait --for=condition=complete --timeout 60s jobs apigee-k8s-cluster-ready-check; do sleep 2; done'
+  kubectl delete -f "$HYBRID_HOME"/apigee-k8s-cluster-ready-check.yaml # one-off job not needed anymore
+  
+  echo "✅ Completed readiness checks and deleted job"
+}
 
 install_runtime() {
-    pushd "$HYBRID_HOME" || return # because apigeectl uses pwd-relative paths
-    mkdir -p "$HYBRID_HOME"/generated
+    pushd "$HELM_CHARTS_ROOT" || return # because helm needs pwd-relative paths
 
-    export -f apigeectl_init
-    timeout 1200 bash -c 'until apigeectl_init; do sleep 30; done'
+    echo "⏳ Installing apigee-operator..."
+    helm upgrade operator apigee-operator/ \
+      --install \
+      --create-namespace \
+      --namespace apigee-system \
+      --atomic \
+      -f overrides.yaml
 
-    echo -n "⏳ Waiting for Apigeectl init "
-    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+    echo "- ⏳ Waiting for apigee-operator to be ready..."
     timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s issuer apigee-selfsigned-issuer -n apigee-system; do sleep 10; done'
     timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s certificate apigee-serving-cert -n apigee-system; do sleep 10; done'
-    timeout 720 bash -c 'until kubectl wait --for=condition=complete --timeout 60s job/apigee-resources-install  -n apigee-system; do sleep 10; done'
+    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
+    echo "✅ apigee-operator installed"
 
-    export -f apigeectl_apply
-    timeout 720 bash -c 'until apigeectl_apply; do sleep 20; done'
+    echo "⏳ Installing apigee-datastore..."
+    helm upgrade datastore apigee-datastore/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      -f overrides.yaml
 
-    echo -n "⏳ Waiting for Apigeectl apply "
-    timeout 1800 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-runtime -n apigee; do sleep 10; done'
+    echo "- ⏳ Waiting for apigee-cassandra to be ready..."
+    timeout 600 bash -c 'until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeedatastore default -n apigee; do sleep 10; done'
+    echo "✅ apigee-datastore installed and ready"
+
+    echo "⏳ Installing apigee-telemetry..."
+    helm upgrade telemetry apigee-telemetry/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      -f overrides.yaml
+
+    echo "- 🔑 Configuring Workload Identity for apigee-telemetry service accounts..."
+    create_k8s_sa_workload "apigee-logger-apigee-telemetry" "apigee-logger@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-metrics-sa" "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
+    echo "- ✅ apigee-telemetry service accounts configured for Workload Identity"
+    
+    echo "- ⏳ Waiting for apigee-telemetry to be ready..."
+    timeout 600 bash -c 'until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeetelemetry apigee-telemetry -n apigee; do sleep 10; done'
+    echo "✅ apigee-telemetry installed and ready"
+
+    echo "⏳ Installing apigee-redis..."
+    helm upgrade redis apigee-redis/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      -f overrides.yaml
+
+    echo "- ⏳ Waiting for apigee-redis to be ready..."
+    timeout 600 bash -c 'until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeeredis default -n apigee; do sleep 10; done'
+    echo "✅ apigee-redis installed and ready"
+
+    echo "⏳ Installing apigee-ingress-manager..."
+    helm upgrade ingress-manager apigee-ingress-manager/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      -f overrides.yaml
+
+    echo "- ⏳ Waiting for apigee-ingress-manager to be ready..."
+    timeout 600 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-ingressgateway-manager -n apigee; do sleep 10; done'
+    echo "✅ apigee-ingress-manager installed and ready"
+
+    echo "⏳ Installing apigee-org..."
+    helm upgrade $PROJECT_ID apigee-org/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      -f overrides.yaml
+
+    echo "- 🔑 Configuring Workload Identity for apigee-org service accounts..."
+    APIGEE_ORG_HASH=$(kubectl get apigeeorg -n apigee -o jsonpath='{.items[0].metadata.name}')
+    create_k8s_sa_workload "apigee-mart-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-connect-agent-$APIGEE_ORG_HASH-sa" "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-watcher-$APIGEE_ORG_HASH-sa" "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
+    echo "- ✅ apigee-org service accounts configured for Workload Identity"
+    echo "- ⏳ Waiting for apigee-org to be ready..."
+    
+    timeout 600 bash -c "until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeeorg $APIGEE_ORG_HASH -n apigee; do sleep 10; done"
+    echo "✅ apigee-org installed and ready"
+
+    echo "⏳ Installing apigee-env..."
+    helm upgrade $ENV_NAME apigee-env/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      --set env=$ENV_NAME \
+      -f overrides.yaml
+
+    echo "- 🔑 Configuring Workload Identity for apigee-env service accounts..."
+    APIGEE_ORG_ENV_HASH=$(kubectl get apigeeenv -n apigee -o jsonpath='{.items[0].metadata.name}')
+    create_k8s_sa_workload "apigee-synchronizer-$APIGEE_ORG_ENV_HASH-sa" "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-udca-$APIGEE_ORG_ENV_HASH-sa" "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
+    create_k8s_sa_workload "apigee-runtime-$APIGEE_ORG_ENV_HASH-sa" "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
+    echo "- ✅ apigee-env service accounts configured for Workload Identity"
+    echo "- ⏳ Waiting for apigee-env to be ready..."
+
+    timeout 600 bash -c "until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeeenv $APIGEE_ORG_ENV_HASH -n apigee; do sleep 10; done"
+    echo "✅ apigee-env installed and ready"
+
+    echo "⏳ Installing apigee-virtualhost..."
+    helm upgrade $ENV_GROUP_NAME apigee-virtualhost/ \
+      --install \
+      --namespace apigee \
+      --atomic \
+      --set envgroup=$ENV_GROUP_NAME \
+      -f overrides.yaml
+
+    echo "- ⏳ Waiting for apigee-virtualhost to be ready..."
+    timeout 600 bash -c 'until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeeroute $(kubectl get apigeeroute -o=jsonpath='{.items[0].metadata.name}' -n apigee) -n apigee; do sleep 10; done'
+    echo "✅ apigee-virtualhost installed and ready"
 
     cat << EOF > "$HYBRID_HOME"/generated/wildcard-gateway.yaml
 apiVersion: apigee.cloud.google.com/v1alpha1
