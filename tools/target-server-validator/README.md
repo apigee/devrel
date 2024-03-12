@@ -10,8 +10,7 @@ Validation is done by deploying a sample proxy which check if HOST & PORT is ope
 ## Pre-Requisites
 * Python3.x
 * Java
-* Maven
-3.9.6
+* Maven >= 3.9.6
 * Please install the required Python dependencies
 ```
     python3 -m pip install -r requirements.txt
@@ -52,7 +51,7 @@ api_ip=<IP>                                      # IP address corresponding to a
 report_format=csv                                # Report Format. Choose csv or md (defaults to md)
 
 [gcp_metrics]
-enable_gcp_metrics=true                          # set 'true' to push target server's host and status to stack driver
+enable_gcp_metrics=true                          # set 'true' to push target server's host and status to GCP metrics
 project_id=xxx-xxx-xxx                           # Project id of GCP project where the data will be pushed
 metric_name=custom.googleapis.com/<metric_name>  # Replace <metric_name> with custom metric name
 enable_dashboard=true                            # set 'true' to create the dashboard with alerting policy
@@ -175,3 +174,7 @@ Please check a [Sample report](report.md)
 The script can also create a GCP Monitoring Dashboard with an alerting widget like shown below:
 
 ![GCP Monitoring Dashboard](images/dashboard.png)
+
+This script creates a custom metric with labels as hostname and status. The possible statuses, namely REACHABLE NOT_REACHABLE, and UNKNOWN_HOST, are determined by calling the validator proxy. These statuses are then assigned values of 1, 0.5, and 0, respectively.
+
+Then, an alerting policy is created with a threshold of 0.75. Entries below this threshold trigger alerts sent to designated notification channels. Finally, this policy is added as a widget on the GCP dashboard.

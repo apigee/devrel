@@ -310,7 +310,7 @@ def create_custom_metric(project_id, metric_name):
     return None
 
 
-def get_status_int(status):
+def get_status_value(status):
     if status == "REACHABLE":
         return 1
     elif status == "NOT_REACHABLE":
@@ -339,7 +339,7 @@ def report_metric(project_id, metric_descriptor, sample_data):
 
     try:
         for data in sample_data:
-            point = monitoring_v3.Point({'interval': interval, 'value': {'double_value': get_status_int(data[5])}})  # noqa
+            point = monitoring_v3.Point({'interval': interval, 'value': {'double_value': get_status_value(data[5])}})  # noqa
             series.metric.labels['hostname'] = data[2]
             series.metric.labels['status'] = data[5]
             series.points = [point]
