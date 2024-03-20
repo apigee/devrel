@@ -57,7 +57,7 @@ metric_name=custom.googleapis.com/<metric_name>  # Replace <metric_name> with cu
 enable_dashboard=true                            # set 'true' to create the dashboard with alerting policy
 dashboard_title=Apigee Target Server Monitoring Dashboard  # Monitoring Dashboard Title
 alert_policy_name=Apigee Target Server Validator Policy    # Alerting Policy Name
-notification_channel_id=xxxxxxxx                 # Notification Channel id
+notification_channel_ids=xxxxxxxx                 # Comma separated list of Notification Channel ids
 
 [target_server_state_file]
 state_file=gs://bucket_name/path/to/file/scan_output.json  # GCS Bucket path to store --scan output
@@ -115,22 +115,25 @@ The script supports the below arguments
 * `--onboard`               option to create validator proxy, custom metric descriptors and dashboard
 * `--scan`                  option to fetch target servers from Environment target servers, api proxies & csv file
 * `--monitor`               option to check the status of target servers and generate report or push to GCP metrics
+* `--input`                 Path to input properties file
 
 To onboard, run
 ```
-python3 main.py --onboard
+python3 main.py --input path/to/input_file --onboard 
 ```
 Make sure you have build the java callout jar before running onboard.
 
 To scan, run
 ```
-python3 main.py --scan
+python3 main.py --input path/to/input_file --scan
 ```
 
 To monitor, run
 ```
-python3 main.py --monitor
+python3 main.py --input path/to/input_file --monitor
 ```
+
+You can also pass multiple arguments at the same time.
 
 --onboard deploys an API proxy to validate if the target servers are reachable or not. To use the API proxy, make sure your payloads adhere to the following format:
 
@@ -178,3 +181,30 @@ The script can also create a GCP Monitoring Dashboard with an alerting widget li
 This script creates a custom metric with labels as hostname and status. The possible statuses, namely REACHABLE NOT_REACHABLE, and UNKNOWN_HOST, are determined by calling the validator proxy. These statuses are then assigned values of 1, 0.5, and 0, respectively.
 
 Then, an alerting policy is created with a threshold of 0.75. Entries below this threshold trigger alerts sent to designated notification channels. Finally, this policy is added as a widget on the GCP dashboard.
+
+# Running the Pipeline
+
+To run the pipeline script (`pipeline.sh`), follow these steps:
+
+## Prerequisites
+
+Before running the pipeline script, ensure you have the following prerequisites configured:
+
+- **Environment Variables**: Set up the necessary environment variables required by the script. These variables should include:
+  - `APIGEE_X_ORG`: Your Apigee organization ID.
+  - `APIGEE_X_ENV`: The Apigee environment to deploy to.
+  - `APIGEE_X_HOSTNAME`: The hostname for your Apigee instance.
+
+  *NOTE*: This pipeline will create a test notification channel with type email and email_address as `no-reply@google.com`.
+
+- **Input Properties Template**: This script requires an `input.properties` file for the necessary configuration parameters and will create a corresponding `generated.properties` file by replacing the environment variables with their values. Ensure that the values are set properly in this file before running the script.
+
+## Running the Pipeline
+
+### Command
+
+To execute the pipeline, use the following command:
+
+```
+./pipeline.sh
+```

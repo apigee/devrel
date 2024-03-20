@@ -1,0 +1,8 @@
+{
+    "type": "email",
+    "displayName": "Alert Notification Channel",
+    "description": "Email channel for alert notifications",
+    "labels": {
+        "email_address": "no-reply@google.com"
+    }
+}

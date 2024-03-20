@@ -326,7 +326,7 @@ def report_metric(project_id, metric_descriptor, sample_data):
 
     # Check if metric descriptor exists
     if not metric_descriptor:
-        logger.error("Error while pushing the data to stackdriver. ERROR-INFO: Metric descriptor does not exist.")  # noqa
+        logger.error("Error while pushing the data to gcp metrics. ERROR-INFO: Metric descriptor does not exist.")  # noqa
         return
 
     series.metric.type = metric_descriptor.type
@@ -345,13 +345,13 @@ def report_metric(project_id, metric_descriptor, sample_data):
             series.points = [point]
 
             client.create_time_series(name=f"projects/{project_id}", time_series=[series])  # noqa
-            logger.debug(f"Pushed to stackdriver - {data[2]} {data[5]}")
-        logger.info("Successfully pushed data to stackdriver")
+            logger.debug(f"Pushed to gcp metrics - {data[2]} {data[5]}")
+        logger.info("Successfully pushed data to gcp metrics")
     except Exception as e:
-        logger.error(f"Error while pushing the data to stackdriver. ERROR-INFO: {e}")  # noqa
+        logger.error(f"Error while pushing the data to gcp metrics. ERROR-INFO: {e}")  # noqa
 
 
-def create_alert_policy(project_id, policy_name, metric_name, notification_channel_id):  # noqa
+def create_alert_policy(project_id, policy_name, metric_name, notification_channel_ids):  # noqa
     client = monitoring_v3.AlertPolicyServiceClient()
     conditions = [
         monitoring_v3.AlertPolicy.Condition(
@@ -376,7 +376,7 @@ def create_alert_policy(project_id, policy_name, metric_name, notification_chann
         )
     ]
 
-    notification_channels = [f"projects/{project_id}/notificationChannels/{notification_channel_id}"]  # noqa
+    notification_channels = [f"projects/{project_id}/notificationChannels/{notification_channel_id}" for notification_channel_id in notification_channel_ids.split(",")]  # noqa
     policy = monitoring_v3.AlertPolicy(
         display_name=policy_name,
         conditions=conditions,
@@ -384,15 +384,19 @@ def create_alert_policy(project_id, policy_name, metric_name, notification_chann
         combiner=monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
     )
 
-    created_policy = client.create_alert_policy(
-        name=f"projects/{project_id}",
-        alert_policy=policy
-    )
-    logger.info(f"Created alert policy: {created_policy.name}")
-    return created_policy.name
+    try:
+        created_policy = client.create_alert_policy(
+            name=f"projects/{project_id}",
+            alert_policy=policy
+        )
+        logger.info(f"Created alert policy: {created_policy.name}")
+        return created_policy.name
+    except Exception as e:
+        logger.error(f"Alerting Policy couldn't be created. ERROR-INFO - {e}")
+        return None
 
 
-def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_id):  # noqa
+def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_ids):  # noqa
     client = monitoring_dashboard_v1.DashboardsServiceClient()
     request = monitoring_dashboard_v1.ListDashboardsRequest(parent=f"projects/{project_id}")  # noqa
 
@@ -410,17 +414,19 @@ def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_nam
     dashboard.grid_layout = grid_layout
 
     # create alerting policy
-    alert_policy_name = create_alert_policy(project_id, policy_name, metric_name, notification_channel_id)  # noqa
-    widget = monitoring_dashboard_v1.Widget()
-    widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)  # noqa
-    dashboard.grid_layout.widgets.append(widget)
-
-    request = monitoring_dashboard_v1.CreateDashboardRequest(
-        parent=f"projects/{project_id}",
-        dashboard=dashboard,
-    )
-    response = client.create_dashboard(request=request)
-    logger.info(f"Dashboard created: {response.name}")
+    alert_policy_name = create_alert_policy(project_id, policy_name, metric_name, notification_channel_ids)  # noqa
+    if alert_policy_name:
+        widget = monitoring_dashboard_v1.Widget()
+        widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)  # noqa
+        dashboard.grid_layout.widgets.append(widget)
+        request = monitoring_dashboard_v1.CreateDashboardRequest(
+            parent=f"projects/{project_id}",
+            dashboard=dashboard,
+        )
+        response = client.create_dashboard(request=request)
+        logger.info(f"Dashboard created: {response.name}")
+    else:
+        logger.error("Dashboard could not be created, since alerting policy doesn't exist")  # noqa
 
 
 def gcs_upload_json(project_id, bucket_name, destination_blob_name, json_data):

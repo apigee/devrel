@@ -221,7 +221,7 @@ class Apigee:
                 return True
             else:
                 if self.deploy_api(env, api_name, api_rev):
-                    logger.info(f"Proxy with name {api_name} has been deployed  to {env} in Apigee Org {self.org}")  # noqa
+                    logger.info(f"Deploying proxy with name {api_name}  to {env} in Apigee Org {self.org}")  # noqa
                     while api_deployment_retry_count < api_deployment_retry:
                         if self.get_api_revisions_deployment(
                             env, api_name, api_rev

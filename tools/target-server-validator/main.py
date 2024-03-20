@@ -51,11 +51,11 @@ def main():
     parser.add_argument('--onboard', action='store_true', help='Toggle to onboard validator proxy, custom metric descriptors and dashboard')  # noqa
     parser.add_argument('--scan', action='store_true', help='Toggle to read all resources')  # noqa
     parser.add_argument('--monitor', action='store_true', help='Toggle to check the status of target servers and push to GCP Logging')  # noqa
-
+    parser.add_argument('--input', default='input.properties', help='Path to input file', type=str)  # noqa
     args = parser.parse_args()
 
     # Parse Inputs
-    cfg = parse_config("input.properties")
+    cfg = parse_config(args.input)
     check_proxies = cfg["validation"].getboolean("check_proxies")
     proxy_export_dir = cfg["validation"]["proxy_export_dir"]
     enable_gcp_metrics = cfg["gcp_metrics"].getboolean("enable_gcp_metrics")
@@ -114,8 +114,8 @@ def main():
                 logger.info(f"Creating dashboard in project {metrics_project_id}")  # noqa
                 dashboard_title = cfg["gcp_metrics"]["dashboard_title"]
                 alert_policy_name = cfg["gcp_metrics"]["alert_policy_name"]
-                notification_channel_id = cfg["gcp_metrics"]["notification_channel_id"]  # noqa
-                create_custom_dashboard(metrics_project_id, dashboard_title, metric_name, alert_policy_name, notification_channel_id)  # noqa
+                notification_channel_ids = cfg["gcp_metrics"]["notification_channel_ids"]  # noqa
+                create_custom_dashboard(metrics_project_id, dashboard_title, metric_name, alert_policy_name, notification_channel_ids)  # noqa
 
     if args.scan:
         environments = source_apigee.list_environments()
@@ -319,7 +319,7 @@ def main():
             if descriptor:
                 report_metric(metrics_project_id, descriptor, final_report)
             else:
-                logger.error("Couldn't push data to stackdriver because the the existing metric descriptor couldn't be fetched.")  # noqa
+                logger.error("Couldn't push data to gcp metrics because the the existing metric descriptor couldn't be fetched.")  # noqa
 
         elif report_format == "md":
             report_file = "report.md"
