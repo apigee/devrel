@@ -67,8 +67,13 @@ python3 main.py --scan --input "$SCRIPTPATH/generated.properties"
 
 python3 main.py --monitor --input "$SCRIPTPATH/generated.properties"
 
+python3 main.py --offboard --input "$SCRIPTPATH/generated.properties"
+
 # Display Report
 cat "$SCRIPTPATH/report.md"
+
+# delete notification channel
+bash "$SCRIPTPATH/test/delete_notification_channel.sh" "$APIGEE_X_ORG" "$NOTIFICATION_CHANNEL_IDS"
 
 # deactivate venv & cleanup
 deactivate

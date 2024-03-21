@@ -156,6 +156,48 @@ class Apigee:
         logger.debug(response.text)
         return False, None
 
+    def get_api_deployments(self, api_name):
+        headers = self.auth_header.copy()
+
+        deployed_revision_url = f"{self.baseurl}/apis/{api_name}/deployments"
+        deployed_revision_get_response = requests.request(
+            "GET", deployed_revision_url, headers=headers, data={}
+            )
+        deployments = deployed_revision_get_response.json()
+        revision_deployements = deployments.get('deployments')
+        return revision_deployements
+
+    def delete_api(self, api_name):
+        headers = self.auth_header.copy()
+        revision_deployements = self.get_api_deployments(api_name)
+
+        if revision_deployements:
+            for revision_deployement in revision_deployements:
+                deployed_env = revision_deployement.get('environment')
+                rev = revision_deployement.get('revision')
+
+                # delete api deployment
+                revision_delete_url = f"{self.baseurl}/environments/{deployed_env}/apis/{api_name}/revisions/{rev}/deployments"  # noqa
+                revision_response = requests.request(
+                    "DELETE",
+                    revision_delete_url, headers=headers, data={}
+                )
+                if revision_response.status_code == 200:
+                    logger.info(f"Successfully deleted {api_name} api proxy revision {rev} in env {deployed_env}")  # noqa
+
+        # proxy deletion
+        url = f"{self.baseurl}/apis/{api_name}"
+        try:
+            response = requests.request(
+                "DELETE", url, headers=headers, data={}
+            )
+            if response.status_code == 200:
+                logger.info(f"Api proxy {api_name} deleted successfully.")
+            else:
+                logger.error(f"Error deleting Api proxy {api_name}. ERROR-INFO - {response.json()}")  # noqa
+        except Exception as e:
+            logger.error(f"Couldn't delete api proxy {api_name}. ERROR-INFO- {e}")  # noqa
+
     def get_api_revisions_deployment(self, env, api_name, api_rev):  # noqa
         url = (
             url

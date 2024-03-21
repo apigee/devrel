@@ -429,6 +429,69 @@ def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_nam
         logger.error("Dashboard could not be created, since alerting policy doesn't exist")  # noqa
 
 
+def delete_dashboard(project_id, alerting_policies):
+    logger.info("Deleting GCP Monitoring Dashboard")
+    client = monitoring_dashboard_v1.DashboardsServiceClient()
+
+    list_request = monitoring_dashboard_v1.ListDashboardsRequest(
+        parent=f"projects/{project_id}",)
+    list_response = client.list_dashboards(request=list_request)
+
+    try:
+        for dashboard in list_response.dashboards:
+            if 'grid_layout' in dashboard and 'widgets' in dashboard.grid_layout:  # noqa
+                for widget in dashboard.grid_layout.widgets:
+                    if 'alert_chart' in widget:
+                        alerting_policy = widget.alert_chart.name
+                        if alerting_policy in alerting_policies:
+                            delete_request = monitoring_dashboard_v1.DeleteDashboardRequest(  # noqa
+                                name=dashboard.name
+                            )
+                            client.delete_dashboard(request=delete_request)
+                            logger.info(f"Deleted monitoring dashboard {dashboard.name}")  # noqa
+    except Exception as e:
+        logger.error(f"Error deleting dashboard: {e}")
+
+
+def delete_alerting_policy(project_id, metric_name):
+    logger.info(f"Deleting alerting policy with metric {metric_name}")
+    try:
+        client = monitoring_v3.AlertPolicyServiceClient()
+        list_request = monitoring_v3.ListAlertPoliciesRequest(
+            name=f"projects/{project_id}",
+        )
+        policies_list = client.list_alert_policies(request=list_request)
+        alerting_policy = []
+        for alert_policy in policies_list.alert_policies:
+            if 'conditions' in alert_policy:
+                for condition in alert_policy.conditions:
+                    if 'condition_threshold' in condition and 'filter' in condition.condition_threshold:  # noqa
+                        if f'metric.type = "{metric_name}"' in condition.condition_threshold.filter:  # noqa
+                            request = monitoring_v3.DeleteAlertPolicyRequest(
+                                name=alert_policy.name,
+                            )
+                            client.delete_alert_policy(request=request)
+                            alerting_policy.append(alert_policy.name)
+                            logger.info(f"Deleted alerting policy {alert_policy.name}")  # noqa
+        return alerting_policy
+    except Exception as e:
+        logger.error(f"Couldn't delete alerting policy {alert_policy.name}. ERROR-INFO: {e}")  # noqa
+        return []
+
+
+def delete_metric_descriptor(metric_name, project_id):
+    logger.info(f"Deleting metric descriptor {metric_name}")
+    client = monitoring_v3.MetricServiceClient()
+    request = monitoring_v3.DeleteMetricDescriptorRequest(
+        name=f"projects/{project_id}/metricDescriptors/{metric_name}",
+    )
+    try:
+        client.delete_metric_descriptor(request=request)
+        logger.info(f"Deleted Metric Descriptor - {metric_name}")
+    except Exception as e:
+        logger.error(f"Couldn't delete metric descriptor {metric_name}. ERROR-INFO - {e}")  # noqa
+
+
 def gcs_upload_json(project_id, bucket_name, destination_blob_name, json_data):
     try:
         storage_client = storage.Client(project=project_id)

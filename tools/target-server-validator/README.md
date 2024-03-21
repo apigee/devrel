@@ -11,6 +11,9 @@ Validation is done by deploying a sample proxy which check if HOST & PORT is ope
 * Python3.x
 * Java
 * Maven >= 3.9.6
+
+* If you are pushing the data to gcp metrics, you require `roles/monitoring.editor` role.
+
 * Please install the required Python dependencies
 ```
     python3 -m pip install -r requirements.txt
@@ -112,9 +115,10 @@ export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)            # Access
 
 The script supports the below arguments
 
-* `--onboard`               option to create validator proxy, custom metric descriptors and dashboard
+* `--onboard`               option to create validator proxy, custom metric descriptors, alerting policy and dashboard
 * `--scan`                  option to fetch target servers from Environment target servers, api proxies & csv file
 * `--monitor`               option to check the status of target servers and generate report or push to GCP metrics
+* `--offboard`              option to delete validator proxy, custom metric descriptors, alerting policy and dashboard
 * `--input`                 Path to input properties file
 
 To onboard, run
@@ -131,6 +135,11 @@ python3 main.py --input path/to/input_file --scan
 To monitor, run
 ```
 python3 main.py --input path/to/input_file --monitor
+```
+
+To offboard, run
+```
+python3 main.py --input path/to/input_file --offboard
 ```
 
 You can also pass multiple arguments at the same time.
@@ -196,6 +205,8 @@ Before running the pipeline script, ensure you have the following prerequisites 
   - `APIGEE_X_HOSTNAME`: The hostname for your Apigee instance.
 
   *NOTE*: This pipeline will create a test notification channel with type email and email_address as `no-reply@google.com`.
+
+- **IAM Roles**: To set up the monitoring dashboard and alerts, make sure that you have `roles/monitoring.editor` role.
 
 - **Input Properties Template**: This script requires an `input.properties` file for the necessary configuration parameters and will create a corresponding `generated.properties` file by replacing the environment variables with their values. Ensure that the values are set properly in this file before running the script.
 

@@ -34,6 +34,9 @@ from utilities import (  # pylint: disable=import-error
     report_metric,
     create_custom_dashboard,
     get_metric_descriptor,
+    delete_alerting_policy,
+    delete_dashboard,
+    delete_metric_descriptor,
     gcs_upload_json,
     download_json_from_gcs,
     write_json_to_file,
@@ -48,9 +51,10 @@ def main():
     # Arguments
     parser = argparse.ArgumentParser(description='details',
     usage='use "%(prog)s --help" for more information',formatter_class=argparse.RawTextHelpFormatter)  # noqa
-    parser.add_argument('--onboard', action='store_true', help='Toggle to onboard validator proxy, custom metric descriptors and dashboard')  # noqa
+    parser.add_argument('--onboard', action='store_true', help='Toggle to onboard validator proxy, custom metric descriptors, dashboard and alerting policy')  # noqa
     parser.add_argument('--scan', action='store_true', help='Toggle to read all resources')  # noqa
     parser.add_argument('--monitor', action='store_true', help='Toggle to check the status of target servers and push to GCP Logging')  # noqa
+    parser.add_argument('--offboard', action='store_true', help='Toggle to offboard validator proxy, custom metric descriptors, dashboard and alerting policy')  # noqa
     parser.add_argument('--input', default='input.properties', help='Path to input file', type=str)  # noqa
     args = parser.parse_args()
 
@@ -332,6 +336,12 @@ def main():
             report_file = "report.csv"
             logger.info(f"Dumping report to file {report_file}")
             write_csv_report(report_file, final_report)
+
+    if args.offboard:
+        target_apigee.delete_api(cfg["validation"]["api_name"])
+        alerting_policies = delete_alerting_policy(cfg["target"]["org"], metric_name)  # noqa
+        delete_dashboard(cfg["target"]["org"], alerting_policies)
+        delete_metric_descriptor(metric_name, cfg["target"]["org"])
 
 
 if __name__ == "__main__":
