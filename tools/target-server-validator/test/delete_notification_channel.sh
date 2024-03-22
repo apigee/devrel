@@ -20,5 +20,6 @@ IFS=','
 
 # Loop through each notification channel ID and delete it
 for CHANNEL_ID in $NOTIFICATION_CHANNEL_IDS; do
-    gcloud beta monitoring channels delete "$CHANNEL_ID" --project="$PROJECT_ID" --quiet
+    yes | gcloud beta monitoring channels delete "$CHANNEL_ID" --project="$PROJECT_ID" \
+        || echo "Couldn't delete Notification Channel"
 done

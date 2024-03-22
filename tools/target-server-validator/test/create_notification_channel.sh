@@ -21,7 +21,7 @@ type=$(jq -r '.type' $JSON_FILE)
 displayName=$(jq -r '.displayName' $JSON_FILE)
 emailAddress=$(jq -r '.labels.email_address' $JSON_FILE)
 
-list_response=$(gcloud alpha monitoring channels list --filter="type='$type' AND displayName=\"$displayName\" AND labels.email_address='$emailAddress'" --format=json --verbosity=none --project="$PROJECT_ID" --format=json 2>&1)
+list_response=$(gcloud beta monitoring channels list --filter="type='$type' AND displayName=\"$displayName\" AND labels.email_address='$emailAddress'" --format=json --verbosity=none --project="$PROJECT_ID"  2>&1)
 
 if [ "$list_response" = "[]" ]; then
 

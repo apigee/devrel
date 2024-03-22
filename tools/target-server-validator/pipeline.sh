@@ -21,12 +21,13 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
+gcloud components install beta --quiet # as the cloud-sdk image no longer has this
 NOTIFICATION_CHANNEL_IDS=$(bash "$SCRIPTPATH/test/create_notification_channel.sh" "$APIGEE_X_ORG" 2>&1)
 if [ -z "$NOTIFICATION_CHANNEL_IDS" ]; then
     echo "Error creating notification channel"
     exit 1
 else
-    echo "Notification Channel Id - ${NOTIFICATION_CHANNEL_IDS}"
+    echo "Created Notification Channel Id - ${NOTIFICATION_CHANNEL_IDS}"
 fi
 
 bash "$SCRIPTPATH/callout/build_java_callout.sh"
