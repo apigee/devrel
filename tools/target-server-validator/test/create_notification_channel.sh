@@ -16,6 +16,7 @@
 
 JSON_FILE="./test/email-channel.json"
 PROJECT_ID=$1
+OUTPUT_FILE=$2
 
 type=$(jq -r '.type' $JSON_FILE)
 displayName=$(jq -r '.displayName' $JSON_FILE)
@@ -31,11 +32,11 @@ if [ "$list_response" = "[]" ]; then
     
     if [ "$exit_status" -eq 0 ]; then
         channel_id=$(echo "$create_response" | grep -oE "projects/$PROJECT_ID/notificationChannels/[0-9]+" | awk -F'/' '{print $4}')
-        echo "$channel_id"
     else
-        echo
+        channel_id="" 
     fi
 else
-    comma_separated=$(echo "$list_response" | jq -r '.[].name' | awk -F'/' '{print $4}' | paste -sd "," -)
-    echo "$comma_separated"
+    channel_id=$(echo "$list_response" | jq -r '.[].name' | awk -F'/' '{print $4}' | paste -sd "," -)
 fi
+
+echo "$channel_id" > "$OUTPUT_FILE"

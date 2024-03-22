@@ -22,13 +22,9 @@ SCRIPTPATH="$(
 )"
 
 gcloud components install beta --quiet # as the cloud-sdk image no longer has this
-NOTIFICATION_CHANNEL_IDS=$(bash "$SCRIPTPATH/test/create_notification_channel.sh" "$APIGEE_X_ORG" 2>&1)
-if [ -z "$NOTIFICATION_CHANNEL_IDS" ]; then
-    echo "Error creating notification channel"
-    exit 1
-else
-    echo "Created Notification Channel Id - ${NOTIFICATION_CHANNEL_IDS}"
-fi
+bash "$SCRIPTPATH/test/create_notification_channel.sh" "$APIGEE_X_ORG" "$SCRIPTPATH/channel.txt"
+NOTIFICATION_CHANNEL_IDS=$(cat "$SCRIPTPATH/channel.txt")
+echo "Created Notification Channel Id - $NOTIFICATION_CHANNEL_IDS"
 
 bash "$SCRIPTPATH/callout/build_java_callout.sh"
 
@@ -37,7 +33,7 @@ rm -rf "$SCRIPTPATH/export"
 rm -rf "$SCRIPTPATH/report*"
 
 # Generate input file
-envsubst <"$SCRIPTPATH/input.properties" >"$SCRIPTPATH/generated.properties"
+NOTIFICATION_CHANNEL_IDS=$NOTIFICATION_CHANNEL_IDS envsubst <"$SCRIPTPATH/input.properties" >"$SCRIPTPATH/generated.properties"
 
 # Generate optional input csv file
 cat >"$SCRIPTPATH/input.csv" <<EOF
@@ -73,8 +69,10 @@ python3 main.py --offboard --input "$SCRIPTPATH/generated.properties"
 # Display Report
 cat "$SCRIPTPATH/report.md"
 
-# delete notification channel
+# cleanup files and notification channel
 bash "$SCRIPTPATH/test/delete_notification_channel.sh" "$APIGEE_X_ORG" "$NOTIFICATION_CHANNEL_IDS"
+rm -f "$SCRIPTPATH/channel.txt"
+rm -f "$SCRIPTPATH/scan_output.json"
 
 # deactivate venv & cleanup
 deactivate
