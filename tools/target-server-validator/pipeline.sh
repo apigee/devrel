@@ -16,47 +16,27 @@
 
 set -e
 
-SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
+SCRIPTPATH="$(
+    cd "$(dirname "$0")" || exit >/dev/null 2>&1
+    pwd -P
+)"
+
+gcloud components install beta --quiet # as the cloud-sdk image no longer has this
+bash "$SCRIPTPATH/test/create_notification_channel.sh" "$APIGEE_X_ORG" "$SCRIPTPATH/channel.txt"
+NOTIFICATION_CHANNEL_IDS=$(cat "$SCRIPTPATH/channel.txt")
+echo "Created Notification Channel Id - $NOTIFICATION_CHANNEL_IDS"
 
 bash "$SCRIPTPATH/callout/build_java_callout.sh"
 
 # Clean up previously generated files
-rm -rf "$SCRIPTPATH/input.properties"
 rm -rf "$SCRIPTPATH/export"
 rm -rf "$SCRIPTPATH/report*"
 
 # Generate input file
-cat > "$SCRIPTPATH/input.properties" << EOF
-[source]
-baseurl=https://apigee.googleapis.com/v1
-org=$APIGEE_X_ORG
-auth_type=oauth
-
-[target]
-baseurl=https://apigee.googleapis.com/v1
-org=$APIGEE_X_ORG
-auth_type=oauth
-
-[csv]
-file=input.csv
-default_port=443
-
-[validation]
-check_csv=true
-check_proxies=true
-proxy_export_dir=export
-skip_proxy_list=
-api_env=$APIGEE_X_ENV
-api_name=target_server_validator
-api_force_redeploy=true
-api_hostname=$APIGEE_X_HOSTNAME
-api_ip=
-report_format=md
-allow_insecure=false
-EOF
+NOTIFICATION_CHANNEL_IDS=$NOTIFICATION_CHANNEL_IDS envsubst <"$SCRIPTPATH/input.properties" >"$SCRIPTPATH/generated.properties"
 
 # Generate optional input csv file
-cat > "$SCRIPTPATH/input.csv" << EOF
+cat >"$SCRIPTPATH/input.csv" <<EOF
 HOST,PORT
 httpbin.org
 httpbin.org,443
@@ -78,10 +58,21 @@ export APIGEE_ACCESS_TOKEN
 # Running the Target Server Validator
 cd "$SCRIPTPATH"
 
-python3 main.py
+python3 main.py --onboard --input "$SCRIPTPATH/generated.properties"
+
+python3 main.py --scan --input "$SCRIPTPATH/generated.properties"
+
+python3 main.py --monitor --input "$SCRIPTPATH/generated.properties"
+
+python3 main.py --offboard --input "$SCRIPTPATH/generated.properties"
 
 # Display Report
 cat "$SCRIPTPATH/report.md"
+
+# cleanup files and notification channel
+bash "$SCRIPTPATH/test/delete_notification_channel.sh" "$APIGEE_X_ORG" "$NOTIFICATION_CHANNEL_IDS"
+rm -f "$SCRIPTPATH/channel.txt"
+rm -f "$SCRIPTPATH/scan_output.json"
 
 # deactivate venv & cleanup
 deactivate

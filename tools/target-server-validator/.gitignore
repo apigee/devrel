@@ -1,2 +1,4 @@
 callout/target/
 export/
+scan_output.json
+input.csv

@@ -17,15 +17,23 @@
 
 import os
 import sys
+import json
 import configparser
 import zipfile
 import csv
 from urllib.parse import urlparse
+import time
+import concurrent.futures
+from google.api import label_pb2 as ga_label
+from google.cloud import monitoring_v3
+from google.api import metric_pb2 as ga_metric
+from google.cloud import monitoring_dashboard_v1
+from google.protobuf import duration_pb2
+from google.cloud import storage
 import requests
 import xmltodict
 import urllib3
 from forcediphttpsadapter.adapters import ForcedIPHTTPSAdapter
-import concurrent.futures
 from base_logger import logger
 
 
@@ -268,3 +276,259 @@ def run_parallel(func, args, workers=10):
                 logger.info("No exception information available.")
             logger.error(f"{future} generated an exception")
     return data
+
+
+def get_metric_descriptor(project_id, metric_name):
+    descriptor_name = f"projects/{project_id}/metricDescriptors/{metric_name}"
+
+    client = monitoring_v3.MetricServiceClient()
+    try:
+        descriptor = client.get_metric_descriptor(name=descriptor_name)
+        return descriptor
+    except Exception as e:
+        logger.error(f"Error while getting the existing metric descriptor. ERROR-INFO: {e}")  # noqa
+        return None
+
+
+def create_custom_metric(project_id, metric_name):
+    client = monitoring_v3.MetricServiceClient()
+
+    # Create metric descriptor
+    descriptor = ga_metric.MetricDescriptor()
+    descriptor.type = metric_name
+    descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
+    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.DOUBLE
+    descriptor.labels.extend([
+        ga_label.LabelDescriptor(key='hostname', value_type='STRING'),
+        ga_label.LabelDescriptor(key='status', value_type='STRING')
+    ])
+    try:
+        descriptor = client.create_metric_descriptor(name=f"projects/{project_id}", metric_descriptor=descriptor)  # noqa
+        return descriptor
+    except Exception as e:
+        logger.error(f"Error while creating the metric descriptor. ERROR-INFO: {e}")  # noqa
+    return None
+
+
+def get_status_value(status):
+    if status == "REACHABLE":
+        return 1
+    elif status == "NOT_REACHABLE":
+        return 0.5
+    elif status == "UNKNOWN_HOST":
+        return 0
+
+
+def report_metric(project_id, metric_descriptor, sample_data):
+    client = monitoring_v3.MetricServiceClient()
+
+    series = monitoring_v3.TimeSeries()
+
+    # Check if metric descriptor exists
+    if not metric_descriptor:
+        logger.error("Error while pushing the data to gcp metrics. ERROR-INFO: Metric descriptor does not exist.")  # noqa
+        return
+
+    series.metric.type = metric_descriptor.type
+    series.resource.type = 'global'
+
+    now = time.time()
+    seconds = int(now)
+    nanos = int((now - seconds) * 10 ** 9)
+    interval = monitoring_v3.TimeInterval({'end_time': {'seconds': seconds, 'nanos': nanos}})  # noqa
+
+    try:
+        for data in sample_data:
+            point = monitoring_v3.Point({'interval': interval, 'value': {'double_value': get_status_value(data[5])}})  # noqa
+            series.metric.labels['hostname'] = data[2]
+            series.metric.labels['status'] = data[5]
+            series.points = [point]
+
+            client.create_time_series(name=f"projects/{project_id}", time_series=[series])  # noqa
+            logger.debug(f"Pushed to gcp metrics - {data[2]} {data[5]}")
+        logger.info("Successfully pushed data to gcp metrics")
+    except Exception as e:
+        logger.error(f"Error while pushing the data to gcp metrics. ERROR-INFO: {e}")  # noqa
+
+
+def create_alert_policy(project_id, policy_name, metric_name, notification_channel_ids):  # noqa
+    client = monitoring_v3.AlertPolicyServiceClient()
+    conditions = [
+        monitoring_v3.AlertPolicy.Condition(
+            display_name="Target Server Validator Policy",
+            condition_threshold=monitoring_v3.AlertPolicy.Condition.MetricThreshold(  # noqa
+                filter=f"resource.type = \"global\" AND metric.type = \"{metric_name}\"",  # noqa
+                comparison=monitoring_v3.ComparisonType.COMPARISON_LT,
+                threshold_value=0.75,
+                duration=duration_pb2.Duration(seconds=60),
+                aggregations=[
+                    monitoring_v3.Aggregation(
+                        alignment_period=duration_pb2.Duration(seconds=120),
+                        per_series_aligner=monitoring_v3.Aggregation.Aligner.ALIGN_NEXT_OLDER,  # noqa
+                        cross_series_reducer=monitoring_v3.Aggregation.Reducer.REDUCE_NONE,  # noqa
+                        group_by_fields=["metric.label.hostname"],
+                    )
+                ],
+                trigger=monitoring_v3.AlertPolicy.Condition.Trigger(
+                    count=1,
+                )
+            ),
+        )
+    ]
+
+    notification_channels = [f"projects/{project_id}/notificationChannels/{notification_channel_id}" for notification_channel_id in notification_channel_ids.split(",")]  # noqa
+    policy = monitoring_v3.AlertPolicy(
+        display_name=policy_name,
+        conditions=conditions,
+        notification_channels=notification_channels,
+        combiner=monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
+    )
+
+    try:
+        created_policy = client.create_alert_policy(
+            name=f"projects/{project_id}",
+            alert_policy=policy
+        )
+        logger.info(f"Created alert policy: {created_policy.name}")
+        return created_policy.name
+    except Exception as e:
+        logger.error(f"Alerting Policy couldn't be created. ERROR-INFO - {e}")
+        return None
+
+
+def create_custom_dashboard(project_id, dashboard_title, metric_name, policy_name, notification_channel_ids):  # noqa
+    client = monitoring_dashboard_v1.DashboardsServiceClient()
+    request = monitoring_dashboard_v1.ListDashboardsRequest(parent=f"projects/{project_id}")  # noqa
+
+    existing_dashboards = client.list_dashboards(request=request).dashboards
+    for dashboard in existing_dashboards:
+        if dashboard.display_name == dashboard_title:
+            logger.info(f"Dashboard '{dashboard_title}' already exists. Skipping creation.")  # noqa
+            return
+
+    dashboard = monitoring_dashboard_v1.Dashboard()
+    dashboard.display_name = dashboard_title
+    grid_layout = monitoring_dashboard_v1.GridLayout(
+        widgets=[]
+    )
+    dashboard.grid_layout = grid_layout
+
+    # create alerting policy
+    alert_policy_name = create_alert_policy(project_id, policy_name, metric_name, notification_channel_ids)  # noqa
+    if alert_policy_name:
+        widget = monitoring_dashboard_v1.Widget()
+        widget.alert_chart = monitoring_dashboard_v1.AlertChart(name=alert_policy_name)  # noqa
+        dashboard.grid_layout.widgets.append(widget)
+        request = monitoring_dashboard_v1.CreateDashboardRequest(
+            parent=f"projects/{project_id}",
+            dashboard=dashboard,
+        )
+        response = client.create_dashboard(request=request)
+        logger.info(f"Dashboard created: {response.name}")
+    else:
+        logger.error("Dashboard could not be created, since alerting policy doesn't exist")  # noqa
+
+
+def delete_dashboard(project_id, alerting_policies):
+    logger.info("Deleting GCP Monitoring Dashboard")
+    client = monitoring_dashboard_v1.DashboardsServiceClient()
+
+    list_request = monitoring_dashboard_v1.ListDashboardsRequest(
+        parent=f"projects/{project_id}",)
+    list_response = client.list_dashboards(request=list_request)
+
+    try:
+        for dashboard in list_response.dashboards:
+            if 'grid_layout' in dashboard and 'widgets' in dashboard.grid_layout:  # noqa
+                for widget in dashboard.grid_layout.widgets:
+                    if 'alert_chart' in widget:
+                        alerting_policy = widget.alert_chart.name
+                        if alerting_policy in alerting_policies:
+                            delete_request = monitoring_dashboard_v1.DeleteDashboardRequest(  # noqa
+                                name=dashboard.name
+                            )
+                            client.delete_dashboard(request=delete_request)
+                            logger.info(f"Deleted monitoring dashboard {dashboard.name}")  # noqa
+    except Exception as e:
+        logger.error(f"Error deleting dashboard: {e}")
+
+
+def delete_alerting_policy(project_id, metric_name):
+    logger.info(f"Deleting alerting policy with metric {metric_name}")
+    try:
+        client = monitoring_v3.AlertPolicyServiceClient()
+        list_request = monitoring_v3.ListAlertPoliciesRequest(
+            name=f"projects/{project_id}",
+        )
+        policies_list = client.list_alert_policies(request=list_request)
+        alerting_policy = []
+        for alert_policy in policies_list.alert_policies:
+            if 'conditions' in alert_policy:
+                for condition in alert_policy.conditions:
+                    if 'condition_threshold' in condition and 'filter' in condition.condition_threshold:  # noqa
+                        if f'metric.type = "{metric_name}"' in condition.condition_threshold.filter:  # noqa
+                            request = monitoring_v3.DeleteAlertPolicyRequest(
+                                name=alert_policy.name,
+                            )
+                            client.delete_alert_policy(request=request)
+                            alerting_policy.append(alert_policy.name)
+                            logger.info(f"Deleted alerting policy {alert_policy.name}")  # noqa
+        return alerting_policy
+    except Exception as e:
+        logger.error(f"Couldn't delete alerting policy {alert_policy.name}. ERROR-INFO: {e}")  # noqa
+        return []
+
+
+def delete_metric_descriptor(metric_name, project_id):
+    logger.info(f"Deleting metric descriptor {metric_name}")
+    client = monitoring_v3.MetricServiceClient()
+    request = monitoring_v3.DeleteMetricDescriptorRequest(
+        name=f"projects/{project_id}/metricDescriptors/{metric_name}",
+    )
+    try:
+        client.delete_metric_descriptor(request=request)
+        logger.info(f"Deleted Metric Descriptor - {metric_name}")
+    except Exception as e:
+        logger.error(f"Couldn't delete metric descriptor {metric_name}. ERROR-INFO - {e}")  # noqa
+
+
+def gcs_upload_json(project_id, bucket_name, destination_blob_name, json_data):
+    try:
+        storage_client = storage.Client(project=project_id)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
+        blob.upload_from_string(json.dumps(json_data))
+        logger.info(f'Scan output uploaded to gs://{bucket_name}/{destination_blob_name}')  # noqa
+    except Exception as error:
+        logger.error(f"Output data not pushed to GCS. ERROR-INFO - {error}")
+
+
+def download_json_from_gcs(project_id, bucket_name, source_blob_name):
+    try:
+        storage_client = storage.Client(project=project_id)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        json_string = blob.download_as_string()
+        json_data = json.loads(json_string)
+        return json_data
+    except Exception as error:
+        logger.error(f"Target Servers output data couldn't be fetched. ERROR-INFO - {error}")  # noqa
+        return None
+
+
+def write_json_to_file(file_path, data):
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f)
+        logger.info(f"Successfully written data to {file_path}")
+    except Exception as e:
+        logger.error(f"Data not written to {file_path}. ERROR-INFO: {e}")
+
+
+def read_json_from_file(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            scan_output = json.load(f)
+            return scan_output
+    except Exception as e:
+        logger.error(f"Data couldn't be fetched from {file_path}. ERROR-INFO: {e}") # noqa

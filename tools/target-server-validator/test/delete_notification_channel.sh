@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/bin/sh
 
-# Copyright 2022 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+PROJECT_ID=$1
+NOTIFICATION_CHANNEL_IDS=$2
+IFS=',' 
 
-xmltodict==0.13.0
-requests==2.31.0
-forcediphttpsadapter==1.0.2
-google-cloud-monitoring==2.19.1
-google-cloud-monitoring-dashboards==2.14.1
-google-cloud-storage==2.14.0
-google-api-python-client==2.120.0
+# Loop through each notification channel ID and delete it
+for CHANNEL_ID in $NOTIFICATION_CHANNEL_IDS; do
+    yes | gcloud beta monitoring channels delete "$CHANNEL_ID" --project="$PROJECT_ID" \
+        || echo "Couldn't delete Notification Channel"
+done
