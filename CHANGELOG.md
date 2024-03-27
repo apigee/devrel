@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.18.0](https://github.com/apigee/devrel/compare/v1.17.0...v1.18.0) (2024-03-25)
+
+
+### Features
+
+* added offboard option to delete proxy, gcp metrics and dashboards ([4e1b9cc](https://github.com/apigee/devrel/commit/4e1b9cccd19aff3e380fec783f14f81dad6d2e73))
+* added support for ADC and option to store scan output data in gcs or local file ([9218f64](https://github.com/apigee/devrel/commit/9218f64247864495948f80252cebfda436ce4872))
+* enable monitoring dashboard and alerting policy ([77ccf13](https://github.com/apigee/devrel/commit/77ccf13f8e5fa2f3681c65ed8844411f11f7ab4f))
+* push data to stackdriver ([4bdab1a](https://github.com/apigee/devrel/commit/4bdab1a17f6e0a38d5fd074a6690b2821abe2e78))
+* remove configurable proxy generator because of deprecation ([f8c84e7](https://github.com/apigee/devrel/commit/f8c84e753fa6d3a8e86d5a6d9c2d1e7676931ecc))
+* updated arguments and enabled gcs for outputs ([f399e70](https://github.com/apigee/devrel/commit/f399e70c1ab4478d7c570b8f151382b00457d4c4))
+
+
+### Bug Fixes
+
+* added install gcloud beta component in pipeline.sh ([a0ec366](https://github.com/apigee/devrel/commit/a0ec366159f4981966b4063c05d9a4d5c52c10fb))
+* fixed create notification channel script ([87e2d55](https://github.com/apigee/devrel/commit/87e2d55e913e28588d7eb88bba6dfb3d7da3229a))
+* fixed linting and license headers ([f8333ef](https://github.com/apigee/devrel/commit/f8333ef98f28f044385ba0498c0e9f4e363d7e64))
+* fixed pipeline.sh ([0d75949](https://github.com/apigee/devrel/commit/0d75949453a92728450829aca8f1605076ef6ccc))
+* fixed README.md and get_status function ([258928f](https://github.com/apigee/devrel/commit/258928fbe1d43cf23c3cb96904428497a92a5b50))
+* updated README and logger prints ([6746a8c](https://github.com/apigee/devrel/commit/6746a8ced7112f3586f62323ac8c7cc262ec7bb9))
+* updated requirements.txt and utilities.py ([7f4e8e6](https://github.com/apigee/devrel/commit/7f4e8e6fd2724e2cf2e1ccf41efd2d34247c2333))
+
 ## [1.17.0](https://github.com/apigee/devrel/compare/v1.16.0...v1.17.0) (2024-01-26)
 
 
