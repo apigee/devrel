@@ -16,7 +16,7 @@ FROM golang:alpine3.18
 
 RUN apk add --no-cache git
 RUN go install github.com/google/addlicense@v1.0.0
-RUN export GO111MODULE=on && go install github.com/googlecodelabs/tools/claat@v2.2.6
+RUN go install github.com/googlecodelabs/tools/claat@latest
 
 # Install our dependencies
 COPY *.sh /usr/bin/
