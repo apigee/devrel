@@ -43,7 +43,7 @@ RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
   chmod +x /usr/bin/mvn
 
 # install claat
-RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.4/claat-linux-amd64 > /usr/local/bin/claat
+RUN wget -qO- https://github.com/googlecodelabs/tools/releases/download/v2.2.6/claat-linux-amd64 > /usr/local/bin/claat
 RUN chmod +x /usr/local/bin/claat
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
