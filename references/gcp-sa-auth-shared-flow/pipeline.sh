@@ -22,11 +22,21 @@ SA_EMAIL="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
-# create a service account without any roles and download the key
+
+
+# create a service account without any roles if it doesn't exist
 EXISTING_EMAIL=$(gcloud iam service-accounts list --filter="email=$SA_EMAIL" --format="get(email)")
 if [ "$EXISTING_EMAIL" != "$SA_EMAIL" ]; then
   gcloud iam service-accounts create "$SA_NAME"
 fi
+
+# Cleaning up existing service account keys for that SA
+for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --format="get(name)" --filter="keyType=USER_MANAGED")
+do
+  gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA_EMAIL" -q
+done
+
+# Create and download service account key
 gcloud iam service-accounts keys create "$SCRIPTPATH/$SA_NAME-key.json" \
   --iam-account "$SA_EMAIL"
 
@@ -49,8 +59,3 @@ sackmesser deploy --googleapi -d "$SCRIPTPATH"/test/token-validation \
 
 curl -k --fail "https://$APIGEE_X_HOSTNAME/token-validation/v0/oauth"
 curl -k --fail "https://$APIGEE_X_HOSTNAME/token-validation/v0/jwt"
-
-for SA_KEY_NAME in $(gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --format="get(name)" --filter="keyType=USER_MANAGED")
-do
-  gcloud iam service-accounts keys delete "$SA_KEY_NAME" --iam-account="$SA_EMAIL" -q
-done
