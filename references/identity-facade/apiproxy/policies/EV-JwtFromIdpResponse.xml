@@ -22,7 +22,10 @@
         <Variable name="oidc.flow.access_token">
             <JSONPath>$.access_token</JSONPath>
         </Variable>
+        <Variable name="oidc.flow.refresh_token">
+            <JSONPath>$.refresh_token</JSONPath>
+        </Variable>
     </JSONPayload>
     <Source clearPayload="false">tokenResponse</Source>
-    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </ExtractVariables>
