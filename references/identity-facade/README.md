@@ -116,5 +116,5 @@ Available endpoints are the following ones:
 
 1. GET /authorize: to deal with the initiation of the authentication sequence
 2. GET /callback: to deal with access token issuance
-3. POST /token: to deal with access token issuance
+3. POST /token: to deal with access token and refresh token issuance
 4. GET /protected: to simulate access to a protected resource

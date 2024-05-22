@@ -137,4 +137,51 @@ deactivate nerp
 nerp -> b: 200 OK
 deactivate nerp
 
+note over u,backend: refresh token use
+opt Refresh Token
+    u -> b: User interaction
+    b -> b: App activity
+    b -> nerp: GET /protected\n(Authorization: Bearer <access_token>)
+    activate nerp
+    nerp -> nerp: verify access token
+    activate nerp
+    deactivate nerp
+    nerp -> b: status code: 401\n("error": "access_token_expired")
+    deactivate nerp
+    b ->> id: POST /token\n(refresh_token,\nclient credentials,\ngrant_type [refresh_token],\nredirect_uri)
+    activate id
+    id -> id: validate client credentials, redirect_uri, grant_type
+    activate id
+    deactivate id
+    id -> id: control presence and value of refresh token
+    activate id
+    deactivate id
+    id -> id: retrieve IdP client\ncredentials + IdP connection parameters from KVM (or PropertySet or Secret)
+    activate id
+    deactivate id
+    id -> idp: POST /token\n(w/ IdP client credentials, refresh_token)
+    activate id
+    idp -> id: access_token, refresh_token,\nid_token, expires_in
+    deactivate id
+    id -> idp: GET /certs\n(JWKS keys)
+    activate id
+    idp -> id: return latest JWKS keys
+    deactivate id
+    id -> id: cache JWKS keys
+    activate id
+    deactivate id
+    id -> id: validate id_token (JWT validation + JWKS)
+    activate id
+    deactivate id
+    id -> id: generate new access and refresh token using expires_in\n(attach IdP tokens as custom attributes)
+    activate id
+    deactivate id
+    opt
+    id -> id: generate new id_token,\nsign using Apigee private key,\nput Apigee access token in JWT
+    activate id
+    deactivate id
+    end
+    id -> b: 200 OK \n(apigee_tokens, state(1))
+    deactivate id
+end
 @enduml

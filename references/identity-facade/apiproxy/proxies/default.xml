@@ -153,26 +153,31 @@
                     <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
-                    <Condition>( request.formparam.grant_type != "authorization_code" )</Condition>
+                    <Condition>( request.formparam.grant_type != "authorization_code") and (request.formparam.grant_type != "refresh_token" )</Condition>
                     <Name>RF-UnsupportedGrantType</Name>
                 </Step>
                 <Step>
-                    <Condition>( request.formparam.code Is null ) or ( request.formparam.code = "" )</Condition>
+                    <Condition>((( request.formparam.code Is null ) or ( request.formparam.code = "" )) and (request.formparam.grant_type == "authorization_code"))</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
-                    <Condition>(( request.formparam.code_verifier Is null ) or ( request.formparam.code_verifier = "" )) and ( flow.pkce.enabled = "true" )</Condition>
+                    <Condition>(( request.formparam.code_verifier Is null ) or ( request.formparam.code_verifier = "" )) and ( flow.pkce.enabled = "true" ) and (request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
+                    <Condition>(request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>OA2-GetOriginalStateAttributes</Name>
                 </Step>
                 <Step>
-                    <Condition>( flow.pkce.enabled = "true" )</Condition>
+                    <Condition>(request.formparam.grant_type == "refresh_token")</Condition>
+                    <Name>OA2-GetRefreshTokenAttributes</Name>
+                </Step>
+                <Step>
+                    <Condition>( flow.pkce.enabled = "true" ) and (request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>JS-PKCECodeVerification</Name>
                 </Step>
                 <Step>
-                    <Condition>( oidc.flow.isPKCECodeVerified == false ) and ( flow.pkce.enabled = "true" )</Condition>
+                    <Condition>( oidc.flow.isPKCECodeVerified == false ) and ( flow.pkce.enabled = "true" ) and (request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>RF-InvalidGrant</Name>
                 </Step>
                 <Step>
@@ -185,7 +190,12 @@
                     <Name>BA-AddClientID-ClientSecret-AzHeader</Name>
                 </Step>
                 <Step>
+                    <Condition>(request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>AM-BuildIdpRequest</Name>
+                </Step>
+                <Step>
+                    <Condition>(request.formparam.grant_type == "refresh_token")</Condition>
+                    <Name>AM-BuildIdpRefreshTokenRequest</Name>
                 </Step>
                 <Step>
                     <Name>SC-IdpTokenIssuance</Name>
@@ -220,10 +230,20 @@
                     <Name>AM-SetClientIdAsFormParam</Name>
                 </Step>
                 <Step>
+                    <Condition>(request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>OA2-GenerateAccessToken</Name>
                 </Step>
+                <Step>
+                    <Condition>(request.formparam.grant_type == "refresh_token")</Condition>
+                    <Name>OA2-GenerateRefreshToken</Name>
+                </Step>
             </Request>
-            <Response/>
+            <Response>
+                <Step>
+                    <Condition>(request.formparam.grant_type == "refresh_token")</Condition>
+                    <Name>OA2-SetUpdateTokenAttributes</Name>
+                </Step>
+            </Response>
         </Flow>
         <Flow name="GET /protected">
             <Condition>(proxy.pathsuffix MatchesPath "/protected") and (request.verb = "GET")</Condition>
