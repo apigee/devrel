@@ -21,7 +21,6 @@
         </Headers>
         <FormParams>
             <FormParam name="refresh_token">{oauthv2refreshtoken.OA2-GetRefreshTokenAttributes.accesstoken.idp.refresh_token}</FormParam>
-            <FormParam name="redirect_uri">{private.flow.idp.apigee.redirect_uri}</FormParam>
             <FormParam name="grant_type">refresh_token</FormParam>
         </FormParams>
         <Verb>POST</Verb>

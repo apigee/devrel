@@ -149,7 +149,7 @@
                     <Name>RF-InvalidClient</Name>
                 </Step>
                 <Step>
-                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != request.formparam.redirect_uri )</Condition>
+                    <Condition>( verifyapikey.VAK-VerifyAPIKey-ClientId.redirection_uris != request.formparam.redirect_uri ) and ( request.formparam.grant_type == "authorization_code")</Condition>
                     <Name>RF-InvalidRequest</Name>
                 </Step>
                 <Step>
