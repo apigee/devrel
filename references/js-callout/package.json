@@ -7,6 +7,6 @@
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1",
-    "jest": "^26.1.0"
+    "jest": "^29.7.0"
   }
 }
