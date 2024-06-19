@@ -6,6 +6,6 @@
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.2",
-    "puppeteer": "^13.5.1"
+    "puppeteer": "^22.11.2"
   }
 }
