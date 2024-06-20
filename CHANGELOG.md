@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.1](https://github.com/apigee/devrel/compare/v1.18.0...v1.18.1) (2024-06-17)
+
+
+### Bug Fixes
+
+* fixed distutils module issue ([1d0c6f7](https://github.com/apigee/devrel/commit/1d0c6f7dbd014672ba8540d38dadb3138f573042))
+* gcp sa flow key cleanup ([1d000aa](https://github.com/apigee/devrel/commit/1d000aa6212fb506a633b22cfc6f84b9d79fc7cd))
+
 ## [1.18.0](https://github.com/apigee/devrel/compare/v1.17.0...v1.18.0) (2024-03-25)
 
 
