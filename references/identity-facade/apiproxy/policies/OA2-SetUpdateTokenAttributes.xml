@@ -11,15 +11,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<OAuthV2 name="OA2-GenerateAccessToken">
-    <Operation>GenerateAccessToken</Operation>
-    <ExpiresIn ref="private.flow.idp.expires_in">1800000</ExpiresIn>
-    <RefreshTokenExpiresIn ref="private.flow.idp.expires_in">1800000</RefreshTokenExpiresIn>
-    <SupportedGrantTypes>
-        <GrantType>authorization_code</GrantType>
-    </SupportedGrantTypes>
-    <GrantType>request.formparam.grant_type</GrantType>
-    <RFCCompliantRequestResponse>true</RFCCompliantRequestResponse>
+<SetOAuthV2Info name="OA2-SetUpdateTokenAttributes">
+    <AccessToken ref="oauthv2accesstoken.OA2-GenerateRefreshToken.access_token"/>
     <Attributes>
         <Attribute name="idp.jwt" ref="oidc.flow.jwt" display="false"/>
         <Attribute name="idp.access_token" ref="oidc.flow.access_token" display="false"/>
@@ -27,5 +20,4 @@
         <Attribute name="idp.scope" ref="oidc.flow.scope" display="false"/>
         <Attribute name="idp.expires_in" ref="oidc.flow.expires_in" display="false"/>
     </Attributes>
-    <GenerateResponse enabled="true"/>
-</OAuthV2>
+</SetOAuthV2Info>
