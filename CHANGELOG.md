@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/apigee/devrel/compare/v1.18.1...v1.19.0) (2024-06-21)
+
+
+### Features
+
+* updated the sequence diagram ([3f9ec2b](https://github.com/apigee/devrel/commit/3f9ec2b6d84abbebe71d6debdbfd431cea70dc59))
+
 ## [1.18.1](https://github.com/apigee/devrel/compare/v1.18.0...v1.18.1) (2024-06-17)
 
 
