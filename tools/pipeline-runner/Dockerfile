@@ -37,6 +37,7 @@ RUN apk add --no-cache \
   py-pip \
   zip \
   make \
+  go \
   protobuf-dev
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
