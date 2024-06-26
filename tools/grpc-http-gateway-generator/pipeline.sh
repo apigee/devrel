@@ -18,7 +18,8 @@ set -e # exit on first error
 
 # Run a currency mock service
 docker run --name grpc-mock --detach \
-  -p 9090:9090 -e PORT=9090 gcr.io/google-samples/microservices-demo/currencyservice:v0.10.0 
+  -p 9090:9090 -e PORT=9090 \
+  gcr.io/google-samples/microservices-demo/currencyservice:v0.10.0 &> /dev/null
 
 # Trap for cleanup
 trap 'docker kill grpc-mock || true; docker rm grpc-mock || true' EXIT INT TERM
@@ -31,11 +32,12 @@ rm -rdf generated || true
 (cd generated/gateway && CGO_ENABLED=0 go build -o grpcgateway .)
 ./generated/gateway/grpcgateway --grpc-server-endpoint localhost:9090 &
 GATEWAY_PID=$!
-echo "$GATEWAY_PID"
 
 # Extended trap for cleanup
-trap 'docker kill grpc-mock || true; docker rm grpc-mock || true; kill $GATEWAY_PID || true' EXIT INT TERM
+trap 'docker kill grpc-mock &> /dev/null || true; docker rm grpc-mock &> /dev/null || true; kill $GATEWAY_PID || true' EXIT INT TERM
 
 # Smoke test the gRPC Gateway
 curl -X POST localhost:8080/hipstershop.CurrencyService/Convert \
 -d '{"from": {"units": 3, "currency_code": "USD", "nanos": 0}, "to_code": "CHF"}'
+
+curl -X POST localhost:8080/hipstershop.CurrencyService/GetSupportedCurrencies
