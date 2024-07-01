@@ -35,7 +35,10 @@ RUN apk add --no-cache \
   ca-certificates \
   ttf-freefont \
   py-pip \
-  zip
+  zip \
+  make \
+  go \
+  protobuf-dev
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
 RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
