@@ -37,7 +37,7 @@ GATEWAY_PID=$!
 trap 'docker kill grpc-mock &> /dev/null || true; docker rm grpc-mock &> /dev/null || true; kill $GATEWAY_PID || true' EXIT INT TERM
 
 # Smoke test the gRPC Gateway
-curl -X POST localhost:8080/hipstershop.CurrencyService/Convert \
+curl --fail -X POST localhost:8080/hipstershop.CurrencyService/Convert \
 -d '{"from": {"units": 3, "currency_code": "USD", "nanos": 0}, "to_code": "CHF"}'
 
-curl -X POST localhost:8080/hipstershop.CurrencyService/GetSupportedCurrencies
+curl --fail -X POST localhost:8080/hipstershop.CurrencyService/GetSupportedCurrencies
