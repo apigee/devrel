@@ -52,7 +52,11 @@ trap 'docker kill grpc-mock &> /dev/null || true; docker rm grpc-mock &> /dev/nu
 (cd generated/gateway && docker build -t grpc-gateway:latest .)
 
 DOCKER_REPO="docker"
-if [ -z "$(gcloud artifacts repositories describe $DOCKER_REPO --location=$GCP_REGION --format='get(name)')" ]; then \
+if [ -z "$(gcloud artifacts repositories describe $DOCKER_REPO \
+   --location=$GCP_REGION \
+   --project $APIGEE_X_ORG \
+   --format='get(name)')" ]; then \
+  
   gcloud artifacts repositories create $DOCKER_REPO \
       --repository-format=docker \
       --location=$GCP_REGION \
