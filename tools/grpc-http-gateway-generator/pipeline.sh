@@ -22,32 +22,12 @@ export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 PROJECT_ID=$(gcloud config get-value project)
 GCP_REGION=europe-west2
 
-# Run a currency mock service
-docker run --name grpc-mock --detach \
-  -p 9090:9090 -e PORT=9090 \
-  -e DISABLE_PROFILER=1 -e DISABLE_DEBUGGER=1 \
-  gcr.io/google-samples/microservices-demo/currencyservice:v0.10.0 &> /dev/null
-
-# Trap for cleanup
-trap 'docker kill grpc-mock || true; docker rm grpc-mock || true' EXIT INT TERM
-
 # Generate the gRCP Gateway based on the proto file
 rm -rdf generated || true
 ./generate-gateway.sh --proto-path ./examples/currency.proto
 
-# Build and run the gRPC Gateway
+# Build the gRPC Gateway
 (cd generated/gateway && CGO_ENABLED=0 go build -o grpcgateway .)
-./generated/gateway/grpcgateway --grpc-server-endpoint localhost:9090 &
-GATEWAY_PID=$!
-
-# Extended trap for cleanup
-trap 'docker kill grpc-mock &> /dev/null || true; docker rm grpc-mock &> /dev/null || true; kill $GATEWAY_PID || true' EXIT INT TERM
-
-# Smoke test the gRPC Gateway
-# curl --fail -X POST localhost:8080/hipstershop.CurrencyService/Convert \
-# -d '{"from": {"units": 3, "currency_code": "USD", "nanos": 0}, "to_code": "CHF"}'
-
-# curl --fail -X POST localhost:8080/hipstershop.CurrencyService/GetSupportedCurrencies
 
 # Build the grpc-gateway container and push it to Artifact Registry
 (cd generated/gateway && docker build -t grpc-gateway:latest .)
@@ -70,6 +50,7 @@ IMAGE_PATH="$REPO_LOCATION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/grpc-gateway"
 docker tag grpc-gateway:latest "$IMAGE_PATH:latest"
 docker push "$IMAGE_PATH"
 
+# Deploy grpc-gateway container to Cloud Run
 sed -i.bak "s|GRPC_GATEWAY_IMAGE|$IMAGE_PATH|g" "templates/cloud-run-service.yaml"
 
 gcloud run services replace templates/cloud-run-service.yaml \
