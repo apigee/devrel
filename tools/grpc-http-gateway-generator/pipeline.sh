@@ -37,13 +37,13 @@ REPO_LOCATION="europe"
 
 if [ -z "$(gcloud artifacts repositories describe $DOCKER_REPO \
    --location=$REPO_LOCATION \
-   --project $PROJECT_ID \
+   --project "$PROJECT_ID" \
    --format='get(name)')" ]; then \
   
   gcloud artifacts repositories create $DOCKER_REPO \
       --repository-format=docker \
       --location=$REPO_LOCATION \
-      --project=$PROJECT_ID
+      --project="$PROJECT_ID"
 fi
 
 IMAGE_PATH="$REPO_LOCATION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/grpc-gateway"
@@ -54,7 +54,7 @@ docker push "$IMAGE_PATH"
 sed -i.bak "s|GRPC_GATEWAY_IMAGE|$IMAGE_PATH|g" "templates/cloud-run-service.yaml"
 
 gcloud run services replace templates/cloud-run-service.yaml \
-  --project $PROJECT_ID --region $GCP_REGION \
+  --project "$PROJECT_ID" --region $GCP_REGION \
   --platform managed
 
 # Generate and deploy an Apigee API proxy for the currency-service

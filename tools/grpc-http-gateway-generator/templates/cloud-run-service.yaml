@@ -20,34 +20,34 @@ spec:
   template:
     spec:
       containers:
-      - name: grpc-gateway
-        image: GRPC_GATEWAY_IMAGE
-        ports:
-        - name: http1
-          containerPort: 8080
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 512Mi
-        startupProbe:
-          timeoutSeconds: 240
-          periodSeconds: 240
-          failureThreshold: 1
-          tcpSocket:
-            port: 8080
-      - name: currencyservice-1
-        image: gcr.io/google-samples/microservices-demo/currencyservice@sha256:e08a1f5d4e4b74fc3d6222d535a11615e8201e7075a090c1ba4436ef1f1cbe7b
-        env:
-        - name: PORT
-          value: '9090'
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 512Mi
-        startupProbe:
-          timeoutSeconds: 1
-          periodSeconds: 10
-          failureThreshold: 3
-          grpc:
-            port: 9090
-            service: currencyservice-v1
+        - name: grpc-gateway
+          image: GRPC_GATEWAY_IMAGE
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          startupProbe:
+            timeoutSeconds: 240
+            periodSeconds: 240
+            failureThreshold: 1
+            tcpSocket:
+              port: 8080
+        - name: currencyservice-1
+          image: gcr.io/google-samples/microservices-demo/currencyservice@sha256:e08a1f5d4e4b74fc3d6222d535a11615e8201e7075a090c1ba4436ef1f1cbe7b
+          env:
+            - name: PORT
+              value: "9090"
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          startupProbe:
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+            grpc:
+              port: 9090
+              service: currencyservice-v1
