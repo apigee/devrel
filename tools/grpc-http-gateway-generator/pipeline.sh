@@ -19,6 +19,7 @@ set -e # exit on first error
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
+PROJECT_ID=$(gcloud config get-value project)
 GCP_REGION=europe-west2
 
 # Run a currency mock service
@@ -51,41 +52,43 @@ trap 'docker kill grpc-mock &> /dev/null || true; docker rm grpc-mock &> /dev/nu
 # Build the grpc-gateway container and push it to Artifact Registry
 (cd generated/gateway && docker build -t grpc-gateway:latest .)
 
-DOCKER_REPO="docker"
+DOCKER_REPO="devrel"
+REPO_LOCATION="europe"
+
 if [ -z "$(gcloud artifacts repositories describe $DOCKER_REPO \
-   --location=$GCP_REGION \
-   --project $APIGEE_X_ORG \
+   --location=$REPO_LOCATION \
+   --project $PROJECT_ID \
    --format='get(name)')" ]; then \
   
   gcloud artifacts repositories create $DOCKER_REPO \
       --repository-format=docker \
-      --location=$GCP_REGION \
-      --project=$APIGEE_X_ORG
+      --location=$REPO_LOCATION \
+      --project=$PROJECT_ID
 fi
 
-IMAGE_PATH="$GCP_REGION-docker.pkg.dev/$APIGEE_X_ORG/$DOCKER_REPO/grpc-gateway"
+IMAGE_PATH="$REPO_LOCATION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/grpc-gateway"
 docker tag grpc-gateway:latest "$IMAGE_PATH:latest"
 docker push "$IMAGE_PATH"
 
 sed -i.bak "s|GRPC_GATEWAY_IMAGE|$IMAGE_PATH|g" "templates/cloud-run-service.yaml"
 
 gcloud run services replace templates/cloud-run-service.yaml \
-  --project $APIGEE_X_ORG --region $GCP_REGION \
+  --project $PROJECT_ID --region $GCP_REGION \
   --platform managed
 
 # Generate and deploy an Apigee API proxy for the currency-service
-SA_EMAIL="apigee-runtime@$APIGEE_X_ORG.iam.gserviceaccount.com"
+SA_EMAIL="apigee-test-cloudrun@$APIGEE_X_ORG.iam.gserviceaccount.com"
 
 if [ -z "$(gcloud iam service-accounts list --filter "$SA_EMAIL" --format="value(email)"  --project "$APIGEE_X_ORG")" ]; then
-    gcloud iam service-accounts create apigee-runtime \
-        --description="Apigee Runtime" --project "$APIGEE_X_ORG"
+    gcloud iam service-accounts create apigee-test-cloudrun \
+        --description="Apigee Test Cloud Run" --project "$APIGEE_X_ORG"
 fi
 
 gcloud run services add-iam-policy-binding currency-service \
 	 --member="serviceAccount:$SA_EMAIL" \
 	 --role='roles/run.invoker' \
 	 --region=$GCP_REGION \
-	 --platform=managed --project "$APIGEE_X_ORG"
+	 --platform=managed --project "$PROJECT_ID"
 
 CLOUD_RUN_URL=$(gcloud run services list --filter currency-service --format="value(status.url)" --limit 1)
 sed -i "s|CLOUD_RUN_URL|$CLOUD_RUN_URL|g" "templates/apiproxy/targets/default.xml"
