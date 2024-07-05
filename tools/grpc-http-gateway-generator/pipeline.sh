@@ -51,9 +51,9 @@ docker tag grpc-gateway:latest "$IMAGE_PATH:latest"
 docker push "$IMAGE_PATH"
 
 # Deploy grpc-gateway container to Cloud Run
-sed -i.bak "s|GRPC_GATEWAY_IMAGE|$IMAGE_PATH|g" "templates/cloud-run-service.yaml"
+sed -i.bak "s|GRPC_GATEWAY_IMAGE|$IMAGE_PATH|g" "examples/currency-v1/cloud-run-service.yaml"
 
-gcloud run services replace templates/cloud-run-service.yaml \
+gcloud run services replace examples/currency-v1/cloud-run-service.yaml \
   --project "$PROJECT_ID" --region $GCP_REGION \
   --platform managed
 
@@ -72,10 +72,10 @@ gcloud run services add-iam-policy-binding currency-service \
 	 --platform=managed --project "$PROJECT_ID"
 
 CLOUD_RUN_URL=$(gcloud run services list --filter currency-service --format="value(status.url)" --limit 1)
-sed -i "s|CLOUD_RUN_URL|$CLOUD_RUN_URL|g" "templates/apiproxy/targets/default.xml"
+sed -i "s|CLOUD_RUN_URL|$CLOUD_RUN_URL|g" "examples/currency-v1/apiproxy/targets/default.xml"
 
 TOKEN="$(gcloud config config-helper --force-auth-refresh --format json | jq -r '.credential.access_token')"
-sackmesser deploy -d "$SCRIPTPATH/templates" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$TOKEN" --deployment-sa "$SA_EMAIL"
+sackmesser deploy -d "$SCRIPTPATH/examples/currency-v1" -o "$APIGEE_X_ORG" -e "$APIGEE_X_ENV" -t "$TOKEN" --deployment-sa "$SA_EMAIL"
 
 # Test the Apigee API
 curl -X GET "https://$APIGEE_X_HOSTNAME/currency/v1/currencies"
