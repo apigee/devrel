@@ -31,10 +31,11 @@
 /tools/apigee-x-trial-provision         @yuriylesyuk @danistrebel
 /tools/decrypt-hybrid-assets            @yuriylesyuk
 /tools/endpoints-oas-importer           @danistrebel
+/tools/grpc-http-gateway-generator      @danistrebel @omidtahouri
 /tools/hybrid-quickstart                @danistrebel
 /tools/oas-apigee-mock                  @markjkelly
 /tools/pipeline-linter                  @seymen @danistrebel
 /tools/pipeline-runner                  @seymen @danistrebel
-/tools/sf-dependency-list               @yuriylesyuk
 /tools/proxy-endpoint-unifier           @anaik91
+/tools/sf-dependency-list               @yuriylesyuk
 /tools/target-server-validator          @anaik91

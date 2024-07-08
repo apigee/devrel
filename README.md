@@ -92,7 +92,8 @@ Apigee products.
   A tool to unify/split proxy endpoints based on API basepath.
 - [Apigee Target Server Validator](tools/target-server-validator) -
   A tool to validate all targets in Target Servers & Apigee API Proxy Bundles.
-
+- [gRPC to HTTP Gateway Generator](tools/grpc-http-gateway-generator) -
+  Generate gateways to expose gRPC services with HTTP API management.
 ## Labs
 
 This folder contains raw assets used to generate content to teach a particular
