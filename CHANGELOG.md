@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.19.0](https://github.com/apigee/devrel/compare/v1.18.1...v1.19.0) (2024-07-11)
+
+
+### Features
+
+* deploy grpc gateway to cloud run with an apigee proxy ([5e5a9ed](https://github.com/apigee/devrel/commit/5e5a9edd78b361aa9c94ef625953119d93bd1cea))
+* initial import grpc-gateway-generator ([18c2bc8](https://github.com/apigee/devrel/commit/18c2bc864955e140fcec6dffbe2e1ff0ed786c9f))
+* pipeline.sh for gRPC gateway generator ([134af47](https://github.com/apigee/devrel/commit/134af47eb1fab2770eefe569d82f0bffa9e10208))
+* updated the sequence diagram ([3f9ec2b](https://github.com/apigee/devrel/commit/3f9ec2b6d84abbebe71d6debdbfd431cea70dc59))
+
+
+### Bug Fixes
+
+* cURL fail for pipeline.sh ([328b46b](https://github.com/apigee/devrel/commit/328b46bc07c4fb326db6839bb13dfdb2329e15f1))
+* use correct project fwhen checking forartifact registry ([a86206b](https://github.com/apigee/devrel/commit/a86206bfc019a33b7aa17d96fbd847f36782905e))
+* use existing service account and switch the gcp project for artifact registry and run ([12838bc](https://github.com/apigee/devrel/commit/12838bc2b9b5f65598c872e622ffce66a0a4dbfb))
+
 ## [1.18.1](https://github.com/apigee/devrel/compare/v1.18.0...v1.18.1) (2024-06-17)
 
 
