@@ -63,7 +63,7 @@ set_config_params() {
     export GKE_CLUSTER_NAME=${GKE_CLUSTER_NAME:-apigee-hybrid}
     export GKE_CLUSTER_MACHINE_TYPE=${GKE_CLUSTER_MACHINE_TYPE:-e2-standard-4}
     echo "- GKE Node Type $GKE_CLUSTER_MACHINE_TYPE"
-    export APIGEE_HYBRID_VERSION='1.12.0'
+    export APIGEE_HYBRID_VERSION='1.12.1'
     echo "- Apigee hybrid version $APIGEE_HYBRID_VERSION"
     export CHARTS_REPO=oci://us-docker.pkg.dev/apigee-release/apigee-hybrid-helm-charts
     echo "- Repository for Helm charts $CHARTS_REPO"
@@ -93,8 +93,8 @@ set_config_params() {
     echo "- Nameserver ${NAME_SERVER:-N/A}"
 
     export QUICKSTART_ROOT="${QUICKSTART_ROOT:-$PWD}"
+    export HYBRID_HOME="$QUICKSTART_ROOT/generated"
     export QUICKSTART_TOOLS="$QUICKSTART_ROOT/tools"
-    export HYBRID_HOME=$QUICKSTART_ROOT/generated
     export HELM_CHARTS_ROOT="$QUICKSTART_ROOT/helm-charts"
 
     echo "- Script root from: $QUICKSTART_ROOT"
@@ -112,7 +112,7 @@ function wait_for_ready(){
 
     # shellcheck disable=SC2001
     sanitized="$(echo "$action" | sed 's/Bearer [^\"]*/TOKEN/gi')"
-    echo -e "Waiting for $sanitized to return output $expected_output"
+    echo -e " Waiting for $sanitized to return output $expected_output"
     echo -e "Start: $(date)\n"
 
     while true; do
@@ -562,6 +562,7 @@ create_k8s_sa_workload() {
   K8S_SA=$1
   GCP_SA=$2
   kubectl create sa -n apigee "$K8S_SA" || echo "$K8S_SA exists"
+  sleep 1 # so that the next command doesn't return NotFound for K8S_SA
   kubectl annotate sa --overwrite -n apigee "$K8S_SA" "iam.gke.io/gcp-service-account=$GCP_SA"
 
   gcloud iam service-accounts add-iam-policy-binding "$GCP_SA" \
@@ -612,15 +613,16 @@ configure_runtime() {
   echo "Configure Overrides"
 
   cat << EOF > "$HELM_CHARTS_ROOT"/overrides.yaml
+# https://cloud.google.com/apigee/docs/hybrid/latest/config-prop-ref
+
 gcp:
   projectID: $PROJECT_ID
   region: "$AX_REGION" # Analytics Region
   workloadIdentity:
     enabled: true
 
-# Apigee org name.
 org: $PROJECT_ID
-# Kubernetes cluster name details
+
 k8sCluster:
   name: $GKE_CLUSTER_NAME
   region: "$REGION"
@@ -630,10 +632,6 @@ namespace: apigee
 # explictly set node pool names until b/325582303 is resolved
 nodeSelector:
   requiredForScheduling: false
-#  apigeeData:
-#    value: default-pool
-#  apigeeRuntime:
-#    value: default-pool
 
 instanceID: "$GKE_CLUSTER_NAME-$REGION"
 
@@ -643,9 +641,6 @@ envs:
       runtime: apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com
       synchronizer: apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com
       udca: apigee-udca@$PROJECT_ID.iam.gserviceaccount.com
-
-udca:
-  gsa: apigee-udca@$PROJECT_ID.iam.gserviceaccount.com
 
 watcher:
   gsa: apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com
@@ -661,7 +656,7 @@ metrics:
   gsa: apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com
 
 logger:
-  enabled: true
+  enabled: false
   gsa: apigee-logger@$PROJECT_ID.iam.gserviceaccount.com
 
 virtualhosts:
@@ -675,7 +670,6 @@ virtualhosts:
 ingressGateways:
 - name: apigee-ingress
   replicaCountMin: 1
-  replicaCountMax: 2
 EOF
 
 if [ "$CERT_TYPE" = "google-managed" ]; then
@@ -695,7 +689,7 @@ fi
 
 install_wildcard_gateway() {
   timeout 300 bash -c 'until kubectl wait --for=condition=ready --timeout 60s pod -l app=apigee-controller -n apigee-system; do sleep 10; done'
-  kubectl apply -f "$HYBRID_HOME"/generated/wildcard-gateway.yaml
+  kubectl apply -f "$HYBRID_HOME"/wildcard-gateway.yaml
 }
 
 check_cluster_readiness() {
@@ -754,7 +748,7 @@ EOF
   
   kubectl apply -f "$HYBRID_HOME"/apigee-k8s-cluster-ready-check.yaml
   echo "- ⏳ Waiting for jobs/apigee-k8s-cluster-ready-check to complete..."
-  timeout 180 bash -c 'until kubectl wait --for=condition=complete --timeout 60s jobs apigee-k8s-cluster-ready-check; do sleep 2; done'
+  timeout 300 bash -c 'until kubectl wait --for=condition=complete --timeout 60s jobs apigee-k8s-cluster-ready-check; do sleep 2; done'
   kubectl delete -f "$HYBRID_HOME"/apigee-k8s-cluster-ready-check.yaml # one-off job not needed anymore
   
   echo "✅ Completed readiness checks and deleted job"
@@ -876,7 +870,7 @@ install_runtime() {
     timeout 600 bash -c 'until kubectl wait --for=jsonpath='{.status.state}'=running --timeout 60s apigeeroute $(kubectl get apigeeroute -o=jsonpath='{.items[0].metadata.name}' -n apigee) -n apigee; do sleep 10; done'
     echo "✅ apigee-virtualhost installed and ready"
 
-    cat << EOF > "$HYBRID_HOME"/generated/wildcard-gateway.yaml
+    cat << EOF > "$HYBRID_HOME"/wildcard-gateway.yaml
 apiVersion: apigee.cloud.google.com/v1alpha1
 kind: ApigeeRoute
 metadata:
