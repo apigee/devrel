@@ -19,4 +19,22 @@ set -e
 SCRIPT_PATH="$( (cd "$(dirname "$0")" && pwd))"
 
 (cd "$SCRIPT_PATH" && npm i --no-fund)
-(cd "$SCRIPT_PATH" && npm run test)
+(cd "$SCRIPT_PATH" && npm run unit-test)
+
+curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | sh -
+
+export PATH=$PATH:$HOME/.apigeecli/bin
+
+TOKEN="$(gcloud auth print-access-token)"
+
+apigeecli apis create bundle \
+  --name mock-petstore-v3 \
+  --proxy-folder "${SCRIPT_PATH}/apiproxy" \
+  --org "${APIGEE_X_ORG}" \
+  --env "${APIGEE_X_ENV}" \
+  --ovr \
+  --token "${TOKEN}" \
+  --wait
+
+(cd "$SCRIPT_PATH" && npm run int-test)
+

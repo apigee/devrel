@@ -1,12 +1,14 @@
 {
   "scripts": {
-    "test": "node ./node_modules/.bin/jest unit"
+    "unit-test": "node ./node_modules/.bin/jest unit",
+    "int-test": "node ./node_modules/.bin/jest int"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "jest": "^29.7.0",
     "js-yaml": "^4.1.0",
-    "openapi-overlays-js": "^0.2.0"
+    "openapi-overlays-js": "^0.2.0",
+    "supertest": "^7.0.0"
   },
   "jest": {}
 }

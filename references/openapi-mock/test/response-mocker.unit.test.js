@@ -34,7 +34,7 @@ class MockContext {
 
 const petStoreSpec = fs.readFileSync('./apiproxy/resources/oas/spec.json', 'utf8');
 
-describe("response-mocker", () => {
+describe("response-mocker-unit", () => {
   test("get /pet/findByStatus (mock-status: null, accept: null) | pre-defined example/json", () => {
 
     let ctx = new MockContext({
@@ -131,7 +131,7 @@ describe("response-mocker", () => {
     expect(ctx.getVariable("response.content")).toMatch(/^<root>[\s\S]*<\/root>$/gm)
   });
 
-  test("get /pet/findByTags (seeded, mock-status: null, accept: null) | random example/xml", () => {
+  test("get /pet/findByTags (seeded, mock-status: null, accept: null) | random example/json", () => {
     let seed = 4108554714;
     let ctx = new MockContext({
       "request.verb": "GET",

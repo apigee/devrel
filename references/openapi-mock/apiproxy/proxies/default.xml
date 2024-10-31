@@ -41,7 +41,7 @@
   </PreFlow>
   <Flows/>
   <HTTPProxyConnection>
-    <BasePath>/v3/petstore</BasePath>
+    <BasePath>/mock/v3/petstore</BasePath>
   </HTTPProxyConnection>
   <RouteRule name="no-route"/>
 </ProxyEndpoint>
