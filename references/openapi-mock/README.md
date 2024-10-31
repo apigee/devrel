@@ -20,7 +20,7 @@ This is a [reference API Proxy implementation](./apiproxy) that lets you easily 
 The reference mock API proxy supports the following features.
 
 * [CORS](#cors) (using Apigee [CORS](https://cloud.google.com/apigee/docs/api-platform/reference/policies/cors-policy) policy)
-* [Request Validation](#request-validation) (using Apigee  [OASValidation](https://cloud.google.com/apigee/docs/api-platform/reference/policies/oas-validation-policy))
+* [Request Validation](#request-validation) (using Apigee [OASValidation](https://cloud.google.com/apigee/docs/api-platform/reference/policies/oas-validation-policy))
 * [Dynamic Response Status Code](#dynamic-response-status-code) (using a custom [JavaScript](https://cloud.google.com/apigee/docs/api-platform/reference/policies/javascript-policy) policy)
 * [Dynamic Response Content Type](#dynamic-response-content-type) (using a custom [JavaScript](https://cloud.google.com/apigee/docs/api-platform/reference/policies/javascript-policy) policy)
 * [Dynamic Response Body](#dynamic-response-body) (using a custom [JavaScript](https://cloud.google.com/apigee/docs/api-platform/reference/policies/javascript-policy) policy)
@@ -28,11 +28,11 @@ The reference mock API proxy supports the following features.
 
 ## Customizing The Mock API Proxy
 
-This [reference implementation](./apiproxy) provides a solid foundation for building your own mock API proxy. You can customize it by adding your own policies, modifying the existing configuration,  and using your own OpenAPI specification. This is a great way to learn about Apigee or to achieve more advanced customizations.
+This [reference implementation](./apiproxy) provides a solid foundation for building your own mock API proxy. You can customize it by adding your own policies, modifying the existing configuration, and using your own OpenAPI specification. This is a great way to learn about Apigee or to achieve more advanced customizations.
 
 At the very minimum, you have to:
 
-1. Update the `<BasePath>/v3/petstore</BasePath>` element within the  [default.xml](./apiproxy/proxies/default.xml) proxy endpoint.
+1. Update the `<BasePath>/v3/petstore</BasePath>` element within the [default.xml](./apiproxy/proxies/default.xml) proxy endpoint.
 2. Replace the included sample [spec.json](./apiproxy/resources/oas/spec.json) file with your own OpenAPI 3 spec file.
 
 > The OpenAPI 3 spec file has to be in JSON format.
@@ -73,7 +73,7 @@ It is that simple. All the information needed to generate the mock API proxy is 
 
 Under the hood, it is using the same reference implementation JavaScript policy from this repo.
 
-Finally, you just as shown before, you would use the [Apigee CLI](https://github.com/apigee/apigeecli/releases/) to deploy the API proxy bundle.
+Finally,as shown before, you would use the [Apigee CLI](https://github.com/apigee/apigeecli/releases/) to deploy the API proxy bundle.
 
 ## Mock API Proxy Features
 
@@ -125,12 +125,12 @@ If you use both `Mock-Status` and `Mock-Fuzz`, `Mock-Status` takes precedence.
 The reference mock API proxy automatically selects the `Content-Type` for responses. Here is how it works:
 
 * **JSON preferred:** If the operation allows `application/json`, the proxy will default to using it.
-* **Random selection:**  If `application/json` is not available, the proxy will randomly choose from the media types available for that operation.
+* **Random selection:** If `application/json` is not available, the proxy will randomly choose from the media types available for that operation.
 
 **Want more control?** You can use headers to select the response Content-Type:
 
 * **Standard `Accept` header:** You can use the standard `Accept` header in your request to request a specific media type (e.g., `Accept: application/xml`).
-* **Random media type:**  Alternatively, use the `Mock-Fuzz: true` header to have the proxy select a random media type the available ones.
+* **Random media type:** Alternatively, use the `Mock-Fuzz: true` header to have the proxy select a random media type the available ones.
 
 If you use both `Accept` and `Mock-Fuzz`, the `Accept` header will take precedence.
 
@@ -143,11 +143,11 @@ Here's how it determines what to send back for any particular operation's respon
 
 1. **Prioritizes `example` field:** If the response includes an `example` field, the proxy will use that example.
 
-2. **Handles multiple `examples`:** If the response has an `examples` field with multiple examples, the proxy will randomly select one.  You can use the `Mock-Example` header to specify which example you want (e.g., `Mock-Example: my-example`).
+2. **Handles multiple `examples`:** If the response has an `examples` field with multiple examples, the proxy will randomly select one. You can use the `Mock-Example` header to specify which example you want (e.g., `Mock-Example: my-example`).
 
 3. **Uses schema examples:** If no response examples are provided, but the schema for the response has an `example`, the proxy will use that.
 
-4. **Generates from schema:**  As a last resort, the proxy will generate a random example based on the response schema. This works for JSON, YAML, and XML.
+4. **Generates from schema:** As a last resort, the proxy will generate a random example based on the response schema. This works for JSON, YAML, and XML.
 
 You can use the `Mock-Fuzz: true` header to force the proxy to always generate a random example from the schema, even if other static examples are available.
 
@@ -158,13 +158,13 @@ The reference mock API proxy uses a special technique to make its responses seem
 
 * **Pseudo-random numbers:** The "random" choices the proxy makes (like status codes and content) are actually generated using a pseudo-random number generator (PRNG). This means the responses look random, but are determined by a starting value called a "seed."
 
-* **Unique seeds:**  Each request uses a different seed, so responses vary. However, the seed is provided in a special response header called `Mock-Seed`.
+* **Unique seeds:** Each request uses a different seed, so responses vary. However, the seed is provided in a special response header called `Mock-Seed`.
 
 * **Getting the same response:** To get an identical response, simply include the `Mock-Seed` header in a new request, using the value from a previous response. This forces the proxy to use the same seed and generate the same "random" choices, resulting in an identical response.
 
 This feature is super helpful for:
 
-* **Testing:**  Ensuring your tests always get the same response.
+* **Testing:** Ensuring your tests always get the same response.
 * **Debugging:** Easily recreating specific scenarios to pinpoint issues in application code.
 
 Essentially, by using the `Mock-Seed` header, you can control the randomness of the mock API responses, making them repeatable for testing and debugging.
@@ -183,7 +183,7 @@ The following fields are supported when generating examples from a JSON schema:
     * `additionalProperties` field - only used when there are no `properties` defined
 * `array` type
     * `minItems`, `maxItems` fields - array length chosen randomly between these values
-    * `items` field  - determines the type of array elements
+    * `items` field - determines the type of array elements
     * `prefixItems` (not supported yet)
 * `null` type
 * `const` type
@@ -206,10 +206,10 @@ The following fields are supported when generating examples from a JSON schema:
 * `integer` type
     * `minimum`, `maximum` fields - a random integer value chosen randomly between these values
     * `exclusiveMinimuim` field (boolean, JSON-Schema 4)
-    * `exclusiveMaximum` field  (boolean, JSON-Schema 4)
+    * `exclusiveMaximum` field (boolean, JSON-Schema 4)
     * `multipleOf` field
 * `number` type
     * `minimum`, `maximum` fields - a random float value chosen randomly between these values
     * `exclusiveMinimuim` field (boolean, JSON-Schema 4)
-    * `exclusiveMaximum` field  (boolean, JSON-Schema 4)
+    * `exclusiveMaximum` field (boolean, JSON-Schema 4)
     * `multipleOf` field
