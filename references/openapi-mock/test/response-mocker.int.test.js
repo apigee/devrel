@@ -21,7 +21,7 @@ const request = require('supertest');
 const fs = require('fs');
 const { expect, test, describe, beforeEach } = require('@jest/globals');
 const {setMockedResponse} = require("../apiproxy/resources/jsc/response-mocker");
-const APIGEE_X_HOST= process.env.APIGEE_X_HOST;
+const APIGEE_X_HOSTNAME= process.env.APIGEE_X_HOSTNAME;
 const BASE_PATH = `/mock/v3/petstore`
 
 
@@ -30,8 +30,8 @@ let PROXY_URL;
 describe("response-mocker-int", () => {
 
   beforeEach(() => {
-    expect(APIGEE_X_HOST).toBeDefined();
-    PROXY_URL=`https://${APIGEE_X_HOST}${BASE_PATH}`
+    expect(APIGEE_X_HOSTNAME).toBeDefined();
+    PROXY_URL=`https://${APIGEE_X_HOSTNAME}${BASE_PATH}`
   });
 
   test('get /pet/findByStatus (mock-status: null, accept: null) | pre-defined example/json', async () => {
