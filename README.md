@@ -1,4 +1,19 @@
 # Apigee DevRel
+<!--
+  Copyright 2024 Google LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 
 [![In Solidarity](https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png)](https://github.com/apps/in-solidarity)
 
@@ -59,6 +74,8 @@ further to fit a particular use case.
   API protection against bot leveraging reCAPTCHA enterprise
 - [Firestore Facade](references/firestore-facade) - Reference implementation
   for a long term caching/storage solution based on Cloud Firestore
+- [OpenAPI Mock](references/openapi-mock) - Reference implementation
+    for creating a mock API proxy from an OpenAPI 3 specification
 
 ## Tools
 

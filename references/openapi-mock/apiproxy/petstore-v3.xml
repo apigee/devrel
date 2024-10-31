@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Copyright 2024 Google LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<APIProxy revision="5" name="petstore-v3">
+  <DisplayName>Swagger Petstore - OpenAPI 3.0</DisplayName>
+  <Description>This is a sample Pet Store Server based on the OpenAPI 3.0 specification.</Description>
+  <CreatedAt>1730258534837</CreatedAt>
+  <LastModifiedAt>1730258534837</LastModifiedAt>
+  <BasePaths>/v3/petstore</BasePaths>
+  <Policies>
+    <Policy>AM-LoadSpec</Policy>
+    <Policy>AM-SetError</Policy>
+    <Policy>CORS-Allow</Policy>
+    <Policy>JS-MockResponse</Policy>
+    <Policy>OAS-Validate</Policy>
+  </Policies>
+  <ProxyEndpoints>
+    <ProxyEndpoint>default</ProxyEndpoint>
+  </ProxyEndpoints>
+  <Resources>
+    <Resource>jsc://response-mocker.cjs</Resource>
+    <Resource>oas://spec.json</Resource>
+  </Resources>
+</APIProxy>
