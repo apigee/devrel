@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.20.0](https://github.com/apigee/devrel/compare/v1.19.0...v1.20.0) (2024-11-20)
+
+
+### Features
+
+* add reference openapi mock apiproxy implementation ([1bc7966](https://github.com/apigee/devrel/commit/1bc79663728d044b96d583507658a59dc97d7494))
+
+
+### Bug Fixes
+
+* added more fault names ([31628f7](https://github.com/apigee/devrel/commit/31628f7fa65e41a99159a4d487761986bc24ba4f))
+* make proxy main XML file as minimal as possible ([ef36ce5](https://github.com/apigee/devrel/commit/ef36ce5507505b265e635d4c05f91f1d393cd71c))
+* use APIGEE_X_HOSTNAME env var ([1eb0d1a](https://github.com/apigee/devrel/commit/1eb0d1ac222d7a937e69cfb970d1bc9dc2aa0ed8))
+
 ## [1.19.0](https://github.com/apigee/devrel/compare/v1.18.1...v1.19.0) (2024-07-11)
 
 
