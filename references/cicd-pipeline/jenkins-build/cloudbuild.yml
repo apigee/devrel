@@ -16,8 +16,8 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args:
       - build
-      - "--tag=gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base:latest"
+      - "--tag=europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins-base:latest"
       - "--file=./Dockerfile"
       - .
 images:
-  - "gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base:latest"
+  - "europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins-base:latest"

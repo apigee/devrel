@@ -19,10 +19,10 @@ SCRIPTPATH="$( cd "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 export PATH="$PATH:$SCRIPTPATH/../../tools/apigee-sackmesser/bin"
 
 PROJECT_ID=$(gcloud config get-value project)
-gcloud builds submit --tag "gcr.io/$PROJECT_ID/apigee-target" --project "$PROJECT_ID"
+gcloud builds submit --tag "europe-docker.pkg.dev/$PROJECT_ID/devrel/apigee-target:latest" --project "$PROJECT_ID"
 
 gcloud run deploy apigee-target-demo \
-         --image="gcr.io/$(gcloud config get-value project)/apigee-target" \
+         --image="europe-docker.pkg.dev/$PROJECT_ID/devrel/apigee-target:latest" \
          --platform=managed \
          --region=europe-west1 \
          --no-allow-unauthenticated --project "$PROJECT_ID"

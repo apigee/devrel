@@ -40,8 +40,8 @@ docker build -f ./jenkins-web/Dockerfile -t apigee/devrel-jenkins:latest .
 PROJECT_ID=<my-project>
 gcloud builds submit --config ./cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkins-web/cloudbuild.yml --project $PROJECT_ID
-docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
-docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest apigee/devrel-jenkins:latest
+docker pull europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest
+docker tag europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest apigee/devrel-jenkins:latest
 ```
 
 ### Run the Jenkins Container
@@ -56,8 +56,8 @@ Image in GCR. If you have not used Cloud Build to build your Image then push it
 to GCR like so:
 
 ```sh
-docker tag apigee/devrel-jenkins:latest gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
-docker push gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest
+docker tag apigee/devrel-jenkins:latest europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest
+docker push europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest
 ```
 
 If you are building for Apigee X or hybrid you should create a dedicated service
@@ -108,7 +108,7 @@ CONTAINER_ENVS+=",APIGEE_PROD_ENV=prod1"
 CONTAINER_ENVS+=",TEST_HOST=$APIGEE_X_HOSTNAME"
 
 gcloud compute instances create-with-container jenkins --tags jenkins \
-  --container-image gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest \
+  --container-image europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest \
   --container-env "$CONTAINER_ENVS" \
   --machine-type e2-standard-2 \
   --service-account "$JENKINS_SA_EMAIL" \
@@ -134,7 +134,7 @@ CONTAINER_ENVS+=",APIGEE_PASS=$APIGEE_PASS"
 CONTAINER_ENVS+=",TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net"
 
 gcloud compute instances create-with-container jenkins --tags jenkins \
-  --container-image gcr.io/$PROJECT_ID/apigee/devrel-jenkins:latest \
+  --container-image europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins:latest \
   --container-env "$CONTAINER_ENVS" \
   --machine-type e2-standard-2 \
   --service-account "$JENKINS_SA_EMAIL" --scopes cloud-platform
@@ -233,8 +233,8 @@ docker build -f jenkinsfile-runner/Dockerfile -t apigee/devrel-jenkinsfile:lates
 PROJECT_ID=$(gcloud config get-value project)\
 gcloud builds submit --config ./cloudbuild.yml --project $PROJECT_ID
 gcloud builds submit --config ./jenkinsfile-runner/cloudbuild.yml --project $PROJECT_ID
-docker pull gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest
-docker tag gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile:latest
+docker pull europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkinsfile-runner:latest
+docker tag europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkinsfile-runner:latest apigee/devrel-jenkinsfile:latest
 ```
 
 ### Example Run
