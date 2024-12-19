@@ -16,10 +16,10 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args:
       - build
-      - "--tag=gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest"
+      - "--tag=europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkinsfile-runner:latest"
       - "--file=./jenkinsfile-runner/Dockerfile"
-      - "--build-arg=baseImage=gcr.io/$PROJECT_ID/apigee/devrel-jenkins-base"
+      - "--build-arg=baseImage=europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkins-base"
       - "--build-arg=baseImageTag=latest"
       - .
 images:
-  - "gcr.io/$PROJECT_ID/apigee/devrel-jenkinsfile-runner:latest"
+  - "europe-docker.pkg.dev/$PROJECT_ID/devrel/devrel-jenkinsfile-runner:latest"
