@@ -60,7 +60,7 @@ apigeecli apis create bundle \
 
 If you just need to quickly generate a mock API proxy from your OpenAPI 3 spec, the [apigee-go-gen](https://apigee.github.io/apigee-go-gen/installation/) tool can help. 
 
-The tool's [mock oas](https://apigee.github.io/apigee-go-gen/mock/mock-openapi-spec/) command automates the process, saving you time and effort.
+The tool's [mock oas](https://apigee.github.io/apigee-go-gen/mock/mock-openapi-description/) command automates the process, saving you time and effort.
 
 Here is an example of how to generate a mock API proxy using the `apigee-go-gen` tool.
 
