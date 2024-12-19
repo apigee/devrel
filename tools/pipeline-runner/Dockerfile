@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM alpine:latest
+FROM google/cloud-sdk:alpine AS gcloud-sdk
 
-COPY --from=google/cloud-sdk:alpine /google-cloud-sdk /google-cloud-sdk
+FROM alpine:3.21
+
+COPY --from=gcloud-sdk /google-cloud-sdk /google-cloud-sdk
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 
 # Install additional tools
 RUN apk add --no-cache \
   bash \
+  curl \
   jq \
   libxml2-utils \
   maven \
