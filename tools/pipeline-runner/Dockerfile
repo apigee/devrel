@@ -22,6 +22,7 @@ ENV PATH="/google-cloud-sdk/bin:${PATH}"
 # Install additional tools
 RUN apk add --no-cache \
   bash \
+  docker \
   curl \
   jq \
   libxml2-utils \
