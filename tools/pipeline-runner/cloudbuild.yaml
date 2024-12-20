@@ -56,19 +56,37 @@ steps:
     args:
       - '-c'
       - |-
+        set -e
         max_duration=8760 # cloud build timeout minus 4m
         if [ -n "$_PR_NUMBER" ]; then
-          FULL_PIPELINE_REQUIRED=$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER" | jq '.body |= ascii_downcase | .body | contains("[x] pr requires full pipeline run")' )
-          PROJECTS=$(list-repo-changes.sh)
+          PR_DATA="$(curl "https://api.github.com/repos/$_REPO_GH_ISSUE/issues/$_PR_NUMBER")"
+          FULL_PIPELINE_REQUIRED=$(printf '%s' "$$PR_DATA" | jq '.body |= ascii_downcase | .body | contains("[x] pr requires full pipeline run")' )
+          SELECTED_PROJECTS_FLAG=$(printf '%s' "$$PR_DATA" | jq '.body |= ascii_downcase | .body | contains("[x] test following projects (comma separated list):")')
+
+          # get a comma-separated list of folders of changed sub-projects
+          CHANGED_PROJECTS=$(list-repo-changes.sh)
+
+          # test only explicity subset of projects
+          if [ "$$SELECTED_PROJECTS_FLAG" = "true" ]; then
+            PROJECTS=$(printf "$$PR_DATA" | grep -o -i -E "test following projects \(comma separated list\): *.*" | cut -d ':' -f 2 | tr -d '[:space:]')
+            if [ -z "$$PROJECTS" ]; then
+              echo "SELECTED PROJECTS is empty. Please provide a list"
+              PROJECTS="$$CHANGED_PROJECTS"
+            fi
+          else
+            PROJECTS=$$CHANGED_PROJECTS
+          fi
+
           if [ "$$FULL_PIPELINE_REQUIRED" = "true" ]; then
             echo "Running Full Pipeline as required in the PR"
             timeout "$$max_duration" run-pipelines.sh || true
-          elif [ -z "$$PROJECTS"]; then
+          elif [ -z "$$PROJECTS" ]; then
             echo "TOTAL PIPELINE (no change);pass;0" > ./pipeline-result.txt
           else
-            echo "PR includes changes in $$PROJECTS"
+            echo "PR testing changes in the following projects: $$PROJECTS"
             timeout "$$max_duration" run-pipelines.sh "$$PROJECTS" || true
           fi
+
         elif [ "$_CI_PROJECT" = "all" ]; then
           timeout "$$max_duration" run-pipelines.sh || true
         else
