@@ -34,7 +34,7 @@ Given('I navigate to the authorize page', async function() {
     args: ["--no-sandbox"]
   })
   this.page = await this.browser.newPage()
-  return await this.page.goto('https://' + hostname + '/v1/openid-connect/authorize?client_id=' + this.apickli.scenarioVariables.clientId
+  return await this.page.goto('https://' + hostname + '/v1/openid-connect/c' + this.apickli.scenarioVariables.clientId
     + '&redirect_uri=https://mocktarget.apigee.net/echo&response_type=code&state=' + state +'&scope=' + scope)
 })
 
