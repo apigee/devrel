@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM google/cloud-sdk:alpine
+FROM google/cloud-sdk:alpine AS gcloud-sdk
+
+FROM alpine:3.21
+
+COPY --from=gcloud-sdk /google-cloud-sdk /google-cloud-sdk
+ENV PATH="/google-cloud-sdk/bin:${PATH}"
 
 # Install additional tools
 RUN apk add --no-cache \
+  bash \
+  docker \
+  git \
+  curl \
   jq \
   libxml2-utils \
   maven \
@@ -38,7 +47,9 @@ RUN apk add --no-cache \
   zip \
   make \
   go \
-  protobuf-dev
+  yq \
+  protobuf-dev \
+  dbus
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
 RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
@@ -52,17 +63,10 @@ RUN chmod +x /usr/local/bin/claat
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
   PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global puppeteer@5.2.1
+RUN npm install --global puppeteer@5.2.1 apigeelint@2.10.0
 
 # add our tooling scripts
 COPY *.sh /usr/bin/
-
-# install apgieelint
-RUN npm install --global apigeelint@2.10.0
-
-# yq because the apk is too old
-RUN wget -q -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v4.29.2/yq_linux_amd64"
-RUN chmod +x /usr/local/bin/yq
 
 # Run script
 WORKDIR /home

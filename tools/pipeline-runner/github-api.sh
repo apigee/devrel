@@ -18,7 +18,8 @@
 
 buildresult=$(cat)
 
-REPORT_ROWS=$(echo "$buildresult" | awk -F";" '$0="|"$1"|"$2"|"$3"|"' OFS="|")
+REPORT_ROWS=$(echo "$buildresult" | awk -F\; -v OFS='|' '{gsub(/pass/, "✅"); gsub(/fail/, "❌"); print "|" $1 "|" $2 "|" $3 "|"}')
+
 REPORT=$(cat <<EOF
 ### Pipeline Report
 

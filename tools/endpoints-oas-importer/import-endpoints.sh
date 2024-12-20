@@ -131,7 +131,7 @@ function client_authentication() {
 
 # normalizing yaml and json OAS file types
 if [[ $oas == *.yaml || $oas == *.yml ]]; then
-  oas_json_content=$(yq -o json "$oas")
+  oas_json_content=$(yq e -o json "$oas")
 elif [[ $oas == *.json ]]; then
   oas_json_content=$(cat "$oas")
 else

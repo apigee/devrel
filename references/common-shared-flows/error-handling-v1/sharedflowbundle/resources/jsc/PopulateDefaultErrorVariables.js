@@ -98,6 +98,6 @@ switch (context.getVariable("fault.name")) {
     // }
 }
 
-if (context.getVariable("flow.error.code") == null || !context.getVariable("custom.error.code")) {
+if (!context.getVariable("custom.error.code")) {
   setFault(500, "Internal Server Error", "500.99", "Internal Server Error");
 }

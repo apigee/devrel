@@ -36,7 +36,7 @@ Given('I navigate to the authorize page', async function() {
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-gpu"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -49,7 +49,7 @@ Given('I navigate to the authorize page with query params that must be sanitized
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-gpu"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + '    ' + this.apickli.scenarioVariables.clientId
@@ -62,7 +62,7 @@ Given('I navigate to the authorize page with an invalid response type', async fu
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-gpu"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -75,7 +75,7 @@ Given('I navigate to the authorize page without a scope parameter', async functi
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-gpu"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -88,7 +88,7 @@ Given('I navigate to the authorize page without a state parameter', async functi
   this.browser = await puppeteer.launch({
     ignoreHTTPSErrors: true,
     headless: true,
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-gpu"]
   })
   this.page = await this.browser.newPage()
   return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -102,7 +102,7 @@ if (isPkceEnabled) {
     this.browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
       headless: true,
-      args: ["--no-sandbox"]
+      args: ["--no-sandbox", "--disable-gpu"]
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -114,7 +114,7 @@ if (isPkceEnabled) {
     this.browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
       headless: true,
-      args: ["--no-sandbox"]
+      args: ["--no-sandbox", "--disable-gpu"]
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
@@ -126,7 +126,7 @@ if (isPkceEnabled) {
     this.browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
       headless: true,
-      args: ["--no-sandbox"]
+      args: ["--no-sandbox", "--disable-gpu"]
     })
     this.page = await this.browser.newPage()
     return await this.page.goto('https://' + hostname + basePath + '/authorize?client_id=' + this.apickli.scenarioVariables.clientId
