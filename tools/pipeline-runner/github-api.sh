@@ -18,7 +18,8 @@
 
 buildresult=$(cat)
 
-REPORT_ROWS=$(echo "$buildresult" | awk -F";" '$2 = ($2 == "fail" ? "❌" : "✅") ; $0="|"$1"|"$2"|"$3"|"' OFS="|")
+REPORT_ROWS=$(echo "$buildresult" | awk -F, -v OFS='|' '{gsub(/pass/, "✅"); gsub(/fail/, "❌"); print "|" $1 "|" $2 "|" $3 "|"}')
+
 REPORT=$(cat <<EOF
 ### Pipeline Report
 
@@ -31,6 +32,8 @@ $REPORT_ROWS
 Commit version: $SHORT_SHA
 EOF
 )
+
+echo $REPORT
 
 REPO_API="https://api.github.com/repos/$REPO_GH_ISSUE"
 
