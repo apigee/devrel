@@ -33,8 +33,6 @@ Commit version: $SHORT_SHA
 EOF
 )
 
-echo $REPORT
-
 REPO_API="https://api.github.com/repos/$REPO_GH_ISSUE"
 
 createIssueComment() {
