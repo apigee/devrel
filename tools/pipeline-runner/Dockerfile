@@ -48,7 +48,8 @@ RUN apk add --no-cache \
   make \
   go \
   yq \
-  protobuf-dev
+  protobuf-dev \
+  dbus
 
 # Reduce nighly log (note: -ntp requires maven 3.6.1+)
 RUN mv /usr/bin/mvn /usr/bin/_mvn &&\
