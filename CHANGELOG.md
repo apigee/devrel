@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.21.0](https://github.com/apigee/devrel/compare/v1.20.0...v1.21.0) (2024-12-20)
+
+
+### Features
+
+* add curl to Docker image ([e1c307e](https://github.com/apigee/devrel/commit/e1c307e6dc1659cd164a0fdf6ae13b046e31774b))
+* add docker to image ([a4c4f8d](https://github.com/apigee/devrel/commit/a4c4f8df47687661bf786dec8ec507793f56aab0))
+* allow for selective pipeline ([3b93916](https://github.com/apigee/devrel/commit/3b93916de0a2fbfb81d8f15e3861642d20dfbe24))
+* base pipeline builder off alpine ([141cbc3](https://github.com/apigee/devrel/commit/141cbc36aa3b5eb79a0b2a5d0528a4252184e326))
+
+
+### Bug Fixes
+
+* add --no-gpu to fix puppeteer regression in alpine ([6c3ada5](https://github.com/apigee/devrel/commit/6c3ada5ad94d32109e9dafcd30a1ec5cf5efa03a))
+* add dbus to chromium ([e30621b](https://github.com/apigee/devrel/commit/e30621bbe2bb4fb914e04d724327fd67cb938620))
+* broken link linter fix ([eef26f4](https://github.com/apigee/devrel/commit/eef26f445eb9e7479035ac5f19bdebd9f5031e26))
+* clean up ([9a3a12b](https://github.com/apigee/devrel/commit/9a3a12b7d63a1fe92c409aa188b88c85d580b1ef))
+* deprecate GCR repo ([6dbcc00](https://github.com/apigee/devrel/commit/6dbcc00354d97b046691b4090d77043fac67eae4))
+* proper error handling ([b2d2568](https://github.com/apigee/devrel/commit/b2d25685a8d7082ad7d96867d500b003947a6564))
+* proper error handling ([6446826](https://github.com/apigee/devrel/commit/6446826e934e8266d3a18cddba25a36f7bb87bfa))
+
 ## [1.20.0](https://github.com/apigee/devrel/compare/v1.19.0...v1.20.0) (2024-11-20)
 
 
