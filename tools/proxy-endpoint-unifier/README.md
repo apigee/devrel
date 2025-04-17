@@ -1,6 +1,6 @@
 # Apigee API Proxy Endpoint Unifier
 
-Apigee X and hybrid have a limitation of hosting up to 5 Proxy Endpoints per API Proxy. Apigee Edge has no such limitation.
+Apigee X and hybrid have a limitation of hosting up to 10 Proxy Endpoints per API Proxy. Apigee Edge has no such limitation.
 The objective of this tool is to take a proxy bundle and intelligently convert its proxy endpoints into logically
 grouped conditional flows, in order to stay within the Proxy Endpoint limit.
 
@@ -19,7 +19,7 @@ This is not an officially supported Google product.
     input_apis=apis                                     # Folder Containing exported & unzipped Proxy Bundles
     processed_apis=transformed                          # Folder to export transformed Proxies to 
     proxy_bundle_directory=transformed_zipped_bundles   # Folder to export transformed Proxies Bundles (zip) to 
-    proxy_endpoint_count=4                              # Number of Proxy Endpoints to retain while transforming (1-5)
+    proxy_endpoint_count=10                              # Number of Proxy Endpoints to retain while transforming (1-5)
     debug=false                                         # Flag to export debug logs
 
     [validate]
