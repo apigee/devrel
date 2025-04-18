@@ -1,6 +1,6 @@
 # Apigee API Proxy Endpoint Unifier
 
-Apigee X and hybrid have a limitation of hosting up to 5 Proxy Endpoints per API Proxy. Apigee Edge has no such limitation.
+Apigee X and hybrid have a limitation of hosting up to [10 Proxy Endpoints](https://cloud.google.com/apigee/docs/api-platform/reference/limits#api-proxies) per API Proxy. Apigee Edge has no such limitation.
 The objective of this tool is to take a proxy bundle and intelligently convert its proxy endpoints into logically
 grouped conditional flows, in order to stay within the Proxy Endpoint limit.
 
@@ -25,6 +25,40 @@ This is not an officially supported Google product.
     [validate]
     enabled=true                                        # Flag to enable proxy validation
     gcp_project_id=xxx-xxx-xxx                          # Apigee Project for proxy validation
+```
+
+Folder Structure of `input_apis`
+
+```
+apis/
+├── <exaple_api_1>
+│   └── apiproxy
+│       ├── exaple_api_1.xml
+│       ├── manifests
+│       │   └── manifest.xml
+│       ├── policies
+│       │   ├── example.xml
+│       ├── proxies
+│       │   ├── example.xml
+│       ├── resources
+│       │   └── jsc
+│       │       ├── example.js
+│       └── targets
+│           ├── default.xml
+├── <exaple_api_2>
+│   └── apiproxy
+│       ├── exaple_api_2.xml
+│       ├── manifests
+│       │   └── manifest.xml
+│       ├── policies
+│       │   ├── example.xml
+│       ├── proxies
+│       │   ├── example.xml
+│       ├── resources
+│       │   └── jsc
+│       │       ├── example.js
+│       └── targets
+│           ├── default.xml
 ```
 
 * If enabling validation, please run the following command to authenticate against Apigee APIs:
