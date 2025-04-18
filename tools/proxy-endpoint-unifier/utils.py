@@ -21,19 +21,41 @@ import xmltodict
 import json
 import shutil
 import zipfile
+import requests
 
+APIGEE_PROXY_ENDPOINT_LIMIT=10
+
+def is_token_valid(token):
+    """Checks if an access token is valid.
+
+    Args:
+        token: The access token to validate.
+
+    Returns:
+        True if the token is valid, \
+        False otherwise.
+    """
+    url = f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}"  # noqa
+    r = requests.get(url, timeout=5)
+    if r.status_code == 200:
+        response_json = r.json()
+        if 'email' not in response_json:
+            response_json['email'] = ''
+        print(f"Token Validated for user {response_json['email']}")  # noqa pylint: disable=W1203
+        return True
+    print(f"Token expired or invalid. Please run export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)")
+    sys.exit(1)
 
 def parse_config(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
     return config
 
-
 def get_proxy_endpoint_count(cfg):
     try:
         proxy_endpoint_count = cfg.getint('common', 'proxy_endpoint_count')
-        if not (proxy_endpoint_count > 0 and proxy_endpoint_count <= 5):
-            print('ERROR: Proxy Endpoints should be > Zero(0)  &  < Five(5)')
+        if not (proxy_endpoint_count > 0 and proxy_endpoint_count <= APIGEE_PROXY_ENDPOINT_LIMIT):
+            print(f'ERROR: Proxy Endpoints should be > Zero(0)  &  {APIGEE_PROXY_ENDPOINT_LIMIT}')
             sys.exit(1)
     except ValueError:
         print('proxy_endpoint_count should be a Number')
@@ -137,7 +159,7 @@ def parse_proxy_root(dir):
     api_proxy = doc.get('APIProxy', {})
     proxy_endpoints = api_proxy.get('ProxyEndpoints', {}).get('ProxyEndpoint', {})  # noqa
     target_endpoints = api_proxy.get('TargetEndpoints', {}).get('TargetEndpoint', {})  # noqa
-    policies = api_proxy.get('Policies', {}).get('Policy', {})
+    policies = {} if api_proxy.get('Policies', {}) is None else api_proxy.get('Policies', {}).get('Policy', {})  # noqa
     if len(proxy_endpoints) == 0:
         print('Proceeding with Filesystem parse of ProxyEndpoints')
         doc['APIProxy']['ProxyEndpoints'] = {}
@@ -197,26 +219,62 @@ def get_all_policies_from_step(Step):
     return policies
 
 
-def get_all_policies_from_flow(Flow, fault_rule=False):
+def get_all_policies_from_flow(flow, fault_rule=False):  # noqa pylint: disable=R0912
+    """Retrieves all policies from a flow.
+
+    Args:
+        Flow: Flow data dictionary.
+        fault_rule: Boolean indicating \
+        whether to
+            process fault rules.
+
+    Returns:
+        A list of policy names.
+    """
     policies = []
+
     if not fault_rule:
-        Request = ([] if Flow['Request'] is None else (
-                    [Flow['Request']['Step']] if isinstance(Flow['Request']['Step'], dict)  # noqa
-                    else Flow['Request']['Step']))
-        Response = ([] if Flow['Response'] is None else (
-                    [Flow['Response']['Step']] if isinstance(Flow['Response']['Step'], dict)  # noqa
-                    else Flow['Response']['Step']))
-        for each_flow in Request:
+        if flow.get('Request'):
+            if isinstance(flow['Request'], list) and len(flow['Request']) > 0:
+                flow['Request'] = flow['Request'][0]
+            request = ([] if flow['Request'] is None else (
+                        [] if flow['Request'].get('Step') is None else
+                        (
+                            [flow['Request']['Step']] if isinstance(flow['Request']['Step'], dict)    # noqa pylint: disable=C0301
+                            else flow['Request']['Step']
+                        )))
+        else:
+            request = []
+        if flow.get('Response'):
+            if (isinstance(flow['Response'], list) and
+                    len(flow['Response']) > 0):
+                flow['Response'] = flow['Response'][0]
+            response = ([] if flow['Response'] is None else (
+                            [] if flow['Response'].get('Step') is None else
+                            (
+                            [flow['Response']['Step']] if isinstance(flow['Response']['Step'], dict)   # noqa pylint: disable=C0301
+                                else flow['Response']['Step']
+                            )))
+        else:
+            response = []
+        for each_flow in request:
             policies.extend(get_all_policies_from_step(each_flow))
-        for each_flow in Response:
+        for each_flow in response:
             policies.extend(get_all_policies_from_step(each_flow))
     else:
-        FaultRules = ([] if Flow is None else (
-                    [Flow['Step']] if isinstance(Flow['Step'], dict)
-                    else Flow['Step']))
-        for each_step in FaultRules:
+        if flow is None:
+            fault_rules = []
+        elif flow.get('FaultRule', None) is None:
+            fault_rules = []
+        else:
+            fault_rules = (
+                [flow['FaultRule'].get('Step')] if isinstance(flow['FaultRule'].get('Step'), dict)  # noqa
+                else flow['FaultRule'].get('Step')
+            )
+        for each_step in fault_rules:
             policies.extend(get_all_policies_from_step(each_step))
     return policies
+
 
 
 def get_all_policies_from_endpoint(endpointData, endpointType):
@@ -258,6 +316,10 @@ def get_all_policies_from_endpoint(endpointData, endpointType):
     if 'DefaultFaultRule' in endpointData[endpointType]:
         policies.extend(
             get_all_policies_from_flow(endpointData[endpointType]['DefaultFaultRule'], True)  # noqa
+        )
+    if 'FaultRules' in endpointData[endpointType]:
+        policies.extend(
+            get_all_policies_from_flow(endpointData[endpointType]['FaultRules'], True)  # noqa
         )
     return policies
 
@@ -380,12 +442,27 @@ def process_steps(step, condition):
 
 
 def process_flow(flow, condition):
+    """Processes flows with conditions.
+
+
+    Args:
+        flow (dict): flow dictionary
+        condition (str): condition string
+
+    Returns:
+        dict: processed flow dictionary.
+    """
     processed_flow = flow.copy()
-    if flow['Request'] is not None:
-        processed_flow['Request']['Step'] = process_steps(flow['Request'],
+    
+    if flow.get('Request', None) is not None:
+        Step = flow.get('Request', None).get('Step', None)
+        if Step is not None: 
+            processed_flow['Request']['Step'] = process_steps(flow['Request'],
                                                           condition)
-    if flow['Response'] is not None:
-        processed_flow['Response']['Step'] = process_steps(flow['Response'],
+    if flow.get('Response', None) is not None:
+        Step = flow.get('Response', None).get('Step', None)
+        if Step is not None:
+            processed_flow['Response']['Step'] = process_steps(flow['Response'],
                                                            condition)
     processed_flow_with_condition = apply_condition(processed_flow,
                                                     condition)
@@ -402,78 +479,93 @@ def process_route_rules(route_rules, condition):
 
 
 def merge_proxy_endpoints(api_dict, basepath, pes):
+    """Merges multiple proxy endpoints \
+    into one.
+
+    Args:
+        api_dict (dict): The API \
+        dictionary.
+        basepath (str): The base path \
+        for the merged
+            endpoint.
+        pes (list): List of proxy \
+        endpoints to merge.
+
+    Returns:
+        dict: The merged proxy endpoint.
+    """
     merged_pe = {'ProxyEndpoint': {}}
     for each_pe, each_pe_info in api_dict['ProxyEndpoints'].items():
         if each_pe in pes:
-            original_basepath = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['BasePath']   # noqa
-            # TODO : Build full Request path
-            condition=(original_basepath if original_basepath is None else f'(request.path Matches "{original_basepath}*")')   # noqa
+            original_basepath = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['BasePath']   # noqa pylint: disable=C0301
+            # TODO : Build full Request path   # noqa pylint: disable=W0511
+            condition = (original_basepath if original_basepath is None else f'(request.path Matches "{original_basepath}*")')   # noqa pylint: disable=C0301
             copied_flows = (
-                None if each_pe_info['ProxyEndpoint']['Flows'] is None else each_pe_info['ProxyEndpoint']['Flows'].copy()   # noqa
+                None if each_pe_info['ProxyEndpoint']['Flows'] is None else each_pe_info['ProxyEndpoint']['Flows'].copy()   # noqa pylint: disable=C0301
             )
             original_flows = ([] if copied_flows is None else
-                              ([copied_flows['Flow']] if isinstance(copied_flows['Flow'],dict) else copied_flows['Flow']))  # noqa
+                              ([copied_flows['Flow']] if isinstance(copied_flows['Flow'], dict) else copied_flows['Flow']))   # noqa pylint: disable=C0301
 
             if len(merged_pe['ProxyEndpoint']) == 0:
                 merged_pe['ProxyEndpoint'] = {
-                        '@name': [],
-                        'Description': None,
-                        'FaultRules': None,
-                        'PreFlow': {
-                            '@name': 'PreFlow',
-                            'Request': {'Step': []},
-                            'Response': {'Step': []},
-                        },
-                        'PostFlow': {
-                            '@name': 'PostFlow',
-                            'Request': {'Step': []},
-                            'Response': {'Step': []},
-                        },
-                        'Flows': {'Flow': []},
-                        'HTTPProxyConnection': {'BasePath': '',
-                                                'Properties': {},
-                                                'VirtualHost': ''},
-                        'RouteRule': []
-                    }
+                    '@name': [],
+                    'Description': None,
+                    'FaultRules': None,
+                    'PreFlow': {
+                        '@name': 'PreFlow',
+                        'Request': {'Step': []},
+                        'Response': {'Step': []},
+                    },
+                    'PostFlow': {
+                        '@name': 'PostFlow',
+                        'Request': {'Step': []},
+                        'Response': {'Step': []},
+                    },
+                    'Flows': {'Flow': []},
+                    'HTTPProxyConnection': {'BasePath': '',
+                                            'Properties': {},
+                                            'VirtualHost': ''},
+                    'RouteRule': []
+                }
 
-                merged_pe['ProxyEndpoint']['Description'] = each_pe_info['ProxyEndpoint']['Description']  # noqa
-                merged_pe['ProxyEndpoint']['FaultRules'] = each_pe_info['ProxyEndpoint']['FaultRules']  # noqa
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['BasePath'] = (basepath if basepath is None else f'/{basepath}')  # noqa
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['Properties']  # noqa
-                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']  # noqa
+                merged_pe['ProxyEndpoint']['Description'] = each_pe_info['ProxyEndpoint']['Description']   # noqa pylint: disable=C0301
+                merged_pe['ProxyEndpoint']['FaultRules'] = each_pe_info['ProxyEndpoint']['FaultRules']   # noqa pylint: disable=C0301
+                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['BasePath'] = (basepath if basepath is None else f'/{basepath}')   # noqa pylint: disable=C0301
+                if len(merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties']) != 0:
+                    merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['Properties']   # noqa pylint: disable=C0301
+                merged_pe['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']   # noqa pylint: disable=C0301
 
-            merged_pe['ProxyEndpoint']['@name'].append(each_pe_info['ProxyEndpoint']['@name'])  # noqa
+            merged_pe['ProxyEndpoint']['@name'].append(each_pe_info['ProxyEndpoint']['@name'])   # noqa pylint: disable=C0301
             merged_pe['ProxyEndpoint']['RouteRule'].extend(
-                    process_route_rules(each_pe_info['ProxyEndpoint']['RouteRule'],condition)  # noqa
+                    process_route_rules(each_pe_info['ProxyEndpoint']['RouteRule'], condition)   # noqa pylint: disable=C0301
             )
             merged_pe['ProxyEndpoint']['PreFlow']['Request']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Request'], condition)   # noqa pylint: disable=C0301
             )
             merged_pe['ProxyEndpoint']['PreFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Response'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PreFlow']['Response'], condition)   # noqa pylint: disable=C0301
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Request']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Request'], condition)   # noqa pylint: disable=C0301
             )
             merged_pe['ProxyEndpoint']['PostFlow']['Response']['Step'].extend(
-                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Response'],condition)  # noqa
+                process_steps(each_pe_info['ProxyEndpoint']['PostFlow']['Response'], condition)   # noqa pylint: disable=C0301
             )
             if 'PostClientFlow' in each_pe_info['ProxyEndpoint']:
                 merged_pe['ProxyEndpoint']['PostClientFlow'] = {
-                            '@name': 'PostClientFlow',
-                            'Request': {'Step': []},
-                            'Response': {'Step': []},
-                        }
+                    '@name': 'PostClientFlow',
+                    'Request': {'Step': []},
+                    'Response': {'Step': []},
+                }
                 merged_pe['ProxyEndpoint']['PostClientFlow']['Response']['Step'].extend(  # noqa
-                    process_steps(each_pe_info['ProxyEndpoint']['PostClientFlow']['Response'], None)  # noqa
+                    process_steps(each_pe_info['ProxyEndpoint']['PostClientFlow']['Response'], None)   # noqa pylint: disable=C0301
                 )
             for each_flow in original_flows:
                 merged_pe['ProxyEndpoint']['Flows']['Flow'].append(
                     process_flow(each_flow, condition)
                 )
-    merged_pe['ProxyEndpoint']['@name'] = "-".join(merged_pe['ProxyEndpoint']['@name'])  # noqa
+    merged_pe['ProxyEndpoint']['@name'] = basepath.strip().replace('/','')
     return merged_pe
-
 
 def copy_folder(src, dst):
     try:
