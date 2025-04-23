@@ -35,12 +35,12 @@ def main():
     final_dict = {}
     processed_dict = {}
     if validation_enabled:
-        utils.is_token_valid(os.getenv('APIGEE_ACCESS_TOKEN',''))
+        utils.is_token_valid(os.getenv('APIGEE_ACCESS_TOKEN', ''))
 
     for each_dir in proxies:
         each_proxy_dict = utils.read_proxy_artifacts(
                         f"{proxy_dir}/{each_dir}/apiproxy",
-                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}/apiproxy")
+                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}/apiproxy")  # noqa
                             )
         if len(each_proxy_dict) > 0:
             each_proxy_rel = utils.get_proxy_objects_relationships(

@@ -23,7 +23,8 @@ import shutil
 import zipfile
 import requests
 
-APIGEE_PROXY_ENDPOINT_LIMIT=10
+APIGEE_PROXY_ENDPOINT_LIMIT = 10
+
 
 def is_token_valid(token):
     """Checks if an access token is valid.
@@ -43,19 +44,21 @@ def is_token_valid(token):
             response_json['email'] = ''
         print(f"Token Validated for user {response_json['email']}")  # noqa pylint: disable=W1203
         return True
-    print(f"Token expired or invalid. Please run export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)")
+    print("Token expired or invalid. Please run export APIGEE_ACCESS_TOKEN=$(gcloud auth print-access-token)")  # noqa
     sys.exit(1)
+
 
 def parse_config(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
     return config
 
+
 def get_proxy_endpoint_count(cfg):
     try:
         proxy_endpoint_count = cfg.getint('common', 'proxy_endpoint_count')
-        if not (proxy_endpoint_count > 0 and proxy_endpoint_count <= APIGEE_PROXY_ENDPOINT_LIMIT):
-            print(f'ERROR: Proxy Endpoints should be > Zero(0)  &  {APIGEE_PROXY_ENDPOINT_LIMIT}')
+        if not (proxy_endpoint_count > 0 and proxy_endpoint_count <= APIGEE_PROXY_ENDPOINT_LIMIT):  # noqa
+            print(f'ERROR: Proxy Endpoints should be > Zero(0)  &  {APIGEE_PROXY_ENDPOINT_LIMIT}')  # noqa
             sys.exit(1)
     except ValueError:
         print('proxy_endpoint_count should be a Number')
@@ -276,7 +279,6 @@ def get_all_policies_from_flow(flow, fault_rule=False):  # noqa pylint: disable=
     return policies
 
 
-
 def get_all_policies_from_endpoint(endpointData, endpointType):
     policies = []
     policies.extend(
@@ -453,19 +455,15 @@ def process_flow(flow, condition):
         dict: processed flow dictionary.
     """
     processed_flow = flow.copy()
-    
     if flow.get('Request', None) is not None:
         Step = flow.get('Request', None).get('Step', None)
-        if Step is not None: 
-            processed_flow['Request']['Step'] = process_steps(flow['Request'],
-                                                          condition)
+        if Step is not None:
+            processed_flow['Request']['Step'] = process_steps(flow['Request'], condition)  # noqa
     if flow.get('Response', None) is not None:
         Step = flow.get('Response', None).get('Step', None)
         if Step is not None:
-            processed_flow['Response']['Step'] = process_steps(flow['Response'],
-                                                           condition)
-    processed_flow_with_condition = apply_condition(processed_flow,
-                                                    condition)
+            processed_flow['Response']['Step'] = process_steps(flow['Response'], condition)   # noqa
+    processed_flow_with_condition = apply_condition(processed_flow, condition)   # noqa
     return processed_flow_with_condition
 
 
@@ -531,7 +529,7 @@ def merge_proxy_endpoints(api_dict, basepath, pes):
                 merged_pe['ProxyEndpoint']['Description'] = each_pe_info['ProxyEndpoint']['Description']   # noqa pylint: disable=C0301
                 merged_pe['ProxyEndpoint']['FaultRules'] = each_pe_info['ProxyEndpoint']['FaultRules']   # noqa pylint: disable=C0301
                 merged_pe['ProxyEndpoint']['HTTPProxyConnection']['BasePath'] = (basepath if basepath is None else f'/{basepath}')   # noqa pylint: disable=C0301
-                if len(merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties']) != 0:
+                if len(merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties']) != 0:  # noqa
                     merged_pe['ProxyEndpoint']['HTTPProxyConnection']['Properties'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['Properties']   # noqa pylint: disable=C0301
                 merged_pe['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost'] = each_pe_info['ProxyEndpoint']['HTTPProxyConnection']['VirtualHost']   # noqa pylint: disable=C0301
 
@@ -564,8 +562,9 @@ def merge_proxy_endpoints(api_dict, basepath, pes):
                 merged_pe['ProxyEndpoint']['Flows']['Flow'].append(
                     process_flow(each_flow, condition)
                 )
-    merged_pe['ProxyEndpoint']['@name'] = basepath.strip().replace('/','')
+    merged_pe['ProxyEndpoint']['@name'] = basepath.strip().replace('/', '')  # noqa
     return merged_pe
+
 
 def copy_folder(src, dst):
     try:
