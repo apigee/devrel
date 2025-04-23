@@ -34,11 +34,13 @@ def main():
     proxies = utils.list_dir(proxy_dir)
     final_dict = {}
     processed_dict = {}
+    if validation_enabled:
+        utils.is_token_valid(os.getenv('APIGEE_ACCESS_TOKEN', ''))
 
     for each_dir in proxies:
         each_proxy_dict = utils.read_proxy_artifacts(
                         f"{proxy_dir}/{each_dir}/apiproxy",
-                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}/apiproxy")
+                        utils.parse_proxy_root(f"{proxy_dir}/{each_dir}/apiproxy")  # noqa
                             )
         if len(each_proxy_dict) > 0:
             each_proxy_rel = utils.get_proxy_objects_relationships(
@@ -72,12 +74,13 @@ def main():
                 'ProxyEndpoints': []
             }
             for each_path, pes in each_group.items():
-                each_pe = '-'.join(pes)
-                merged_pes[each_pe] = utils.merge_proxy_endpoints(
+                each_merged_pe = utils.merge_proxy_endpoints(
                     processing_final_dict[each_api],
                     each_path,
                     pes
                 )
+                each_merged_pe_name = each_merged_pe['ProxyEndpoint']['@name']
+                merged_pes[each_merged_pe_name] = each_merged_pe
                 merged_objects[f"{each_api}_{index}"]['Name'] = f"{final_dict[each_api]['proxyName']}_{index}"  # noqa
                 merged_objects[f"{each_api}_{index}"]['Policies'].extend(  # noqa
                     [ item for pe in pes for item in processed_dict[each_api][pe]['Policies']])  # noqa
@@ -85,7 +88,7 @@ def main():
                     [ item for pe in pes for item in processed_dict[each_api][pe]['TargetEndpoints']])  # noqa
                 merged_objects[f"{each_api}_{index}"]['Policies'] = list(set(merged_objects[f"{each_api}_{index}"]['Policies']))  # noqa
                 merged_objects[f"{each_api}_{index}"]['TargetEndpoints'] = list(set(merged_objects[f"{each_api}_{index}"]['TargetEndpoints']))  # noqa
-                merged_objects[f"{each_api}_{index}"]['ProxyEndpoints'].append(each_pe)  # noqa
+                merged_objects[f"{each_api}_{index}"]['ProxyEndpoints'].append(each_merged_pe_name)  # noqa
 
     for each_api, grouped_api in bundled_group.items():
         for index, each_group in enumerate(grouped_api):
