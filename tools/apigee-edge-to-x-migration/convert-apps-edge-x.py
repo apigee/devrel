@@ -16,7 +16,6 @@
 
 import json
 import sys
-from datetime import datetime
 
 if len(sys.argv) > 1:
     apps_file = sys.argv[1]

@@ -29,6 +29,7 @@ with open(file, 'r') as file:
     # Load JSON data from the file
     json_data = json.load(file)
 
+
 # Function to recursively convert "false" strings to False
 def convert_false_to_false(json_data):
     if isinstance(json_data, dict):
@@ -41,6 +42,7 @@ def convert_false_to_false(json_data):
         return False  # Convert "false" string to false
     return json_data
 
+
 def convert_true_to_true(json_data):
     if isinstance(json_data, dict):
         for key, value in json_data.items():
@@ -51,6 +53,7 @@ def convert_true_to_true(json_data):
     elif isinstance(json_data, str) and json_data.lower() == 'true':
         return True  # Convert "true" string to true
     return json_data
+
 
 # Apply the conversion function
 json_data = convert_false_to_false(json_data)
