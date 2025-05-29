@@ -17,7 +17,7 @@
 # Usage: ${APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR}/clean_apps.sh
 
 gcloud config get project
-echo X_ORG=$X_ORG
+echo X_ORG="$X_ORG"
 
 echo '*******************************************'
 echo WARNING WARNING WARNING
@@ -25,7 +25,7 @@ echo This will attempt to remove all developers and their apps from the org, not
 echo WARNING WARNING WARNING
 echo '*******************************************'
 
-read -p "OK to proceed (Y/n)? " i
+read -r -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
   echo aborted
@@ -37,9 +37,9 @@ TOKEN=$(gcloud auth print-access-token)
 
 AUTH="Authorization: Bearer $TOKEN"
 
-for DEV in $(curl -s -H "$AUTH" https://apigee.googleapis.com/v1/organizations/$X_ORG/developers | jq -r .developer[].email)
+for DEV in $(curl -s -H "$AUTH" https://apigee.googleapis.com/v1/organizations/"$X_ORG"/developers | jq -r .developer[].email)
 do 
-    echo DEV: $DEV
+    echo DEV: "$DEV"
     ENC_DEV=encoded_string=$(printf "%s" "$DEV" | jq -sRr @uri)
-    curl -X DELETE -H "$AUTH" https://apigee.googleapis.com/v1/organizations/$X_ORG/developers/$ENC_DEV 
+    curl -X DELETE -H "$AUTH" https://apigee.googleapis.com/v1/organizations/"$X_ORG"/developers/"$ENC_DEV" 
 done

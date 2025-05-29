@@ -17,7 +17,7 @@
 # Usage: ${APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR}/clean_apps.sh
 
 gcloud config get project
-echo X_ORG=$X_ORG
+echo X_ORG="$X_ORG"
 
 echo '*******************************************'
 echo WARNING WARNING WARNING
@@ -25,7 +25,7 @@ echo This will attempt to remove all KVMs at the org and envs level, not just th
 echo WARNING WARNING WARNING
 echo '*******************************************'
 
-read -p "OK to proceed (Y/n)? " i
+read -r -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
   echo aborted
@@ -35,37 +35,35 @@ echo Proceeding...
 
 TOKEN=$(gcloud auth print-access-token)
 
-AUTH="Authorization: Bearer $TOKEN"
-
-for KVM in $(apigeecli -t $TOKEN --org=$ORG kvms list | jq -r .[])
+for KVM in $(apigeecli -t "$TOKEN" --org="$ORG" kvms list | jq -r .[])
 do 
-    echo KVM: $KVM
-    apigeecli -t $TOKEN --org=$ORG kvms delete --name=$KVM
+    echo KVM: "$KVM"
+    apigeecli -t "$TOKEN" --org="$ORG" kvms delete --name="$KVM"
 done
 
-for ENV in $(apigeecli -t $TOKEN --org=$ORG environments list | jq -r .[])
+for ENV in $(apigeecli -t "$TOKEN" --org="$ORG" environments list | jq -r .[])
 do
-    echo ENV KVMS: $ENV ================================
+    echo ENV KVMS: "$ENV" ================================
 
-    for KVM in $(apigeecli -t $TOKEN --org=$ORG --env=$ENV kvms list | jq -r .[])
+    for KVM in $(apigeecli -t "$TOKEN" --org="$ORG" --env="$ENV" kvms list | jq -r .[])
     do 
-        echo $ENV KVM: $KVM
-        apigeecli -t $TOKEN --org=$ORG --env=$ENV kvms delete --name=$KVM 
+        echo "$ENV" KVM: "$KVM"
+        apigeecli -t "$TOKEN" --org="$ORG" --env="$ENV" kvms delete --name="$KVM" 
     done
 done
 
 echo; echo PROXY KVMS ================================
-PROXIES=$(apigeecli -t $TOKEN --org=$ORG apis list | jq -r .proxies[].name)
+PROXIES=$(apigeecli -t "$TOKEN" --org="$ORG" apis list | jq -r .proxies[].name)
 for PROXY in $PROXIES
 do
-    KVMS=$(apigeecli -t $TOKEN --org=$ORG --proxy=$PROXY kvms list | jq -r .[])
+    KVMS=$(apigeecli -t "$TOKEN" --org="$ORG" --proxy="$PROXY" kvms list | jq -r .[])
     if [ "$KVMS" != "" ]
     then
-        echo PROXY KVMS: $PROXY ================================
+        echo PROXY KVMS: "$PROXY" ================================
         for KVM in $KVMS
         do
-            echo $KVM
-            apigeecli -t $TOKEN --org=$ORG --proxy=$PROXY kvms delete --name=$KVM
+            echo "$KVM"
+            apigeecli -t "$TOKEN" --org="$ORG" --proxy="$PROXY" kvms delete --name="$KVM"
         done
     fi
 done

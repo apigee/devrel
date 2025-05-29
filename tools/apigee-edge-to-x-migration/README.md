@@ -281,7 +281,6 @@ drwxr-xr-x  6 user  primarygroup     192 Sep 20 10:13 data-org-amer-demo13
 
 ```bash
 tree $EDGE_EXPORT_DIR
-├── apps.json
 ├── data-env-prod
 │   ├── flowhooks
 │   │   └── flow_hook_config

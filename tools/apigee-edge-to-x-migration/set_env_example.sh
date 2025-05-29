@@ -23,13 +23,13 @@ export B64UNPW="base64 of your_username:your_password"
 export EDGE_AUTH="Authorization: Basic $B64UNPW"
 
 export EDGE_EXPORT_DIR=$EDGE_X_MIGRATION_DIR/edge-export
-mkdir $EDGE_EXPORT_DIR
+mkdir "$EDGE_EXPORT_DIR"
 export EXPORTED_ORG_DIR=$EDGE_EXPORT_DIR/data-org-${EDGE_ORG}
 
 # X variables
 export X_ORG=your_x_org_name
 export X_IMPORT_DIR=$EDGE_X_MIGRATION_DIR/x-import
-mkdir $X_IMPORT_DIR
+mkdir "$X_IMPORT_DIR"
 
 # Other variables
 export APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR=$EDGE_X_MIGRATION_DIR/devrel/tools/apigee-migrate-edge-to-x-tools
