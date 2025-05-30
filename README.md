@@ -111,6 +111,8 @@ Apigee products.
   A tool to validate all targets in Target Servers & Apigee API Proxy Bundles.
 - [gRPC to HTTP Gateway Generator](tools/grpc-http-gateway-generator) -
   Generate gateways to expose gRPC services with HTTP API management.
+- [Apigee Edge to X Migration Tools](tools/apigee-edge-to-x-migration) -
+  Self service tools and scripts to migrate Apigee Edge to X.
 ## Labs
 
 This folder contains raw assets used to generate content to teach a particular
