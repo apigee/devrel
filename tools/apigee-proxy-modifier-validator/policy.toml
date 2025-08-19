@@ -1,0 +1,81 @@
+[AssignMessage]
+[AssignMessage.transport]
+xpath = ".//AssignTo"
+target_type = "attribute"
+attribute_name = "transport"
+from = "https"
+to = "http"
+
+[ServiceCallout]
+[ServiceCallout.disableHttp10]
+xpath = ".//HTTPTargetConnection/Properties/Property[@name='allow.http10']"
+target_type = "text"
+from = "true"
+to = "false"
+
+[ServiceCallout.use_proxy]
+xpath = ".//HTTPTargetConnection/Properties/Property[@name='use.proxy']"
+target_type = "text"
+to = "false"
+
+[ServiceCallout.use_proxy_tunneling]
+xpath = ".//HTTPTargetConnection/Properties/Property[@name='use.proxy.tunneling']"
+target_type = "text"
+to = "false"
+
+[ServiceCallout.success_code]
+xpath = ".//HTTPTargetConnection/Properties/Property[@name='success.codes']"
+target_type = "text"
+to = "2XX"
+
+[ServiceCallout.remove_empty]
+xpath = ".//FaultRules"
+action = "remove_if_empty"
+
+[AssignMessage.remove_empty]
+xpath = ".//FaultRules"
+action = "remove_if_empty"
+
+[ServiceCallout.trimTargetURL]
+xpath = ".//HTTPTargetConnection/URL"
+action = "trim_value"
+target_type = "text"
+
+[HMAC]
+[HMAC.prefix]
+xpath = ".//SecretKey"
+target_type = "attribute"
+attribute_name = "ref"
+prefix = "private."
+
+[ProxyEndpoint]
+[ProxyEndpoint.updateBasePath1]
+xpath = ".//HTTPProxyConnection/BasePath"
+target_type = "text"
+from = "bo-rpa-4565/transactions"
+prefix = "/"
+
+[ProxyEndpoint.updateBasePath2]
+xpath = ".//HTTPProxyConnection/BasePath"
+target_type = "text"
+from = "bo-rpa-313/"
+prefix = "/"
+
+[ProxyEndpoint.updateBasePath3]
+xpath = ".//HTTPProxyConnection/BasePath"
+target_type = "text"
+from = "product-support-rpa-agreements/agreements"
+prefix = "/"
+
+[ProxyEndpoint.updateBasePath4]
+xpath = ".//HTTPProxyConnection/BasePath"
+target_type = "text"
+from = "product-support-rpa-person-corebanking/person"
+prefix = "/"
+
+[ExtractVariables.replace]
+xpath = ".//JSONPayload/Variable/JSONPath"
+target_type = "text"
+from = "$."
+to = "$.*"
+exact_match = true
