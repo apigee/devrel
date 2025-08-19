@@ -30,7 +30,7 @@ pip install -r "$SCRIPTPATH/requirements.txt"
 
 # Running the Target Server Validator
 cd "$SCRIPTPATH"
-INPUT_PATH="$SCRIPTPATH/input"
+INPUT_PATH="$SCRIPTPATH/test"
 OUTPUT_PATH="$SCRIPTPATH/output"
 
 python modify_proxies.py -v --overwrite \
