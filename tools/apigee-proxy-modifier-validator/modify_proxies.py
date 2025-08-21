@@ -42,10 +42,11 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - [%(funcName)s] %(message)s',
     handlers=[logging.StreamHandler(sys.stdout)]
 )
-logger = logging.getLogger() # Get the root logger
+logger = logging.getLogger()  # Get the root logger
 
 # Apigee API base URL
-APIGEE_BASE_URL = os.getenv('APIGEE_BASE_URL', "https://apigee.googleapis.com/v1")
+APIGEE_BASE_URL = os.getenv('APIGEE_BASE_URL',
+                            "https://apigee.googleapis.com/v1")
 
 # Status strings for reporting consistency
 STATUS_YES = "Yes"
@@ -65,9 +66,10 @@ VAL_FAILED_UNKNOWN = "Failed (Unknown Validation Error)"
 VAL_SKIPPED_MODIFY_FAILED = "Skipped (Modify Failed)"
 VAL_SKIPPED_NAME_INF = "Failed (Name Inference)"
 VAL_SKIPPED_DISABLED = "Disabled"
-VAL_SKIPPED_PENDING = "Pending" # Intermediate state, shouldn't be final
+VAL_SKIPPED_PENDING = "Pending"  # Intermediate state, shouldn't be final
 VAL_SKIPPED_EXISTS = "Skipped (Output Exists)"
 VAL_FAILED_SETUP = "Failed (Setup Error)"
+
 
 class InvalidConfigFileError(Exception):
     """Custom exception with an error code."""
@@ -116,81 +118,83 @@ def infer_proxy_name(bundle_path: Path) -> str | None:  # noqa pylint: disable=E
     logger.info(f"Inferred name: '{inferred_name}' for {bundle_path.name}")
     return inferred_name
 
-def _extract_error_snippet(response_content: str, max_len: int = 150) -> str:  # noqa pylint: disable=R0912,R0915
+
+def _extract_error_snippet(response_content: str, max_len: int = 150) -> str:  # noqa:E501 pylint: disable=R0912,R0915
     """
-    Attempts to extract a concise summary of error messages from response content.
-    Prioritizes extracting messages from any 'violations' list found
-    within the error details. Joins multiple violations.
+    Attempts to extract a concise summary of error messages
+    from response content. Prioritizes extracting messages
+    from any 'violations' list found within the error details.
+    Joins multiple violations.
     """
-    snippet = "No details extracted" # Default if extraction fails
+    snippet = "No details extracted"  # Default if extraction fails
     if not response_content:
-        return "" # Return empty if no content
-    violations_found = [] # List to hold formatted violation strings
+        return ""  # Return empty if no content
+    violations_found = []  # List to hold formatted violation strings
 
     try:  # noqa pylint: disable=R1702
         # Attempt to parse as JSON first
         data = json.loads(response_content)
         if isinstance(data, dict):
-            # --- Check specifically for 'violations' within 'error.details' first ---
-            if 'error' in data and isinstance(data['error'], dict) and 'details' in data['error']:
+            # --- Check specifically for 'violations' within 'error.details' first ---  # noqa:E501
+            if 'error' in data and isinstance(data['error'], dict) and 'details' in data['error']:  # noqa:E501 pylint: disable=C0301
                 details = data['error']['details']
                 if isinstance(details, list):
                     # Iterate through *all* items in the 'details' list
                     for detail_item in details:
-                        # Check if this detail item *contains* a 'violations' key with a list value
+                        # Check if this detail item *contains* a 'violations' key with a list value  # noqa:E501 pylint: disable=C0301
                         if isinstance(detail_item, dict) and \
                            'violations' in detail_item and \
                            isinstance(detail_item['violations'], list):
                             for violation in detail_item['violations']:
-                                violation_text = "Unknown violation detail" # Default
+                                violation_text = "Unknown violation detail"    # noqa:E501
                                 if isinstance(violation, dict):
-                                    # Attempt to get common fields, fallback gracefully
+                                    # Attempt to get common fields, fallback gracefully  # noqa:E501
                                     filename = violation.get('filename', None)
                                     desc = violation.get('description', None)
                                     msg = violation.get('message', None)
-                                    violation_text = desc or msg or violation_text
+                                    violation_text = desc or msg or violation_text  # noqa:E501
                                     if filename:
-                                        violations_found.append(f"{filename}: {violation_text}")
+                                        violations_found.append(f"{filename}: {violation_text}")  # noqa:E501 pylint: disable=C0301
                                     else:
                                         violations_found.append(violation_text)
 
                                 elif isinstance(violation, str):
                                     violations_found.append(violation)
 
-            # --- If specific violations were extracted, format and return them ---
+            # --- If specific violations were extracted, format and return them ---  # noqa:E501
             if violations_found:
                 snippet = "; ".join(violations_found)
-                logger.debug(f"Extracted {len(violations_found)} violations: {snippet[:500]}...")
-                # Truncate the final combined string if needed for the report cell
+                logger.debug(f"Extracted {len(violations_found)} violations: {snippet[:500]}...")  # noqa:E501 pylint: disable=C0301
+                # Truncate the final combined string if needed for the report cell  # noqa:E501
                 if len(snippet) > max_len:
                     snippet = snippet[:max_len-3] + "..."
-                return snippet # Return the combined violation details
+                return snippet  # Return the combined violation details
 
-            # --- Fallback to other common error keys if no violations were processed ---
-            logger.debug("No 'violations' found or processed in error details, checking common keys.")  # noqa pylint: disable=C0301
+            # --- Fallback to other common error keys if no violations were processed ---  # noqa:E501 pylint: disable=C0301
+            logger.debug("No 'violations' found or processed in error details, checking common keys.")    # noqa:E501 pylint: disable=C0301
             if 'error' in data and isinstance(data['error'], dict):
                 # Prioritize error.message if available
                 if 'message' in data['error']:
                     snippet = data['error']['message']
                 # Check for other potential details if message is generic
-                elif 'detail' in data['error']: # Sometimes detail is nested here
+                elif 'detail' in data['error']:  # Sometimes detail is nested here  # noqa:E501
                     snippet = data['error']['detail']
-                elif 'status' in data['error']: # Fallback to status
+                elif 'status' in data['error']:  # Fallback to status
                     snippet = f"Status: {data['error']['status']}"
-            elif 'message' in data: # Top-level message
+            elif 'message' in data:  # Top-level message
                 snippet = data['message']
             elif ('fault' in data and isinstance(data['fault'], dict)
                   and 'faultstring' in data['fault']):
                 snippet = data['fault']['faultstring']
-            elif 'detail' in data: # Top-level detail
+            elif 'detail' in data:  # Top-level detail
                 snippet = data['detail']
-            elif 'error' in data and isinstance(data['error'], str): # Simple top-level error string
+            elif 'error' in data and isinstance(data['error'], str):  # Simple top-level error string  # noqa:E501 pylint: disable=C0301
                 snippet = data['error']
             else:
                 # Fallback if known keys aren't found in JSON
                 snippet = "JSON error content (see logs)"
 
-        elif isinstance(data, list) and data: # Handle case where root is a list
+        elif isinstance(data, list) and data:  # Handle case where root is a list  # noqa:E501
             logger.debug("Response is a list, extracting from first item.")
             first_item = data[0]
             if isinstance(first_item, str):
@@ -203,11 +207,11 @@ def _extract_error_snippet(response_content: str, max_len: int = 150) -> str:  #
     except json.JSONDecodeError:
         # If it's not JSON, try to get the first non-empty line or a snippet
         logger.debug("Response is not JSON, extracting first line.")
-        lines = [line.strip() for line in response_content.strip().splitlines() if line.strip()]
+        lines = [line.strip() for line in response_content.strip().splitlines() if line.strip()]  # noqa:E501 pylint: disable=C0301
         if lines:
-            snippet = lines[0] # Take the first meaningful line
+            snippet = lines[0]  # Take the first meaningful line
         else:
-            snippet = response_content.strip() # Fallback to raw stripped content
+            snippet = response_content.strip()  # Fallback to raw stripped content  # noqa:E501
 
     # --- Final Cleanup and Truncation for Fallback Snippets ---
     if isinstance(snippet, str):
@@ -227,7 +231,8 @@ def _extract_error_snippet(response_content: str, max_len: int = 150) -> str:  #
 
 def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: disable=R0914,R0912,R0915
     """
-    Parses/modifies an XML file using lxml based on TOML rules, preserving format.
+    Parses/modifies an XML file using lxml based on TOML rules,
+    preserving format.
 
     Supports modes based on TOML keys present in a rule:
     - conditional_prefix: Prepends 'prefix' if 'from' matches existing value
@@ -253,24 +258,24 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
             strip_cdata=False,
             remove_comments=False
         )
-        tree = etree.parse(str(xml_path), parser) # nosec B320
+        tree = etree.parse(str(xml_path), parser)  # nosec B320
         root = tree.getroot()
 
         root_tag_name = root.tag
         if not root_tag_name:
-            logger.error(f"Could not determine root element for {xml_path.name}")
+            logger.error(f"Could not determine root element for {xml_path.name}")  # noqa:E501
             return False
 
         if root_tag_name not in rules:
             logger.debug(
-                f"No rules defined for root element '{root_tag_name}' in {xml_path.name}"
+                f"No rules defined for root element '{root_tag_name}' in {xml_path.name}"  # noqa:E501 pylint: disable=C0301
             )
             return False
 
         policy_rules = rules[root_tag_name]
         any_change_made_to_tree = False
         logger.debug(
-            f"Applying rules for element type '{root_tag_name}' to {xml_path.name}"
+            f"Applying rules for element type '{root_tag_name}' to {xml_path.name}"  # noqa:E501
         )
 
         # --- Iterate through rules ---
@@ -285,7 +290,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
             to_str = rule_details.get('to')
             prefix_str = rule_details.get('prefix')
             suffix_str = rule_details.get('suffix')
-            action = rule_details.get('action') # e.g., "remove_if_empty", "trim_value"
+            action = rule_details.get('action')
 
             exact_match = rule_details.get('exact_match', False)
             if not isinstance(exact_match, bool):
@@ -297,7 +302,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
 
             # Basic parameter checks
             if not xpath_expr:
-                logger.warning(f"  Skipping rule '{rule_name}': Missing required 'xpath'.")
+                logger.warning(f"  Skipping rule '{rule_name}': Missing required 'xpath'.")  # noqa:E501 pylint: disable=C0301
                 continue
 
             # Determine modification mode and check exclusivity
@@ -310,37 +315,35 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
             # Prioritize 'action' if present
             if action == "remove_if_empty":
                 mode = "remove_if_empty"
-                if has_prefix or has_suffix or has_to or has_from:
-                    logger.warning(f"Skipping rule '{rule_name}': 'action: remove_if_empty' incompatible with value modification keys.")  # noqa pylint: disable=C0301
+                if has_prefix or has_suffix or has_to or has_from:  # noqa:E501
+                    logger.warning(f"Skipping rule '{rule_name}': 'action: remove_if_empty' incompatible with value modification keys.")  # noqa:E501 pylint: disable=C0301
                     continue
             elif action == "trim_value":
                 mode = "trim_value"
                 if has_prefix or has_suffix or has_to or has_from:
-                    logger.warning(f"Skipping rule '{rule_name}': 'action: trim_value' incompatible with value modification keys.")  # noqa pylint: disable=C0301
+                    logger.warning(f"Skipping rule '{rule_name}': 'action: trim_value' incompatible with value modification keys.")  # noqa:E501 pylint: disable=C0301
                     continue
-            # Determine mode based on other keys if no 'action' or action is not handled above
             elif has_prefix and has_from and not has_suffix and not has_to:
                 mode = "conditional_prefix"
             elif has_prefix and not has_from and not has_suffix and not has_to:
                 mode = "prefix"
             elif has_suffix and not has_from and not has_prefix and not has_to:
                 mode = "suffix"
-            elif has_to and not has_prefix and not has_suffix: # 'from' is optional for set_replace
+            elif has_to and not has_prefix and not has_suffix:
                 mode = "set_replace"
 
             if not mode:
                 logger.warning(
                     f"  Skipping rule '{rule_name}': No valid operation defined or conflicting keys. "  # noqa pylint: disable=C0301
-                    "Ensure one of 'action', 'prefix', 'suffix', or 'to' is primary."
+                    "Ensure one of 'action', 'prefix', 'suffix', or 'to' is primary."  # noqa:E501
                 )
                 continue
 
             # Validate 'exact_match' usage
-            if exact_match and not has_from and mode in ["conditional_prefix", "set_replace"]:
-                logger.warning(f"Rule '{rule_name}': 'exact_match=true' requires 'from' for mode '{mode}'. Ignoring exact_match.")  # noqa pylint: disable=C0301
+            if exact_match and not has_from and mode in ["conditional_prefix", "set_replace"]:  # noqa:E501 pylint: disable=C0301
+                logger.warning(f"Rule '{rule_name}': 'exact_match=true' requires 'from' for mode '{mode}'. Ignoring exact_match.")    # noqa:E501 pylint: disable=C0301
                 exact_match = False
 
-            # Further validation for modes other than remove_if_empty/trim_value
             if mode not in ["remove_if_empty", "trim_value"]:
                 if not target_type:
                     logger.warning(f"Skipping rule '{rule_name}': Missing 'target_type' for mode '{mode}'.")  # noqa pylint: disable=C0301
@@ -361,44 +364,44 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
             try:
                 elements_found = root.xpath(xpath_expr)
                 if not elements_found:
-                    logger.debug(f"  Rule '{rule_name}': XPath '{xpath_expr}' found no elements.")
+                    logger.debug(f"  Rule '{rule_name}': XPath '{xpath_expr}' found no elements.")  # noqa:E501 pylint: disable=C0301
                     continue
 
                 made_change_this_rule = False
                 for element in elements_found:
                     if mode == "remove_if_empty":
-                        has_text_content = element.text and element.text.strip()
+                        has_text_content = element.text and element.text.strip()  # noqa:E501
                         has_child_elements = len(element) > 0
                         if not has_text_content and not has_child_elements:
                             parent = element.getparent()
                             if parent is not None:
                                 parent.remove(element)
                                 made_change_this_rule = True
-                                logger.info(f"  Removed empty element via rule '{rule_name}'.")
+                                logger.info(f"  Removed empty element via rule '{rule_name}'.")  # noqa:E501 pylint: disable=C0301
                             else:
                                 logger.warning(f"  Rule '{rule_name}': Element has no parent (is it root?). Cannot remove.")  # noqa pylint: disable=C0301
                         else:
-                            logger.debug(f"  Rule '{rule_name}': Element not empty, not removed.")
-                        continue # Process next element or rule
+                            logger.debug(f"  Rule '{rule_name}': Element not empty, not removed.")  # noqa:E501 pylint: disable=C0301
+                        continue  # Process next element or rule
 
                     # --- Logic for modes that modify values ---
                     value_changed = False
                     current_value = ""
 
                     if target_type == 'text':
-                        current_value = element.text if element.text is not None else ""
+                        current_value = element.text if element.text is not None else ""  # noqa:E501 pylint: disable=C0301
                     elif target_type == 'attribute':
                         current_value = element.get(attribute_name, "")
 
-                    new_value = current_value # Default: no change
+                    new_value = current_value
                     apply_modification = False
 
                     if mode == "trim_value":
                         new_value = current_value.strip()
-                        apply_modification = True # Always attempt to apply trim
+                        apply_modification = True
                     elif mode == "conditional_prefix":
                         condition_met = (exact_match and current_value == from_str) or \
-                                        (not exact_match and has_from and from_str in current_value)
+                                        (not exact_match and has_from and from_str in current_value)  # noqa:E501 pylint: disable=C0301
                         if condition_met:
                             new_value = prefix_str + current_value
                             apply_modification = True
@@ -413,13 +416,14 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
                             new_value = to_str
                             apply_modification = True
                         else:
-                            condition_met = (exact_match and current_value == from_str) or \
-                                            (not exact_match and from_str in current_value)
+                            condition_met = (
+                                    (exact_match and current_value == from_str) or  # noqa:E501
+                                    (not exact_match and from_str in current_value)  # noqa:E501
+                                )
                             if condition_met:
                                 new_value = to_str if exact_match else current_value.replace(from_str, to_str)  # noqa pylint: disable=C0301
                                 apply_modification = True
 
-                    # Update the element ONLY if modification was flagged AND new value differs
                     if apply_modification and new_value != current_value:
                         if target_type == 'text':
                             element.text = new_value
@@ -434,12 +438,11 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
                            f"  Applied change via rule '{rule_name}' (Mode: {mode}{match_type_log}) to element matching XPath."  # noqa pylint: disable=C0301
                         )
 
-                # If this rule made any change to any element, mark the tree dirty
                 if made_change_this_rule:
                     any_change_made_to_tree = True
 
             except etree.XPathError as e:
-                logger.warning(f"  Skipping rule '{rule_name}': Invalid XPath '{xpath_expr}': {e}")
+                logger.warning(f"  Skipping rule '{rule_name}': Invalid XPath '{xpath_expr}': {e}")  # noqa:E501 pylint: disable=C0301
             except Exception as e:
                 logger.error(f"  Error applying rule '{rule_name}' to {xml_path.name}: {e}", exc_info=False)  # noqa pylint: disable=C0301
 
@@ -454,7 +457,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
                     pretty_print=True
                 )
                 content_was_modified_and_saved = True
-                logger.info(f"Successfully saved modified XML: {xml_path.name}")
+                logger.info(f"Successfully saved modified XML: {xml_path.name}")  # noqa:E501
             except Exception as e:
                 logger.error(f"Error writing modified XML for {xml_path.name} using lxml: {e}")  # noqa pylint: disable=C0301
                 return False
@@ -480,18 +483,22 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
     rules: dict
 ) -> tuple[bool, bool, dict[str, str]]:
     """
-    Processes a single API proxy bundle: extracts, modifies XML files (using lxml), re-zips.
+    Processes a single API proxy bundle: extracts,
+    modifies XML files (using lxml), re-zips.
 
     Returns tuple (processing_completed, any_xml_changed, diff_details):
-      - processing_completed: True if process ran end-to-end without critical errors.
-      - any_xml_changed: True if any XML file content was actually modified.
-      - diff_details: Dictionary mapping relative_path: diff_string for changed files.
+      - processing_completed: True if process ran end-to-end
+                                without critical errors.
+      - any_xml_changed: True if any XML file content was
+                                actually modified.
+      - diff_details: Dictionary mapping relative_path:
+                            diff_string for changed files.
     """
     logger.info(f"--- Processing bundle: {bundle_path.name} ---")
     processing_completed = False
     any_xml_changed_in_bundle = False
-    diff_details = {} # Dictionary to store diffs {relative_path: diff_string}
-    original_contents = {} # Store original content {relative_path: content}
+    diff_details = {}  # Dictionary to store diffs {relative_path: diff_string}
+    original_contents = {}  # Store original content {relative_path: content}
 
     # Input validation
     if not bundle_path.is_file() or bundle_path.suffix.lower() != '.zip':
@@ -505,13 +512,13 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
         # Use temporary directory for extraction and modification
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_dir_path = Path(temp_dir)
-            logger.info(f"Extracting bundle to temporary directory: {temp_dir_path}")
+            logger.info(f"Extracting bundle to temporary directory: {temp_dir_path}")  # noqa:E501
             try:
                 with zipfile.ZipFile(bundle_path, 'r') as zip_ref:
                     zip_ref.extractall(temp_dir_path)
             except Exception as e:
                 logger.error(f"Error extracting ZIP file {bundle_path}: {e}")
-                return processing_completed, any_xml_changed_in_bundle, diff_details
+                return processing_completed, any_xml_changed_in_bundle, diff_details  # noqa:E501
 
             # --- Scan specified subdirectories for XML files ---
             base_apiproxy_dir = temp_dir_path / 'apiproxy'
@@ -521,62 +528,60 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
                 "targets": base_apiproxy_dir / 'targets'
             }
 
-            modification_scan_successful = True # Track if any XML processing fails
+            modification_scan_successful = True
 
             for dir_key, dir_path in dirs_to_scan.items():  # noqa pylint: disable=R1702
                 if dir_path.is_dir():
                     logger.info(f"Scanning directory: {dir_path}")
                     for item in dir_path.iterdir():
                         if item.is_file() and item.suffix.lower() == '.xml':
-                            relative_path = item.relative_to(temp_dir_path).as_posix()
+                            relative_path = item.relative_to(temp_dir_path).as_posix()  # noqa:E501
                             logger.debug(f"Processing {dir_key} file: {item.name} ({relative_path})")  # noqa pylint: disable=C0301
 
                             # --- Store Original Content ---
                             try:
-                                # Read bytes first for consistent diffing, then decode
                                 original_bytes = item.read_bytes()
-                                original_content = original_bytes.decode('utf-8')
-                                original_contents[relative_path] = original_content
+                                original_content = original_bytes.decode('utf-8')  # noqa:E501
+                                original_contents[relative_path] = original_content  # noqa:E501
                             except Exception as read_err:
                                 logger.error(f"Error reading original file {relative_path}: {read_err}")  # noqa pylint: disable=C0301
                                 modification_scan_successful = False
-                                continue # Skip this file
+                                continue  # Skip this file
 
                             # --- Attempt Modification ---
                             file_was_modified = False
                             try:
-                                file_was_modified = modify_xml_file_lxml(item, rules)
+                                file_was_modified = modify_xml_file_lxml(item, rules)  # noqa:E501
 
                                 if file_was_modified:
                                     any_xml_changed_in_bundle = True
-                                    logger.info(f"File content was modified: {relative_path}")
+                                    logger.info(f"File content was modified: {relative_path}")  # noqa:E501 pylint: disable=C0301
 
                                     # --- Generate Diff if Modified ---
                                     try:
                                         # Read modified bytes and decode
                                         modified_bytes = item.read_bytes()
-                                        modified_content = modified_bytes.decode('utf-8')
+                                        modified_content = modified_bytes.decode('utf-8')  # noqa:E501 pylint: disable=C0301
 
                                         # Generate diff using decoded strings
                                         diff = difflib.unified_diff(
-                                            original_content.splitlines(keepends=True),
-                                            modified_content.splitlines(keepends=True),
-                                            fromfile=relative_path + ' (original)',
-                                            tofile=relative_path + ' (modified)',
+                                            original_content.splitlines(keepends=True),  # noqa:E501
+                                            modified_content.splitlines(keepends=True),  # noqa:E501
+                                            fromfile=relative_path + ' (original)',  # noqa:E501
+                                            tofile=relative_path + ' (modified)',  # noqa:E501
                                             lineterm='\n',
-                                            n=3 # Number of context lines
+                                            n=3  # Number of context lines
                                         )
                                         diff_string = "".join([ f"{each_ds}\n" if not each_ds.endswith("\n") else each_ds for each_ds in diff ])  # noqa pylint: disable=C0301
-                                        if diff_string: # Only store if diff is not empty
-                                            diff_details[relative_path] = diff_string
-                                            logger.debug(f"Generated diff for {relative_path}")
+                                        if diff_string:
+                                            diff_details[relative_path] = diff_string  # noqa:E501
+                                            logger.debug(f"Generated diff for {relative_path}")  # noqa:E501 pylint: disable=C0301
                                         else:
                                             logger.info(f"File {relative_path} saved but no textual diff detected by difflib.")  # noqa pylint: disable=C0301
                                             diff_details[relative_path] = "(Formatting changes only detected)\n"  # noqa pylint: disable=C0301
 
                                     except Exception as diff_err:
                                         logger.error(f"Error generating diff for {relative_path}: {diff_err}")  # noqa pylint: disable=C0301
-                                        # Store placeholder indicating diff error
                                         diff_details[relative_path] = f"--- Error generating diff: {diff_err} ---\n"  # noqa pylint: disable=C0301
 
                             except Exception as e:
@@ -586,13 +591,13 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
                                 )
                                 modification_scan_successful = False
                 else:
-                    logger.debug(f"Directory not found or is not a directory: {dir_path}")
+                    logger.debug(f"Directory not found or is not a directory: {dir_path}")  # noqa:E501 pylint: disable=C0301
 
             if not modification_scan_successful:
                 logger.error(
                     f"Bundle processing stopped due to errors during XML modification for: {bundle_path.name}"  # noqa pylint: disable=C0301
                 )
-                return processing_completed, any_xml_changed_in_bundle, diff_details
+                return processing_completed, any_xml_changed_in_bundle, diff_details  # noqa:E501
 
             logger.info(
                 f"Finished XML scan for {bundle_path.name}. Any content changes made: {any_xml_changed_in_bundle}"  # noqa pylint: disable=C0301
@@ -602,21 +607,21 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
             logger.info(f"Creating output bundle: {output_path}")
             try:
                 output_path.parent.mkdir(parents=True, exist_ok=True)
-                with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:  # noqa:E501
                     for root_dir_str, _, files in os.walk(temp_dir_path):
                         root_dir = Path(root_dir_str)
                         for file in files:
                             file_path = root_dir / file
-                            arcname = file_path.relative_to(temp_dir_path)
+                            arcname = file_path.relative_to(temp_dir_path)  # noqa:E501
                             zipf.write(file_path, arcname)
-                logger.info(f"Successfully created bundle: {output_path}")
+                logger.info(f"Successfully created bundle: {output_path}")  # noqa:E501
                 processing_completed = True
             except Exception as e:
-                logger.error(f"Error creating output ZIP file {output_path}: {e}")
+                logger.error(f"Error creating output ZIP file {output_path}: {e}")  # noqa:E501
 
     except Exception as outer_e:
         logger.error(
-            f"Outer error during bundle processing for {bundle_path.name}: {outer_e}",
+            f"Outer error during bundle processing for {bundle_path.name}: {outer_e}",  # noqa:E501
             exc_info=True
         )
 
@@ -643,7 +648,7 @@ def validate_bundle(bundle_path: Path, org_id: str, proxy_name: str) -> tuple[st
         logger.debug(f"Using ADC for project: {project_id or 'Default'}")
         auth_req = google.auth.transport.requests.Request()
         credentials.refresh(auth_req)
-        authed_session = google.auth.transport.requests.AuthorizedSession(credentials)
+        authed_session = google.auth.transport.requests.AuthorizedSession(credentials)  # noqa:E501
         validate_url = f"{APIGEE_BASE_URL}/organizations/{org_id}/apis"
         params = {'action': 'validate', 'validate': 'true', 'name': proxy_name}
         headers = {'Content-Type': 'application/octet-stream'}
@@ -657,7 +662,7 @@ def validate_bundle(bundle_path: Path, org_id: str, proxy_name: str) -> tuple[st
         else:
             logger.info(f"API Response Body Snippet [{proxy_name}]:\n{response_content[:1000] + ('...' if len(response_content) > 1000 else '')}")  # noqa pylint: disable=C0301
         if response.ok:
-            logger.info(f"Validation request OK (HTTP {response.status_code}) for '{proxy_name}'.")
+            logger.info(f"Validation request OK (HTTP {response.status_code}) for '{proxy_name}'.")  # noqa:E501 pylint: disable=C0301
             if '"error"' in response_content.lower() or '"validationerrors"' in response_content.lower():  # noqa pylint: disable=C0301
                 logger.warning(f"[{proxy_name}] Validation OK, but API indicates issues. See response.")  # noqa pylint: disable=C0301
                 error_snippet = _extract_error_snippet(response_content)
@@ -677,20 +682,19 @@ def validate_bundle(bundle_path: Path, org_id: str, proxy_name: str) -> tuple[st
         logger.error(f"[{proxy_name}] Bundle not found: {bundle_path}")
         return VAL_FAILED_FILE, "Bundle File Missing"
     except Exception as e:
-        logger.error(f"[{proxy_name}] Unknown Error during validation: {e}", exc_info=True)
+        logger.error(f"[{proxy_name}] Unknown Error during validation: {e}", exc_info=True)  # noqa:E501 pylint: disable=C0301
         error_snippet = _extract_error_snippet(response_content) if response_content else "Unknown Error"  # noqa pylint: disable=C0301
         return VAL_FAILED_UNKNOWN, error_snippet[:80]
 
 # --- Worker function for parallel processing ---
-def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R0912,R0915
+def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0914,R0912,R0915
     bundle_path_str: str,
     output_dir_str: str,
     rules: dict,
-    config_path_str: str, # For logging context in process_bundle
+    config_path_str: str,  # For logging context in process_bundle
     org_id: str | None,  # noqa pylint: disable=E1131
     validate_flag: bool,
     overwrite_flag: bool,
-    # verbose_flag: bool, # verbose_flag not directly used in worker to set log level, inherited
     bundle_idx: int,
     total_bundles: int
 ) -> list:
@@ -702,8 +706,6 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
     bundle_path = Path(bundle_path_str)
     output_dir = Path(output_dir_str)
     config_path_for_logging = Path(config_path_str)
-
-
     current_bundle_name = bundle_path.name
     output_bundle_path = output_dir / current_bundle_name
     processing_completed, any_xml_changed = False, False
@@ -711,8 +713,7 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
     validation_error_snippet = ""
     diff_details = {}
 
-    # This print will be from a worker process; order might be interleaved with other workers.
-    print(f"\n[{bundle_idx + 1}/{total_bundles}] Processing: {current_bundle_name}")
+    print(f"\n[{bundle_idx + 1}/{total_bundles}] Processing: {current_bundle_name}")  # noqa:E501
 
     if output_bundle_path.exists():
         if not overwrite_flag:
@@ -726,17 +727,16 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
         print(f"Overwriting: {current_bundle_name}")
 
     try:
-        # Pass the original config_path (as Path object) for potential logging inside process_bundle
-        processing_completed, any_xml_changed, diff_details = process_bundle(
-            bundle_path, config_path_for_logging, output_bundle_path, rules
+        processing_completed, any_xml_changed, diff_details = process_bundle(  # noqa:E501
+            bundle_path, config_path_for_logging, output_bundle_path, rules  # noqa:E501
         )
         log_msg = "Mod process completed." + (f" Content changed: {STATUS_YES}" if any_xml_changed else f" Content unchanged: {STATUS_NO}")  # noqa pylint: disable=C0301
         if processing_completed:
             logger.info(log_msg)
-            print(f"✅ Mod Process Finished: {current_bundle_name}")
+            print(f"✅ Mod Process Finished: {current_bundle_name}")  # noqa:E501
         else:
-            logger.error(f"Mod Process Failed: {current_bundle_name}")
-            print(f"❌ Mod Process Failed: {current_bundle_name}")
+            logger.error(f"Mod Process Failed: {current_bundle_name}")  # noqa:E501
+            print(f"❌ Mod Process Failed: {current_bundle_name}")  # noqa:E501
     except Exception as e:
         processing_completed = False
         any_xml_changed = False
@@ -748,9 +748,9 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
 
     if validate_flag:  # noqa pylint: disable=R1702
         if processing_completed:
-            if not org_id: # Should be caught by argparse if --validate is set
-                logger.error(f"Org ID missing for validation of {current_bundle_name}")
-                validation_status_detail = VAL_FAILED_SETUP # A new status or use existing
+            if not org_id:  # Should be caught by argparse if --validate is set
+                logger.error(f"Org ID missing for validation of {current_bundle_name}")  # noqa:E501
+                validation_status_detail = VAL_FAILED_SETUP
                 validation_error_snippet = "Org ID missing for validation"
             else:
                 print(f"Attempting validation for {current_bundle_name}...")
@@ -764,13 +764,13 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
                             print(f"❌ Validation finished for '{inferred_name}'. Status: {validation_status_detail}")  # noqa pylint: disable=C0301
                     except Exception as val_e:
                         validation_status_detail = VAL_FAILED_UNKNOWN
-                        validation_error_snippet = "Unknown Validation Exception"
-                        logger.error(f"Validation exception: {val_e}", exc_info=True)
-                        print(f"❌ Error during validation call.")
+                        validation_error_snippet = "Unknown Validation Exception"  # noqa:E501
+                        logger.error(f"Validation exception: {val_e}", exc_info=True)  # noqa:E501
+                        print("❌ Error during validation call.")
                 else:
                     validation_status_detail = VAL_SKIPPED_NAME_INF
                     validation_error_snippet = "Cannot infer name"
-                    print(f"❌ Skipping validation - cannot infer name.")
+                    print("❌ Skipping validation - cannot infer name.")
         else:
             validation_status_detail = VAL_SKIPPED_MODIFY_FAILED
             validation_error_snippet = "Modify process failed"
@@ -782,9 +782,10 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
 # --- Main Execution Logic ---
 
 def main():  # noqa pylint: disable=R0912,R0915,R0914
-    """Parses arguments, orchestrates bundle processing and validation, generates MD report."""
+    """Parses arguments, orchestrates bundle processing
+        and validation, generates MD report."""
     parser = argparse.ArgumentParser(
-        description="Modify/validate Apigee bundles and generate Markdown report (lxml).",
+        description="Modify/validate Apigee bundles and generate Markdown report (lxml).",  # noqa:E501 pylint: disable=C0301
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     # --- Argument parsing ---
@@ -829,7 +830,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
     try:
         rules = parse_config(config_path)
         if rules is None:
-            raise InvalidConfigFileError("No rules found",-1)
+            raise InvalidConfigFileError("No rules found", -1)
     except Exception as cfg_err:
         logger.critical(f"Failed to load config: {cfg_err}")
         sys.exit(1)
@@ -837,39 +838,38 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
     # --- Start Processing ---
     print(f"--- Starting Bundle Processing from: {input_dir} ---")
     if args.validate:
-        print(f"--- Validation ENABLED for org '{args.org}' (inferred names) ---")
-    print("--- INFO: Using lxml for XML modification to preserve formatting. ---")
+        print(f"--- Validation ENABLED for org '{args.org}' (inferred names) ---")  # noqa:E501
+    print("--- INFO: Using lxml for XML modification to preserve formatting. ---")  # noqa:E501
 
     bundles_found = sorted(list(input_dir.glob('*.zip')))
     total_bundles = len(bundles_found)
     results_data = []
 
     if not bundles_found:
-        logger.warning(f"No .zip files found in input directory: {input_dir}")
+        logger.warning(f"No .zip files found in input directory: {input_dir}")  # noqa:E501
         print("No .zip bundles found to process.")
         try:
             with open(args.report_file, 'w', encoding='utf-8') as f:
                 f.write("# Bundle Processing Report\n\n")
-                f.write("No .zip bundles found in the input directory.\n")
+                f.write("No .zip bundles found in the input directory.\n")  # noqa:E501
             print(f"Empty report saved to: {args.report_file}")
         except Exception as e:
             logger.error(f"Failed to write empty report file: {e}")
         sys.exit(0)
 
-    logger.info(f"Found {total_bundles} bundle(s). Using up to {args.workers} worker processes.")
-    print(f"--- Found {total_bundles} bundle(s). Using up to {args.workers} worker processes. ---")
+    logger.info(f"Found {total_bundles} bundle(s). Using up to {args.workers} worker processes.")  # noqa:E501 pylint: disable=C0301
+    print(f"--- Found {total_bundles} bundle(s). Using up to {args.workers} worker processes. ---")  # noqa:E501 pylint: disable=C0301
 
     tasks = []
     for i, bundle_path_iter in enumerate(bundles_found):
         tasks.append((
             str(bundle_path_iter),
-            str(output_dir), # output_dir is already resolved Path
+            str(output_dir),  # output_dir is already resolved Path
             rules,
-            str(config_path), # config_path is Path from args
+            str(config_path),  # config_path is Path from args
             args.org,
             args.validate,
             args.overwrite,
-            # args.verbose, # Not passing verbose, logger level is inherited
             i,
             total_bundles
         ))
@@ -878,34 +878,30 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
         # Ensure pool is properly closed, especially if errors occur
         try:
             with multiprocessing.Pool(processes=args.workers) as pool:
-                results_data = pool.starmap(process_single_bundle_worker, tasks)
+                results_data = pool.starmap(process_single_bundle_worker, tasks)  # noqa:E501
         except Exception as e:
             logger.critical(f"A critical error occurred during parallel processing: {e}", exc_info=True)  # noqa pylint: disable=C0301
-            if not results_data: # If pool init failed or starmap didn't even start
-                results_data = [] # Ensure it's a list for report generation
-    else: # Should be caught by "if not bundles_found"
+            if not results_data:
+                results_data = []
+    else:
         results_data = []
 
-
-    # --- Generate Markdown Report Content ---
     report_lines = []
     report_lines.append("# Bundle Processing Report")
     report_lines.append(f"Processed bundles from: `{args.input_dir}`")
     report_lines.append(f"Output saved to: `{args.output_dir}`")
     report_lines.append(f"Config file used: `{args.config_path}`")
-    report_lines.append("\n---\n") # Separator
+    report_lines.append("\n---\n")  # Separator
 
-    # --- Summary Counts ---
     report_lines.append("## Overall Summary")
-    modified_yes_count = sum(1 for r in results_data if r and len(r) > 1 and r[1] == STATUS_YES)
-    valid_results_count = sum(1 for r in results_data if r and len(r) > 1)
+    modified_yes_count = sum(1 for r in results_data if r and len(r) > 1 and r[1] == STATUS_YES)  # noqa:E501 pylint: disable=C0301
+    valid_results_count = sum(1 for r in results_data if r and len(r) > 1)  # noqa:E501
     modified_no_count = valid_results_count - modified_yes_count
 
     report_lines.append(f"*   **Total Bundles Found:** {total_bundles}")
     report_lines.append(f"*   **Bundles Processed (attempted):** {valid_results_count}")  # noqa pylint: disable=C0301
-    report_lines.append(f"*   **Bundles with XML changes:** {modified_yes_count}")
+    report_lines.append(f"*   **Bundles with XML changes:** {modified_yes_count}")  # noqa:E501
     report_lines.append(f"*   **Bundles unchanged/skipped/failed modify (among processed):** {modified_no_count}")  # noqa pylint: disable=C0301
-
 
     if args.validate:
         val_success_count = sum(1 for r in results_data if r and len(r) > 2 and r[2] in [VAL_SUCCESS, VAL_SUCCESS_WITH_ISSUES])  # noqa pylint: disable=C0301
@@ -924,26 +920,26 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
         report_lines.append("|" + "---|" * len(headers))
 
         for row in results_data:
-            if not row or len(row) < 4: # Gracefully handle incomplete results from failed workers
-                logger.warning(f"Skipping malformed row in report generation: {row}")
+            if not row or len(row) < 4:
+                logger.warning(f"Skipping malformed row in report generation: {row}")  # noqa:E501
                 report_lines.append(f"| {'Error processing bundle'} | - | - | {'Worker failed to return full data'} |")  # noqa pylint: disable=C0301
                 continue
-            bundle_name, mod_status, val_status, val_snippet_raw = row[:4]
+            bundle_name, mod_status, val_status, val_snippet_raw = row[:4]  # noqa:E501
             val_snippet_md = "`" + val_snippet_raw.replace('|', '\\|') + "`" if val_snippet_raw else ""  # noqa pylint: disable=C0301
             report_lines.append(f"| {bundle_name} | {mod_status} | {val_status} | {val_snippet_md} |")  # noqa pylint: disable=C0301
     else:
-        report_lines.append("\nNo bundle processing results to display in table.")
-    report_lines.append("\n---\n") # Separator after table
+        report_lines.append("\nNo bundle processing results to display in table.")  # noqa:E501
+    report_lines.append("\n---\n")  # Separator after table
 
     # --- Detailed Bundle Results ---
     report_lines.append("## Bundle Details")
 
     if not results_data:
-        report_lines.append("\nNo bundles were processed or results recorded.")
+        report_lines.append("\nNo bundles were processed or results recorded.")  # noqa:E501
     else:
         for result_row in results_data:
-            if not result_row or len(result_row) < 5: # Gracefully handle incomplete results
-                report_lines.append(f"\n### Bundle: `{'Unknown (Worker Error)'}`")
+            if not result_row or len(result_row) < 5:
+                report_lines.append(f"\n### Bundle: `{'Unknown (Worker Error)'}`")  # noqa:E501
                 report_lines.append(f"*   **Error:** Worker failed to return complete data for this bundle.")  # noqa pylint: disable=C0301
                 continue
 
@@ -951,7 +947,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
 
             report_lines.append(f"\n### Bundle: `{bundle_name}`")
             report_lines.append(f"*   **Modified:** {modified_status}")
-            report_lines.append(f"*   **Validation Result:** {validation_status}")
+            report_lines.append(f"*   **Validation Result:** {validation_status}")  # noqa:E501
             if validation_snippet:
                 report_lines.append(f"*   **Validation Detail Snippet:** `{validation_snippet}`")  # noqa pylint: disable=C0301
 
@@ -959,13 +955,12 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
                 report_lines.append("\n*   **Modifications Made:**")
                 for file_path, diff_content in diff_dict.items():
                     report_lines.append(f"    *   **File:** `{file_path}`")
-                    report_lines.append(f"        ```diff")
+                    report_lines.append("        ```diff")
                     indented_diff = "\n".join("        " + line for line in diff_content.splitlines())  # noqa pylint: disable=C0301
                     report_lines.append(indented_diff)
-                    report_lines.append(f"        ```")
+                    report_lines.append("        ```")
             elif modified_status == STATUS_YES:
                 report_lines.append("\n*   **Modifications Made:** (No textual diff generated, likely formatting changes only)")  # noqa pylint: disable=C0301
-
 
     report_lines.append("\n---\n")
     report_lines.append("**NOTE:** For full validation details (failures or API issues), check the script's console log output (use `-v` for maximum detail). The snippet above is only a hint.")  # noqa pylint: disable=C0301
@@ -977,8 +972,8 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
             f.write(report_content)
         print(f"\nMarkdown report saved successfully to: {args.report_file}")
     except Exception as e:
-        logger.error(f"Failed to write Markdown report to {args.report_file}: {e}")
-        print(f"\n❌ Failed to save report file.")
+        logger.error(f"Failed to write Markdown report to {args.report_file}: {e}")  # noqa:E501
+        print("\n❌ Failed to save report file.")
 
 
 if __name__ == "__main__":
