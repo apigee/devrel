@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Module providing a set of functions to modify and validate apigee proxies."""
+"""Module providing a set of functions to modify
+and validate apigee proxies."""
 
 
 import argparse
@@ -34,7 +35,7 @@ import google.auth.transport.requests  # pylint: disable=import-error
 import requests  # pylint: disable=import-error
 import tomlkit  # pylint: disable=import-error
 from lxml import etree  # nosec B410 pylint: disable=import-error
-from defusedxml.ElementTree import parse
+
 # Setup basic logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -439,7 +440,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
 
             except etree.XPathError as e:
                 logger.warning(f"  Skipping rule '{rule_name}': Invalid XPath '{xpath_expr}': {e}")
-            except Exception as e:  # noqa pylint: disable=W0718
+            except Exception as e:
                 logger.error(f"  Error applying rule '{rule_name}' to {xml_path.name}: {e}", exc_info=False)  # noqa pylint: disable=C0301
 
         # --- Save file only if the lxml tree was modified ---
@@ -454,7 +455,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
                 )
                 content_was_modified_and_saved = True
                 logger.info(f"Successfully saved modified XML: {xml_path.name}")
-            except Exception as e:  # noqa pylint: disable=W0718
+            except Exception as e:
                 logger.error(f"Error writing modified XML for {xml_path.name} using lxml: {e}")  # noqa pylint: disable=C0301
                 return False
         else:
@@ -465,7 +466,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
         logger.error(f"XML file not found: {xml_path}")
     except etree.XMLSyntaxError as xml_err:
         logger.error(f"Invalid XML structure in {xml_path.name}: {xml_err}")
-    except Exception as e:  # noqa pylint: disable=W0718
+    except Exception as e:
         logger.error(f"Failed to process XML file {xml_path.name} using lxml: {e}", exc_info=False)  # noqa pylint: disable=C0301
 
     return content_was_modified_and_saved
@@ -508,7 +509,7 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
             try:
                 with zipfile.ZipFile(bundle_path, 'r') as zip_ref:
                     zip_ref.extractall(temp_dir_path)
-            except Exception as e:  # noqa pylint: disable=W0718
+            except Exception as e:
                 logger.error(f"Error extracting ZIP file {bundle_path}: {e}")
                 return processing_completed, any_xml_changed_in_bundle, diff_details
 
@@ -536,7 +537,7 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
                                 original_bytes = item.read_bytes()
                                 original_content = original_bytes.decode('utf-8')
                                 original_contents[relative_path] = original_content
-                            except Exception as read_err:  # noqa pylint: disable=W0718
+                            except Exception as read_err:
                                 logger.error(f"Error reading original file {relative_path}: {read_err}")  # noqa pylint: disable=C0301
                                 modification_scan_successful = False
                                 continue # Skip this file
@@ -573,12 +574,12 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
                                             logger.info(f"File {relative_path} saved but no textual diff detected by difflib.")  # noqa pylint: disable=C0301
                                             diff_details[relative_path] = "(Formatting changes only detected)\n"  # noqa pylint: disable=C0301
 
-                                    except Exception as diff_err:  # noqa pylint: disable=W0718
+                                    except Exception as diff_err:
                                         logger.error(f"Error generating diff for {relative_path}: {diff_err}")  # noqa pylint: disable=C0301
                                         # Store placeholder indicating diff error
                                         diff_details[relative_path] = f"--- Error generating diff: {diff_err} ---\n"  # noqa pylint: disable=C0301
 
-                            except Exception as e:  # noqa pylint: disable=W0718
+                            except Exception as e:
                                 logger.error(
                                     f"Critical error during modify call for {item.name} in {dir_key}: {e}",  # noqa pylint: disable=C0301
                                     exc_info=True
@@ -610,10 +611,10 @@ def process_bundle(  # noqa pylint: disable=R0914,R0912,R0915,W0613
                             zipf.write(file_path, arcname)
                 logger.info(f"Successfully created bundle: {output_path}")
                 processing_completed = True
-            except Exception as e:  # noqa pylint: disable=W0718
+            except Exception as e:
                 logger.error(f"Error creating output ZIP file {output_path}: {e}")
 
-    except Exception as outer_e:  # noqa pylint: disable=W0718
+    except Exception as outer_e:
         logger.error(
             f"Outer error during bundle processing for {bundle_path.name}: {outer_e}",
             exc_info=True
@@ -675,7 +676,7 @@ def validate_bundle(bundle_path: Path, org_id: str, proxy_name: str) -> tuple[st
     except FileNotFoundError:
         logger.error(f"[{proxy_name}] Bundle not found: {bundle_path}")
         return VAL_FAILED_FILE, "Bundle File Missing"
-    except Exception as e: # noqa pylint: disable=W0718
+    except Exception as e:
         logger.error(f"[{proxy_name}] Unknown Error during validation: {e}", exc_info=True)
         error_snippet = _extract_error_snippet(response_content) if response_content else "Unknown Error"  # noqa pylint: disable=C0301
         return VAL_FAILED_UNKNOWN, error_snippet[:80]
@@ -736,7 +737,7 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
         else:
             logger.error(f"Mod Process Failed: {current_bundle_name}")
             print(f"❌ Mod Process Failed: {current_bundle_name}")
-    except Exception as e:  # noqa pylint: disable=W0718
+    except Exception as e:
         processing_completed = False
         any_xml_changed = False
         diff_details = {}
@@ -761,7 +762,7 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
                             print(f"✅ Validation finished for '{inferred_name}'. Status: {validation_status_detail}")  # noqa pylint: disable=C0301
                         else:
                             print(f"❌ Validation finished for '{inferred_name}'. Status: {validation_status_detail}")  # noqa pylint: disable=C0301
-                    except Exception as val_e:  # noqa pylint: disable=W0718
+                    except Exception as val_e:
                         validation_status_detail = VAL_FAILED_UNKNOWN
                         validation_error_snippet = "Unknown Validation Exception"
                         logger.error(f"Validation exception: {val_e}", exc_info=True)
@@ -829,7 +830,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
         rules = parse_config(config_path)
         if rules is None:
             raise InvalidConfigFileError("No rules found",-1)
-    except Exception as cfg_err:  # noqa pylint: disable=W0718
+    except Exception as cfg_err:
         logger.critical(f"Failed to load config: {cfg_err}")
         sys.exit(1)
 
@@ -851,7 +852,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
                 f.write("# Bundle Processing Report\n\n")
                 f.write("No .zip bundles found in the input directory.\n")
             print(f"Empty report saved to: {args.report_file}")
-        except Exception as e:  # noqa pylint: disable=W0718
+        except Exception as e:
             logger.error(f"Failed to write empty report file: {e}")
         sys.exit(0)
 
@@ -878,7 +879,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
         try:
             with multiprocessing.Pool(processes=args.workers) as pool:
                 results_data = pool.starmap(process_single_bundle_worker, tasks)
-        except Exception as e:  # noqa pylint: disable=W0718
+        except Exception as e:
             logger.critical(f"A critical error occurred during parallel processing: {e}", exc_info=True)  # noqa pylint: disable=C0301
             if not results_data: # If pool init failed or starmap didn't even start
                 results_data = [] # Ensure it's a list for report generation
@@ -975,7 +976,7 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
         with open(args.report_file, 'w', encoding='utf-8') as f:
             f.write(report_content)
         print(f"\nMarkdown report saved successfully to: {args.report_file}")
-    except Exception as e:  # noqa pylint: disable=W0718
+    except Exception as e:
         logger.error(f"Failed to write Markdown report to {args.report_file}: {e}")
         print(f"\n❌ Failed to save report file.")
 
