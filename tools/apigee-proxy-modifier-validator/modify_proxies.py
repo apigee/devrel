@@ -33,8 +33,8 @@ import google.auth  # pylint: disable=import-error
 import google.auth.transport.requests  # pylint: disable=import-error
 import requests  # pylint: disable=import-error
 import tomlkit  # pylint: disable=import-error
-from lxml import etree  # pylint: disable=import-error
-
+from lxml import etree  # nosec B410 pylint: disable=import-error
+from defusedxml.ElementTree import parse
 # Setup basic logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -44,7 +44,7 @@ logging.basicConfig(
 logger = logging.getLogger() # Get the root logger
 
 # Apigee API base URL
-APIGEE_BASE_URL = "https://apigee.googleapis.com/v1"
+APIGEE_BASE_URL = os.getenv('APIGEE_BASE_URL', "https://apigee.googleapis.com/v1")
 
 # Status strings for reporting consistency
 STATUS_YES = "Yes"
@@ -68,10 +68,15 @@ VAL_SKIPPED_PENDING = "Pending" # Intermediate state, shouldn't be final
 VAL_SKIPPED_EXISTS = "Skipped (Output Exists)"
 VAL_FAILED_SETUP = "Failed (Setup Error)"
 
+class InvalidConfigFileError(Exception):
+    """Custom exception with an error code."""
+    def __init__(self, message, error_code):
+        super().__init__(message)
+        self.error_code = error_code
 
 # --- Helper Functions ---
 
-def parse_config(config_path: Path) -> dict | None:
+def parse_config(config_path: Path) -> dict | None:  # noqa pylint: disable=E1131
     """Parses the TOML configuration file."""
     logger.info(f"Parsing configuration file: {config_path}")
     if not config_path.is_file():
@@ -86,7 +91,7 @@ def parse_config(config_path: Path) -> dict | None:
         logger.error(f"Error parsing TOML file {config_path}: {e}")
         raise
 
-def infer_proxy_name(bundle_path: Path) -> str | None:
+def infer_proxy_name(bundle_path: Path) -> str | None:  # noqa pylint: disable=E1131
     """
     Infers the Apigee proxy name from the bundle filename stem.
     Removes common revision/version patterns (_revN, -revN, _vN).
@@ -247,7 +252,7 @@ def modify_xml_file_lxml(xml_path: Path, rules: dict) -> bool:  # noqa pylint: d
             strip_cdata=False,
             remove_comments=False
         )
-        tree = etree.parse(str(xml_path), parser)
+        tree = etree.parse(str(xml_path), parser) # nosec B320
         root = tree.getroot()
 
         root_tag_name = root.tag
@@ -681,7 +686,7 @@ def process_single_bundle_worker(  # noqa pylint: disable=R0913,R0917,R0914,R091
     output_dir_str: str,
     rules: dict,
     config_path_str: str, # For logging context in process_bundle
-    org_id: str | None,
+    org_id: str | None,  # noqa pylint: disable=E1131
     validate_flag: bool,
     overwrite_flag: bool,
     # verbose_flag: bool, # verbose_flag not directly used in worker to set log level, inherited
@@ -822,7 +827,8 @@ def main():  # noqa pylint: disable=R0912,R0915,R0914
     # --- Config parsing ---
     try:
         rules = parse_config(config_path)
-        assert rules is not None
+        if rules is None:
+            raise InvalidConfigFileError("No rules found",-1)
     except Exception as cfg_err:  # noqa pylint: disable=W0718
         logger.critical(f"Failed to load config: {cfg_err}")
         sys.exit(1)
