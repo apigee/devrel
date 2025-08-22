@@ -1,0 +1,44 @@
+# Azure Configuration
+azure_location = "eastus"
+
+# GCP Configuration
+gcp_project_id = "your-gcp-project-id"
+gcp_region     = "us-central1"
+
+# Apigee Configuration
+
+apigee_org_name          = "your-org-name"
+apigee_env_name          = "dev"
+apigee_envgroup_name     = "dev-group"
+apigee_namespace         = "apigee"
+apigee_version           = "1.15.0"
+apigee_org_display_name  = "My Apigee Organization"
+apigee_env_display_name  = "Development Environment"
+apigee_instance_name     = "apigee-instance"
+apigee_cassandra_replica_count = 1
+
+
+# Hostnames for Apigee Environment Group
+hostnames = [
+  "api.example.com",
+  "api-dev.example.com"
+]
+
+#TLS related variable
+tls_apigee_self_signed = true
+tls_apigee_cert_path = "path/to/your/tls.crt"
+tls_apigee_key_path = "path/to/your/tls.key"
+
+#Load Balancer IP
+#apigee_lb_ip="35.188.116.91"
+
+
+create_org=true
+apigee_install=true
+
+
+# Optional: Ingress Service Annotations for Azure Internal Load Balancer
+# ingress_svc_annotations = {
+#   "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+#   "service.beta.kubernetes.io/azure-load-balancer-internal-subnet" = "snet-aks-${name_suffix}"
+# } 
