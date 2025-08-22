@@ -30,6 +30,7 @@
 /tools/apigee-openlegacy                @tomfi @joelgauci
 /tools/apigee-sackmesser                @danistrebel
 /tools/apigee-x-trial-provision         @yuriylesyuk @danistrebel
+/tools/apigee-hybrid-terraform          @rajeshmi @ayos
 /tools/decrypt-hybrid-assets            @yuriylesyuk
 /tools/endpoints-oas-importer           @danistrebel
 /tools/grpc-http-gateway-generator      @danistrebel @omidtahouri
