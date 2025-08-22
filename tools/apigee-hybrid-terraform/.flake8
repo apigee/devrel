@@ -1,0 +1,11 @@
+[flake8]
+# Ignore the following error codes:
+# F401: 'X' imported but unused
+# E128: continuation line under-indented for visual indent
+# E303: too many blank lines (2)
+# W291: trailing whitespace
+# W292: no newline at end of file
+# W293: blank line contains whitespace
+# W391: blank line at end of file
+ignore = F401, E128, E303, W291, W292, W293, W391
+max-line-length = 120
