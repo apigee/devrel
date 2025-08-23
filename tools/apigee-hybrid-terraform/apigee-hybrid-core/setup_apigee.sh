@@ -124,16 +124,17 @@ setup_apigee() {
         exit 1
     fi
 
-    export org_name=$(grep -A 1 'org:' "$OVERRIDES_YAML_PATH" | grep 'org:' | awk '{print $2}')
+    org_name=$(grep -A 1 'org:' "$OVERRIDES_YAML_PATH" | grep 'org:' | awk '{print $2}')
+    export org_name
 
     # Set up base directories
     export APIGEE_HYBRID_BASE=output/$org_name/apigee-hybrid
     export APIGEE_HELM_CHARTS_BASE=helm-charts
 
-    mkdir -p $APIGEE_HYBRID_BASE/$APIGEE_HELM_CHARTS_BASE
+    mkdir -p "$APIGEE_HYBRID_BASE/$APIGEE_HELM_CHARTS_BASE"
 
     # Pull Apigee Helm charts
-    cd $APIGEE_HYBRID_BASE/$APIGEE_HELM_CHARTS_BASE
+    cd "$APIGEE_HYBRID_BASE/$APIGEE_HELM_CHARTS_BASE" || exit
     export APIGEE_HELM_CHARTS_HOME=$PWD
 
     # Set chart repository and version
@@ -141,24 +142,29 @@ setup_apigee() {
     export CHART_VERSION=${APIGEE_VERSION}
 
     # Remove all files in the home directory
-    rm -rf $APIGEE_HELM_CHARTS_HOME/*
+    rm -rf "${APIGEE_HELM_CHARTS_HOME:?}"/*
 
     # Pull all required Helm charts
-    helm pull $CHART_REPO/apigee-operator --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-datastore --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-env --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-ingress-manager --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-org --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-redis --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-telemetry --version $CHART_VERSION --untar
-    helm pull $CHART_REPO/apigee-virtualhost --version $CHART_VERSION --untar
+    helm pull "$CHART_REPO/apigee-operator" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-datastore" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-env" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-ingress-manager" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-org" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-redis" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-telemetry" --version "$CHART_VERSION" --untar
+    helm pull "$CHART_REPO/apigee-virtualhost" --version "$CHART_VERSION" --untar
 
     # Get the filename from the path
-    local apigee_overrides_yaml_filename=$(basename $OVERRIDES_YAML_PATH)
-    local apigee_service_template_filename=$(basename $SERVICE_TEMPLATE_PATH)
-    local apigee_sa_key_json_filename=$(basename $SA_KEY_JSON_PATH)
-    local apigee_envgroup_cert_file_filename=$(basename $ENVGROUP_CERT_PATH)
-    local apigee_envgroup_private_key_file_filename=$(basename $ENVGROUP_PRIVATE_KEY_PATH)
+    apigee_overrides_yaml_filename=$(basename "$OVERRIDES_YAML_PATH")
+    local apigee_overrides_yaml_filename
+    apigee_service_template_filename=$(basename "$SERVICE_TEMPLATE_PATH")
+    local apigee_service_template_filename
+    apigee_sa_key_json_filename=$(basename "$SA_KEY_JSON_PATH")
+    local apigee_sa_key_json_filename
+    apigee_envgroup_cert_file_filename=$(basename "$ENVGROUP_CERT_PATH")
+    local apigee_envgroup_cert_file_filename
+    apigee_envgroup_private_key_file_filename=$(basename "$ENVGROUP_PRIVATE_KEY_PATH")
+    local apigee_envgroup_private_key_file_filename
 
     echo "apigee_overrides_yaml_filename: $apigee_overrides_yaml_filename"
     echo "apigee_sa_key_json_filename: $apigee_sa_key_json_filename"
@@ -166,35 +172,37 @@ setup_apigee() {
     echo "apigee_envgroup_private_key_file_filename: $apigee_envgroup_private_key_file_filename"
     
     # Copy the overrides.yaml file
-    cp $OVERRIDES_YAML_PATH $APIGEE_HELM_CHARTS_HOME/$apigee_overrides_yaml_filename
-    cp $SERVICE_TEMPLATE_PATH $APIGEE_HELM_CHARTS_HOME/$apigee_service_template_filename
+    cp "$OVERRIDES_YAML_PATH" "$APIGEE_HELM_CHARTS_HOME/$apigee_overrides_yaml_filename"
+    cp "$SERVICE_TEMPLATE_PATH" "$APIGEE_HELM_CHARTS_HOME/$apigee_service_template_filename"
 
     # Copy the sa-key.json file
-    cp -fr $SA_KEY_JSON_PATH $APIGEE_HELM_CHARTS_HOME/apigee-datastore/$apigee_sa_key_json_filename
-    cp -fr $SA_KEY_JSON_PATH $APIGEE_HELM_CHARTS_HOME/apigee-telemetry/$apigee_sa_key_json_filename
-    cp -fr $SA_KEY_JSON_PATH $APIGEE_HELM_CHARTS_HOME/apigee-org/$apigee_sa_key_json_filename
-    cp -fr $SA_KEY_JSON_PATH $APIGEE_HELM_CHARTS_HOME/apigee-env/$apigee_sa_key_json_filename
+    cp -fr "$SA_KEY_JSON_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-datastore/$apigee_sa_key_json_filename"
+    cp -fr "$SA_KEY_JSON_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-telemetry/$apigee_sa_key_json_filename"
+    cp -fr "$SA_KEY_JSON_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-org/$apigee_sa_key_json_filename"
+    cp -fr "$SA_KEY_JSON_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-env/$apigee_sa_key_json_filename"
 
-    mkdir -p $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/
+    mkdir -p "$APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/"
 
     # Copy the cert files
-    cp -fr $ENVGROUP_CERT_PATH $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/$apigee_envgroup_cert_file_filename
-    cp -fr $ENVGROUP_PRIVATE_KEY_PATH $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/$apigee_envgroup_private_key_file_filename
+    cp -fr "$ENVGROUP_CERT_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/$apigee_envgroup_cert_file_filename"
+    cp -fr "$ENVGROUP_PRIVATE_KEY_PATH" "$APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/$apigee_envgroup_private_key_file_filename"
 }
 
 create_namespace() {
     local apigee_namespace=$1
-    if ! kubectl get namespace $apigee_namespace &>/dev/null; then
-        kubectl create namespace $apigee_namespace
+    if ! kubectl get namespace "$apigee_namespace" &>/dev/null; then
+        kubectl create namespace "$apigee_namespace"
     fi
 }
 
 enable_control_plane_access() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
-    local org_name=$(grep -A 1 'org:' "$apigee_overrides_yaml_path" | grep 'org:' | awk '{print $2}')
+    org_name=$(grep -A 1 'org:' "$apigee_overrides_yaml_path" | grep 'org:' | awk '{print $2}')
+    local org_name
 
-    export TOKEN=$(gcloud auth application-default print-access-token)
+    TOKEN=$(gcloud auth application-default print-access-token)
+    export TOKEN
 
     curl -X PATCH -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type:application/json" \
@@ -211,7 +219,7 @@ enable_control_plane_access() {
 }
 
 install_crd() {
-    kubectl apply -k  $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/crds/default/ \
+    kubectl apply -k  "$APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/crds/default/" \
     --server-side \
     --force-conflicts \
     --validate=false
@@ -228,83 +236,83 @@ install_operator() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     helm upgrade operator apigee-operator/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 
     #Wait for operator to be ready
-    kubectl wait --for=condition=ready pod -l app=apigee-controller -n $apigee_namespace --timeout=120s
+    kubectl wait --for=condition=ready pod -l app=apigee-controller -n "$apigee_namespace" --timeout=120s
 }
 
 install_datastore() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     helm upgrade datastore apigee-datastore/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 }
 
 install_telemetry() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     helm upgrade telemetry apigee-telemetry/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 }
 
 install_redis() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     helm upgrade redis apigee-redis/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 }
 
 install_ingress_manager() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     helm upgrade ingress-manager apigee-ingress-manager/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 }
 
 install_org() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
-    local org_name=$(grep -A 1 'org:' "$apigee_overrides_yaml_path" | grep 'org:' | awk '{print $2}')
+    org_name=$(grep -A 1 'org:' "$apigee_overrides_yaml_path" | grep 'org:' | awk '{print $2}')
+    local org_name
 
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
-    cd $APIGEE_HELM_CHARTS_HOME
-
-    helm upgrade $org_name apigee-org/ \
+    helm upgrade "$org_name" apigee-org/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    -f $apigee_overrides_yaml_path
+    -f "$apigee_overrides_yaml_path"
 }
 
 install_env() {
@@ -312,18 +320,18 @@ install_env() {
     local apigee_overrides_yaml_path=$2
 
     #read the env_name from the overrides.yaml file
-    local apigee_env_name=$(grep -A 1 'envs:' "$apigee_overrides_yaml_path" | grep 'name:' | awk '{print $3}')
-
+    apigee_env_name=$(grep -A 1 'envs:' "$apigee_overrides_yaml_path" | grep 'name:' | awk '{print $3}')
+    local apigee_env_name
 
     local env_release_name="env-release-$apigee_env_name"
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
-    helm upgrade $env_release_name apigee-env/ \
+    helm upgrade "$env_release_name" apigee-env/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    --set env=$apigee_env_name \
-    -f $apigee_overrides_yaml_path
+    --set env="$apigee_env_name" \
+    -f "$apigee_overrides_yaml_path"
     
 }
 
@@ -332,15 +340,16 @@ install_envgroup() {
     local apigee_overrides_yaml_path=$2
 
     #read the env_group_name from the overrides.yaml file
-    local apigee_env_group_name=$(grep -A 1 'virtualhosts:' "$apigee_overrides_yaml_path" | grep 'name:' | awk '{print $3}')
+    apigee_env_group_name=$(grep -A 1 'virtualhosts:' "$apigee_overrides_yaml_path" | grep 'name:' | awk '{print $3}')
+    local apigee_env_group_name
     local env_group_release_name="env-group-release-$apigee_env_group_name"
 
-    helm upgrade $env_group_release_name apigee-virtualhost/ \
+    helm upgrade "$env_group_release_name" apigee-virtualhost/ \
     --install \
-    --namespace $apigee_namespace \
+    --namespace "$apigee_namespace" \
     --atomic \
-    --set envgroup=$apigee_env_group_name \
-    -f $apigee_overrides_yaml_path
+    --set envgroup="$apigee_env_group_name" \
+    -f "$apigee_overrides_yaml_path"
     
 }   
 
@@ -348,10 +357,10 @@ setup_ingress() {
     local apigee_namespace=$1
     local apigee_overrides_yaml_path=$2
 
-    cd $APIGEE_HELM_CHARTS_HOME
+    cd "$APIGEE_HELM_CHARTS_HOME" || exit
 
     #apply the apigee-service.yaml file
-    kubectl apply -f $APIGEE_HELM_CHARTS_HOME/apigee-service.yaml
+    kubectl apply -f "$APIGEE_HELM_CHARTS_HOME/apigee-service.yaml"
     
 }
 
@@ -367,8 +376,7 @@ setup_kubeconfig() {
         fi
     fi
     echo "Checking if kubectl is configured correctly"
-    kubectl get nodes
-    if [ $? -ne 0 ]; then
+    if ! kubectl get nodes; then
         echo "Failed to get nodes"
         exit 1
     fi
@@ -378,19 +386,19 @@ setup_kubeconfig() {
 main() {
     setup_apigee
     setup_kubeconfig
-    create_namespace $APIGEE_NAMESPACE
-    enable_control_plane_access $APIGEE_NAMESPACE "overrides.yaml"
+    create_namespace "$APIGEE_NAMESPACE"
+    enable_control_plane_access "$APIGEE_NAMESPACE" "overrides.yaml"
     install_crd
     install_cert_manager
-    install_operator $APIGEE_NAMESPACE "overrides.yaml"
-    install_datastore $APIGEE_NAMESPACE "overrides.yaml"
-    install_telemetry $APIGEE_NAMESPACE "overrides.yaml"
-    install_redis $APIGEE_NAMESPACE "overrides.yaml"
-    install_ingress_manager $APIGEE_NAMESPACE "overrides.yaml"
-    install_org $APIGEE_NAMESPACE "overrides.yaml"
-    install_env $APIGEE_NAMESPACE "overrides.yaml"
-    install_envgroup $APIGEE_NAMESPACE "overrides.yaml"
-    setup_ingress $APIGEE_NAMESPACE "overrides.yaml"
+    install_operator "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_datastore "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_telemetry "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_redis "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_ingress_manager "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_org "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_env "$APIGEE_NAMESPACE" "overrides.yaml"
+    install_envgroup "$APIGEE_NAMESPACE" "overrides.yaml"
+    setup_ingress "$APIGEE_NAMESPACE" "overrides.yaml"
 }
 
 # Run main function

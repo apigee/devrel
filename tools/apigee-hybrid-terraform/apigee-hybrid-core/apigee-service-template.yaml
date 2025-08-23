@@ -21,16 +21,16 @@ metadata:
   namespace: ${apigee_namespace}
 spec:
   ports:
-  - name: status-port
-    port: 15021
-    protocol: TCP
-    targetPort: 15021
-  - name: https
-    port: 443
-    protocol: TCP
-    targetPort: 8443
+    - name: status-port
+      port: 15021
+      protocol: TCP
+      targetPort: 15021
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
   selector:
-    app: apigee-ingressgateway #required
+    app: apigee-ingressgateway  # required
     ingress_name: ${ingress_name}
     org: ${org_name}
   type: LoadBalancer

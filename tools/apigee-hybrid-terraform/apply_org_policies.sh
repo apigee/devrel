@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-read -p "Please enter your Google Cloud project ID: " project
+read -r -p "Please enter your Google Cloud project ID: " project
 export project
 
 if [ -z "$project" ]; then
