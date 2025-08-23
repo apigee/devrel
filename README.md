@@ -86,6 +86,8 @@ Apigee products.
   A tool to build and test groups of Apigee projects
 - [Pipeline Linter](tools/pipeline-linter) -
   A tool to lint groups of Apigee projects
+- [Apigee hybrid Terraform Script](tools/apigee-hybrid-terraform) -
+  Apigee Hybrid Terraform script to deploy Apigee hybrid on GKE,AKS,EKS and Bring Your Own Cluster
 - [Apigee hybrid Quickstart GKE](tools/hybrid-quickstart) -
   A quickstart setup configuration for Apigee hybrid on GKE
 - [Decrypt Hybrid Assets](tools/decrypt-hybrid-assets) -

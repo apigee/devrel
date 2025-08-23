@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+instanceID: "${instance_id}"
+namespace: ${apigee_namespace}  # Usually "apigee"
+
+gcp:
+  projectID: ${project_id}
+  region: ${analytics_region}
+
+k8sCluster:
+  name: ${cluster_name}
+  # Must be the closest Google Cloud region to your cluster.
+  region: ${cluster_location}
+
+org: ${org_name}
+
+# Required for Enhanced per-environment proxy limits:
+enhanceProxyLimits: true
+
+# Required if using data residency with hybrid:
+
+# Required for data residency with hybrid and Enhanced per-environment
+# proxy limits:
+newDataPipeline:
+  debugSession: true
+  analytics: true
+
+envs:
+  - name: ${environment_name}
+    serviceAccountPaths:
+      # Provide the path relative to the apigee-env chart directory.
+      synchronizer: ${non_prod_service_account_filepath}
+      # For example: "PROJECT_ID-apigee-non-prod.json"
+      runtime: ${non_prod_service_account_filepath}
+      # For example: "PROJECT_ID-apigee-non-prod.json"
+      udca: ${non_prod_service_account_filepath}
+      # For example: "PROJECT_ID-apigee-non-prod.json"
+
+cassandra:
+  hostNetwork: false
+  # Set to false for single region installations and multi-region
+  # installations with connectivity between pods in different clusters,
+  # for example GKE installations.
+  # Set to true for multi-region installations with no communication
+  # between pods in different clusters, for example Google Distributed
+  # Cloud on VMware or bare metal, GKE on AWS, AKS, EKS, and OpenShift
+  # installations.
+  # See Multi-region deployment: Prerequisites
+  replicaCount: ${cassandra_replica_count}
+  # Use 1 for non-prod or "demo" installations and multiples of 3
+  # for production.
+  # See Configure Cassandra for production for guidelines.
+
+
+nodeSelector:
+  requiredForScheduling: false
+  apigeeRuntime:
+    key: "cloud.google.com/gke-nodepool"
+    value: "apigee-runtime"
+  apigeeData:
+    key: "cloud.google.com/gke-nodepool"
+    value: "apigee-data"
+
+
+ingressGateways:
+  - name: ${ingress_name}  # maximum 17 characters.
+    replicaCountMin: 2
+    replicaCountMax: 10
+    svcType: ClusterIP
+
+
+virtualhosts:
+  - name: ${environment_group_name}
+    selector:
+      app: apigee-ingressgateway
+      ingress_name: ${ingress_name}
+    sslCertPath: certs/${ssl_cert_path}
+    sslKeyPath: certs/${ssl_key_path}
+
+mart:
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the chart directory.
+  # For example: "PROJECT_ID-apigee-non-prod.json"
+
+connectAgent:
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the apigee-org chart directory.
+  # Use the same service account for mart and connectAgent
+  # For example: "PROJECT_ID-apigee-non-prod.json"
+
+logger:
+  enabled: true
+  # enabled by default
+  # See apigee-logger in Service accounts and roles used by hybrid
+  # components.
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the apigee-telemetry chart directory.
+  # For example: "PROJECT_ID-apigee-non-prod.json"
+
+metrics:
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the apigee-telemetry chart directory.
+  # For example: "PROJECT_ID-apigee-non-prod.json"
+
+udca:
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the apigee-org chart directory.
+  # For example: "PROJECT_ID-apigee-non-prod.json"
+
+watcher:
+  serviceAccountPath: ${non_prod_service_account_filepath}
+  # Provide the path relative to the apigee-org chart directory.
+  # For example: "PROJECT_ID-apigee-non-prod.json"
