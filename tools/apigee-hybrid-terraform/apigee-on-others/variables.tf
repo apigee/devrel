@@ -130,7 +130,7 @@ variable "billing_type" {
   description = "The billing type for the Apigee organization"
   type        = string
   default     = "EVALUATION"
-} 
+}
 variable "tls_apigee_self_signed" {
   description = "Whether to use self-signed certificates for Apigee TLS. If true, self-signed certs will be generated. If false, provide tls_apigee_cert and tls_apigee_key."
   type        = bool

@@ -96,10 +96,10 @@ module "eks" {
       max_size     = 2
       desired_size = 2
       tags = {
-        "cloud.google.com/gke-nodepool" = "apigee-runtime" 
+        "cloud.google.com/gke-nodepool" = "apigee-runtime"
       }
       labels = {
-        "nodepool-purpose"            = "apigee-runtime"
+        "nodepool-purpose"              = "apigee-runtime"
         "cloud.google.com/gke-nodepool" = "apigee-runtime"
       }
     }
@@ -116,7 +116,7 @@ module "eks" {
         "cloud.google.com/gke-nodepool" = "apigee-data"
       }
       labels = {
-        "nodepool-purpose"            = "apigee-data"
+        "nodepool-purpose"              = "apigee-data"
         "cloud.google.com/gke-nodepool" = "apigee-data"
       }
     }
@@ -146,7 +146,7 @@ module "irsa-ebs-csi" {
 # Add EBS CSI driver addon after IRSA role is created
 resource "aws_eks_addon" "ebs_csi" {
   cluster_name             = module.eks.cluster_name
-  addon_name              = "aws-ebs-csi-driver"
+  addon_name               = "aws-ebs-csi-driver"
   service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
 
   depends_on = [module.irsa-ebs-csi]
@@ -161,7 +161,7 @@ resource "null_resource" "create_output_dir" {
 
 # Generate kubeconfig for EKS
 resource "local_file" "kubeconfig" {
-  content  = <<-KUBECONFIG
+  content         = <<-KUBECONFIG
     apiVersion: v1
     kind: Config
     current-context: ${module.eks.cluster_name}
@@ -189,7 +189,7 @@ resource "local_file" "kubeconfig" {
           - --region
           - ${var.eks_region}
   KUBECONFIG
-  filename = "${path.module}/output/${var.project_id}/apigee-kubeconfig"
+  filename        = "${path.module}/output/${var.project_id}/apigee-kubeconfig"
   file_permission = "0600"
 
   depends_on = [
@@ -216,37 +216,37 @@ resource "null_resource" "cluster_setup" {
 module "apigee_hybrid" {
   source = "../apigee-hybrid-core"
 
-  project_id               = var.project_id
-  region                   = var.region
-  apigee_org_name          = var.apigee_org_name
-  apigee_env_name          = var.apigee_env_name
-  apigee_envgroup_name     = var.apigee_envgroup_name
-  apigee_namespace         = var.apigee_namespace
-  apigee_version           = var.apigee_version
-  cluster_name             = local.cluster_name
-  kubeconfig               = abspath("${local_file.kubeconfig.filename}") # Pass the kubeconfig file path to core module
+  project_id           = var.project_id
+  region               = var.region
+  apigee_org_name      = var.apigee_org_name
+  apigee_env_name      = var.apigee_env_name
+  apigee_envgroup_name = var.apigee_envgroup_name
+  apigee_namespace     = var.apigee_namespace
+  apigee_version       = var.apigee_version
+  cluster_name         = local.cluster_name
+  kubeconfig           = abspath("${local_file.kubeconfig.filename}") # Pass the kubeconfig file path to core module
 
-  
-  apigee_org_display_name  = var.apigee_org_display_name
-  apigee_env_display_name  = var.apigee_env_display_name
-  apigee_instance_name     = var.apigee_instance_name
-  apigee_envgroup_hostnames = var.hostnames
+
+  apigee_org_display_name        = var.apigee_org_display_name
+  apigee_env_display_name        = var.apigee_env_display_name
+  apigee_instance_name           = var.apigee_instance_name
+  apigee_envgroup_hostnames      = var.hostnames
   apigee_cassandra_replica_count = var.apigee_cassandra_replica_count
-  ingress_name             = var.ingress_name
-  ingress_svc_annotations  = var.ingress_svc_annotations
-  overrides_template_path  = "${path.module}/../apigee-hybrid-core/overrides-templates.yaml"
-  service_template_path    = "${path.module}/../apigee-hybrid-core/apigee-service-template.yaml"
+  ingress_name                   = var.ingress_name
+  ingress_svc_annotations        = var.ingress_svc_annotations
+  overrides_template_path        = "${path.module}/../apigee-hybrid-core/overrides-templates.yaml"
+  service_template_path          = "${path.module}/../apigee-hybrid-core/apigee-service-template.yaml"
 
-  apigee_lb_ip                = var.apigee_lb_ip
+  apigee_lb_ip = var.apigee_lb_ip
   #TLS related variables
-  tls_apigee_self_signed      = var.tls_apigee_self_signed
-  tls_apigee_cert_path        = var.tls_apigee_cert_path
-  tls_apigee_key_path         = var.tls_apigee_key_path
+  tls_apigee_self_signed = var.tls_apigee_self_signed
+  tls_apigee_cert_path   = var.tls_apigee_cert_path
+  tls_apigee_key_path    = var.tls_apigee_key_path
 
 
-  apigee_install           = var.apigee_install
-  create_org               = var.create_org
-  billing_type             = var.billing_type
+  apigee_install = var.apigee_install
+  create_org     = var.create_org
+  billing_type   = var.billing_type
 
   depends_on = [
     module.eks,

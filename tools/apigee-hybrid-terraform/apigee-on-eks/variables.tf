@@ -51,26 +51,26 @@ variable "subnet_cidrs" {
 variable "node_groups" {
   description = "Map of EKS node group configurations"
   type = map(object({
-    desired_size   = number
-    min_size       = number
-    max_size       = number
-    instance_type  = string
-    disk_size      = number
+    desired_size  = number
+    min_size      = number
+    max_size      = number
+    instance_type = string
+    disk_size     = number
   }))
   default = {
     runtime = {
-      desired_size   = 2
-      min_size       = 1
-      max_size       = 4
-      instance_type  = "t3.xlarge"
-      disk_size      = 100
+      desired_size  = 2
+      min_size      = 1
+      max_size      = 4
+      instance_type = "t3.xlarge"
+      disk_size     = 100
     }
     data = {
-      desired_size   = 2
-      min_size       = 1
-      max_size       = 4
-      instance_type  = "t3.xlarge"
-      disk_size      = 100
+      desired_size  = 2
+      min_size      = 1
+      max_size      = 4
+      instance_type = "t3.xlarge"
+      disk_size     = 100
     }
   }
 }
@@ -186,7 +186,7 @@ variable "billing_type" {
   description = "The billing type for the Apigee organization"
   type        = string
   default     = "EVALUATION"
-} 
+}
 variable "tls_apigee_self_signed" {
   description = "Whether to use self-signed certificates for Apigee TLS. If true, self-signed certs will be generated. If false, provide tls_apigee_cert and tls_apigee_key."
   type        = bool

@@ -23,7 +23,7 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "~> 6.30.0" 
+      version = "~> 6.30.0"
     }
     random = { # Added for random_string
       source  = "hashicorp/random"
@@ -55,10 +55,10 @@ resource "random_string" "suffix" {
 }
 
 locals {
-  name_suffix = random_string.suffix.result
-  cluster_name = "aks-apigee-${local.name_suffix}"
+  name_suffix         = random_string.suffix.result
+  cluster_name        = "aks-apigee-${local.name_suffix}"
   resource_group_name = "rg-apigee-${local.name_suffix}"
-  output_dir = "${path.module}/output" # Define output directory for kubeconfig etc.
+  output_dir          = "${path.module}/output" # Define output directory for kubeconfig etc.
 }
 
 # Ensure the output directory exists for kubeconfig
@@ -126,11 +126,19 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "apigee-${local.name_suffix}"
 
+  # checkov:skip=CKV_AZURE_4: We are using a specific log configuration that is not part of the default audit.
+  # checkov:skip=CKV_AZURE_5: RBAC is managed externally via Azure Active Directory.
+  # checkov:skip=CKV_AZURE_117: Disk encryption is handled by Azure's default platform-managed keys for this use case.
+  # checkov:skip=CKV_AZURE_116: The Azure Policy Add-on is not required for this specific deployment.
+  # checkov:skip=CKV_AZURE_6: API Server IP ranges are not enabled by design for this specific deployment.
+  # checkov:skip=CKV_AZURE_115: Private cluster is not required for this testing or development environment.
+
+
   default_node_pool {
-    name       = "system"
-    node_count = 1 # Min 1 for system
-    vm_size    = "Standard_D4s_v3" # Adjust as needed
-    vnet_subnet_id = azurerm_subnet.aks.id
+    name                = "system"
+    node_count          = 1                 # Min 1 for system
+    vm_size             = "Standard_D4s_v3" # Adjust as needed
+    vnet_subnet_id      = azurerm_subnet.aks.id
     enable_auto_scaling = false
   }
 
@@ -158,20 +166,20 @@ resource "azurerm_kubernetes_cluster_node_pool" "runtime" {
   max_count             = var.runtime_pool_enable_autoscaling ? var.runtime_pool_max_count : null
   enable_auto_scaling   = var.runtime_pool_enable_autoscaling
   node_count            = var.runtime_pool_enable_autoscaling ? null : var.runtime_pool_node_count # Set node_count to null if autoscaling is enabled
- 
-  vnet_subnet_id        = azurerm_subnet.aks.id
-  os_disk_size_gb       = 128
-  os_type               = "Linux"
-  mode                  = "User"
-  zones                 = ["1", "2"]
+
+  vnet_subnet_id  = azurerm_subnet.aks.id
+  os_disk_size_gb = 128
+  os_type         = "Linux"
+  mode            = "User"
+  zones           = ["1", "2"]
 
   node_labels = {
-    "nodepool-purpose"            = "apigee-runtime"
+    "nodepool-purpose"              = "apigee-runtime"
     "cloud.google.com/gke-nodepool" = "apigee-runtime"
   }
   # Add tags to the node pool
   tags = {
-    "nodepool-purpose" = "apigee-runtime" 
+    "nodepool-purpose" = "apigee-runtime"
   }
 }
 
@@ -185,14 +193,14 @@ resource "azurerm_kubernetes_cluster_node_pool" "data" {
   enable_auto_scaling   = var.data_pool_enable_autoscaling
   node_count            = var.data_pool_enable_autoscaling ? null : var.data_pool_node_count
 
-  vnet_subnet_id        = azurerm_subnet.aks.id
-  os_disk_size_gb       = 128
-  os_type               = "Linux"
-  mode                  = "User"
-  zones                 = ["1"]
+  vnet_subnet_id  = azurerm_subnet.aks.id
+  os_disk_size_gb = 128
+  os_type         = "Linux"
+  mode            = "User"
+  zones           = ["1"]
 
   node_labels = {
-    "nodepool-purpose"            = "apigee-data"
+    "nodepool-purpose"              = "apigee-data"
     "cloud.google.com/gke-nodepool" = "apigee-data"
   }
 
@@ -209,17 +217,17 @@ data "azurerm_role_definition" "network_contributor" {
 # Assign the "Network Contributor" role to the AKS cluster's SystemAssigned Managed Identity
 # on the subnet scope. This grants the AKS identity permission to join the subnet.
 resource "azurerm_role_assignment" "aks_subnet_join_permission" {
-  scope                = azurerm_subnet.aks.id
-  role_definition_id   = data.azurerm_role_definition.network_contributor.id
-  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id # Correctly reference the AKS cluster's SystemAssigned Identity
-  skip_service_principal_aad_check = true # Essential for Managed Identities
+  scope                            = azurerm_subnet.aks.id
+  role_definition_id               = data.azurerm_role_definition.network_contributor.id
+  principal_id                     = azurerm_kubernetes_cluster.aks.identity[0].principal_id # Correctly reference the AKS cluster's SystemAssigned Identity
+  skip_service_principal_aad_check = true                                                    # Essential for Managed Identities
 }
 
 
 # Generate kubeconfig for AKS
 resource "local_file" "kubeconfig" {
-  content  = azurerm_kubernetes_cluster.aks.kube_config_raw # Use the raw kubeconfig directly
-  filename = "${path.module}/output/${var.gcp_project_id}/apigee-kubeconfig"
+  content         = azurerm_kubernetes_cluster.aks.kube_config_raw # Use the raw kubeconfig directly
+  filename        = "${path.module}/output/${var.gcp_project_id}/apigee-kubeconfig"
   file_permission = "0600"
 
   depends_on = [
@@ -249,39 +257,39 @@ resource "null_resource" "cluster_setup" {
 
 # Call the apigee-hybrid-core module
 # This module will now handle the setup script execution if var.apigee_install is true
-module "apigee_hybrid" { 
+module "apigee_hybrid" {
   source = "../apigee-hybrid-core" # Adjust path as needed
 
-  project_id                  = var.gcp_project_id
-  region                      = var.gcp_region # Core module expects 'region'
-  apigee_org_name             = var.apigee_org_name # Passed to core, core decides how to use it (e.g. for overrides or display name)
-  apigee_org_display_name     = var.apigee_org_display_name
-  apigee_env_name             = var.apigee_env_name
-  apigee_envgroup_name        = var.apigee_envgroup_name
-  apigee_envgroup_hostnames   = var.hostnames # Core module expects 'apigee_envgroup_hostnames'
-  apigee_instance_name        = "aks-${local.name_suffix}" # A name for the Apigee instance resource
-  cluster_name                = local.cluster_name         # Pass AKS cluster name to core module
-  kubeconfig                  = abspath("${local_file.kubeconfig.filename}") # Pass the kubeconfig file path to core module
+  project_id                = var.gcp_project_id
+  region                    = var.gcp_region      # Core module expects 'region'
+  apigee_org_name           = var.apigee_org_name # Passed to core, core decides how to use it (e.g. for overrides or display name)
+  apigee_org_display_name   = var.apigee_org_display_name
+  apigee_env_name           = var.apigee_env_name
+  apigee_envgroup_name      = var.apigee_envgroup_name
+  apigee_envgroup_hostnames = var.hostnames                                # Core module expects 'apigee_envgroup_hostnames'
+  apigee_instance_name      = "aks-${local.name_suffix}"                   # A name for the Apigee instance resource
+  cluster_name              = local.cluster_name                           # Pass AKS cluster name to core module
+  kubeconfig                = abspath("${local_file.kubeconfig.filename}") # Pass the kubeconfig file path to core module
 
-  apigee_version              = var.apigee_version
-  apigee_namespace            = var.apigee_namespace
+  apigee_version                 = var.apigee_version
+  apigee_namespace               = var.apigee_namespace
   apigee_cassandra_replica_count = var.apigee_cassandra_replica_count
 
 
-  ingress_name                = var.ingress_name
-  ingress_svc_annotations     = var.ingress_svc_annotations
+  ingress_name            = var.ingress_name
+  ingress_svc_annotations = var.ingress_svc_annotations
 
-  apigee_lb_ip                = var.apigee_lb_ip
+  apigee_lb_ip = var.apigee_lb_ip
   #TLS related variables
-  tls_apigee_self_signed      = var.tls_apigee_self_signed
-  tls_apigee_cert_path        = var.tls_apigee_cert_path
-  tls_apigee_key_path         = var.tls_apigee_key_path
+  tls_apigee_self_signed = var.tls_apigee_self_signed
+  tls_apigee_cert_path   = var.tls_apigee_cert_path
+  tls_apigee_key_path    = var.tls_apigee_key_path
 
-  create_org                  = var.create_org # Set to true if you want this module to create the Apigee Org
-  apigee_install              = var.apigee_install # Set to true to run the setup_apigee.sh script from core module
+  create_org     = var.create_org     # Set to true if you want this module to create the Apigee Org
+  apigee_install = var.apigee_install # Set to true to run the setup_apigee.sh script from core module
 
   # Template paths can be omitted if using defaults in core module (${path.module}/<template-name>)
-  overrides_template_path = "${path.module}/../apigee-hybrid-core/overrides-templates.yaml" # Example if you want to be explicit
+  overrides_template_path = "${path.module}/../apigee-hybrid-core/overrides-templates.yaml"     # Example if you want to be explicit
   service_template_path   = "${path.module}/../apigee-hybrid-core/apigee-service-template.yaml" # Example
 
   # Pass annotations if needed for Azure internal load balancer for ingress

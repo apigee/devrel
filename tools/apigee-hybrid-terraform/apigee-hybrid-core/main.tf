@@ -44,9 +44,9 @@ resource "random_string" "suffix" {
 }
 
 locals {
-  random_suffix = substr(random_string.suffix.result, 0, 6)
+  random_suffix             = substr(random_string.suffix.result, 0, 6)
   apigee_org_constructed_id = "organizations/${var.project_id}" # Apigee Org ID is the Project ID
-  service_account_id_short  = "${var.apigee_service_account_name}"  #"apigee-non-prod-${local.random_suffix}" # Or make this configurable
+  service_account_id_short  = var.apigee_service_account_name   #"apigee-non-prod-${local.random_suffix}" # Or make this configurable
   service_account_email     = "${local.service_account_id_short}@${var.project_id}.iam.gserviceaccount.com"
 
   effective_org_id = var.create_org ? (
@@ -229,9 +229,9 @@ resource "tls_self_signed_cert" "apigee_envgroup_cert" {
 }
 
 resource "local_file" "apigee_envgroup_private_key_file" {
-  sensitive_content  = var.tls_apigee_self_signed ? tls_private_key.apigee_envgroup_key[0].private_key_pem : var.tls_apigee_key_path
-  filename        = "${local.output_dir}/${local.cert_filename_prefix}.key"
-  file_permission = "0600"
+  sensitive_content = var.tls_apigee_self_signed ? tls_private_key.apigee_envgroup_key[0].private_key_pem : var.tls_apigee_key_path
+  filename          = "${local.output_dir}/${local.cert_filename_prefix}.key"
+  file_permission   = "0600"
   depends_on = [
     null_resource.create_output_dir,
     tls_private_key.apigee_envgroup_key,
@@ -264,7 +264,7 @@ resource "google_apigee_organization" "apigee_org" {
   depends_on = [
     google_project_service.apigee,
     google_project_service.compute,
-    google_project_service.container, # Apigee may require container API for its operations
+    google_project_service.container,       # Apigee may require container API for its operations
     local_file.apigee_non_prod_sa_key_file, # Ensure SA Key is created before org
 
   ]
@@ -310,18 +310,18 @@ resource "google_apigee_envgroup_attachment" "env_to_group_attachment" {
 resource "local_file" "apigee_overrides" {
   content = templatefile(local.final_overrides_template_path, {
     # K8S_CLUSTER_RUNNING_APIGEE_RUNTIME
-    instance_id                       = var.apigee_instance_name # This is the Apigee Instance name (google_apigee_instance.name)
-    apigee_namespace                  = var.apigee_namespace
+    instance_id      = var.apigee_instance_name # This is the Apigee Instance name (google_apigee_instance.name)
+    apigee_namespace = var.apigee_namespace
     # GCP_PROJECT_ID used for Apigee Organization
-    project_id                        = var.project_id
-    analytics_region                  = var.region
+    project_id       = var.project_id
+    analytics_region = var.region
     # K8S_CLUSTER_NAME where Apigee is installed
-    cluster_name                      = var.cluster_name
-    cluster_location                  = var.region # Assuming K8s cluster region is same as Apigee region for simplicity
+    cluster_name     = var.cluster_name
+    cluster_location = var.region # Assuming K8s cluster region is same as Apigee region for simplicity
     # APIGEE_ORGANIZATION_ID
-    org_name                          = local.org_name_for_overrides # This should be the Apigee Org ID (typically project_id)
-    environment_name                  = var.apigee_env_name
-    cassandra_replica_count           = var.apigee_cassandra_replica_count
+    org_name                = local.org_name_for_overrides # This should be the Apigee Org ID (typically project_id)
+    environment_name        = var.apigee_env_name
+    cassandra_replica_count = var.apigee_cassandra_replica_count
     # File paths for SA key and certs are basenames, script will handle full paths for secrets
     non_prod_service_account_filepath = local.sa_key_filename_for_overrides
     ingress_name                      = var.ingress_name
@@ -335,26 +335,26 @@ resource "local_file" "apigee_overrides" {
   file_permission = "0644"
   depends_on = [
     null_resource.create_output_dir,
-    local_file.apigee_non_prod_sa_key_file, # Ensure SA key file is written
-    local_file.apigee_envgroup_cert_file,   # Ensure cert file is written
+    local_file.apigee_non_prod_sa_key_file,      # Ensure SA key file is written
+    local_file.apigee_envgroup_cert_file,        # Ensure cert file is written
     local_file.apigee_envgroup_private_key_file, # Ensure key file is written
   ]
 }
 
 resource "local_file" "apigee_service" {
   content = templatefile(local.final_service_template_path, {
-    apigee_namespace       = var.apigee_namespace
+    apigee_namespace = var.apigee_namespace
     # APIGEE_ORGANIZATION_ID
-    org_name               = local.org_name_for_overrides # This should be the Apigee Org ID
-    ingress_name           = var.ingress_name
+    org_name     = local.org_name_for_overrides # This should be the Apigee Org ID
+    ingress_name = var.ingress_name
     # SERVICE_NAME often maps to envgroup name or a specific service identifier
-    service_name           = var.apigee_envgroup_name # Or another appropriate variable
-    apigee_lb_ip           = var.apigee_lb_ip
+    service_name = var.apigee_envgroup_name # Or another appropriate variable
+    apigee_lb_ip = var.apigee_lb_ip
     # Add any other variables your template needs
   })
   filename        = "${local.output_dir}/apigee-service.yaml"
   file_permission = "0644"
-  depends_on = [null_resource.create_output_dir]
+  depends_on      = [null_resource.create_output_dir]
 }
 
 # ------------------------------------------------------------------------------
@@ -364,25 +364,25 @@ resource "null_resource" "apigee_setup_execution" {
   count = var.apigee_install ? 1 : 0
 
   triggers = {
-    apigee_version                   = var.apigee_version
-    apigee_namespace                 = var.apigee_namespace
-    kubeconfig                       = var.kubeconfig
-    apigee_overrides_yaml_content    = local_file.apigee_overrides.content
-    apigee_service_yaml_content      = local_file.apigee_service.content
-    apigee_sa_key_json_content       = local_file.apigee_non_prod_sa_key_file.content
-    apigee_envgroup_cert_content     = local_file.apigee_envgroup_cert_file.content
-    apigee_envgroup_key_content      = local_file.apigee_envgroup_private_key_file.content
-    script_hash                      = filemd5("${path.module}/setup_apigee.sh")
-    output_dir                       = local.output_dir
+    apigee_version                = var.apigee_version
+    apigee_namespace              = var.apigee_namespace
+    kubeconfig                    = var.kubeconfig
+    apigee_overrides_yaml_content = local_file.apigee_overrides.content
+    apigee_service_yaml_content   = local_file.apigee_service.content
+    apigee_sa_key_json_content    = local_file.apigee_non_prod_sa_key_file.content
+    apigee_envgroup_cert_content  = local_file.apigee_envgroup_cert_file.content
+    apigee_envgroup_key_content   = local_file.apigee_envgroup_private_key_file.content
+    script_hash                   = filemd5("${path.module}/setup_apigee.sh")
+    output_dir                    = local.output_dir
   }
 
   provisioner "local-exec" {
     when = destroy
     #command = "kubectl delete -f ${self.triggers.output_dir}/apigee-service.yaml"
-    command = "if [ -n \"${self.triggers.kubeconfig}\" ] && [ -f \"${self.triggers.kubeconfig}\" ]; then export KUBECONFIG=${self.triggers.kubeconfig}; fi && kubectl delete -f ${self.triggers.output_dir}/apigee-service.yaml"
+    command    = "if [ -n \"${self.triggers.kubeconfig}\" ] && [ -f \"${self.triggers.kubeconfig}\" ]; then export KUBECONFIG=${self.triggers.kubeconfig}; fi && kubectl delete -f ${self.triggers.output_dir}/apigee-service.yaml"
     on_failure = continue
   }
-  
+
   provisioner "local-exec" {
     command = <<-EOT
       bash ${path.module}/setup_apigee.sh \
