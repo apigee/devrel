@@ -69,4 +69,3 @@ with Diagram("Apigee Hybrid on Google Kubernetes Engine",
     nat >> Edge(label="Google APIs", fontsize="12") >> apigee
     nat >> Edge(label="Google APIs", fontsize="12") >> logging
     nat >> Edge(label="Google APIs", fontsize="12") >> monitoring
-    
