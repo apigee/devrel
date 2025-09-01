@@ -12,3 +12,4 @@ __pycache__/
 test/transformed/
 test/transformed_zipped_bundles/
 venv/
+.venv/
