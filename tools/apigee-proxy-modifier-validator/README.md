@@ -39,7 +39,7 @@ During migration from Apigee Edge to Apigee X/Hybrid, certain policy configurati
 1.  **Python:** Python 3.8 or higher recommended.
 2.  **pip:** Python package installer.
 3.  **Google Cloud SDK:** (`gcloud` command-line tool) installed and authenticated.
-4.  **Application Default Credentials (ADC):** Configured for Google Cloud authentication. Run `gcloud auth application-default login` in your terminal and authenticate with a Google account that has permissions to validate Apigee APIs (e.g., Apigee API Admin role or custom role with `apigee.organizations.apis.validate`).
+4.  **Application Default Credentials (ADC):** Configured for Google Cloud authentication. Run `gcloud auth application-default login` in your terminal and authenticate with a Google account that has permissions to validate Apigee APIs (e.g., Apigee API Admin role or custom role with `apigee.proxies.create`).
 5.  **Required Python Libraries:** Install using pip.
 
 ## Installation
@@ -96,8 +96,6 @@ python modify_proxies.py --input-dir <path/to/input_bundles> \
 ```
 
 **Options:**
-Use code with caution.
-Bash
 Command-Line Arguments:
 * --input-dir PATH: Required. Path to the directory containing the source .zip proxy bundles.
 *  --output-dir PATH: Required. Path to the directory where modified .zip bundles will be saved. Must be different from the input directory.

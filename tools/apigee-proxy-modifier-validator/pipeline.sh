@@ -28,7 +28,7 @@ python3 -m venv "$VENV_PATH"
 . "$VENV_PATH/bin/activate"
 pip install -r "$SCRIPTPATH/requirements.txt"
 
-# Running the Target Server Validator
+# Running the modify_proxies
 cd "$SCRIPTPATH"
 INPUT_PATH="$SCRIPTPATH/test"
 OUTPUT_PATH="$SCRIPTPATH/output"
