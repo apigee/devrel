@@ -39,8 +39,10 @@ from lxml import etree  # nosec B410 pylint: disable=import-error
 # Setup basic logging configuration
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - [%(funcName)s] %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
+    format='%(asctime)s.%(msecs)03d - %(levelname)s - [%(funcName)s] %(message)s',  # noqa:E501 pylint: disable=C0301
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[logging.StreamHandler(sys.stdout)],
+    force=True
 )
 logger = logging.getLogger()  # Get the root logger
 
