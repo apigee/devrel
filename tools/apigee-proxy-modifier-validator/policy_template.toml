@@ -1,0 +1,98 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ==============================================================================
+# TOML Configuration Template for Apigee Proxy Modification (LXML Script)
+# Version: Supports Set/Replace, Prefix, Suffix, Conditional Prefix,
+#          Remove Empty Element, and Trim Value operations using XPath.
+# ==============================================================================
+#
+# Use this template to define rules for modifying XML files (Policies,
+# ProxyEndpoints, TargetEndpoints) within Apigee proxy bundles using the
+# Python script that leverages the LXML library.
+#
+# ------------------------------------------------------------------------------
+# LXML Benefits:
+# ------------------------------------------------------------------------------
+# Using LXML generally preserves XML formatting (indentation, whitespace,
+# comments, attribute order) much better than the xmltodict approach. This
+# results in cleaner diffs and reduces the risk of unintended changes.
+#
+# ------------------------------------------------------------------------------
+# Rule Structure Explained
+# ------------------------------------------------------------------------------
+# [RootXmlElementTag]          <- Section matches the *root* tag of the XML file
+#                                  (e.g., <ServiceCallout>, <AssignMessage>,
+#                                   <ProxyEndpoint>, <TargetEndpoint>)
+#
+# [RootXmlElementTag.RuleName] <- A unique, descriptive name for your specific rule
+#                                  under the parent section.
+#
+#   --- Target Identification (Always Required) ---
+#   xpath = "..."                <- REQUIRED: An XPath 1.0 expression to select the
+#                                   XML element(s) or attribute(s) you want to target.
+#                                   Examples: ".//Property[@name='prop_name']",
+#                                             "./HTTPProxyConnection/BasePath",
+#                                             ".//Request/@clearPayload" (for attribute target)
+#
+#   --- Operation Definition (Choose ONE primary operation type per rule) ---
+#
+#   1. Action-Based Operations:
+#      action = "..."            <- Define a specific action. Currently supported:
+#                                   - "remove_if_empty": Removes elements selected by XPath
+#                                     if they have no significant text and no children.
+#                                     *No other value-modifying keys (to, from, prefix, etc.)
+#                                      should be used with this action.*
+#                                   - "trim_value": Trims leading/trailing whitespace from
+#                                     the text or attribute value selected by XPath.
+#                                     Requires `target_type`. If `target_type` is
+#                                     "attribute", also requires `attribute_name`.
+#                                     *No other value-modifying keys should be used.*
+#
+#   2. Value Modification Operations (If 'action' is not used or not one of the above):
+#      target_type = "text" | "attribute" <- REQUIRED for value modifications.
+#                                             Specifies modifying element text or an attribute.
+#
+#      attribute_name = "attr"      <- REQUIRED if target_type = "attribute".
+#                                       Name of the attribute (no '@' prefix).
+#
+#      --- Choose one of the following value modification sub-types ---
+#      a) Set or Replace Value:
+#         to = "new_value"             <- REQUIRED: The final desired value.
+#         from = "old_value"           <- OPTIONAL: If present, only replaces if `from` is
+#                                          found (substring match by default).
+#                                          If omitted, sets value to `to` unconditionally.
+#         exact_match = true | false   <- OPTIONAL (default: false). If true and `from`
+#                                          is present, requires an exact match of `from`.
+#
+#      b) Add Prefix:
+#         prefix = "prefix_string"     <- REQUIRED: Prepends this string.
+#
+#      c) Add Suffix:
+#         suffix = "suffix_string"     <- REQUIRED: Appends this string.
+#
+#      d) Conditional Prefix:
+#         prefix = "prefix_string"     <- REQUIRED: The prefix to add.
+#         from = "condition_value"     <- REQUIRED: Prefix applied only if this string
+#                                          is found in the current value (substring
+#                                          match by default).
+#         exact_match = true | false   <- OPTIONAL (default: false). If true, `from`
+#                                          must be an exact match for prefix to apply.
+#
+#   --- Exclusivity ---
+#   A single rule CANNOT mix different primary operations (e.g., `action = "remove_if_empty"`
+#   with `to = "..."`, or `prefix = "..."` with `suffix = "..."`).
+#   The "Conditional Prefix" is a specific combination of `prefix` and `from`.
+#
+# ==============================================================================
