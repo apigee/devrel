@@ -23,13 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
       - name: generate-docs
         uses: ./tools/pipeline-linter
         with:
           pipeline-action: generate-all-docs.sh
       - name: Archive Generated Docs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: generated-docs
           path: generated/
@@ -39,11 +39,11 @@ jobs:
     needs: generate-docs
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           ref: gh-pages
       - name: Download Generated Docs
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v5
         with:
           name: generated-docs
       - name: Push GH Pages
