@@ -75,7 +75,6 @@ jobs:
           GROOVY_NPM_GROOVY_LINT_FILTER_REGEX_EXCLUDE: "Jenkinsfile"
           MARKDOWN_MARKDOWN_LINK_CHECK_DISABLE_ERRORS: true
           PYTHON_MYPY_DISABLE_ERRORS: true
-          VALIDATE_TERRAFORM_TERRASCAN: false
 
   commit-messages:
     name: Conventional Commits Lint

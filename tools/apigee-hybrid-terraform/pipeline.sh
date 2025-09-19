@@ -13,4 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "no pipeline implemented"
+printf "Running hybrid terraform on GKE"
+
+cd apigee-on-gke
+//Get GCP Project ID
+GCP_PROJECT_ID=$(gcloud config get-value project)
+
+//Set GCP Project ID in terraform.tfvars
+sed -i "s/project_id = \"\"/project_id = \"$GCP_PROJECT_ID\"/g" terraform.tfvars
+sed -i "s/apigee_org_name = \"\"/apigee_org_name = \"$GCP_PROJECT_ID\"/g" terraform.tfvars
+
+terraform init
+terraform plan
+terraform apply --auto-approve
+
+#destroy terraform
+
+terraform destroy --auto-approve
+
+
