@@ -74,8 +74,6 @@ This file defines *how* to modify the XML files.
     *   `suffix = "suffix_string"`: **Required for Suffix.** String to append.
 *   **Exclusivity:** A rule cannot mix `prefix`, `suffix`, and `to`, *except* for `conditional_prefix` which requires both `prefix` and `from`.
 
-**(See `policy_template_lxml.toml` or previous examples for details)**
-
 ### 2. Application Default Credentials (ADC)
 
 Ensure ADC is set up before using `--validate`:
