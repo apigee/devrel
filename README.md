@@ -113,6 +113,8 @@ Apigee products.
   Generate gateways to expose gRPC services with HTTP API management.
 - [Apigee Proxy Bundle Modifier & Validator](tools/apigee-proxy-modifier-validator) -
   A tool to do batch modifications of API proxies when migrating to newer Apigee variants.
+- [Apigee Edge to X Migration Accelerator](/tools/apigee-edge-to-x-migration-tool) - A tool built on node.js to accelerate Apigee Edge to X migration.
+  
 ## Labs
 
 This folder contains raw assets used to generate content to teach a particular
