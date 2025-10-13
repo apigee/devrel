@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # Exit immediately if a command exits with a non-zero status
 set -e
 
 # Create a temporary environment file
 TEMP_ENV=".env"
 echo "Creating temporary environment file..."
-cat <<EOL > $TEMP_ENV
+cat <<EOL >$TEMP_ENV
 install_modules=1
 source_gateway_type="apigee_edge"
 destination_gateway_type="apigee_x"
@@ -38,7 +37,7 @@ apigee_environment_map='{$APIGEE_ENV:$APIGEE_X_ENV}'
 EOL
 
 # Ensure the temporary file is not tracked by git
-echo "$TEMP_ENV" >> .gitignore
+echo "$TEMP_ENV" >>.gitignore
 
 # Source the temporary environment file
 echo "Sourcing temporary environment file..."
@@ -55,4 +54,3 @@ echo "Cleaning up temporary files..."
 rm -f $TEMP_ENV
 
 echo "Pipeline execution completed successfully."
-

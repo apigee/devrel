@@ -13,54 +13,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # Define tool name
 TOOL_NAME="apigee-edge-to-x-migration-tool"
 
 # Function to display banner
 display_banner() {
-  echo "==================================="
-  echo "          $TOOL_NAME setup         "
-  echo "==================================="
+	echo "==================================="
+	echo "          $TOOL_NAME setup         "
+	echo "==================================="
 }
 
 # Function to check if Node.js is installed
 check_node() {
-  if command -v node >/dev/null 2>&1; then
-    echo "Node.js is installed."
-  else
-    echo "Node.js is not installed. Please install Node.js first."
-    exit 1
-  fi
+	if command -v node >/dev/null 2>&1; then
+		echo "Node.js is installed."
+	else
+		echo "Node.js is not installed. Please install Node.js first."
+		exit 1
+	fi
 }
 
 # Function to set up the tool
 setup_tool() {
-  echo "Setting up $TOOL_NAME..."
-  
-  # Check if package.json exists, if not initialize npm
-  if [ ! -f package.json ]; then
-    echo "Initializing npm..."
-    npm init -y
-  fi
+	echo "Setting up $TOOL_NAME..."
 
-  # Install necessary packages
-  echo "Installing necessary packages..."
-  npm install @inquirer/prompts
-  node install-modules.js
-  echo "$TOOL_NAME setup complete."
+	# Check if package.json exists, if not initialize npm
+	if [ ! -f package.json ]; then
+		echo "Initializing npm..."
+		npm init -y
+	fi
+
+	# Install necessary packages
+	echo "Installing necessary packages..."
+	npm install @inquirer/prompts
+	node install-modules.js
+	echo "$TOOL_NAME setup complete."
 }
 
 # Function to initialize the tool
-init_tool(){
-  echo "Initializing $TOOL_NAME..."
+init_tool() {
+	echo "Initializing $TOOL_NAME..."
 
-  npm link
+	npm link
 
-  echo "Initialization done"
-  echo "Command to Launch Tool : apigee-e2x"
-  echo "Launching the tool"
-  apigee-e2x
+	echo "Initialization done"
+	echo "Command to Launch Tool : apigee-e2x"
+	echo "Launching the tool"
+	apigee-e2x
 
 }
 
