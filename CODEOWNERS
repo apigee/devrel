@@ -40,4 +40,5 @@
 /tools/proxy-endpoint-unifier           @anaik91
 /tools/sf-dependency-list               @yuriylesyuk
 /tools/target-server-validator          @anaik91
-tools/apigee-proxy-modifier-validator   @anaik91
+/tools/apigee-proxy-modifier-validator  @anaik91
+/tools/apigee-edge-to-x-migration-tool  @h-kopalle

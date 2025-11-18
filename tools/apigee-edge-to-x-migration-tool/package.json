@@ -1,0 +1,47 @@
+{
+  "name": "apigee-migration",
+  "version": "0.5.0",
+  "description": "apigee-edge-to-x-migration-tool",
+  "main": "index.js",
+  "bin": {
+    "apigee-e2x": "./index.js"
+  },
+  "scripts": {
+    "test": "",
+    "postinstall": "node install-modules.js"
+  },
+  "keywords": [
+    "apigee",
+    "concentrix",
+    "migration"
+  ],
+  "type": "module",
+  "author": "Hemanth Kopalle <hemanth.kopalle@concentrix.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.6",
+    "@inquirer/select": "^4.0.9",
+    "adm-zip": "^0.5.16",
+    "bottleneck": "^2.19.5",
+    "cli-table3": "^0.6.5",
+    "diff": "^8.0.0-beta",
+    "dotenv": "^16.4.7",
+    "inquirer": "^12.4.2",
+    "libsql": "^0.5.0-pre.6",
+    "node-fetch": "^2.7.0",
+    "papaparse": "^5.5.2",
+    "path": "^0.12.7",
+    "temp": "^0.9.4",
+    "url": "^0.11.4",
+    "wrap-ansi": "^9.0.0",
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.6.2",
+    "xslx": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  }
+}
