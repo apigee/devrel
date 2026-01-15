@@ -24,7 +24,7 @@
     "adm-zip": "^0.5.16",
     "bottleneck": "^2.19.5",
     "cli-table3": "^0.6.5",
-    "diff": "^8.0.0-beta",
+    "diff": "^8.0.3",
     "dotenv": "^16.4.7",
     "inquirer": "^12.4.2",
     "libsql": "^0.5.0-pre.6",
