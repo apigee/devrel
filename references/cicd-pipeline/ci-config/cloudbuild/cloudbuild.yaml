@@ -127,16 +127,16 @@ steps:
     env:
       - "TEST_HOST=$_INT_TEST_HOST"
     # Copy coverage reports and other deployment artifacts to a storage bucket
-  - name: "gcr.io/cloud-builders/gsutil"
+  - name: "gcr.io/cloud-builders/gcloud"
     id: "Archive Report"
     entrypoint: "bash"
     args:
       - "-c"
       - |-
         cd "$_WORK_DIR"
-        gsutil cp -r coverage* \
+        gcloud storage cp --recursive coverage* \
         gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID/coverage && \
-        gsutil cp ./report.*.html \
+        gcloud storage cp ./report.*.html \
         gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID
 substitutions:
   # Apigee Org for where to deploy to
