@@ -23,6 +23,9 @@ initialized gcloud context:
 #installed kubectl
 kubectl version
 
+#installed helm 3.10.0+ (b/288407289#comment18)
+helm version
+
 #installed tar
 tar --version
 
