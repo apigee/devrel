@@ -1,0 +1,16 @@
+[
+  {
+    "attributes": [],
+    "email": "hugh@example.com",
+    "firstName": "Hugh",
+    "lastName": "Jack",
+    "userName": "hughexample"
+  },
+  {
+    "attributes": [],
+    "email": "john@example.com",
+    "firstName": "John",
+    "lastName": "Qwertye",
+    "userName": "johnqwerty"
+  }
+]
