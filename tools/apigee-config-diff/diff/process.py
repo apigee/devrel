@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 
-def process_files(output_base_path, resources_folder, confirm):
+def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_path=None):
     actions = ["update", "delete"]
     
     # Strip trailing slash from resources_folder to ensure correct path joining
@@ -80,6 +80,10 @@ def process_files(output_base_path, resources_folder, confirm):
                             f"-Dapigee.env={e}",
                             f"-Dapigee.config.options={action}"
                         ]
+                        if bearer:
+                            cmd.append(f"-Dapigee.bearer={bearer}")
+                        if sa_path:
+                            cmd.append(f"-Dapigee.serviceaccount.file={sa_path}")
                         try:
                             subprocess.run(cmd, check=True)
                         except subprocess.CalledProcessError as e:
@@ -95,6 +99,10 @@ def process_files(output_base_path, resources_folder, confirm):
                         f"-Dapigee.org={org}",
                         f"-Dapigee.config.options={action}"
                     ]
+                    if bearer:
+                        cmd.append(f"-Dapigee.bearer={bearer}")
+                    if sa_path:
+                        cmd.append(f"-Dapigee.serviceaccount.file={sa_path}")
                     try:
                         subprocess.run(cmd, check=True)
                     except subprocess.CalledProcessError as e:

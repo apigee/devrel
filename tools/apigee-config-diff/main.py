@@ -11,6 +11,8 @@ def parse_args():
     parser.add_argument("--folder", help="Files folder from repo root to diff (default: src)", default="src")
     parser.add_argument("--output", help="Output folder for generated trees (default: output)", default="output")
     parser.add_argument("--confirm", action="store_true", help="Execute the Maven plugin (apply changes)")
+    parser.add_argument("--bearer", help="Apigee bearer token (optional)", default=None)
+    parser.add_argument("--sa-path", help="Path to service account key file (optional)", default=None)
     
     return parser.parse_args()
 
@@ -26,7 +28,7 @@ def main():
     write_temporary_files(added_files, deleted_files, modified_files, previous_commit, current_commit, args.output)
 
     # Process (Plan or Apply)
-    process_files(args.output, args.folder, args.confirm)
+    process_files(args.output, args.folder, args.confirm, args.bearer, args.sa_path)
 
 if __name__ == "__main__":
     main()

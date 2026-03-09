@@ -121,3 +121,27 @@ def test_process_files_edge_cases(tmp_path, capsys):
         process_files(str(tmp_path), "src", confirm=False)
         out2, _ = capsys.readouterr()
         assert "No orgs/environments found." in out2
+
+def test_process_files_auth_args(tmp_path):
+    update_dir = tmp_path / "update" / "src"
+    update_dir.mkdir(parents=True)
+    (update_dir / "org1" / "org").mkdir(parents=True)
+    (update_dir / "org1" / "org" / "products.json").write_text("{}")
+    
+    with patch("subprocess.run") as mock_run:
+        process_files(str(tmp_path), "src", confirm=True, bearer="mytoken", sa_path="mysa.json")
+        mock_run.assert_called()
+        args, _ = mock_run.call_args
+        cmd = args[0]
+        assert "-Dapigee.bearer=mytoken" in cmd
+        assert "-Dapigee.serviceaccount.file=mysa.json" in cmd
+
+def test_process_files_auth_args_partial(tmp_path):
+    update_dir = tmp_path / "update" / "src"
+    update_dir.mkdir(parents=True)
+    (update_dir / "org1" / "env" / "dev").mkdir(parents=True)
+    (update_dir / "org1" / "env" / "dev" / "test.json").write_text("{}")
+    with patch("subprocess.run") as mock_run:
+        process_files(str(tmp_path), "src", confirm=True, bearer="mytoken")
+        assert "-Dapigee.bearer=mytoken" in mock_run.call_args[0][0]
+        assert not any("-Dapigee.serviceaccount.file=" in x for x in mock_run.call_args[0][0])

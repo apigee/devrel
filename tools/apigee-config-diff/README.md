@@ -1,109 +1,133 @@
+<p align="center">
+  <img src="logo.svg" alt="Apigee Config Diff Generator Logo" width="500">
+</p>
+
 # Apigee Config Diff Generator
 
-**A helper tool designed to find differences within files in Apigee Config Maven tree structure.**
+**Deploy only what changed in your Apigee configurations.**
 
-It identifies file content changes between 2 commits and generate 2 file tree structures as output:
+This tool finds differences in Apigee Configuration files (KVMs, Target Servers, API Products, etc.) between two Git commits and uses the [Apigee Config Maven Plugin](https://github.com/apigee/apigee-config-maven-plugin) to apply only those changes.
 
-1. **output/update folder:** containing file structure to be created/updated
-2. **output/delete folder:** containing file structure to be deleted
+## Why use this?
 
-It then **applies [apigee-config-maven-plugin](https://github.com/apigee/apigee-config-maven-plugin)** on **both of those folders** and you're done!
+Standard Apigee configuration deployments often re-deploy the entire configuration set, which can be slow and risky for large organizations. This tool allows for **incremental deployments**:
+- **Speed:** Only process files and resources that actually changed.
+- **Safety:** Reduce the risk of accidental overwrites of stable configurations.
+- **CI/CD Friendly:** Designed to run in pipelines (Jenkins, GitHub Actions, GitLab, etc.).
 
-## Requirements
+---
 
-- Python 3
-- Maven (mvn)
-- tree (optional, for dry run visualization)
+## How it Works
 
-## How to run it?
+1. **Diff:** Compares two Git commits (e.g., `HEAD~1` vs `HEAD`).
+2. **Generate:** Creates two temporary trees in `output/`:
+   - `update/`: New or modified resources.
+   - `delete/`: Resources removed or items deleted from within modified files.
+3. **Deploy:** Runs `mvn install` on both trees with the `update` or `delete` option.
 
-The tool is now consolidated into a single Python script with reasonable defaults.
+---
 
-### Arguments
+## Quick Start
 
-- `--commit-before`: Previous commit hash (default: `HEAD~1`)
-- `--current-commit`: Current commit hash (default: `HEAD`)
-- `--folder`: Files folder from repo root to diff (default: `src/`)
-- `--output`: Output folder for generated trees (default: `output/`)
-- `--confirm`: Execute the Maven plugin (apply changes)
+### 1. Requirements
+- Python 3.9+
+- Maven (`mvn`) installed and in your PATH.
+- (Optional) `tree` command for better dry-run visualization.
 
-### 1. Dry Run (Generate Plan)
-
-Run the script to diff between two git hashes and see the plan.
-By default, it compares `HEAD~1` vs `HEAD` in `src/`.
+### 2. Basic Usage (Dry Run)
+By default, the tool compares `HEAD~1` with `HEAD` in the `src/` directory.
 
 ```bash
-# Simplest usage (HEAD~1 vs HEAD)
 python main.py
-
-# Specify commits
-python main.py --commit-before 2b8d428 --current-commit 4a622b7
 ```
 
-This will:
-1. Compare the commits.
-2. Generate output trees in `output/` (default).
-3. Display the structure of files to be processed (dry run).
-
-### 2. Execute (Apply Changes)
-
-To actually apply the changes using the Apigee Maven Plugin, add the `--confirm` flag:
+### 3. Deploy Changes
+Add the `--confirm` flag to actually execute the Maven commands.
 
 ```bash
 python main.py --confirm
 ```
 
-This will execute `mvn install` on the generated file structures.
+---
 
-**Authentication Note:**
-Ensure you have configured your **authentication to Apigee** on `pom.xml`:
-- Change `<apigee.serviceaccount.file>/tmp/sa.json</apigee.serviceaccount.file>` to your service account key location.
-- Or else, change for `<apigee.bearer>${bearer}</apigee.bearer>` and populate the `bearer` env variable.
+## Configuration & Arguments
 
-**Tip:** it's recommended to add those steps in a pipeline triggered by commit.
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `--commit-before` | `HEAD~1` | Previous commit hash to compare. |
+| `--current-commit` | `HEAD` | Current commit hash. |
+| `--folder` | `src` | Folder containing the Apigee config tree. |
+| `--output` | `output` | Where to generate the temporary diff trees. |
+| `--confirm` | `False` | Must be present to execute `mvn` commands. |
+| `--bearer` | `None` | Optional: Apigee bearer token to use for Maven. |
+| `--sa-path` | `None` | Optional: Path to the service account key file. |
 
-## Folder structure
+### Authentication
+The tool passes authentication flags directly to the Maven command. You can provide them in three ways:
 
-This repository expects the following Apigee file structure (it's the same as Apigee Config Maven Plugin).
+1. **Command Line (Recommended):**
+   ```bash
+   python main.py --confirm --bearer "$(gcloud auth print-access-token)"
+   # OR
+   python main.py --confirm --sa-path /tmp/sa.json
+   ```
 
-In the example run above, the file tree below would be inside `src/` (at the root of git repository):
+2. **Environment Variables:**
+   If your `pom.xml` is configured to use environment variables (e.g., `${env.bearer}`), simply export them before running the script:
+   ```bash
+   export bearer=$(gcloud auth print-access-token)
+   python main.py --confirm
+   ```
 
+3. **POM Configuration:**
+   Hardcode the service account path or token directly in your `pom.xml` (not recommended for CI/CD).
+
+---
+
+## Expected Folder Structure
+The tool expects the standard Maven config structure inside your `--folder` (default `src/`):
+
+```text
+<org-name>/
+  ├── org/
+  │   ├── apiProducts.json
+  │   ├── developers.json
+  │   └── ...
+  └── env/
+      ├── <env-name>/
+      │   ├── targetServers.json
+      │   ├── kvms.json
+      │   └── ...
 ```
-<org-name>
-  ├── api
-  │   ├── forecastweatherapi
-  │   │   ├── kvms.json
-  │   │   ├── kvms-security.json
-  │   └── oauth
-  │       ├── kvms.json
-  ├── env
-  │   ├── <prod>
-  │   │   ├── kvms.json
-  │   │   ├── kvms-targets.json
-  │   │   ├── flowhooks.json
-  │   │   ├── targetServers.json
-  │   │   ├── references.json
-  │   ├── <test>
-  │   │   ├── kvms.json
-  │   │   ├── targetServers.json
-  │   │   ├── targetServers-backend.json
-  │   │   ├── keystores.json
-  │   │   ├── keystores-signed.json
-  │   │   ├── aliases.json
-  │   │   └── references.json
-  └── org
-      ├── apiProducts.json
-      ├── appGroups.json
-      ├── appGroupApps.json          
-      ├── developerApps.json
-      ├── developers.json
-      ├── kvms.json
-      ├── reports.json
-      └── importKeys.json
+
+*Note: File names must start with the resource type (e.g., `targetServers-backend.json` is valid).*
+
+---
+
+## Advanced Usage
+
+### Comparing Specific Branches or Commits
+The tool natively supports Git references, including branch names, tags, and specific hashes:
+
+```bash
+python main.py --commit-before main --current-commit feature-branch
 ```
 
-## Notes
+### GitHub Actions / CI Pipelines
+Use the environment variables provided by your CI runner (like `GITHUB_BASE_REF` and `GITHUB_HEAD_REF`) to target PR commits:
 
-- **org-name** and folders directly inside **env** must be the actual correct names for your organizations/environments. You can have multiple organizations and multiple environments.
+```bash
+python main.py \
+  --commit-before origin/main \
+  --current-commit ${{ github.event.pull_request.head.sha }} \
+  --confirm \
+  --bearer ${{ secrets.APIGEE_BEARER }}
+```
 
-- Each file for each type **must** start with the correct naming convention, but the suffix may change, like **targetServers.json** and **targetServers-backend.json**.
+---
+
+## Contributing
+Tests are located in the `diff/` directory. Run them with:
+```bash
+pytest --cov=diff
+```
