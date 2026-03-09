@@ -180,3 +180,15 @@ def test_diff_dict():
             "val": 22
         }]
     }
+
+def test_diff_invalid_types():
+    with pytest.raises(Exception, match="Invalid contents to diff."):
+        diff([1], {"a": 1}, "id")
+
+def test_diff_list_no_identifier():
+    with pytest.raises(Exception, match="identifier if needed to diff lists."):
+        diff([], [], "")
+
+def test_transform_identification_no_identifier():
+    with pytest.raises(Exception, match="Identifier cannot be empty."):
+        _transform_identification("", [])

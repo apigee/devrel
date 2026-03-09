@@ -143,3 +143,73 @@ def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resour
     
     # Verify that the merged content contains BOTH apps, not just the last one
     mock_write_to_file.assert_any_call(path_for_mod_update, expected_merged_content)
+
+@patch('diff.check.git_diff_hashes')
+def test_detect_changes_edge_cases(mock_git_diff_hashes):
+    mock_result = MagicMock()
+    mock_result.stdout = (
+        "R100\tsrc/old_rename.json\n" # Missing path_new
+        "C075\tsrc/copied_fail.json\n" # Missing path_new
+        "X\tsrc/unknown.json\n" # Unknown status
+        "C075\tsrc/old.json\tsrc/new.json" # Valid copy
+    )
+    mock_git_diff_hashes.return_value = mock_result
+
+    added, deleted, modified = detect_changes("a", "b", "src")
+    
+    assert "src/new.json" in added
+    assert len(added) == 1
+    assert len(deleted) == 0
+    
+    # Test unknown status and path_new is None warnings (implicitly covered by calling detect_changes with these mocks)
+    # We can also check if they don't crash
+    # The current code prints to stderr
+    detect_changes("a", "b", "src/")
+
+@patch('diff.check.write_to_file')
+@patch('diff.check.read_git_file_contents')
+@patch('diff.check.create_folder')
+@patch('diff.check.find_resource_type')
+def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
+    mock_create_folder.side_effect = lambda x: x
+    mock_read_git_contents.return_value = '{"full": "content"}'
+    mock_find_resource_type.return_value = None
+    
+    modified_files = ["src/unknown.json"]
+    write_temporary_files([], [], modified_files, "prev", "curr", "/tmp")
+    
+    mock_write_to_file.assert_any_call("/tmp/update/src/unknown.json", {"full": "content"})
+
+@patch('diff.check.run_command_or_exit')
+def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
+    mock_result = MagicMock()
+    mock_result.stdout = ""
+    mock_run_command_or_exit.return_value = mock_result
+
+    added, deleted, modified = detect_changes(None, "def5678", "resources/")
+    assert len(added) == 0
+
+@patch('diff.check.run_command_or_exit')
+def test_detect_changes_initial_commit_empty_line(mock_run_command_or_exit):
+    mock_result = MagicMock()
+    mock_result.stdout = "\n"
+    mock_run_command_or_exit.return_value = mock_result
+
+    added, deleted, modified = detect_changes(None, "def5678", "resources/")
+    assert len(added) == 0
+
+@patch('diff.check.write_to_file')
+@patch('diff.check.read_git_file_contents')
+@patch('diff.check.create_folder')
+@patch('diff.check.find_resource_type')
+@patch('diff.check.diff')
+@patch.dict('diff.check.RESOURCES_ID', {"some_type": "key"})
+def test_write_temporary_files_empty_diff(mock_diff_func, mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
+    mock_create_folder.side_effect = lambda x: x
+    mock_read_git_contents.return_value = "{}"
+    mock_find_resource_type.return_value = "some_type"
+    mock_diff_func.return_value = {"added": [], "modified": [], "deleted": []}
+    
+    write_temporary_files([], [], ["src/file.json"], "prev", "curr", "/tmp")
+    # write_to_file should NOT be called for update/delete if they are empty
+    assert mock_write_to_file.call_count == 0

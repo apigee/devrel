@@ -39,9 +39,6 @@ def process_files(output_base_path, resources_folder, confirm):
             rel_path = os.path.relpath(full_path, action_base_path)
             parts = rel_path.split(os.sep)
 
-            if not parts:
-                continue
-
             org_name = parts[0]
             
             # Basic validation

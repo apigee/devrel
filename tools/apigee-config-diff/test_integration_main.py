@@ -1,6 +1,7 @@
 from unittest.mock import patch, MagicMock
 from main import main
-
+import json
+import os
 
 @patch('sys.argv', ['main.py', '--commit-before', 'previous_commit', '--current-commit', 'current_commit', '--folder', 'src/', '--output', '/tmp/apigee'])
 @patch('diff.check.git_diff_hashes')
@@ -15,10 +16,6 @@ def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashe
 
     main()
 
-
-    import json
-    import os
-    
     # Check that update/delete directories were created and populated
     update_dir = '/tmp/apigee/update/src/my-org/env/dev/'
     delete_dir = '/tmp/apigee/delete/src/my-org/env/dev/'
@@ -40,7 +37,6 @@ def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashe
         assert len(target_servers) == 1
         assert target_servers[0]['name'] == 'Enterprisetarget'
         assert target_servers[0]['isEnabled'] == False
-
 
 
 def _mock_git_diff():

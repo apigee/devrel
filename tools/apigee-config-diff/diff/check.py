@@ -14,7 +14,13 @@ RESOURCES_ID = {
     "aliases": "alias",
     "apiProducts": "name",
     "developers": "email",
-    "developerApps": "name"
+    "developerApps": "name",
+    "kvm": "name",
+    "cache": "name",
+    "appGroup": "name",
+    "caches": "name",
+    "appGroups": "name",
+    "reports": "name"
 }
 
 
@@ -147,3 +153,7 @@ def write_temporary_files(added_files, deleted_files, modified_files, previous_c
                 # Add a new file for deletion, with deleted elements from modified file
                 if len(diff_elements['deleted']) > 0:
                     write_to_file(os.path.join(delete_folder, f'{f_path}.delete'), diff_elements['deleted'])
+            else:
+                # Fallback: if we don't know how to diff the file, deploy it in full
+                print(f"Unknown resource type for {f_path}. Deploying full file.")
+                write_to_file(os.path.join(update_folder, f_path), json.loads(current_file_contents))
