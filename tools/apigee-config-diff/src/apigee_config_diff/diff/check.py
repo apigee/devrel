@@ -45,7 +45,7 @@ def detect_changes(previous_commit, current_commit, resources_base_path):
         result = run_command_or_exit(['git', 'ls-files'], capture_output=True)
         if result.stdout: # result.stdout should be a string
             for file_path in result.stdout.strip().split('\n'):
-                if file_path:  # Ensure not an empty line
+                if file_path and file_path.startswith(resources_base_path):
                     added_files.append(file_path)
     else:
         # Use git diff to get file statuses
