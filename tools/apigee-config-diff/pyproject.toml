@@ -31,4 +31,3 @@ include = ["apigee_config_diff*"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "--cov=apigee_config_diff --cov-report=term-missing"
