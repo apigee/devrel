@@ -11,8 +11,8 @@ def resolve_commits(commit_before, commit_after):
     current_commit = commit_after
 
     if re.fullmatch(r'0+', commit_before):
-        print("Previous commit is all zeros (new branch or first push to PR).")
-        commit_before = "HEAD~1"
+        print("Previous commit is zero. Comparing against an empty repository.")
+        return "", current_commit
 
     # Try to see if commit_before exists.
     try:
