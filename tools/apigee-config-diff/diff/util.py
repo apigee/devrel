@@ -115,3 +115,13 @@ def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
         if stderr_msg: # This usually contains the git error message
             print(f"Stderr: {stderr_msg}", file=sys.stderr)
         sys.exit(e.returncode)
+
+def merge(a, b):
+    if isinstance(a, list) and isinstance(b, list):
+        return a + b
+    if isinstance(a, dict) and isinstance(b, dict):
+        res = a.copy()
+        for k, v in b.items():
+            res[k] = merge(res.get(k), v)
+        return res
+    return b if b is not None else a

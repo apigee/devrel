@@ -15,7 +15,32 @@ def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashe
 
     main()
 
-    assert 1==1
+
+    import json
+    import os
+    
+    # Check that update/delete directories were created and populated
+    update_dir = '/tmp/apigee/update/src/my-org/env/dev/'
+    delete_dir = '/tmp/apigee/delete/src/my-org/env/dev/'
+    
+    assert os.path.exists(os.path.join(update_dir, 'flowhooks.json'))
+    assert os.path.exists(os.path.join(update_dir, 'flowhooks-added.json'))
+    assert os.path.exists(os.path.join(delete_dir, 'flowhooks-old.json'))
+    
+    # Validate content merging correctly
+    with open('/tmp/apigee/update/src/my-org/org/developerApps.json') as f:
+        dev_apps = json.load(f)
+        assert 'hugh@example.com' in dev_apps
+        assert 'hughnew@example.com' in dev_apps
+        assert dev_apps['hugh@example.com'][0]['name'] == 'hughapp'
+        assert dev_apps['hugh@example.com'][0]['callbackUrl'] == 'http://weatherappModified.com'
+        
+    with open('/tmp/apigee/update/src/my-org/env/dev/targetServers.json') as f:
+        target_servers = json.load(f)
+        assert len(target_servers) == 1
+        assert target_servers[0]['name'] == 'Enterprisetarget'
+        assert target_servers[0]['isEnabled'] == False
+
 
 
 def _mock_git_diff():

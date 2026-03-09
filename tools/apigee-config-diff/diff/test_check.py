@@ -105,3 +105,41 @@ def test_write_temporary_files_basic(mock_diff_func, mock_find_resource_type, mo
 
     path_for_mod_delete = os.path.join(delete_folder_path, f"{mod_f_path}.delete")
     mock_write_to_file.assert_any_call(path_for_mod_delete, mock_diff_elements['deleted'])
+
+@patch('diff.check.write_to_file')
+@patch('diff.check.read_git_file_contents')
+@patch('diff.check.create_folder')
+@patch('diff.check.find_resource_type')
+@patch('diff.check.diff')
+@patch.dict('diff.check.RESOURCES_ID', {"developerApps": "name"})
+def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
+    mock_create_folder.side_effect = lambda x: x
+    mock_read_git_contents.return_value = "{}"
+    mock_find_resource_type.return_value = "developerApps"
+    
+    # Simulate the "overlapping key" scenario where dev@example.com has an added AND modified app
+    mock_diff_elements = {
+        "added": {
+            "dev@example.com": [{"name": "App_B"}]
+        },
+        "modified": {
+            "dev@example.com": [{"name": "App_A"}]
+        },
+        "deleted": {}
+    }
+    mock_diff_func.return_value = mock_diff_elements
+
+    modified_files = ["resources/developerApps.json"]
+    tmp_base_path = "/tmp/test_output"
+    update_folder_path = os.path.join(tmp_base_path, "update")
+
+    write_temporary_files([], [], modified_files, "prev", "curr", tmp_base_path)
+
+    expected_merged_content = {
+        "dev@example.com": [{"name": "App_B"}, {"name": "App_A"}]
+    }
+    
+    path_for_mod_update = os.path.join(update_folder_path, "resources/developerApps.json")
+    
+    # Verify that the merged content contains BOTH apps, not just the last one
+    mock_write_to_file.assert_any_call(path_for_mod_update, expected_merged_content)

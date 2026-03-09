@@ -3,7 +3,7 @@ import sys
 import json
 
 from .diff import diff
-from .util import git_diff_hashes, run_command_or_exit, write_to_file, find_resource_type, create_folder, read_git_file_contents
+from .util import git_diff_hashes, run_command_or_exit, write_to_file, find_resource_type, create_folder, read_git_file_contents, merge
 
 
 RESOURCES_ID = {
@@ -139,14 +139,8 @@ def write_temporary_files(added_files, deleted_files, modified_files, previous_c
                 print(f"Diff of elements inside {f_path}:")
                 print(json.dumps(diff_elements, indent=4))
 
-                # Added and modified elements must be created/updated
-                added_and_modified = []
-
-                if isinstance(diff_elements['added'], list) and isinstance(diff_elements['modified'], list):
-                    added_and_modified = diff_elements['added'] + diff_elements['modified']
-                elif isinstance(diff_elements['added'], dict) and isinstance(diff_elements['modified'], dict):
-                    added_and_modified = diff_elements['added'] | diff_elements['modified']
-
+                added_and_modified = merge(diff_elements['added'], diff_elements['modified'])
+                
                 if len(added_and_modified) > 0:
                     write_to_file(os.path.join(update_folder, f_path), added_and_modified)
 

@@ -13,7 +13,7 @@ def test_identify_object():
     expected = {
         1: {"id": 1, "val": 11},
         2: {"id": 2, "val": 22},
-        3: {"id": 3, "val": 34}
+        3: {"id": 3, "val": 33}
     }
 
     transformed = _transform_identification("id", input_data)
