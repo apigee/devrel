@@ -38,6 +38,7 @@ def test_process_files_confirm_env(tmp_path):
         args, kwargs = mock_run.call_args
         cmd = args[0]
         assert "mvn" in cmd
+        assert "-Porg1" in cmd
         assert "-Dapigee.env=prod" in cmd
         assert "-Dapigee.org=org1" in cmd
 
@@ -54,6 +55,7 @@ def test_process_files_confirm_no_env(tmp_path):
         args, kwargs = mock_run.call_args
         cmd = args[0]
         assert "mvn" in cmd
+        assert "-Porg1" in cmd
         assert "-Dapigee.org=org1" in cmd
         assert not any("-Dapigee.env=" in arg for arg in cmd)
 

@@ -74,7 +74,7 @@ def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_p
                     for e in envs:
                         print(f"Running env {e} for org {org}...")
                         cmd = [
-                            "mvn", "install", "-Pdefault",
+                            "mvn", "install", f"-P{org}",
                             f"-Dapigee.config.dir={config_dir}",
                             f"-Dapigee.org={org}",
                             f"-Dapigee.env={e}",
@@ -94,7 +94,7 @@ def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_p
                 else:
                     print(f"Running for org {org} (no specific env detected)...")
                     cmd = [
-                        "mvn", "install", "-Pdefault",
+                        "mvn", "install", f"-P{org}",
                         f"-Dapigee.config.dir={config_dir}",
                         f"-Dapigee.org={org}",
                         f"-Dapigee.config.options={action}"
