@@ -15,7 +15,9 @@ from apigee_config_diff.diff.util import (
 )
 
 def test_resolve_commits_normal():
-    assert resolve_commits("abc", "def") == ("abc", "def")
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value.returncode = 0
+        assert resolve_commits("abc", "def") == ("abc", "def")
 
 def test_resolve_commits_zeros_head_exists():
     # Mock only the 'git rev-parse' call which resolves HEAD~1
@@ -28,6 +30,12 @@ def test_resolve_commits_zeros_head_not_exists():
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.returncode = 1
         assert resolve_commits("0000000", "def") == ("", "def")
+
+def test_resolve_commits_single_commit():
+    # Simulates single commit scenario where HEAD~1 does not exist
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value.returncode = 1
+        assert resolve_commits("HEAD~1", "HEAD") == ("", "HEAD")
 
 def test_resolve_commits_git_not_found():
     with patch("subprocess.run") as mock_run:

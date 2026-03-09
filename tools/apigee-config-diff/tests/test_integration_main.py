@@ -6,7 +6,9 @@ import os
 @patch('sys.argv', ['main.py', '--commit-before', 'previous_commit', '--current-commit', 'current_commit', '--folder', 'resources/', '--output', '/tmp/apigee'])
 @patch('apigee_config_diff.diff.check.git_diff_hashes')
 @patch('apigee_config_diff.diff.check.read_git_file_contents')
-def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashes):
+@patch('subprocess.run')
+def test_write_temporary_files_basic(mock_subprocess_run, mock_read_git_contents, mock_git_diff_hashes):
+    mock_subprocess_run.return_value.returncode = 0
 
     # Mock the diff files
     mock_git_diff_hashes.return_value = _mock_git_diff()

@@ -12,27 +12,26 @@ def resolve_commits(commit_before, commit_after):
 
     if re.fullmatch(r'0+', commit_before):
         print("Previous commit is all zeros (new branch or first push to PR).")
-        try:
-            # Try to see if HEAD~1 exists.
-            git_rev_parse_proc = subprocess.run(
-                ['git', 'rev-parse', '--verify', 'HEAD~1'],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                text=True
-            )
+        commit_before = "HEAD~1"
 
-            if git_rev_parse_proc.returncode == 0:
-                previous_commit = "HEAD~1"
-                print("Comparing against parent of current commit (HEAD~1).")
-            else:
-                print("This appears to be the first commit. Listing all tracked files as 'added'.")
-                previous_commit = ""  # Will be handled to list all files
+    # Try to see if commit_before exists.
+    try:
+        git_rev_parse_proc = subprocess.run(
+            ['git', 'rev-parse', '--verify', commit_before],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True
+        )
+    except FileNotFoundError:
+        print("Error: 'git' command not found. Ensure it is installed and in your PATH.", file=sys.stderr)
+        sys.exit(1)
 
-        except FileNotFoundError:
-            print("Error: 'git' command not found. Ensure it is installed and in your PATH.", file=sys.stderr)
-            sys.exit(1)
-    else:
+    if git_rev_parse_proc.returncode == 0:
         previous_commit = commit_before
+    else:
+        print(f"Commit reference '{commit_before}' not found. "
+              "Listing all tracked files as 'added'.")
+        previous_commit = ""  # Will be handled to list all files
 
     return previous_commit, current_commit
 

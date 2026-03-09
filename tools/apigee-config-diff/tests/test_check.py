@@ -37,7 +37,7 @@ def test_detect_changes_initial_commit(mock_run_command_or_exit):
     mock_result.stdout = (
         "resources/file1.json\n"
         "resources/file2.json\n"
-        "another/file3.txt"
+        "resources/file3.json"
     )
     mock_run_command_or_exit.return_value = mock_result
 
@@ -49,7 +49,7 @@ def test_detect_changes_initial_commit(mock_run_command_or_exit):
 
     assert "resources/file1.json" in added
     assert "resources/file2.json" in added
-    assert "another/file3.txt" in added
+    assert "resources/file3.json" in added
     assert len(added) == 3
     assert len(deleted) == 0
     assert len(modified) == 0

@@ -19,7 +19,7 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
-  <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order
+  <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order 
          of execution is the same as the order in which you define them. -->
   <build>
     <plugins>
@@ -35,13 +35,13 @@
               <goal>targetservers</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-config-kvm</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>keyvaluemaps</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-config-kvm</id>
+            <phase>install</phase>
+            <goals>
+              <goal>keyvaluemaps</goal>
+            </goals>
+          </execution>
           <execution>
             <id>create-config-keystores</id>
             <phase>install</phase>
@@ -49,13 +49,13 @@
               <goal>keystores</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-config-aliases</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>aliases</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-config-aliases</id>
+            <phase>install</phase>
+            <goals>
+              <goal>aliases</goal>
+            </goals>
+          </execution>
           <execution>
             <id>create-config-references</id>
             <phase>install</phase>
@@ -63,13 +63,13 @@
               <goal>references</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-config-resourcefiles</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>resourcefiles</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-config-resourcefiles</id>
+            <phase>install</phase>
+            <goals>
+              <goal>resourcefiles</goal>
+            </goals>
+          </execution>
           <execution>
             <id>create-config-apiproduct</id>
             <phase>install</phase>
@@ -77,13 +77,13 @@
               <goal>apiproducts</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-config-rateplans</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>rateplans</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-config-rateplans</id>
+            <phase>install</phase>
+            <goals>
+              <goal>rateplans</goal>
+            </goals>
+          </execution>
           <execution>
             <id>create-config-developer</id>
             <phase>install</phase>
@@ -112,13 +112,13 @@
               <goal>appgroupapps</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-config-reports</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>reports</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-config-reports</id>
+            <phase>install</phase>
+            <goals>
+              <goal>reports</goal>
+            </goals>
+          </execution>
           <execution>
             <id>create-config-flowhooks</id>
             <phase>install</phase>
@@ -133,42 +133,44 @@
               <goal>importKeys</goal>
             </goals>
           </execution>
-          <!-- <execution> -->
-          <!--   <id>create-portal-categories</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>apicategories</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
-          <!-- <execution> -->
-          <!--   <id>create-portal-docs</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>apidocs</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
-          <!-- <execution> -->
-          <!--   <id>create-spaces</id> -->
-          <!--   <phase>install</phase> -->
-          <!--   <goals> -->
-          <!--     <goal>spaces</goal> -->
-          <!--   </goals> -->
-          <!-- </execution> -->
+          <execution>
+            <id>create-portal-categories</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apicategories</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-portal-docs</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apidocs</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-spaces</id>
+            <phase>install</phase>
+            <goals>
+              <goal>spaces</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
   <profiles>
     <profile>
-      <id>default</id>
+      <id>my-org</id>
       <properties>
-        <apigee.profile>default</apigee.profile>
+        <apigee.profile>my-org</apigee.profile>
         <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
         <apigee.apiversion>v1</apigee.apiversion>
+        <apigee.org>${org}</apigee.org>
+        <apigee.env>${env}</apigee.env>
         <apigee.authtype>oauth</apigee.authtype>
-        <!-- Either one of those below must be provided via env variables -->
-        <apigee.bearer>${apigee_bearer}</apigee.bearer>
-        <apigee.serviceaccount.file>${apigee_sa_file}</apigee.serviceaccount.file>
+        <apigee.bearer>${bearer}</apigee.bearer>
+        <apigee.portal.siteId>${siteId}</apigee.portal.siteId>
+        <apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
       </properties>
     </profile>
   </profiles>
