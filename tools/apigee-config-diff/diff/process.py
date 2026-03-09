@@ -10,7 +10,7 @@ def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_p
     
     for action in actions:
         # Construct the base path for this action and resource folder
-        # e.g. output/update/src
+        # e.g. output/update/resources
         action_base_path = os.path.join(output_base_path, action, resources_subpath)
         
         if not os.path.exists(action_base_path):

@@ -148,23 +148,23 @@ def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resour
 def test_detect_changes_edge_cases(mock_git_diff_hashes):
     mock_result = MagicMock()
     mock_result.stdout = (
-        "R100\tsrc/old_rename.json\n" # Missing path_new
-        "C075\tsrc/copied_fail.json\n" # Missing path_new
-        "X\tsrc/unknown.json\n" # Unknown status
-        "C075\tsrc/old.json\tsrc/new.json" # Valid copy
+        "R100\tresources/old_rename.json\n" # Missing path_new
+        "C075\tresources/copied_fail.json\n" # Missing path_new
+        "X\tresources/unknown.json\n" # Unknown status
+        "C075\tresources/old.json\tresources/new.json" # Valid copy
     )
     mock_git_diff_hashes.return_value = mock_result
 
-    added, deleted, modified = detect_changes("a", "b", "src")
+    added, deleted, modified = detect_changes("a", "b", "resources")
     
-    assert "src/new.json" in added
+    assert "resources/new.json" in added
     assert len(added) == 1
     assert len(deleted) == 0
     
     # Test unknown status and path_new is None warnings (implicitly covered by calling detect_changes with these mocks)
     # We can also check if they don't crash
     # The current code prints to stderr
-    detect_changes("a", "b", "src/")
+    detect_changes("a", "b", "resources/")
 
 @patch('diff.check.write_to_file')
 @patch('diff.check.read_git_file_contents')
@@ -175,10 +175,10 @@ def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create
     mock_read_git_contents.return_value = '{"full": "content"}'
     mock_find_resource_type.return_value = None
     
-    modified_files = ["src/unknown.json"]
+    modified_files = ["resources/unknown.json"]
     write_temporary_files([], [], modified_files, "prev", "curr", "/tmp")
     
-    mock_write_to_file.assert_any_call("/tmp/update/src/unknown.json", {"full": "content"})
+    mock_write_to_file.assert_any_call("/tmp/update/resources/unknown.json", {"full": "content"})
 
 @patch('diff.check.run_command_or_exit')
 def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
@@ -210,6 +210,6 @@ def test_write_temporary_files_empty_diff(mock_diff_func, mock_find_resource_typ
     mock_find_resource_type.return_value = "some_type"
     mock_diff_func.return_value = {"added": [], "modified": [], "deleted": []}
     
-    write_temporary_files([], [], ["src/file.json"], "prev", "curr", "/tmp")
+    write_temporary_files([], [], ["resources/file.json"], "prev", "curr", "/tmp")
     # write_to_file should NOT be called for update/delete if they are empty
     assert mock_write_to_file.call_count == 0

@@ -35,7 +35,7 @@ Standard Apigee configuration deployments often re-deploy the entire configurati
 - (Optional) `tree` command for better dry-run visualization.
 
 ### 2. Basic Usage (Dry Run)
-By default, the tool compares `HEAD~1` with `HEAD` in the `src/` directory.
+By default, the tool compares `HEAD~1` with `HEAD` in the `resources/` directory.
 
 ```bash
 python main.py
@@ -56,7 +56,7 @@ python main.py --confirm
 | :--- | :--- | :--- |
 | `--commit-before` | `HEAD~1` | Previous commit hash to compare. |
 | `--current-commit` | `HEAD` | Current commit hash. |
-| `--folder` | `src` | Folder containing the Apigee config tree. |
+| `--folder` | `resources` | Folder containing the Apigee config tree. |
 | `--output` | `output` | Where to generate the temporary diff trees. |
 | `--confirm` | `False` | Must be present to execute `mvn` commands. |
 | `--bearer` | `None` | Optional: Apigee bearer token to use for Maven. |
@@ -85,7 +85,7 @@ The tool passes authentication flags directly to the Maven command. You can prov
 ---
 
 ## Expected Folder Structure
-The tool expects the standard Maven config structure inside your `--folder` (default `src/`):
+The tool expects the standard Maven config structure inside your `--folder` (default `resources/`):
 
 ```text
 <org-name>/

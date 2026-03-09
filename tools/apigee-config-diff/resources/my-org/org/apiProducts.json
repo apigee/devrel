@@ -1,0 +1,22 @@
+[
+  {
+    "name": "SampleProduct",
+    "displayName": "Sample Product",
+    "approvalType": "auto",
+    "attributes": [
+      {
+        "name": "access",
+        "value": "public"
+      }
+    ],
+    "environments": [
+      "prod"
+    ],
+    "proxies": [
+      "hello-world"
+    ],
+    "quota": "10000",
+    "quotaInterval": "1",
+    "quotaTimeUnit": "month"
+  }
+]

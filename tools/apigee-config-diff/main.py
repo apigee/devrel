@@ -8,7 +8,7 @@ def parse_args():
     
     parser.add_argument("--commit-before", help="Previous commit hash (default: HEAD~1)", default="HEAD~1")
     parser.add_argument("--current-commit", help="Current commit hash (default: HEAD)", default="HEAD")
-    parser.add_argument("--folder", help="Files folder from repo root to diff (default: src)", default="src")
+    parser.add_argument("--folder", help="Files folder from repo root to diff (default: resources)", default="resources")
     parser.add_argument("--output", help="Output folder for generated trees (default: output)", default="output")
     parser.add_argument("--confirm", action="store_true", help="Execute the Maven plugin (apply changes)")
     parser.add_argument("--bearer", help="Apigee bearer token (optional)", default=None)

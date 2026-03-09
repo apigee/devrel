@@ -1,0 +1,6 @@
+[
+  {
+    "flowHookPoint": "PreProxyFlowHook",
+    "sharedFlow": "security-shared-flow"
+  }
+]

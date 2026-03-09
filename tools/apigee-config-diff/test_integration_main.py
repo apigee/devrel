@@ -3,7 +3,7 @@ from main import main
 import json
 import os
 
-@patch('sys.argv', ['main.py', '--commit-before', 'previous_commit', '--current-commit', 'current_commit', '--folder', 'src/', '--output', '/tmp/apigee'])
+@patch('sys.argv', ['main.py', '--commit-before', 'previous_commit', '--current-commit', 'current_commit', '--folder', 'resources/', '--output', '/tmp/apigee'])
 @patch('diff.check.git_diff_hashes')
 @patch('diff.check.read_git_file_contents')
 def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashes):
@@ -17,22 +17,22 @@ def test_write_temporary_files_basic(mock_read_git_contents, mock_git_diff_hashe
     main()
 
     # Check that update/delete directories were created and populated
-    update_dir = '/tmp/apigee/update/src/my-org/env/dev/'
-    delete_dir = '/tmp/apigee/delete/src/my-org/env/dev/'
+    update_dir = '/tmp/apigee/update/resources/my-org/env/dev/'
+    delete_dir = '/tmp/apigee/delete/resources/my-org/env/dev/'
     
     assert os.path.exists(os.path.join(update_dir, 'flowhooks.json'))
     assert os.path.exists(os.path.join(update_dir, 'flowhooks-added.json'))
     assert os.path.exists(os.path.join(delete_dir, 'flowhooks-old.json'))
     
     # Validate content merging correctly
-    with open('/tmp/apigee/update/src/my-org/org/developerApps.json') as f:
+    with open('/tmp/apigee/update/resources/my-org/org/developerApps.json') as f:
         dev_apps = json.load(f)
         assert 'hugh@example.com' in dev_apps
         assert 'hughnew@example.com' in dev_apps
         assert dev_apps['hugh@example.com'][0]['name'] == 'hughapp'
         assert dev_apps['hugh@example.com'][0]['callbackUrl'] == 'http://weatherappModified.com'
         
-    with open('/tmp/apigee/update/src/my-org/env/dev/targetServers.json') as f:
+    with open('/tmp/apigee/update/resources/my-org/env/dev/targetServers.json') as f:
         target_servers = json.load(f)
         assert len(target_servers) == 1
         assert target_servers[0]['name'] == 'Enterprisetarget'
@@ -43,44 +43,44 @@ def _mock_git_diff():
     mock_result = MagicMock()
 
     mock_result.stdout = (
-        "M\tsrc/my-org/env/dev/flowhooks.json\n"
-        "A\tsrc/my-org/env/dev/flowhooks-added.json\n"
-        "D\tsrc/my-org/env/dev/flowhooks-old.json\n"
+        "M\tresources/my-org/env/dev/flowhooks.json\n"
+        "A\tresources/my-org/env/dev/flowhooks-added.json\n"
+        "D\tresources/my-org/env/dev/flowhooks-old.json\n"
 
-        "M\tsrc/my-org/env/dev/references.json\n"
-        "A\tsrc/my-org/env/dev/references-added.json\n"
-        "D\tsrc/my-org/env/dev/references-old.json\n"
+        "M\tresources/my-org/env/dev/references.json\n"
+        "A\tresources/my-org/env/dev/references-added.json\n"
+        "D\tresources/my-org/env/dev/references-old.json\n"
 
-        "M\tsrc/my-org/env/dev/targetServers.json\n"
-        "A\tsrc/my-org/env/dev/targetServers-added.json\n"
-        "D\tsrc/my-org/env/dev/targetServers-old.json\n"
+        "M\tresources/my-org/env/dev/targetServers.json\n"
+        "A\tresources/my-org/env/dev/targetServers-added.json\n"
+        "D\tresources/my-org/env/dev/targetServers-old.json\n"
 
-        "M\tsrc/my-org/env/dev/keystores.json\n"
-        "A\tsrc/my-org/env/dev/keystores-added.json\n"
-        "D\tsrc/my-org/env/dev/keystores-old.json\n"
+        "M\tresources/my-org/env/dev/keystores.json\n"
+        "A\tresources/my-org/env/dev/keystores-added.json\n"
+        "D\tresources/my-org/env/dev/keystores-old.json\n"
 
-        "M\tsrc/my-org/env/dev/aliases.json\n"
-        "A\tsrc/my-org/env/dev/aliases-added.json\n"
-        "D\tsrc/my-org/env/dev/aliases-old.json\n"
+        "M\tresources/my-org/env/dev/aliases.json\n"
+        "A\tresources/my-org/env/dev/aliases-added.json\n"
+        "D\tresources/my-org/env/dev/aliases-old.json\n"
 
-        "M\tsrc/my-org/org/apiProducts.json\n"
-        "A\tsrc/my-org/org/apiProducts-added.json\n"
-        "D\tsrc/my-org/org/apiProducts-old.json\n"
+        "M\tresources/my-org/org/apiProducts.json\n"
+        "A\tresources/my-org/org/apiProducts-added.json\n"
+        "D\tresources/my-org/org/apiProducts-old.json\n"
 
-        "M\tsrc/my-org/org/developers.json\n"
-        "A\tsrc/my-org/org/developers-added.json\n"
-        "D\tsrc/my-org/org/developers-old.json\n"
+        "M\tresources/my-org/org/developers.json\n"
+        "A\tresources/my-org/org/developers-added.json\n"
+        "D\tresources/my-org/org/developers-old.json\n"
 
-        "M\tsrc/my-org/org/developerApps.json\n"
-        "A\tsrc/my-org/org/developerApps-added.json\n"
-        "D\tsrc/my-org/org/developerApps-old.json"
+        "M\tresources/my-org/org/developerApps.json\n"
+        "A\tresources/my-org/org/developerApps-added.json\n"
+        "D\tresources/my-org/org/developerApps-old.json"
     )
 
     return mock_result
 
 file_contents = {
     "previous_commit": {
-        "src/my-org/env/dev/flowhooks.json": """
+        "resources/my-org/env/dev/flowhooks.json": """
         [
             {
                 "flowHookPoint":"PreProxyFlowHook",
@@ -88,7 +88,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/flowhooks-old.json": """
+        "resources/my-org/env/dev/flowhooks-old.json": """
         [
             {
                 "flowHookPoint":"PreTargetFlowHook",
@@ -97,7 +97,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/references.json": """
+        "resources/my-org/env/dev/references.json": """
         [
             {
                 "name" : "sampleReference",
@@ -106,7 +106,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/references-old.json": """
+        "resources/my-org/env/dev/references-old.json": """
         [
             {
                 "name" : "oldReference",
@@ -116,7 +116,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/targetServers.json": """
+        "resources/my-org/env/dev/targetServers.json": """
         [
             {
                 "name": "Enterprisetarget",
@@ -140,7 +140,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/targetServers-old.json": """
+        "resources/my-org/env/dev/targetServers-old.json": """
         [
             {
                 "name": "oldTarget",
@@ -151,14 +151,14 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/keystores.json": """
+        "resources/my-org/env/dev/keystores.json": """
         [
             {
                 "name" : "testKeyStorename"
             }
         ]
         """,
-        "src/my-org/env/dev/keystores-old.json": """
+        "resources/my-org/env/dev/keystores-old.json": """
         [
             {
                 "name" : "oldKeyStorename"
@@ -166,7 +166,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/aliases.json": """
+        "resources/my-org/env/dev/aliases.json": """
         [
             {
                 "alias":"testSelfSignedCert",
@@ -205,7 +205,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/aliases-old.json": """
+        "resources/my-org/env/dev/aliases-old.json": """
         [
             {
                 "alias":"oldSelfSignedCert",
@@ -221,7 +221,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/apiProducts.json": """
+        "resources/my-org/org/apiProducts.json": """
         [
             {
             "name":"weatherProduct",
@@ -311,7 +311,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/org/apiProducts-old.json": """
+        "resources/my-org/org/apiProducts-old.json": """
         [
             {
             "name":"oldWeatherProduct-legacy",
@@ -358,7 +358,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/developers.json": """
+        "resources/my-org/org/developers.json": """
         [
             {
                 "attributes": [],
@@ -369,7 +369,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/org/developers-old.json": """
+        "resources/my-org/org/developers-old.json": """
         [
             {
                 "attributes": [],
@@ -381,7 +381,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/developerApps.json": """
+        "resources/my-org/org/developerApps.json": """
         {
             "hugh@example.com": [
                 {
@@ -395,7 +395,7 @@ file_contents = {
             ]
         }
         """,
-        "src/my-org/org/developerApps-old.json": """
+        "resources/my-org/org/developerApps-old.json": """
        {
             "hughold@example.com": [
                 {
@@ -412,7 +412,7 @@ file_contents = {
     },
 
     "current_commit": {
-        "src/my-org/env/dev/flowhooks.json": """
+        "resources/my-org/env/dev/flowhooks.json": """
         [
             {
                 "flowHookPoint":"PreProxyFlowHook",
@@ -420,7 +420,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/flowhooks-added.json": """
+        "resources/my-org/env/dev/flowhooks-added.json": """
         [
             {
                 "flowHookPoint":"PostTargetFlowHook",
@@ -429,7 +429,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/references.json": """
+        "resources/my-org/env/dev/references.json": """
         [
             {
                 "name" : "sampleReference",
@@ -438,7 +438,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/references-added.json": """
+        "resources/my-org/env/dev/references-added.json": """
         [
             {
                 "name" : "NewReference",
@@ -448,7 +448,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/targetServers.json": """
+        "resources/my-org/env/dev/targetServers.json": """
         [
             {
                 "name": "Enterprisetarget",
@@ -472,7 +472,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/targetServers-added.json": """
+        "resources/my-org/env/dev/targetServers-added.json": """
         [
             {
                 "name": "NewTarget",
@@ -483,14 +483,14 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/keystores.json": """
+        "resources/my-org/env/dev/keystores.json": """
         [
             {
                 "name" : "modifiedKeyStorename"
             }
         ]
         """,
-        "src/my-org/env/dev/keystores-added.json": """
+        "resources/my-org/env/dev/keystores-added.json": """
         [
             {
                 "name" : "newKeyStorename"
@@ -498,7 +498,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/env/dev/aliases.json": """
+        "resources/my-org/env/dev/aliases.json": """
         [
             {
                 "alias":"testSelfSignedCert",
@@ -537,7 +537,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/env/dev/aliases-added.json": """
+        "resources/my-org/env/dev/aliases-added.json": """
         [
             {
                 "alias":"newSelfSignedCert",
@@ -553,7 +553,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/apiProducts.json": """
+        "resources/my-org/org/apiProducts.json": """
         [
             {
             "name":"weatherProduct",
@@ -643,7 +643,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/org/apiProducts-added.json": """
+        "resources/my-org/org/apiProducts-added.json": """
         [
             {
             "name":"aNewProduct",
@@ -690,7 +690,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/developers.json": """
+        "resources/my-org/org/developers.json": """
         [
             {
                 "attributes": [],
@@ -701,7 +701,7 @@ file_contents = {
             }
         ]
         """,
-        "src/my-org/org/developers-added.json": """
+        "resources/my-org/org/developers-added.json": """
         [
             {
                 "attributes": [],
@@ -713,7 +713,7 @@ file_contents = {
         ]
         """,
 
-        "src/my-org/org/developerApps.json": """
+        "resources/my-org/org/developerApps.json": """
         {
             "hugh@example.com": [
                 {
@@ -738,7 +738,7 @@ file_contents = {
             ]
         }
         """,
-        "src/my-org/org/developerApps-added.json": """
+        "resources/my-org/org/developerApps-added.json": """
         {
             "hughadded@example.com": [
                 {

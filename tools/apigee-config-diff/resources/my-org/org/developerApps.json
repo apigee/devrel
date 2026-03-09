@@ -1,0 +1,11 @@
+{
+  "dev@example.com": [
+    {
+      "name": "SampleApp",
+      "apiProducts": [
+        "SampleProduct"
+      ],
+      "callbackUrl": "https://example.com"
+    }
+  ]
+}
