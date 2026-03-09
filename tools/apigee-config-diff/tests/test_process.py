@@ -2,7 +2,7 @@ import os
 import subprocess
 import pytest
 from unittest.mock import patch, MagicMock
-from diff.process import process_files
+from apigee_config_diff.diff.process import process_files
 
 def test_process_files_dry_run(tmp_path, capsys):
     # Create a mock structure

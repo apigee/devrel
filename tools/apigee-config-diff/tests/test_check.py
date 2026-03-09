@@ -1,9 +1,9 @@
 from unittest.mock import patch, MagicMock
 import os
 
-from .check import detect_changes, write_temporary_files
+from apigee_config_diff.diff.check import detect_changes, write_temporary_files
 
-@patch('diff.check.git_diff_hashes')
+@patch('apigee_config_diff.diff.check.git_diff_hashes')
 def test_detect_changes_with_previous_commit(mock_git_diff_hashes):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -31,7 +31,7 @@ def test_detect_changes_with_previous_commit(mock_git_diff_hashes):
     assert len(deleted) == 2
     assert len(modified) == 1
 
-@patch('diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.run_command_or_exit')
 def test_detect_changes_initial_commit(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -54,12 +54,12 @@ def test_detect_changes_initial_commit(mock_run_command_or_exit):
     assert len(deleted) == 0
     assert len(modified) == 0
 
-@patch('diff.check.write_to_file')
-@patch('diff.check.read_git_file_contents')
-@patch('diff.check.create_folder')
-@patch('diff.check.find_resource_type')
-@patch('diff.check.diff')
-@patch.dict('diff.check.RESOURCES_ID', {"some_type": "key"})
+@patch('apigee_config_diff.diff.check.write_to_file')
+@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.create_folder')
+@patch('apigee_config_diff.diff.check.find_resource_type')
+@patch('apigee_config_diff.diff.check.diff')
+@patch.dict('apigee_config_diff.diff.check.RESOURCES_ID', {"some_type": "key"})
 def test_write_temporary_files_basic(mock_diff_func, mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
     mock_create_folder.side_effect = lambda x: x
     mock_read_git_contents.return_value = "{}"
@@ -106,12 +106,12 @@ def test_write_temporary_files_basic(mock_diff_func, mock_find_resource_type, mo
     path_for_mod_delete = os.path.join(delete_folder_path, f"{mod_f_path}.delete")
     mock_write_to_file.assert_any_call(path_for_mod_delete, mock_diff_elements['deleted'])
 
-@patch('diff.check.write_to_file')
-@patch('diff.check.read_git_file_contents')
-@patch('diff.check.create_folder')
-@patch('diff.check.find_resource_type')
-@patch('diff.check.diff')
-@patch.dict('diff.check.RESOURCES_ID', {"developerApps": "name"})
+@patch('apigee_config_diff.diff.check.write_to_file')
+@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.create_folder')
+@patch('apigee_config_diff.diff.check.find_resource_type')
+@patch('apigee_config_diff.diff.check.diff')
+@patch.dict('apigee_config_diff.diff.check.RESOURCES_ID', {"developerApps": "name"})
 def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
     mock_create_folder.side_effect = lambda x: x
     mock_read_git_contents.return_value = "{}"
@@ -144,7 +144,7 @@ def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resour
     # Verify that the merged content contains BOTH apps, not just the last one
     mock_write_to_file.assert_any_call(path_for_mod_update, expected_merged_content)
 
-@patch('diff.check.git_diff_hashes')
+@patch('apigee_config_diff.diff.check.git_diff_hashes')
 def test_detect_changes_edge_cases(mock_git_diff_hashes):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -166,10 +166,10 @@ def test_detect_changes_edge_cases(mock_git_diff_hashes):
     # The current code prints to stderr
     detect_changes("a", "b", "resources/")
 
-@patch('diff.check.write_to_file')
-@patch('diff.check.read_git_file_contents')
-@patch('diff.check.create_folder')
-@patch('diff.check.find_resource_type')
+@patch('apigee_config_diff.diff.check.write_to_file')
+@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.create_folder')
+@patch('apigee_config_diff.diff.check.find_resource_type')
 def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
     mock_create_folder.side_effect = lambda x: x
     mock_read_git_contents.return_value = '{"full": "content"}'
@@ -180,7 +180,7 @@ def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create
     
     mock_write_to_file.assert_any_call("/tmp/update/resources/unknown.json", {"full": "content"})
 
-@patch('diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.run_command_or_exit')
 def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = ""
@@ -189,7 +189,7 @@ def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
     added, deleted, modified = detect_changes(None, "def5678", "resources/")
     assert len(added) == 0
 
-@patch('diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.run_command_or_exit')
 def test_detect_changes_initial_commit_empty_line(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = "\n"
@@ -198,12 +198,12 @@ def test_detect_changes_initial_commit_empty_line(mock_run_command_or_exit):
     added, deleted, modified = detect_changes(None, "def5678", "resources/")
     assert len(added) == 0
 
-@patch('diff.check.write_to_file')
-@patch('diff.check.read_git_file_contents')
-@patch('diff.check.create_folder')
-@patch('diff.check.find_resource_type')
-@patch('diff.check.diff')
-@patch.dict('diff.check.RESOURCES_ID', {"some_type": "key"})
+@patch('apigee_config_diff.diff.check.write_to_file')
+@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.create_folder')
+@patch('apigee_config_diff.diff.check.find_resource_type')
+@patch('apigee_config_diff.diff.check.diff')
+@patch.dict('apigee_config_diff.diff.check.RESOURCES_ID', {"some_type": "key"})
 def test_write_temporary_files_empty_diff(mock_diff_func, mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
     mock_create_folder.side_effect = lambda x: x
     mock_read_git_contents.return_value = "{}"

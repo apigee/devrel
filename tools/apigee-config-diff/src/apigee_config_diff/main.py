@@ -1,7 +1,7 @@
 import argparse
-from diff.check import detect_changes, write_temporary_files
-from diff.util import resolve_commits
-from diff.process import process_files
+from .diff.check import detect_changes, write_temporary_files
+from .diff.util import resolve_commits
+from .diff.process import process_files
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Apigee Config Diff Generator and Deployer")

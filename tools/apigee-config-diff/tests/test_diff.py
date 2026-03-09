@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from .diff import _transform_identification, diff
+from apigee_config_diff.diff.diff import _transform_identification, diff
 
 def test_identify_object():
 

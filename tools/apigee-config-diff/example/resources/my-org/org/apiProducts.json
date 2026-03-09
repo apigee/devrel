@@ -1,7 +1,7 @@
 [
   {
     "name": "SampleProduct",
-    "displayName": "Sample Product",
+    "displayName": "Sample Product Edited",
     "approvalType": "auto",
     "attributes": [
       {
@@ -9,12 +9,8 @@
         "value": "public"
       }
     ],
-    "environments": [
-      "prod"
-    ],
-    "proxies": [
-      "hello-world"
-    ],
+    "environments": ["prod"],
+    "proxies": ["hello-world"],
     "quota": "10000",
     "quotaInterval": "1",
     "quotaTimeUnit": "month"

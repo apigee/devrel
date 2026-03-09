@@ -34,18 +34,22 @@ Standard Apigee configuration deployments often re-deploy the entire configurati
 - Maven (`mvn`) installed and in your PATH.
 - (Optional) `tree` command for better dry-run visualization.
 
-### 2. Basic Usage (Dry Run)
-By default, the tool compares `HEAD~1` with `HEAD` in the `resources/` directory.
-
+### 2. Installation
+Install directly from GitHub:
 ```bash
-python main.py
+pip install git+https://github.com/apigee/devrel.git#subdirectory=tools/apigee-config-diff
 ```
 
-### 3. Deploy Changes
-Add the `--confirm` flag to actually execute the Maven commands.
-
+### 3. Basic Usage (Dry Run)
+By default, the tool compares `HEAD~1` with `HEAD` in the `resources/` directory.
 ```bash
-python main.py --confirm
+apigee-config-diff
+```
+
+### 4. Deploy Changes
+Add the `--confirm` flag to actually execute the Maven commands.
+```bash
+apigee-config-diff --confirm
 ```
 
 ---
@@ -67,16 +71,16 @@ The tool passes authentication flags directly to the Maven command. You can prov
 
 1. **Command Line (Recommended):**
    ```bash
-   python main.py --confirm --bearer "$(gcloud auth print-access-token)"
+   apigee-config-diff --confirm --bearer "$(gcloud auth print-access-token)"
    # OR
-   python main.py --confirm --sa-path /tmp/sa.json
+   apigee-config-diff --confirm --sa-path /tmp/sa.json
    ```
 
 2. **Environment Variables:**
    If your `pom.xml` is configured to use environment variables (e.g., `${env.bearer}`), simply export them before running the script:
    ```bash
    export bearer=$(gcloud auth print-access-token)
-   python main.py --confirm
+   apigee-config-diff --confirm
    ```
 
 3. **POM Configuration:**
@@ -108,16 +112,14 @@ The tool expects the standard Maven config structure inside your `--folder` (def
 
 ### Comparing Specific Branches or Commits
 The tool natively supports Git references, including branch names, tags, and specific hashes:
-
 ```bash
-python main.py --commit-before main --current-commit feature-branch
+apigee-config-diff --commit-before main --current-commit feature-branch
 ```
 
 ### GitHub Actions / CI Pipelines
 Use the environment variables provided by your CI runner (like `GITHUB_BASE_REF` and `GITHUB_HEAD_REF`) to target PR commits:
-
 ```bash
-python main.py \
+apigee-config-diff \
   --commit-before origin/main \
   --current-commit ${{ github.event.pull_request.head.sha }} \
   --confirm \
@@ -127,7 +129,7 @@ python main.py \
 ---
 
 ## Contributing
-Tests are located in the `diff/` directory. Run them with:
+Run tests with:
 ```bash
-pytest --cov=diff
+pytest
 ```

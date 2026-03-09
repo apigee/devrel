@@ -3,7 +3,7 @@ import os
 import shutil
 import subprocess
 from unittest.mock import patch, MagicMock
-from diff.util import (
+from apigee_config_diff.diff.util import (
     resolve_commits,
     read_git_file_contents,
     git_diff_hashes,
@@ -36,12 +36,12 @@ def test_resolve_commits_git_not_found():
             resolve_commits("0000000", "def")
         assert e.value.code == 1
 
-@patch("diff.util.run_command_or_exit")
+@patch("apigee_config_diff.diff.util.run_command_or_exit")
 def test_read_git_file_contents(mock_run):
     mock_run.return_value.stdout = "content"
     assert read_git_file_contents("hash", "path") == "content"
 
-@patch("diff.util.run_command_or_exit")
+@patch("apigee_config_diff.diff.util.run_command_or_exit")
 def test_git_diff_hashes(mock_run):
     git_diff_hashes("a", "b")
     mock_run.assert_called_once_with(['git', 'diff', '--name-status', 'a', 'b'], capture_output=True)
