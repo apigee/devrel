@@ -17,7 +17,7 @@ import os
 
 from apigee_config_diff.diff.check import detect_changes, write_temporary_files
 
-@patch('apigee_config_diff.diff.check.git_diff_hashes')
+@patch('apigee_config_diff.diff.check.GitClient.diff_hashes')
 def test_detect_changes_with_previous_commit(mock_git_diff_hashes):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -45,7 +45,7 @@ def test_detect_changes_with_previous_commit(mock_git_diff_hashes):
     assert len(deleted) == 2
     assert len(modified) == 1
 
-@patch('apigee_config_diff.diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.GitClient.list_files')
 def test_detect_changes_initial_commit(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -69,7 +69,7 @@ def test_detect_changes_initial_commit(mock_run_command_or_exit):
     assert len(modified) == 0
 
 @patch('apigee_config_diff.diff.check.write_to_file')
-@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
 @patch('apigee_config_diff.diff.check.create_folder')
 @patch('apigee_config_diff.diff.check.find_resource_type')
 @patch('apigee_config_diff.diff.check.diff')
@@ -121,7 +121,7 @@ def test_write_temporary_files_basic(mock_diff_func, mock_find_resource_type, mo
     mock_write_to_file.assert_any_call(path_for_mod_delete, mock_diff_elements['deleted'])
 
 @patch('apigee_config_diff.diff.check.write_to_file')
-@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
 @patch('apigee_config_diff.diff.check.create_folder')
 @patch('apigee_config_diff.diff.check.find_resource_type')
 @patch('apigee_config_diff.diff.check.diff')
@@ -158,7 +158,7 @@ def test_write_temporary_files_dict_merge_logic(mock_diff_func, mock_find_resour
     # Verify that the merged content contains BOTH apps, not just the last one
     mock_write_to_file.assert_any_call(path_for_mod_update, expected_merged_content)
 
-@patch('apigee_config_diff.diff.check.git_diff_hashes')
+@patch('apigee_config_diff.diff.check.GitClient.diff_hashes')
 def test_detect_changes_edge_cases(mock_git_diff_hashes):
     mock_result = MagicMock()
     mock_result.stdout = (
@@ -181,7 +181,7 @@ def test_detect_changes_edge_cases(mock_git_diff_hashes):
     detect_changes("a", "b", "resources/")
 
 @patch('apigee_config_diff.diff.check.write_to_file')
-@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
 @patch('apigee_config_diff.diff.check.create_folder')
 @patch('apigee_config_diff.diff.check.find_resource_type')
 def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create_folder, mock_read_git_contents, mock_write_to_file):
@@ -194,7 +194,7 @@ def test_write_temporary_files_unknown_type(mock_find_resource_type, mock_create
     
     mock_write_to_file.assert_any_call("/tmp/update/resources/unknown.json", {"full": "content"})
 
-@patch('apigee_config_diff.diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.GitClient.list_files')
 def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = ""
@@ -203,7 +203,7 @@ def test_detect_changes_initial_commit_no_files(mock_run_command_or_exit):
     added, deleted, modified = detect_changes(None, "def5678", "resources/")
     assert len(added) == 0
 
-@patch('apigee_config_diff.diff.check.run_command_or_exit')
+@patch('apigee_config_diff.diff.check.GitClient.list_files')
 def test_detect_changes_initial_commit_empty_line(mock_run_command_or_exit):
     mock_result = MagicMock()
     mock_result.stdout = "\n"
@@ -213,7 +213,7 @@ def test_detect_changes_initial_commit_empty_line(mock_run_command_or_exit):
     assert len(added) == 0
 
 @patch('apigee_config_diff.diff.check.write_to_file')
-@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
 @patch('apigee_config_diff.diff.check.create_folder')
 @patch('apigee_config_diff.diff.check.find_resource_type')
 @patch('apigee_config_diff.diff.check.diff')

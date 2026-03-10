@@ -18,47 +18,45 @@ import shutil
 import subprocess
 from unittest.mock import patch, MagicMock
 from apigee_config_diff.diff.util import (
-    resolve_commits,
-    read_git_file_contents,
-    git_diff_hashes,
+    GitClient,
     create_folder,
     find_resource_type,
     write_to_file,
     run_command_or_exit,
-    merge
+    merge,
 )
 
 def test_resolve_commits_normal():
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.returncode = 0
-        assert resolve_commits("abc", "def") == ("abc", "def")
+        assert GitClient.resolve_commits("abc", "def") == ("abc", "def")
 
 def test_resolve_commits_zeros():
     # Verifies that zeros always return "" for previous commit
-    assert resolve_commits("0", "def") == ("", "def")
-    assert resolve_commits("0000000", "def") == ("", "def")
+    assert GitClient.resolve_commits("0", "def") == ("", "def")
+    assert GitClient.resolve_commits("0000000", "def") == ("", "def")
 
 def test_resolve_commits_single_commit():
     # Simulates single commit scenario where HEAD~1 does not exist
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.returncode = 1
-        assert resolve_commits("HEAD~1", "HEAD") == ("", "HEAD")
+        assert GitClient.resolve_commits("HEAD~1", "HEAD") == ("", "HEAD")
 
 def test_resolve_commits_git_not_found():
     with patch("subprocess.run") as mock_run:
         mock_run.side_effect = FileNotFoundError
         with pytest.raises(SystemExit) as e:
-            resolve_commits("HEAD", "def")
+            GitClient.resolve_commits("HEAD", "def")
         assert e.value.code == 1
 
 @patch("apigee_config_diff.diff.util.run_command_or_exit")
-def test_read_git_file_contents(mock_run):
+def test_read_file_contents(mock_run):
     mock_run.return_value.stdout = "content"
-    assert read_git_file_contents("hash", "path") == "content"
+    assert GitClient.read_file_contents("hash", "path") == "content"
 
 @patch("apigee_config_diff.diff.util.run_command_or_exit")
-def test_git_diff_hashes(mock_run):
-    git_diff_hashes("a", "b")
+def test_diff_hashes(mock_run):
+    GitClient.diff_hashes("a", "b")
     mock_run.assert_called_once_with(['git', 'diff', '--name-status', 'a', 'b'], capture_output=True)
 
 def test_create_folder(tmp_path):
@@ -115,3 +113,10 @@ def test_merge_dicts():
     b = {"k1": [2], "k2": {"s1": 2, "s2": 3}}
     expected = {"k1": [1, 2], "k2": {"s1": 2, "s2": 3}}
     assert merge(a, b) == expected
+
+@patch('apigee_config_diff.diff.util.run_command_or_exit')
+def test_list_files(mock_run_command_or_exit):
+    mock_run_command_or_exit.return_value = "files"
+    result = GitClient.list_files()
+    mock_run_command_or_exit.assert_called_once_with(['git', 'ls-files'], capture_output=True)
+    assert result == "files"

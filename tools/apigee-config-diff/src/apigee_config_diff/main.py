@@ -14,7 +14,7 @@
 
 import argparse
 from .diff.check import detect_changes, write_temporary_files
-from .diff.util import resolve_commits
+from .diff.util import GitClient
 from .diff.process import process_files
 
 def parse_args():
@@ -33,7 +33,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    previous_commit, current_commit = resolve_commits(args.commit_before, args.current_commit)
+    previous_commit, current_commit = GitClient.resolve_commits(args.commit_before, args.current_commit)
 
     # Find files added, deleted or modified
     added_files, deleted_files, modified_files = detect_changes(previous_commit, current_commit, args.folder)
@@ -44,5 +44,5 @@ def main():
     # Process (Plan or Apply)
     process_files(args.output, args.folder, args.confirm, args.bearer, args.sa_path)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

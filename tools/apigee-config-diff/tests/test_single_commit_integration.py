@@ -18,8 +18,8 @@ import os
 import json
 
 @patch('sys.argv', ['apigee-config-diff', '--commit-before', 'HEAD~1', '--current-commit', 'HEAD', '--folder', 'resources/', '--output', '/tmp/apigee-single'])
-@patch('apigee_config_diff.diff.check.run_command_or_exit')
-@patch('apigee_config_diff.diff.check.read_git_file_contents')
+@patch('apigee_config_diff.diff.check.GitClient.list_files')
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
 @patch('subprocess.run')
 def test_single_commit_integration(mock_subprocess_run, mock_read_git_contents, mock_git_ls_files, tmp_path):
     # 1. Mock 'git rev-parse --verify HEAD~1' to FAIL (single commit repo)

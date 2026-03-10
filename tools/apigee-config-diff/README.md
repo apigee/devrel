@@ -2,7 +2,7 @@
   <img src="logo.svg" alt="Apigee Config Diff Generator Logo" width="500">
 </p>
 
-# Apigee Config Diff Generator
+# Apigee Config Diff Tool
 
 **Deploy only what changed in your Apigee configurations.**
 
@@ -105,26 +105,6 @@ The tool expects the standard Maven config structure inside your `--folder` (def
 ```
 
 *Note: File names must start with the resource type (e.g., `targetServers-backend.json` is valid).*
-
----
-
-## Advanced Usage
-
-### Comparing Specific Branches or Commits
-The tool natively supports Git references, including branch names, tags, and specific hashes:
-```bash
-apigee-config-diff --commit-before main --current-commit feature-branch
-```
-
-### GitHub Actions / CI Pipelines
-Use the environment variables provided by your CI runner (like `GITHUB_BASE_REF` and `GITHUB_HEAD_REF`) to target PR commits:
-```bash
-apigee-config-diff \
-  --commit-before origin/main \
-  --current-commit ${{ github.event.pull_request.head.sha }} \
-  --confirm \
-  --bearer ${{ secrets.APIGEE_BEARER }}
-```
 
 ---
 
