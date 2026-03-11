@@ -64,33 +64,38 @@ def detect_changes(previous_commit, current_commit, resources_base_path):
 
         if diff_output:
             for line in diff_output.split('\n'):
+                if not line:
+                    continue
                 parts = line.split('\t')
-                status_code = parts[0]
+                status_char = parts[0][0]
                 path_old = parts[1]
                 path_new = parts[2] if len(parts) > 2 else None
 
-                if not path_old.startswith(resources_base_path):
-                    continue
-
-                if status_code.startswith('A'):
-                    added_files.append(path_old)
-                elif status_code.startswith('M'):
-                    modified_files.append(path_old)
-                elif status_code.startswith('D'):
-                    deleted_files.append(path_old)
-                elif status_code.startswith('R'):
-                    if path_new is None:
-                        print(f"Warning: Rename status '{status_code}' for '{path_old}' missing new path.", file=sys.stderr)
+                if status_char == 'A':
+                    if path_old.startswith(resources_base_path):
+                        added_files.append(path_old)
+                elif status_char == 'M':
+                    if path_old.startswith(resources_base_path):
+                        modified_files.append(path_old)
+                elif status_char == 'D':
+                    if path_old.startswith(resources_base_path):
+                        deleted_files.append(path_old)
+                elif status_char == 'R':
+                    if not path_new:
+                        print(f"Warning: Rename status '{parts[0]}' for '{path_old}' missing new path.", file=sys.stderr)
                         continue
-                    deleted_files.append(path_old)
-                    added_files.append(path_new)
-                elif status_code.startswith('C'):
-                    if path_new is None:
-                        print(f"Warning: Copy status '{status_code}' for '{path_old}' missing new path.", file=sys.stderr)
+                    if path_old.startswith(resources_base_path):
+                        deleted_files.append(path_old)
+                    if path_new.startswith(resources_base_path):
+                        added_files.append(path_new)
+                elif status_char == 'C':
+                    if not path_new:
+                        print(f"Warning: Copy status '{parts[0]}' for '{path_old}' missing new path.", file=sys.stderr)
                         continue
-                    added_files.append(path_new)
+                    if path_new.startswith(resources_base_path):
+                        added_files.append(path_new)
                 else:
-                    print(f"Unknown git status: {status_code} for file {path_old}", file=sys.stderr)
+                    print(f"Unknown git status: {parts[0]} for file {path_old}", file=sys.stderr)
 
     print("--- Summary of Changes ---")
 
@@ -120,44 +125,41 @@ def calculate_file_diffs(added_files, deleted_files, modified_files, previous_co
     files_to_update = {}
     files_to_delete = {}
 
-    if added_files:
-        for f_path in added_files:
-            file_contents = GitClient.read_file_contents(current_commit, f_path)
-            files_to_update[f_path] = json.loads(file_contents)
+    for f_path in added_files:
+        file_contents = GitClient.read_file_contents(current_commit, f_path)
+        files_to_update[f_path] = json.loads(file_contents)
 
-    if deleted_files:
-        for f_path in deleted_files:
-            file_contents = GitClient.read_file_contents(previous_commit, f_path)
-            files_to_delete[f_path] = json.loads(file_contents)
+    for f_path in deleted_files:
+        file_contents = GitClient.read_file_contents(previous_commit, f_path)
+        files_to_delete[f_path] = json.loads(file_contents)
 
-    if modified_files:
-        for f_path in modified_files:
-            previous_file_contents = GitClient.read_file_contents(previous_commit, f_path)
-            current_file_contents = GitClient.read_file_contents(current_commit, f_path)
+    for f_path in modified_files:
+        previous_file_contents = GitClient.read_file_contents(previous_commit, f_path)
+        current_file_contents = GitClient.read_file_contents(current_commit, f_path)
 
-            file_name = os.path.basename(f_path)
-            resource_type = find_resource_type(file_name, RESOURCES_ID.keys())
+        file_name = os.path.basename(f_path)
+        resource_type = find_resource_type(file_name, RESOURCES_ID)
 
-            if resource_type:
-                diff_elements = diff(
-                    json.loads(previous_file_contents), 
-                    json.loads(current_file_contents), 
-                    RESOURCES_ID[resource_type]
-                )
+        if resource_type:
+            diff_elements = diff(
+                json.loads(previous_file_contents), 
+                json.loads(current_file_contents), 
+                RESOURCES_ID[resource_type]
+            )
 
-                print(f"Diff of elements inside {f_path}:")
-                print(json.dumps(diff_elements, indent=4))
+            print(f"Diff of elements inside {f_path}:")
+            print(json.dumps(diff_elements, indent=4))
 
-                added_and_modified = merge(diff_elements['added'], diff_elements['modified'])
-                
-                if len(added_and_modified) > 0:
-                    files_to_update[f_path] = added_and_modified
+            added_and_modified = merge(diff_elements['added'], diff_elements['modified'])
+            
+            if added_and_modified:
+                files_to_update[f_path] = added_and_modified
 
-                if len(diff_elements['deleted']) > 0:
-                    files_to_delete[f_path + '.delete'] = diff_elements['deleted']
-            else:
-                print(f"Unknown resource type for {f_path}. Deploying full file.")
-                files_to_update[f_path] = json.loads(current_file_contents)
+            if diff_elements['deleted']:
+                files_to_delete[f_path + '.delete'] = diff_elements['deleted']
+        else:
+            print(f"Unknown resource type for {f_path}. Deploying full file.")
+            files_to_update[f_path] = json.loads(current_file_contents)
 
     return files_to_update, files_to_delete
 

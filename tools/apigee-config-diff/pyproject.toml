@@ -7,7 +7,7 @@ name = "apigee-config-diff"
 version = "0.1.0"
 description = "Incremental deployment tool for Apigee Maven Config"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Apigee DevRel" }
 ]

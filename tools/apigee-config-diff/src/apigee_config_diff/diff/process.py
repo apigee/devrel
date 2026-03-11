@@ -75,14 +75,9 @@ def get_affected_orgs_and_envs(action_base_path: str, affected_files: list) -> d
         if not org_name or org_name == rel_path:
             continue
 
-        if org_name not in org_env_map:
-            org_env_map[org_name] = set()
-
-        # Check if the path is within an 'env' directory
-        # Structure: <org-name>/env/<env-name>/...
+        envs = org_env_map.setdefault(org_name, set())
         if len(parts) > 2 and parts[1] == "env":
-            env_name = parts[2]
-            org_env_map[org_name].add(env_name)
+            envs.add(parts[2])
 
     return org_env_map
 
@@ -105,10 +100,11 @@ def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_p
 
         print(f"\nProcessing files in folder {action_base_path} for action {action}")
 
-        affected_files = []
-        for root, dirs, files in os.walk(action_base_path):
-            for file in files:
-                affected_files.append(os.path.join(root, file))
+        affected_files = [
+            os.path.join(root, file)
+            for root, _, files in os.walk(action_base_path)
+            for file in files
+        ]
         
         if not affected_files:
             print(f"No files to process for {action}.")

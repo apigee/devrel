@@ -19,14 +19,9 @@ Provides functions to recursively diff dictionaries and lists of objects.
 
 import sys
 from typing import Any, Dict, List, Set, Tuple, Union, TypedDict
-
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:  # pragma: no cover
-    from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 JSONValue: TypeAlias = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
-
 
 class DiffResult(TypedDict):
     """Type definition for the diff result."""
@@ -107,26 +102,6 @@ def _diff_list(
     return results
 
 
-def _collect_diff_results(
-    target_results: Dict[str, Dict[str, Any]],
-    key: str,
-    diff_data: DiffResult,
-) -> None:
-    """
-    Helper to collect non-empty diff results into target dictionaries.
-
-    Args:
-        target_results: The dictionary containing 'added', 'deleted', 'modified' dicts.
-        key: The key associated with the diff data.
-        diff_data: The diff results to collect.
-    """
-    if diff_data["added"]:
-        target_results["added"][key] = diff_data["added"]
-    if diff_data["deleted"]:
-        target_results["deleted"][key] = diff_data["deleted"]
-    if diff_data["modified"]:
-        target_results["modified"][key] = diff_data["modified"]
-
 
 def _diff_dict(
     identifier: str, before_content: Dict[str, Any], after_content: Dict[str, Any]
@@ -142,36 +117,34 @@ def _diff_dict(
     Returns:
         A dictionary with 'added', 'deleted', and 'modified' sub-dictionaries.
     """
-    results: DiffResult = {"added": {}, "deleted": {}, "modified": {}}
+    before_keys = before_content.keys()
+    after_keys = after_content.keys()
 
-    for key, val_after in after_content.items():
-        if key in before_content:
-            val_before = before_content[key]
+    added = {k: after_content[k] for k in after_keys - before_keys}
+    deleted = {k: before_content[k] for k in before_keys - after_keys}
+    modified: Dict[str, Any] = {}
 
-            if isinstance(val_before, list) and isinstance(val_after, list):
-                # Check if it's a list of dictionaries
-                is_list_of_dicts = any(isinstance(i, dict) for i in val_before) or any(
-                    isinstance(i, dict) for i in val_after
-                )
+    for k in before_keys & after_keys:
+        v_b, v_a = before_content[k], after_content[k]
 
-                if is_list_of_dicts:
-                    list_diff = _diff_list(identifier, val_before, val_after)
-                    _collect_diff_results(results, key, list_diff)  # type: ignore
-                elif val_before != val_after:
-                    results["modified"][key] = val_after  # type: ignore
-            elif isinstance(val_before, dict) and isinstance(val_after, dict):
-                dict_diff = _diff_dict(identifier, val_before, val_after)
-                _collect_diff_results(results, key, dict_diff)  # type: ignore
-            elif val_before != val_after:
-                results["modified"][key] = val_after  # type: ignore
+        if v_b == v_a:
+            continue
+
+        if isinstance(v_b, dict) and isinstance(v_a, dict):
+            diff_data = _diff_dict(identifier, v_b, v_a)
+        elif isinstance(v_b, list) and isinstance(v_a, list) and (
+            any(isinstance(i, dict) for i in v_b) or any(isinstance(i, dict) for i in v_a)
+        ):
+            diff_data = _diff_list(identifier, v_b, v_a)
         else:
-            results["added"][key] = val_after  # type: ignore
+            modified[k] = v_a
+            continue
 
-    for key, val_before in before_content.items():
-        if key not in after_content:
-            results["deleted"][key] = val_before  # type: ignore
+        if diff_data["added"]: added[k] = diff_data["added"]  # type: ignore
+        if diff_data["deleted"]: deleted[k] = diff_data["deleted"]  # type: ignore
+        if diff_data["modified"]: modified[k] = diff_data["modified"]  # type: ignore
 
-    return results
+    return {"added": added, "deleted": deleted, "modified": modified}  # type: ignore
 
 
 def diff(

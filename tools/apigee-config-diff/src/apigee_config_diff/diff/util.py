@@ -17,7 +17,6 @@ import shutil
 import sys
 import json
 import subprocess
-import re
 from typing import Iterable
 
 
@@ -29,7 +28,7 @@ class GitClient:
         previous_commit = ""
         current_commit = commit_after
 
-        if re.fullmatch(r'0+', commit_before):
+        if commit_before and commit_before == '0' * len(commit_before):
             print("Previous commit is zero. Comparing against an empty repository.")
             return "", current_commit
 
@@ -90,10 +89,11 @@ def find_resource_type(file_name: str, available_types: Iterable[str]):
 def write_to_file(file_path, contents):
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
+    json_str = json.dumps(contents, indent=4)
     with open(file_path, 'w') as f:
-        json.dump(contents, f, indent=4)
+        f.write(json_str)
 
-    print(f'\nWrote {file_path} with contents:\n{json.dumps(contents, indent=4)}')
+    print(f'\nWrote {file_path} with contents:\n{json_str}')
 
 
 def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
@@ -129,11 +129,11 @@ def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
 
 
 def merge(a, b):
-    if isinstance(a, list) and isinstance(b, list):
-        return a + b
     if isinstance(a, dict) and isinstance(b, dict):
         res = a.copy()
         for k, v in b.items():
-            res[k] = merge(res.get(k), v)
+            res[k] = merge(res[k], v) if k in res else v
         return res
+    if isinstance(a, list) and isinstance(b, list):
+        return a + b
     return b if b is not None else a
