@@ -30,7 +30,7 @@ Standard Apigee configuration deployments often re-deploy the entire configurati
 ## Quick Start
 
 ### 1. Requirements
-- Python 3.9+
+- Python 3.10+
 - Maven (`mvn`) installed and in your PATH.
 - (Optional) `tree` command for better dry-run visualization.
 
@@ -89,7 +89,7 @@ The tool passes authentication flags directly to the Maven command. You can prov
 ---
 
 ## Expected Folder Structure
-The tool expects the standard Maven config structure inside your `--folder` (default `resources/`):
+The tool expects the standard [Maven config structure](https://github.com/apigee/apigee-config-maven-plugin?tab=readme-ov-file#multi-file-config) inside your `--folder` (default `resources/`):
 
 ```text
 <org-name>/
@@ -104,7 +104,7 @@ The tool expects the standard Maven config structure inside your `--folder` (def
       │   └── ...
 ```
 
-*Note: File names must start with the resource type (e.g., `targetServers-backend.json` is valid).*
+***Note**: File names must start with the resource type (e.g., `targetServers-backend.json` is valid).*
 
 ---
 
