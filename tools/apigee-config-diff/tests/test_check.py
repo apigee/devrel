@@ -227,3 +227,21 @@ def test_write_temporary_files_empty_diff(mock_diff_func, mock_find_resource_typ
     write_temporary_files([], [], ["resources/file.json"], "prev", "curr", "/tmp")
     # write_to_file should NOT be called for update/delete if they are empty
     assert mock_write_to_file.call_count == 0
+
+@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
+def test_calculate_file_diffs_invalid_json(mock_read_git_contents):
+    mock_read_git_contents.return_value = "{ invalid json"
+    
+    from apigee_config_diff.diff.check import calculate_file_diffs
+    added_files = ["resources/added.json"]
+    deleted_files = ["resources/deleted.json"]
+    modified_files = ["resources/modified.json"]
+    
+    files_to_update, files_to_delete = calculate_file_diffs(
+        added_files, deleted_files, modified_files, "prev", "curr"
+    )
+    
+    # Should safely skip the invalid json files and not crash
+    assert "resources/added.json" not in files_to_update
+    assert "resources/deleted.json" not in files_to_delete
+    assert "resources/modified.json" not in files_to_update

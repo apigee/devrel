@@ -127,11 +127,17 @@ def calculate_file_diffs(added_files, deleted_files, modified_files, previous_co
 
     for f_path in added_files:
         file_contents = GitClient.read_file_contents(current_commit, f_path)
-        files_to_update[f_path] = json.loads(file_contents)
+        try:
+            files_to_update[f_path] = json.loads(file_contents)
+        except json.JSONDecodeError as e:
+            print(f"Warning: Failed to parse JSON in added file {f_path}: {e}", file=sys.stderr)
 
     for f_path in deleted_files:
         file_contents = GitClient.read_file_contents(previous_commit, f_path)
-        files_to_delete[f_path] = json.loads(file_contents)
+        try:
+            files_to_delete[f_path] = json.loads(file_contents)
+        except json.JSONDecodeError as e:
+            print(f"Warning: Failed to parse JSON in deleted file {f_path}: {e}", file=sys.stderr)
 
     for f_path in modified_files:
         previous_file_contents = GitClient.read_file_contents(previous_commit, f_path)
@@ -140,26 +146,29 @@ def calculate_file_diffs(added_files, deleted_files, modified_files, previous_co
         file_name = os.path.basename(f_path)
         resource_type = find_resource_type(file_name, RESOURCES_ID)
 
-        if resource_type:
-            diff_elements = diff(
-                json.loads(previous_file_contents), 
-                json.loads(current_file_contents), 
-                RESOURCES_ID[resource_type]
-            )
+        try:
+            if resource_type:
+                diff_elements = diff(
+                    json.loads(previous_file_contents), 
+                    json.loads(current_file_contents), 
+                    RESOURCES_ID[resource_type]
+                )
 
-            print(f"Diff of elements inside {f_path}:")
-            print(json.dumps(diff_elements, indent=4))
+                print(f"Diff of elements inside {f_path}:")
+                print(json.dumps(diff_elements, indent=4))
 
-            added_and_modified = merge(diff_elements['added'], diff_elements['modified'])
-            
-            if added_and_modified:
-                files_to_update[f_path] = added_and_modified
+                added_and_modified = merge(diff_elements['added'], diff_elements['modified'])
+                
+                if added_and_modified:
+                    files_to_update[f_path] = added_and_modified
 
-            if diff_elements['deleted']:
-                files_to_delete[f_path + '.delete'] = diff_elements['deleted']
-        else:
-            print(f"Unknown resource type for {f_path}. Deploying full file.")
-            files_to_update[f_path] = json.loads(current_file_contents)
+                if diff_elements['deleted']:
+                    files_to_delete[f_path + '.delete'] = diff_elements['deleted']
+            else:
+                print(f"Unknown resource type for {f_path}. Deploying full file.")
+                files_to_update[f_path] = json.loads(current_file_contents)
+        except json.JSONDecodeError as e:
+            print(f"Warning: Failed to parse JSON in modified file {f_path}: {e}", file=sys.stderr)
 
     return files_to_update, files_to_delete
 
