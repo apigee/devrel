@@ -22,32 +22,43 @@ from typing import Iterable
 
 class GitClient:
     """Encapsulates Git operations."""
-    
+
     @staticmethod
-    def resolve_commits(commit_before: str, commit_after: str) -> tuple[str, str]:
+    def resolve_commits(
+        commit_before: str, commit_after: str
+    ) -> tuple[str, str]:
         previous_commit = ""
         current_commit = commit_after
 
-        if commit_before and commit_before == '0' * len(commit_before):
-            print("Previous commit is zero. Comparing against an empty repository.")
+        if commit_before and commit_before == "0" * len(commit_before):
+            print(
+                "Previous commit is zero. Comparing against "
+                "an empty repository."
+            )
             return "", current_commit
 
         try:
             git_rev_parse_proc = subprocess.run(  # nosec B603 B607
-                ['git', 'rev-parse', '--verify', commit_before],
+                ["git", "rev-parse", "--verify", commit_before],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
-                text=True
+                text=True,
             )
         except FileNotFoundError:
-            print("Error: 'git' command not found. Ensure it is installed and in your PATH.", file=sys.stderr)
+            print(
+                "Error: 'git' command not found. Ensure it is "
+                "installed and in your PATH.",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         if git_rev_parse_proc.returncode == 0:
             previous_commit = commit_before
         else:
-            print(f"Commit reference '{commit_before}' not found. "
-                  "Listing all tracked files as 'added'.")
+            print(
+                f"Commit reference '{commit_before}' not found. "
+                "Listing all tracked files as 'added'."
+            )
             previous_commit = ""
 
         return previous_commit, current_commit
@@ -55,20 +66,19 @@ class GitClient:
     @staticmethod
     def read_file_contents(commit_hash: str, file_path: str) -> str:
         return run_command_or_exit(
-            ['git', 'show', f'{commit_hash}:{file_path}'],
-            capture_output=True
+            ["git", "show", f"{commit_hash}:{file_path}"], capture_output=True
         ).stdout
 
     @staticmethod
     def diff_hashes(hash_a: str, hash_b: str) -> subprocess.CompletedProcess:
-       return run_command_or_exit(
-            ['git', 'diff', '--name-status', hash_a, hash_b],
-            capture_output=True
+        return run_command_or_exit(
+            ["git", "diff", "--name-status", hash_a, hash_b],
+            capture_output=True,
         )
 
     @staticmethod
     def list_files() -> subprocess.CompletedProcess:
-        return run_command_or_exit(['git', 'ls-files'], capture_output=True)
+        return run_command_or_exit(["git", "ls-files"], capture_output=True)
 
 
 def create_folder(folder_path):
@@ -90,10 +100,10 @@ def write_to_file(file_path, contents):
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     json_str = json.dumps(contents, indent=4)
-    with open(file_path, 'w') as f:
+    with open(file_path, "w") as f:
         f.write(json_str)
 
-    print(f'\nWrote {file_path} with contents:\n{json_str}')
+    print(f"\nWrote {file_path} with contents:\n{json_str}")
 
 
 def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
@@ -107,19 +117,26 @@ def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
             text=text,
             stdout=stdout_setting,
             stderr=stderr_setting,
-            cwd=cwd
+            cwd=cwd,
         )
         return process
     except FileNotFoundError:
-        print(f"Error: Command '{cmd_args[0]}' not found. "
-              "Ensure git is installed and in your PATH.", file=sys.stderr)
+        print(
+            f"Error: Command '{cmd_args[0]}' not found. "
+            "Ensure git is installed and in your PATH.",
+            file=sys.stderr,
+        )
         sys.exit(1)
     except subprocess.CalledProcessError as e:
         print(f"Error executing: {' '.join(e.cmd)}", file=sys.stderr)
         print(f"Return code: {e.returncode}", file=sys.stderr)
 
-        stdout_msg = e.stdout.strip() if e.stdout and isinstance(e.stdout, str) else ""
-        stderr_msg = e.stderr.strip() if e.stderr and isinstance(e.stderr, str) else ""
+        stdout_msg = (
+            e.stdout.strip() if e.stdout and isinstance(e.stdout, str) else ""
+        )
+        stderr_msg = (
+            e.stderr.strip() if e.stderr and isinstance(e.stderr, str) else ""
+        )
 
         if stdout_msg:
             print(f"Stdout: {stdout_msg}", file=sys.stderr)

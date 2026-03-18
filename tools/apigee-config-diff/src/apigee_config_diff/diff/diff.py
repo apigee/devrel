@@ -17,11 +17,13 @@ Module for diffing Apigee configurations.
 Provides functions to recursively diff dictionaries and lists of objects.
 """
 
-import sys
-from typing import Any, Dict, List, Set, Tuple, Union, TypedDict
+from typing import Any, Dict, List, Union, TypedDict
 from typing import TypeAlias
 
-JSONValue: TypeAlias = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
+JSONValue: TypeAlias = Union[
+    Dict[str, Any], List[Any], str, int, float, bool, None
+]
+
 
 class DiffResult(TypedDict):
     """Type definition for the diff result."""
@@ -38,7 +40,8 @@ def _transform_identification(
     identifier: str, content: List[Dict[str, Any]]
 ) -> IdentificationMap:
     """
-    Transforms a list of dictionaries into a dictionary indexed by the given identifier.
+    Transforms a list of dictionaries into a dictionary indexed
+    by the given identifier.
 
     Args:
         identifier: The key to use as the index.
@@ -61,7 +64,8 @@ def _transform_identification(
             identified_content[val] = item
         except (KeyError, TypeError):
             raise KeyError(
-                f"Item at index {index} is missing the required identifier '{identifier}'. "
+                f"Item at index {index} is missing the "
+                f"required identifier '{identifier}'. "
                 f"Item content: {item}"
             ) from None
     return identified_content
@@ -102,9 +106,10 @@ def _diff_list(
     return results
 
 
-
 def _diff_dict(
-    identifier: str, before_content: Dict[str, Any], after_content: Dict[str, Any]
+    identifier: str,
+    before_content: Dict[str, Any],
+    after_content: Dict[str, Any],
 ) -> DiffResult:
     """
     Recursively diffs two dictionaries.
@@ -132,19 +137,28 @@ def _diff_dict(
 
         if isinstance(v_b, dict) and isinstance(v_a, dict):
             diff_data = _diff_dict(identifier, v_b, v_a)
-        elif isinstance(v_b, list) and isinstance(v_a, list) and (
-            any(isinstance(i, dict) for i in v_b) or any(isinstance(i, dict) for i in v_a)
+        elif (
+            isinstance(v_b, list)
+            and isinstance(v_a, list)
+            and (
+                any(isinstance(i, dict) for i in v_b)
+                or any(isinstance(i, dict) for i in v_a)
+            )
         ):
             diff_data = _diff_list(identifier, v_b, v_a)
         else:
             modified[k] = v_a
             continue
 
-        if diff_data["added"]: added[k] = diff_data["added"]  # type: ignore
-        if diff_data["deleted"]: deleted[k] = diff_data["deleted"]  # type: ignore
-        if diff_data["modified"]: modified[k] = diff_data["modified"]  # type: ignore
+        if diff_data["added"]:
+            added[k] = diff_data["added"]  # type: ignore
+        if diff_data["deleted"]:
+            deleted[k] = diff_data["deleted"]  # type: ignore
+        if diff_data["modified"]:
+            modified[k] = diff_data["modified"]  # type: ignore
 
-    return {"added": added, "deleted": deleted, "modified": modified}  # type: ignore
+    # type: ignore
+    return {"added": added, "deleted": deleted, "modified": modified}
 
 
 def diff(
