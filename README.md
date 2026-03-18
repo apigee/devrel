@@ -114,6 +114,8 @@ Apigee products.
 - [Apigee Proxy Bundle Modifier & Validator](tools/apigee-proxy-modifier-validator) -
   A tool to do batch modifications of API proxies when migrating to newer Apigee variants.
 - [Apigee Edge to X Migration Accelerator](/tools/apigee-edge-to-x-migration-tool) - A tool built on node.js to accelerate Apigee Edge to X migration.
+- [Apigee Config Diff Tool](tools/apigee-config-diff) -
+  A tool to find and deploy only the changes in Apigee configurations.
   
 ## Labs
 
