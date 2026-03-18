@@ -1,0 +1,13 @@
+[
+  {
+    "name": "my-cache",
+    "description": "General purpose cache",
+    "expirySettings": {
+      "values": {
+        "expiryDate": {
+          "value": "12-31-2025"
+        }
+      }
+    }
+  }
+]

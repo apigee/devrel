@@ -1,0 +1,11 @@
+[
+  {
+    "name": "backend-target",
+    "host": "backend.example.com",
+    "port": 443,
+    "isEnabled": true,
+    "sSLInfo": {
+      "enabled": "true"
+    }
+  }
+]
