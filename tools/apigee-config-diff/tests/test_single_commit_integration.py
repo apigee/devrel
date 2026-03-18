@@ -17,31 +17,52 @@ from apigee_config_diff.main import main
 import os
 import json
 
-@patch('sys.argv', ['apigee-config-diff', '--commit-before', 'HEAD~1', '--current-commit', 'HEAD', '--folder', 'resources/', '--output', '/tmp/apigee-single'])
-@patch('apigee_config_diff.diff.check.GitClient.list_files')
-@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
-@patch('subprocess.run')
-def test_single_commit_integration(mock_subprocess_run, mock_read_git_contents, mock_git_ls_files, tmp_path):
+
+@patch(
+    "sys.argv",
+    [
+        "apigee-config-diff",
+        "--commit-before",
+        "HEAD~1",
+        "--current-commit",
+        "HEAD",
+        "--folder",
+        "resources/",
+        "--output",
+        "/tmp/apigee-single",
+    ],
+)
+@patch("apigee_config_diff.diff.check.GitClient.list_files")
+@patch("apigee_config_diff.diff.check.GitClient.read_file_contents")
+@patch("subprocess.run")
+def test_single_commit_integration(
+    mock_subprocess_run, mock_read_git_contents, mock_git_ls_files, tmp_path
+):
     # 1. Mock 'git rev-parse --verify HEAD~1' to FAIL (single commit repo)
     mock_subprocess_run.return_value.returncode = 1
-    
+
     # 2. Mock 'git ls-files' to return some files
     mock_ls_files_result = MagicMock()
-    mock_ls_files_result.stdout = "resources/my-org/org/apiProducts.json\npom.xml\n"
+    mock_ls_files_result.stdout = (
+        "resources/my-org/org/apiProducts.json\npom.xml\n"
+    )
     mock_git_ls_files.return_value = mock_ls_files_result
-    
+
     # 3. Mock file contents
     mock_read_git_contents.return_value = '{"name": "my-product"}'
-    
+
     # 4. Run main
     main()
-    
-    # Verify: pom.xml should be ignored, resources/my-org/org/apiProducts.json should be in update/
-    update_file = '/tmp/apigee-single/update/resources/my-org/org/apiProducts.json'
+
+    # Verify: pom.xml should be ignored,
+    # resources/my-org/org/apiProducts.json should be in update/
+    update_file = (
+        "/tmp/apigee-single/update/resources/my-org/org/apiProducts.json"
+    )
     assert os.path.exists(update_file)
-    
+
     # Verify: pom.xml should NOT be in the update folder
-    pom_file = '/tmp/apigee-single/update/pom.xml'
+    pom_file = "/tmp/apigee-single/update/pom.xml"
     assert not os.path.exists(pom_file)
 
     with open(update_file) as f:

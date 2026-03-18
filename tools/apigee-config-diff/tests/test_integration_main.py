@@ -17,11 +17,27 @@ from apigee_config_diff.main import main
 import json
 import os
 
-@patch('sys.argv', ['main.py', '--commit-before', 'previous_commit', '--current-commit', 'current_commit', '--folder', 'resources/', '--output', '/tmp/apigee'])
-@patch('apigee_config_diff.diff.check.GitClient.diff_hashes')
-@patch('apigee_config_diff.diff.check.GitClient.read_file_contents')
-@patch('subprocess.run')
-def test_write_temporary_files_basic(mock_subprocess_run, mock_read_git_contents, mock_git_diff_hashes):
+
+@patch(
+    "sys.argv",
+    [
+        "main.py",
+        "--commit-before",
+        "previous_commit",
+        "--current-commit",
+        "current_commit",
+        "--folder",
+        "resources/",
+        "--output",
+        "/tmp/apigee",
+    ],
+)
+@patch("apigee_config_diff.diff.check.GitClient.diff_hashes")
+@patch("apigee_config_diff.diff.check.GitClient.read_file_contents")
+@patch("subprocess.run")
+def test_write_temporary_files_basic(
+    mock_subprocess_run, mock_read_git_contents, mock_git_diff_hashes
+):
     mock_subprocess_run.return_value.returncode = 0
 
     # Mock the diff files
@@ -33,26 +49,33 @@ def test_write_temporary_files_basic(mock_subprocess_run, mock_read_git_contents
     main()
 
     # Check that update/delete directories were created and populated
-    update_dir = '/tmp/apigee/update/resources/my-org/env/dev/'
-    delete_dir = '/tmp/apigee/delete/resources/my-org/env/dev/'
-    
-    assert os.path.exists(os.path.join(update_dir, 'flowhooks.json'))
-    assert os.path.exists(os.path.join(update_dir, 'flowhooks-added.json'))
-    assert os.path.exists(os.path.join(delete_dir, 'flowhooks-old.json'))
-    
+    update_dir = "/tmp/apigee/update/resources/my-org/env/dev/"
+    delete_dir = "/tmp/apigee/delete/resources/my-org/env/dev/"
+
+    assert os.path.exists(os.path.join(update_dir, "flowhooks.json"))
+    assert os.path.exists(os.path.join(update_dir, "flowhooks-added.json"))
+    assert os.path.exists(os.path.join(delete_dir, "flowhooks-old.json"))
+
     # Validate content merging correctly
-    with open('/tmp/apigee/update/resources/my-org/org/developerApps.json') as f:
+    with open(
+        "/tmp/apigee/update/resources/my-org/org/developerApps.json"
+    ) as f:
         dev_apps = json.load(f)
-        assert 'hugh@example.com' in dev_apps
-        assert 'hughnew@example.com' in dev_apps
-        assert dev_apps['hugh@example.com'][0]['name'] == 'hughapp'
-        assert dev_apps['hugh@example.com'][0]['callbackUrl'] == 'http://weatherappModified.com'
-        
-    with open('/tmp/apigee/update/resources/my-org/env/dev/targetServers.json') as f:
+        assert "hugh@example.com" in dev_apps
+        assert "hughnew@example.com" in dev_apps
+        assert dev_apps["hugh@example.com"][0]["name"] == "hughapp"
+        assert (
+            dev_apps["hugh@example.com"][0]["callbackUrl"]
+            == "http://weatherappModified.com"
+        )
+
+    with open(
+        "/tmp/apigee/update/resources/my-org/env/dev/targetServers.json"
+    ) as f:
         target_servers = json.load(f)
         assert len(target_servers) == 1
-        assert target_servers[0]['name'] == 'Enterprisetarget'
-        assert target_servers[0]['isEnabled'] == False
+        assert target_servers[0]["name"] == "Enterprisetarget"
+        assert target_servers[0]["isEnabled"] is False
 
 
 def _mock_git_diff():
@@ -62,37 +85,31 @@ def _mock_git_diff():
         "M\tresources/my-org/env/dev/flowhooks.json\n"
         "A\tresources/my-org/env/dev/flowhooks-added.json\n"
         "D\tresources/my-org/env/dev/flowhooks-old.json\n"
-
         "M\tresources/my-org/env/dev/references.json\n"
         "A\tresources/my-org/env/dev/references-added.json\n"
         "D\tresources/my-org/env/dev/references-old.json\n"
-
         "M\tresources/my-org/env/dev/targetServers.json\n"
         "A\tresources/my-org/env/dev/targetServers-added.json\n"
         "D\tresources/my-org/env/dev/targetServers-old.json\n"
-
         "M\tresources/my-org/env/dev/keystores.json\n"
         "A\tresources/my-org/env/dev/keystores-added.json\n"
         "D\tresources/my-org/env/dev/keystores-old.json\n"
-
         "M\tresources/my-org/env/dev/aliases.json\n"
         "A\tresources/my-org/env/dev/aliases-added.json\n"
         "D\tresources/my-org/env/dev/aliases-old.json\n"
-
         "M\tresources/my-org/org/apiProducts.json\n"
         "A\tresources/my-org/org/apiProducts-added.json\n"
         "D\tresources/my-org/org/apiProducts-old.json\n"
-
         "M\tresources/my-org/org/developers.json\n"
         "A\tresources/my-org/org/developers-added.json\n"
         "D\tresources/my-org/org/developers-old.json\n"
-
         "M\tresources/my-org/org/developerApps.json\n"
         "A\tresources/my-org/org/developerApps-added.json\n"
         "D\tresources/my-org/org/developerApps-old.json"
     )
 
     return mock_result
+
 
 file_contents = {
     "previous_commit": {
@@ -112,7 +129,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/references.json": """
         [
             {
@@ -131,7 +147,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/targetServers.json": """
         [
             {
@@ -166,7 +181,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/keystores.json": """
         [
             {
@@ -181,7 +195,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/aliases.json": """
         [
             {
@@ -236,7 +249,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/apiProducts.json": """
         [
             {
@@ -373,7 +385,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/developers.json": """
         [
             {
@@ -396,7 +407,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/developerApps.json": """
         {
             "hugh@example.com": [
@@ -424,9 +434,8 @@ file_contents = {
                 }
             ]
         }
-        """
+        """,
     },
-
     "current_commit": {
         "resources/my-org/env/dev/flowhooks.json": """
         [
@@ -444,7 +453,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/references.json": """
         [
             {
@@ -463,7 +471,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/targetServers.json": """
         [
             {
@@ -498,7 +505,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/keystores.json": """
         [
             {
@@ -513,7 +519,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/env/dev/aliases.json": """
         [
             {
@@ -568,7 +573,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/apiProducts.json": """
         [
             {
@@ -705,7 +709,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/developers.json": """
         [
             {
@@ -728,7 +731,6 @@ file_contents = {
             }
         ]
         """,
-
         "resources/my-org/org/developerApps.json": """
         {
             "hugh@example.com": [
@@ -767,9 +769,10 @@ file_contents = {
                 }
             ]
         }
-        """
-    }
+        """,
+    },
 }
+
 
 def _mock_git_file_content(commit_hash, f_path):
     return file_contents[commit_hash][f_path]
