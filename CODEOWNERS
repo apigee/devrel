@@ -42,3 +42,4 @@
 /tools/target-server-validator          @anaik91
 /tools/apigee-proxy-modifier-validator  @anaik91
 /tools/apigee-edge-to-x-migration-tool  @h-kopalle
+/tools/apigee-config-diff               @rickygodoy

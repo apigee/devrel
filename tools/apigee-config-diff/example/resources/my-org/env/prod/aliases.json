@@ -1,0 +1,13 @@
+[
+  {
+    "alias": "my-alias",
+    "keystorename": "my-keystore",
+    "format": "selfsignedcert",
+    "keySize": "2048",
+    "sigAlg": "SHA256withRSA",
+    "subject": {
+      "commonName": "test.example.com"
+    },
+    "certValidityInDays": "365"
+  }
+]
