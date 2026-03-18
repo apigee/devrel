@@ -16,7 +16,7 @@ import os
 import shutil
 import sys
 import json
-import subprocess
+import subprocess  # nosec B404
 from typing import Iterable
 
 
@@ -33,7 +33,7 @@ class GitClient:
             return "", current_commit
 
         try:
-            git_rev_parse_proc = subprocess.run(
+            git_rev_parse_proc = subprocess.run(  # nosec B603 B607
                 ['git', 'rev-parse', '--verify', commit_before],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -101,7 +101,7 @@ def run_command_or_exit(cmd_args, capture_output=False, text=True, cwd=None):
     stderr_setting = subprocess.PIPE
 
     try:
-        process = subprocess.run(
+        process = subprocess.run(  # nosec B603
             cmd_args,
             check=True,
             text=text,

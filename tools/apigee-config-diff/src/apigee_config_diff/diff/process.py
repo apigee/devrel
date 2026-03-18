@@ -14,7 +14,7 @@
 
 import os
 import sys
-import subprocess
+import subprocess  # nosec B404
 
 
 class MavenDeployer:
@@ -53,7 +53,7 @@ class MavenDeployer:
             cmd.append(f"-Dapigee.serviceaccount.file={self.sa_path}")
             
         try:
-            subprocess.run(cmd, check=True)
+            subprocess.run(cmd, check=True)  # nosec B603
         except subprocess.CalledProcessError as e:
             print(f"Error running maven command: {e}", file=sys.stderr)
             sys.exit(1)
@@ -127,7 +127,7 @@ def process_files(output_base_path, resources_folder, confirm, bearer=None, sa_p
         else:
             print(f"\n[Dry Run] The following structure would be processed for action ({action}):")
             try:
-                subprocess.run(["tree", action_base_path], check=False)
+                subprocess.run(["tree", action_base_path], check=False)  # nosec B603 B607
             except FileNotFoundError:
                 for f in affected_files:
                     print(f"  {f}")
