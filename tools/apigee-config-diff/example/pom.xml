@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2026 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>apigee</groupId>
+  <artifactId>parent-pom</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0</version>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <name>Maven Plugin Repository</name>
+      <url>https://repo1.maven.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+  <!-- Since Maven 3.0.3, for two plugins bound to the same phase, the order 
+         of execution is the same as the order in which you define them. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.apigee.edge.config</groupId>
+        <artifactId>apigee-config-maven-plugin</artifactId>
+        <version>2.9.3</version>
+        <executions>
+          <execution>
+            <id>create-config-targetserver</id>
+            <phase>install</phase>
+            <goals>
+              <goal>targetservers</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-kvm</id>
+            <phase>install</phase>
+            <goals>
+              <goal>keyvaluemaps</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-keystores</id>
+            <phase>install</phase>
+            <goals>
+              <goal>keystores</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-aliases</id>
+            <phase>install</phase>
+            <goals>
+              <goal>aliases</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-references</id>
+            <phase>install</phase>
+            <goals>
+              <goal>references</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-resourcefiles</id>
+            <phase>install</phase>
+            <goals>
+              <goal>resourcefiles</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-apiproduct</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apiproducts</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-rateplans</id>
+            <phase>install</phase>
+            <goals>
+              <goal>rateplans</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-developer</id>
+            <phase>install</phase>
+            <goals>
+              <goal>developers</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-app</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apps</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-appgroups</id>
+            <phase>install</phase>
+            <goals>
+              <goal>appgroups</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-appgroupapps</id>
+            <phase>install</phase>
+            <goals>
+              <goal>appgroupapps</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-reports</id>
+            <phase>install</phase>
+            <goals>
+              <goal>reports</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-config-flowhooks</id>
+            <phase>install</phase>
+            <goals>
+              <goal>flowhooks</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>import-app-keys</id>
+            <phase>install</phase>
+            <goals>
+              <goal>importKeys</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-portal-categories</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apicategories</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-portal-docs</id>
+            <phase>install</phase>
+            <goals>
+              <goal>apidocs</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-spaces</id>
+            <phase>install</phase>
+            <goals>
+              <goal>spaces</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>my-org</id>
+      <properties>
+        <apigee.profile>my-org</apigee.profile>
+        <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
+        <apigee.apiversion>v1</apigee.apiversion>
+        <apigee.org>${org}</apigee.org>
+        <apigee.env>${env}</apigee.env>
+        <apigee.authtype>oauth</apigee.authtype>
+        <apigee.bearer>${bearer}</apigee.bearer>
+        <apigee.portal.siteId>${siteId}</apigee.portal.siteId>
+        <apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
+      </properties>
+    </profile>
+  </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
