@@ -153,9 +153,9 @@ def process_files(
                 f"for action ({action}):"
             )
             try:
-                subprocess.run(
+                subprocess.run( # nosec B603 B607
                     ["tree", action_base_path], check=False
-                )  # nosec B603 B607
+                )  
             except FileNotFoundError:
                 for f in affected_files:
                     print(f"  {f}")
