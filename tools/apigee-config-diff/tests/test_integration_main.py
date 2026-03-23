@@ -29,7 +29,7 @@ import os
         "--folder",
         "resources/",
         "--output",
-        "/tmp/apigee",
+        "./tmp/apigee",
     ],
 )
 @patch("apigee_config_diff.diff.check.GitClient.diff_hashes")
@@ -49,8 +49,8 @@ def test_write_temporary_files_basic(
     main()
 
     # Check that update/delete directories were created and populated
-    update_dir = "/tmp/apigee/update/resources/my-org/env/dev/"
-    delete_dir = "/tmp/apigee/delete/resources/my-org/env/dev/"
+    update_dir = "./tmp/apigee/update/resources/my-org/env/dev/"
+    delete_dir = "./tmp/apigee/delete/resources/my-org/env/dev/"
 
     assert os.path.exists(os.path.join(update_dir, "flowhooks.json"))
     assert os.path.exists(os.path.join(update_dir, "flowhooks-added.json"))
@@ -58,7 +58,7 @@ def test_write_temporary_files_basic(
 
     # Validate content merging correctly
     with open(
-        "/tmp/apigee/update/resources/my-org/org/developerApps.json"
+        "./tmp/apigee/update/resources/my-org/org/developerApps.json"
     ) as f:
         dev_apps = json.load(f)
         assert "hugh@example.com" in dev_apps
@@ -70,7 +70,7 @@ def test_write_temporary_files_basic(
         )
 
     with open(
-        "/tmp/apigee/update/resources/my-org/env/dev/targetServers.json"
+        "./tmp/apigee/update/resources/my-org/env/dev/targetServers.json"
     ) as f:
         target_servers = json.load(f)
         assert len(target_servers) == 1
@@ -213,15 +213,15 @@ file_contents = {
                 "keystorename": "testKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "keycertfile",
-                "certFilePath":"/tmp/certs/keystore.pem"
+                "certFilePath":"./tmp/certs/keystore.pem"
             },
             {
                 "alias":"testAliasKeyCertFileAndKey",
                 "keystorename": "testKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "keycertfile",
-                "certFilePath":"/tmp/certs/keystore.pem",
-                "keyFilePath":"/tmp/certs/keystore.key",
+                "certFilePath":"./tmp/certs/keystore.pem",
+                "keyFilePath":"./tmp/certs/keystore.key",
                 "password":"dummy"
             },
             {
@@ -229,7 +229,7 @@ file_contents = {
                 "keystorename": "testKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "pkcs12",
-                "filePath":"/tmp/certs/myKeystore.p12",
+                "filePath":"./tmp/certs/myKeystore.p12",
                 "password":"dummy"
             }
         ]
@@ -537,15 +537,15 @@ file_contents = {
                 "keystorename": "testKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "keycertfile",
-                "certFilePath":"/tmp/certs/keystore.pem"
+                "certFilePath":"./tmp/certs/keystore.pem"
             },
             {
                 "alias":"testAliasKeyCertFileAndKey",
                 "keystorename": "anotherModifiedKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "keycertfile",
-                "certFilePath":"/tmp/certs/keystore.pem",
-                "keyFilePath":"/tmp/certs/keystore.key",
+                "certFilePath":"./tmp/certs/keystore.pem",
+                "keyFilePath":"./tmp/certs/keystore.key",
                 "password":"dummy"
             },
             {
@@ -553,7 +553,7 @@ file_contents = {
                 "keystorename": "testKeyStorename",
                 "ignoreExpiryValidation": true,
                 "format": "pkcs12",
-                "filePath":"/tmp/certs/myKeystore.p12",
+                "filePath":"./tmp/certs/myKeystore.p12",
                 "password":"dummy"
             }
         ]

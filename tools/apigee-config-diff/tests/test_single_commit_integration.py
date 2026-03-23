@@ -29,7 +29,7 @@ import json
         "--folder",
         "resources/",
         "--output",
-        "/tmp/apigee-single",
+        "./tmp/apigee-single",
     ],
 )
 @patch("apigee_config_diff.diff.check.GitClient.list_files")
@@ -57,12 +57,12 @@ def test_single_commit_integration(
     # Verify: pom.xml should be ignored,
     # resources/my-org/org/apiProducts.json should be in update/
     update_file = (
-        "/tmp/apigee-single/update/resources/my-org/org/apiProducts.json"
+        "./tmp/apigee-single/update/resources/my-org/org/apiProducts.json"
     )
     assert os.path.exists(update_file)
 
     # Verify: pom.xml should NOT be in the update folder
-    pom_file = "/tmp/apigee-single/update/pom.xml"
+    pom_file = "./tmp/apigee-single/update/pom.xml"
     assert not os.path.exists(pom_file)
 
     with open(update_file) as f:

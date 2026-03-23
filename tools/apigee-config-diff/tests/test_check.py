@@ -103,7 +103,7 @@ def test_write_temporary_files_basic(
     modified_files = ["resources/modified_file.json"]
     previous_commit = "abc1234"
     current_commit = "def5678"
-    tmp_base_path = "/tmp/test_output"
+    tmp_base_path = "./tmp/test_output"
 
     update_folder_path = os.path.join(tmp_base_path, "update")
     delete_folder_path = os.path.join(tmp_base_path, "delete")
@@ -186,7 +186,7 @@ def test_write_temporary_files_dict_merge_logic(
     mock_diff_func.return_value = mock_diff_elements
 
     modified_files = ["resources/developerApps.json"]
-    tmp_base_path = "/tmp/test_output"
+    tmp_base_path = "./tmp/test_output"
     update_folder_path = os.path.join(tmp_base_path, "update")
 
     write_temporary_files(
@@ -246,10 +246,10 @@ def test_write_temporary_files_unknown_type(
     mock_find_resource_type.return_value = None
 
     modified_files = ["resources/unknown.json"]
-    write_temporary_files([], [], modified_files, "prev", "curr", "/tmp")
+    write_temporary_files([], [], modified_files, "prev", "curr", "./tmp")
 
     mock_write_to_file.assert_any_call(
-        "/tmp/update/resources/unknown.json", {"full": "content"}
+        "./tmp/update/resources/unknown.json", {"full": "content"}
     )
 
 
@@ -292,7 +292,7 @@ def test_write_temporary_files_empty_diff(
     mock_diff_func.return_value = {"added": [], "modified": [], "deleted": []}
 
     write_temporary_files(
-        [], [], ["resources/file.json"], "prev", "curr", "/tmp"
+        [], [], ["resources/file.json"], "prev", "curr", "./tmp"
     )
     # write_to_file should NOT be called for update/delete if they are empty
     assert mock_write_to_file.call_count == 0
