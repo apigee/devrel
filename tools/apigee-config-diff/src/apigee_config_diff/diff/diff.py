@@ -18,9 +18,8 @@ Provides functions to recursively diff dictionaries and lists of objects.
 """
 
 from typing import Any, Dict, List, Union, TypedDict
-from typing import TypeAlias
 
-JSONValue: TypeAlias = Union[
+JSONValue = Union[
     Dict[str, Any], List[Any], str, int, float, bool, None
 ]
 
@@ -33,12 +32,12 @@ class DiffResult(TypedDict):
     modified: JSONValue
 
 
-IdentificationMap: TypeAlias = Dict[Any, Dict[str, Any]]
+IdentificationMap = Dict[Any, Dict[str, Any]]
 
 
 def _transform_identification(
     identifier: str, content: List[Dict[str, Any]]
-) -> IdentificationMap:
+) -> "IdentificationMap":
     """
     Transforms a list of dictionaries into a dictionary indexed
     by the given identifier.
