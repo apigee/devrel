@@ -1,0 +1,17 @@
+<svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="200" rx="20" fill="#F8F9FA"/>
+  
+  <g transform="translate(50, 50)">
+    <!-- Google Inspired Circular Palette -->
+    <path d="M50 0 A50 50 0 0 1 100 50 L50 50 Z" fill="#EA4335"/> <!-- Red -->
+    <path d="M100 50 A50 50 0 0 1 50 100 L50 50 Z" fill="#34A853"/> <!-- Green -->
+    <path d="M50 100 A50 50 0 0 1 0 50 L50 50 Z" fill="#FBBC05"/> <!-- Yellow -->
+    <path d="M0 50 A50 50 0 0 1 50 0 L50 50 Z" fill="#4285F4"/> <!-- Blue -->
+    
+    <!-- Delta Cutout for Diff -->
+    <path d="M50 25 L30 75 L70 75 Z" fill="white"/>
+  </g>
+
+  <text x="180" y="115" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#3C4043">Apigee</text>
+  <text x="365" y="115" font-family="Arial, sans-serif" font-size="54" font-weight="300" fill="#5F6368">Config Diff</text>
+</svg>
