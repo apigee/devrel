@@ -1,0 +1,9 @@
+[
+  {
+    "email": "dev@example.com",
+    "firstName": "Sample",
+    "lastName": "Developer",
+    "userName": "sampledev",
+    "attributes": []
+  }
+]

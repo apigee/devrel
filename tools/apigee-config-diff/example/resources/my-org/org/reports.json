@@ -1,0 +1,15 @@
+[
+  {
+    "name": "TrafficReport",
+    "displayName": "Traffic Report",
+    "dimensions": ["proxy"],
+    "metrics": [
+      {
+        "name": "sum(message_count)",
+        "function": "sum"
+      }
+    ],
+    "chartType": "line",
+    "timeUnit": "hour"
+  }
+]
