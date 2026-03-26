@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apigee-config-diff"
+version = "0.1.0"
+description = "Incremental deployment tool for Apigee Maven Config"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Apigee DevRel" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://github.com/apigee/devrel/tree/main/tools/apigee-config-diff"
+
+[project.scripts]
+apigee-config-diff = "apigee_config_diff.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["apigee_config_diff*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

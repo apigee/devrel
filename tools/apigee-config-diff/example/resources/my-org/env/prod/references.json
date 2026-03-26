@@ -1,0 +1,7 @@
+[
+  {
+    "name": "my-reference",
+    "refers": "my-keystore",
+    "resourceType": "KeyStore"
+  }
+]

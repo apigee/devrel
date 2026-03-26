@@ -1,0 +1,12 @@
+[
+  {
+    "name": "settings",
+    "encrypted": "true",
+    "entry": [
+      {
+        "name": "api_key",
+        "value": "secret-value"
+      }
+    ]
+  }
+]
