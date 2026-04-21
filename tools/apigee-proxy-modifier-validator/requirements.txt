@@ -5,7 +5,7 @@ google-auth==2.40.0
 google-auth-httplib2==0.2.0
 httplib2==0.22.0
 idna==3.10
-lxml==5.4.0
+lxml==6.1.0
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
 pyparsing==3.2.3
