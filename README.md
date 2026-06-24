@@ -76,6 +76,10 @@ further to fit a particular use case.
   for a long term caching/storage solution based on Cloud Firestore
 - [OpenAPI Mock](references/openapi-mock) - Reference implementation
     for creating a mock API proxy from an OpenAPI 3 specification
+- [Apigee Skills Serving](references/apigee-skills-serving) -
+  Reference implementation for using Apigee API hub as a versioned,
+  signed catalog of agent skills (SKILL.md bundles) discoverable and
+  installable by LLM agent runtimes.
 
 ## Tools
 

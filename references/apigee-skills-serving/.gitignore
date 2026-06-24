@@ -1,0 +1,29 @@
+# apigee-skills-serving local-only artifacts.
+
+# Operator environment with real values; copied from env.sh.example.
+env.sh
+
+# Ed25519 signing material. Never commit private keys.
+*.key
+*.pem
+*.priv
+*signing*
+.signing/
+
+# Built skill bundles. Produced by scripts/pack_skill.py and uploaded
+# to GCS; not stored in the repo.
+*.skill
+/dist/
+/build/
+
+# Python ephemera.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtualenv created by pipeline.sh.
+venv/
+.venv/

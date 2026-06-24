@@ -1,0 +1,67 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Demo manifest. Run scripts/sign_skill.py and scripts/upload_skill.py to populate gs_uri, signature, signing_key_id, zip_sha256.
+author: apigee-devrel
+capabilities: []
+description: 'Teaches an LLM agent to scaffold, validate, package, upload, and deploy
+  Apigee X / hybrid API proxies by orchestrating the 18 deterministic MCP tools exposed
+  by the apigee-proxy-skill MCP server. The agent never writes XML by hand: tools
+  generate policy XML from 25 Jinja2 templates, validate bundles with defusedxml,
+  package with a 10 MB ceiling, and surface every failure as a closed-set ErrorKind
+  envelope. Production deploy targets Cloud Run with Workload Identity Federation
+  and per-user service-account impersonation (iss-scoped SHA-256 derivation defeats
+  cross-issuer sub collisions). 5 architectural decisions recorded as ADRs; 600 tests;
+  1.30:1 test:src ratio.'
+keywords:
+- apigee
+- proxy
+- mcp
+- scaffold
+- validate
+- package
+- upload
+- deploy
+- policy
+- xml
+- jinja2
+- defusedxml
+- workload-identity-federation
+- cloud-run
+license: Apache-2.0
+manifest_schema_version: '1'
+name: apigee-proxy-skill
+runtime_iam:
+- apigee.proxies.create
+- apigee.proxies.get
+- apigee.proxies.list
+- apigee.proxyrevisions.create
+- apigee.proxyrevisions.get
+- apigee.proxyrevisions.list
+- apigee.deployments.create
+- apigee.deployments.delete
+- apigee.deployments.get
+- apigee.deployments.list
+- apigee.keyvaluemaps.create
+- apigee.keyvaluemaps.get
+- apigee.keyvaluemaps.update
+- apigee.keyvaluemapentries.create
+- apigee.keyvaluemapentries.update
+- apigee.targetservers.create
+- apigee.targetservers.get
+- apigee.targetservers.update
+- apigee.resourcefiles.create
+- apigee.resourcefiles.get
+- apigee.resourcefiles.update
+version: 0.1.0

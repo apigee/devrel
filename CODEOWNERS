@@ -26,6 +26,7 @@
 /references/southbound-mtls             @danistrebel
 /references/threat-protect              @joelgauci
 /references/openapi-mock                @micovery
+/references/apigee-skills-serving       @gsjurseth
 /tools/apigee-envoy-quickstart          @ganadurai
 /tools/apigee-openlegacy                @tomfi @joelgauci
 /tools/apigee-sackmesser                @danistrebel
