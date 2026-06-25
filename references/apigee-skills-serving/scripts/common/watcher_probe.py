@@ -41,7 +41,6 @@ import uuid
 from enum import Enum
 from pathlib import Path
 
-
 SKILLS_DIR = Path.home() / ".config" / "opencode" / "skills"
 PROBE_SETTLE_SECONDS = 2.0
 

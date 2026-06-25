@@ -1,3 +1,17 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Tests for ``scripts/sign_skill.py``.
 
 Coverage targets:
@@ -29,9 +43,7 @@ from pathlib import Path
 import pytest
 import yaml
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey,
-)
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from scripts.common.canonical import canonicalize
 from scripts.common.manifest_schema import validate_manifest
@@ -203,9 +215,8 @@ def test_signature_verifies_with_pubkey(
     half of the §8.2 sign+verify integration."""
     import base64
 
-    from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-        Ed25519PublicKey,
-    )
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import \
+        Ed25519PublicKey
 
     out = tmp_path / "m.signed.yaml"
     main = _import_sign_main()

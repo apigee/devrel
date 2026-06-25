@@ -60,15 +60,11 @@ from typing import Sequence
 import yaml
 from cryptography.exceptions import InvalidKey
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey,
-)
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from scripts.common.canonical import canonicalize
-from scripts.common.manifest_schema import (
-    ManifestValidationError,
-    validate_manifest,
-)
+from scripts.common.manifest_schema import (ManifestValidationError,
+                                            validate_manifest)
 
 EXIT_OK = 0
 EXIT_USER = 1

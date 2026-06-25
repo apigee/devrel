@@ -50,7 +50,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-
 GLOBAL_OPENCODE_JSON = (
     Path.home() / ".config" / "opencode" / "opencode.json"
 )
