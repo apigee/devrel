@@ -80,7 +80,7 @@ def _request_with_retry(
     """
     resp = fn(url, **kwargs)
     if 500 <= resp.status_code < 600:
-        sleep_seconds = random.uniform(0.2, 0.4)
+        sleep_seconds = random.uniform(0.2, 0.4)  # nosec B311 - retry jitter, not cryptographic
         # Hand the retry decision to the caller BEFORE sleeping
         # so the caller's log line carries the same backoff value
         # we are about to wait. Library itself stays silent --

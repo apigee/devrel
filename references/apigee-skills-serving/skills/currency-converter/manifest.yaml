@@ -18,10 +18,10 @@ capabilities: []
 description: Converts monetary amounts between fiat currencies using a static exchange-rate
   table.
 keywords:
-- currency
-- exchange
-- fiat
-- money
+  - currency
+  - exchange
+  - fiat
+  - money
 license: Apache-2.0
 manifest_schema_version: '1'
 name: currency-converter

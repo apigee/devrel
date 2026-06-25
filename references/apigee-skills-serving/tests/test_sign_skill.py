@@ -215,9 +215,6 @@ def test_signature_verifies_with_pubkey(
     half of the §8.2 sign+verify integration."""
     import base64
 
-    from cryptography.hazmat.primitives.asymmetric.ed25519 import \
-        Ed25519PublicKey
-
     out = tmp_path / "m.signed.yaml"
     main = _import_sign_main()
     assert main([

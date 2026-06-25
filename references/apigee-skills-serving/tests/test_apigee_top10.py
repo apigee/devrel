@@ -39,9 +39,7 @@ import io
 import re
 import sys
 import zipfile
-from collections import Counter
 from pathlib import Path
-from unittest import mock
 
 import pytest
 import yaml

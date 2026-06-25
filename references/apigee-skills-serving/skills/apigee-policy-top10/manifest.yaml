@@ -18,15 +18,15 @@ capabilities: []
 description: Reports the top 10 Apigee policy types currently in use across deployed
   proxy revisions in the caller's Apigee org.
 keywords:
-- apigee
-- policy
-- top10
-- proxies
+  - apigee
+  - policy
+  - top10
+  - proxies
 license: Apache-2.0
 manifest_schema_version: '1'
 name: apigee-policy-top10
 runtime_iam:
-- apigee.proxies.list
-- apigee.deployments.list
-- apigee.proxyrevisions.get
+  - apigee.proxies.list
+  - apigee.deployments.list
+  - apigee.proxyrevisions.get
 version: 0.1.0

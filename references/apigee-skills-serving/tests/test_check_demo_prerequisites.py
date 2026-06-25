@@ -42,7 +42,6 @@ Required behaviour (all locked by these tests):
 """
 from __future__ import annotations
 
-import os
 import stat
 import subprocess
 from pathlib import Path
@@ -315,7 +314,7 @@ def test_framework_vars_absent_emit_info(tmp_path: Path) -> None:
         if "ARGUMENTS" in line or "SKILL_DIR" in line
     ]
     assert info_lines, "framework vars must produce visible lines"
-    assert not any("FAILED" in l for l in info_lines), (
+    assert not any("FAILED" in line for line in info_lines), (
         f"framework vars must not produce FAILED lines: {info_lines}"
     )
 

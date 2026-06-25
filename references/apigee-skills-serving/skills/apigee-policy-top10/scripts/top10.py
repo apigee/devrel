@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-#!/usr/bin/env python3
 """apigee-policy-top10 enumerator.
 
 Strategy: full bundle download per deployed proxy revision, XML
@@ -40,7 +39,7 @@ import sys
 import zipfile
 from collections import Counter
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree as ET  # nosec B405 - trusted Apigee proxy XML
 
 import google.auth
 import google.auth.transport.requests
@@ -167,7 +166,7 @@ def _policy_types_in_bundle(zip_bytes: bytes) -> list[str]:
             if not name.endswith(".xml"):
                 continue
             try:
-                tree = ET.fromstring(zf.read(name))
+                tree = ET.fromstring(zf.read(name))  # nosec B314 - trusted Apigee proxy XML
                 types.append(tree.tag)
             except ET.ParseError:
                 _say(f"warning: unparseable policy file {name}")

@@ -17,10 +17,10 @@ author: apigee-devrel
 capabilities: []
 description: Returns a canned weather forecast for a named city.
 keywords:
-- weather
-- forecast
-- location
-- temperature
+  - weather
+  - forecast
+  - location
+  - temperature
 license: Apache-2.0
 manifest_schema_version: '1'
 name: weather-lookup

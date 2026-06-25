@@ -42,7 +42,6 @@ test can drive a real second-run-is-no-op path.
 """
 from __future__ import annotations
 
-import base64
 import json
 from pathlib import Path
 from typing import Any

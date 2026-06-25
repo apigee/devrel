@@ -25,43 +25,43 @@ description: 'Teaches an LLM agent to scaffold, validate, package, upload, and d
   cross-issuer sub collisions). 5 architectural decisions recorded as ADRs; 600 tests;
   1.30:1 test:src ratio.'
 keywords:
-- apigee
-- proxy
-- mcp
-- scaffold
-- validate
-- package
-- upload
-- deploy
-- policy
-- xml
-- jinja2
-- defusedxml
-- workload-identity-federation
-- cloud-run
+  - apigee
+  - proxy
+  - mcp
+  - scaffold
+  - validate
+  - package
+  - upload
+  - deploy
+  - policy
+  - xml
+  - jinja2
+  - defusedxml
+  - workload-identity-federation
+  - cloud-run
 license: Apache-2.0
 manifest_schema_version: '1'
 name: apigee-proxy-skill
 runtime_iam:
-- apigee.proxies.create
-- apigee.proxies.get
-- apigee.proxies.list
-- apigee.proxyrevisions.create
-- apigee.proxyrevisions.get
-- apigee.proxyrevisions.list
-- apigee.deployments.create
-- apigee.deployments.delete
-- apigee.deployments.get
-- apigee.deployments.list
-- apigee.keyvaluemaps.create
-- apigee.keyvaluemaps.get
-- apigee.keyvaluemaps.update
-- apigee.keyvaluemapentries.create
-- apigee.keyvaluemapentries.update
-- apigee.targetservers.create
-- apigee.targetservers.get
-- apigee.targetservers.update
-- apigee.resourcefiles.create
-- apigee.resourcefiles.get
-- apigee.resourcefiles.update
+  - apigee.proxies.create
+  - apigee.proxies.get
+  - apigee.proxies.list
+  - apigee.proxyrevisions.create
+  - apigee.proxyrevisions.get
+  - apigee.proxyrevisions.list
+  - apigee.deployments.create
+  - apigee.deployments.delete
+  - apigee.deployments.get
+  - apigee.deployments.list
+  - apigee.keyvaluemaps.create
+  - apigee.keyvaluemaps.get
+  - apigee.keyvaluemaps.update
+  - apigee.keyvaluemapentries.create
+  - apigee.keyvaluemapentries.update
+  - apigee.targetservers.create
+  - apigee.targetservers.get
+  - apigee.targetservers.update
+  - apigee.resourcefiles.create
+  - apigee.resourcefiles.get
+  - apigee.resourcefiles.update
 version: 0.1.0
