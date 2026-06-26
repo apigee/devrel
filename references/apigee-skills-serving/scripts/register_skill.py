@@ -54,8 +54,7 @@ from typing import Any, Sequence
 import requests
 import yaml
 
-from scripts.common.manifest_schema import (ManifestValidationError,
-                                            validate_manifest)
+from scripts.common.manifest_schema import ManifestValidationError, validate_manifest
 
 EXIT_OK = 0
 EXIT_USER = 1

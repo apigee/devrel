@@ -35,8 +35,7 @@ from pathlib import Path
 import pytest
 
 from scripts.common import permission_resolver as pr
-from scripts.common.permission_resolver import (Resolution, Verdict,
-                                                detect_active_agent,
+from scripts.common.permission_resolver import (Resolution, Verdict, detect_active_agent,
                                                 resolve_skill_permission)
 
 
