@@ -84,10 +84,22 @@ main() {
     local kept=0
 
     # Demo-installed skill in BOTH runtimes.
+    #
+    # NOTE: we deliberately use `if/then/else` instead of
+    # `cmd && ((removed++)) || ((kept++))` here. The shorter
+    # form is the SC2015 anti-pattern: `((removed++))` returns
+    # exit status 1 when `removed` is still 0 (because the
+    # post-increment evaluates the *current* value first, and
+    # `((0))` is falsy), so the `||` branch fires and `kept`
+    # gets incremented too. Double-counting bug, not just a
+    # style nit.
     for root in "${OC_SKILLS}" "${JS_SKILLS}"; do
-        _remove_dir "${root}/${DEMO_INSTALLED_SKILL}" \
-            "$dry_run" "$verbose" \
-            && ((removed++)) || ((kept++))
+        if _remove_dir "${root}/${DEMO_INSTALLED_SKILL}" \
+            "$dry_run" "$verbose"; then
+            ((removed++))
+        else
+            ((kept++))
+        fi
     done
 
     # Per-install staging dirs (UUID-suffixed; glob expands to
@@ -96,9 +108,12 @@ main() {
         local staging
         shopt -s nullglob
         for staging in "${root}"/.staging-*; do
-            _remove_dir "${staging}" \
-                "$dry_run" "$verbose" \
-                && ((removed++)) || ((kept++))
+            if _remove_dir "${staging}" \
+                "$dry_run" "$verbose"; then
+                ((removed++))
+            else
+                ((kept++))
+            fi
         done
         shopt -u nullglob
     done
@@ -106,9 +121,12 @@ main() {
     # Lock file + breadcrumb. These are normal files, not dirs.
     for root in "${OC_SKILLS}" "${JS_SKILLS}"; do
         for f in "${root}/.staging.lock" "${root}/.recent-install"; do
-            _remove_file "$f" \
-                "$dry_run" "$verbose" \
-                && ((removed++)) || ((kept++))
+            if _remove_file "$f" \
+                "$dry_run" "$verbose"; then
+                ((removed++))
+            else
+                ((kept++))
+            fi
         done
     done
 
