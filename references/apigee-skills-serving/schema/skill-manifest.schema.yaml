@@ -1,0 +1,133 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Skill manifest schema — LOCKED v1.
+#
+# This file is the human-readable mirror of the validator at
+# ``scripts/common/manifest_schema.py``. Scripts validate against
+# the Python module (regexes are compiled there); this YAML is the
+# canonical reference reviewers and authors read.
+#
+# JSON-Schema-ish shape, intentionally minimal. We do NOT load this
+# at runtime via jsonschema — the dependency-surface reason being
+# that jsonschema/pydantic transitive trees would exceed the
+# four-package requirements.txt budget.
+#
+# Acceptance: must parse with ``yaml.safe_load``.
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://github.com/apigee/devrel/blob/main/references/apigee-skills-serving/schema/skill-manifest.schema.v1"
+title: "Skill manifest"
+description: |
+  External manifest YAML for a packaged .skill bundle. Signed by
+  the author with an ed25519 private key and uploaded to API hub
+  as the Spec content. Distinct from the in-zip SKILL.md
+  frontmatter; the manifest is the security-relevant artifact.
+type: object
+additionalProperties: true   # forward compat: unknown keys allowed
+required:
+  - manifest_schema_version
+  - name
+  - version
+  - description
+  - keywords
+  - author
+  - license
+  - gs_uri
+  - zip_sha256
+  - signature
+  - signing_key_id
+
+properties:
+  manifest_schema_version:
+    description: "Schema version. Exact string '1' for v1."
+    type: string
+    enum: ["1"]
+
+  name:
+    description: "Skill identifier. Matches OpenCode skill name regex."
+    type: string
+    minLength: 1
+    maxLength: 64
+    pattern: "^[a-z0-9]+(-[a-z0-9]+)*$"
+
+  version:
+    description: "Semantic version, MAJOR.MINOR.PATCH."
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+
+  description:
+    description: "Human-readable description (OpenCode advisory cap)."
+    type: string
+    minLength: 1
+    maxLength: 1024
+
+  keywords:
+    description: "Discovery keywords. 1-20 lowercase-hyphenated tokens."
+    type: array
+    minItems: 1
+    maxItems: 20
+    items:
+      type: string
+      pattern: "^[a-z0-9-]+$"
+
+  author:
+    description: "Author or organisation identifier."
+    type: string
+    minLength: 1
+    maxLength: 256
+
+  license:
+    description: "SPDX licence identifier (soft-validated)."
+    type: string
+    minLength: 1
+    maxLength: 64
+
+  capabilities:
+    description: "Free-form capability tags. Not enforced."
+    type: array
+    items:
+      type: string
+
+  gs_uri:
+    description: "GCS location of the signed .skill zip."
+    type: string
+    pattern: "^gs://[a-z0-9._-]+/.+\\.skill$"
+
+  zip_sha256:
+    description: "Hex sha256 (64 chars) of the zip bytes."
+    type: string
+    pattern: "^[0-9a-f]{64}$"
+
+  signature:
+    description: "Base64 of the ed25519 signature over canonical bytes."
+    type: string
+    minLength: 1
+
+  signing_key_id:
+    description: "sha256:<hex> fingerprint of the signing public key."
+    type: string
+    pattern: "^sha256:[0-9a-f]{64}$"
+
+  runtime_iam:
+    description: |
+      GCP IAM permissions consumed by the skill at runtime, in
+      dot-form (e.g. apigee.proxies.list). Service-host-prefixed
+      form (apigee.googleapis.com/...) is rejected: it would fail
+      testIamPermissions at install time.
+    type: array
+    maxItems: 100
+    items:
+      type: string
+      pattern: "^[a-z]+\\.[a-z0-9.]+$"

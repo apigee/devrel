@@ -1,0 +1,32 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Demo manifest. Run scripts/sign_skill.py and scripts/upload_skill.py to populate gs_uri, signature, signing_key_id, zip_sha256.
+author: apigee-devrel
+capabilities: []
+description: Reports the top 10 Apigee policy types currently in use across deployed
+  proxy revisions in the caller's Apigee org.
+keywords:
+  - apigee
+  - policy
+  - top10
+  - proxies
+license: Apache-2.0
+manifest_schema_version: '1'
+name: apigee-policy-top10
+runtime_iam:
+  - apigee.proxies.list
+  - apigee.deployments.list
+  - apigee.proxyrevisions.get
+version: 0.1.0

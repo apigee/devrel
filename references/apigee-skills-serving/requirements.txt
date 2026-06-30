@@ -1,0 +1,10 @@
+# Runtime dependencies.
+# google-cloud-storage SDK intentionally NOT included; GCS access
+# uses `requests` against the public-read HTTPS endpoint.
+cryptography>=43.0,<47
+google-auth>=2.30,<3
+requests>=2.32,<3
+pyyaml>=6.0,<7
+
+# Test-only.
+pytest>=8.0,<9
