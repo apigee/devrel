@@ -131,25 +131,50 @@ def test_env_enabled_writable_dir_returns_ENABLED(
 def test_env_enabled_readonly_dir_returns_UNDETECTABLE(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """When the skills directory is unwritable, the probe cannot
-    write its sentinel. OSError is caught and converted to
-    UNDETECTABLE so the caller can fall back to the
-    /reload-skills path -- not crash."""
+    """When mkdir raises OSError (e.g., read-only skills dir,
+    quota exhausted, ENOSPC, EROFS), the probe must catch it and
+    return UNDETECTABLE so the caller can fall back to the
+    /reload-skills path -- not crash.
+
+    Implementation note: this test originally tried to provoke
+    the OSError by chmod'ing tmp_path to 0o555. That works for
+    an unprivileged user but is a no-op for root, which has
+    CAP_DAC_OVERRIDE and ignores POSIX write bits. CI containers
+    sometimes run as root (e.g., the Cloud Build pipeline), in
+    which case the test silently passed the chmod, mkdir
+    succeeded, and the assertion failed with
+    WATCHER_ENABLED != WATCHER_UNDETECTABLE.
+
+    Patching ``Path.mkdir`` to raise OSError directly is the
+    honest fix: the contract under test is "mkdir failure ->
+    UNDETECTABLE", not "POSIX permission semantics on tmp_path".
+    The patch is scoped via monkeypatch so it's automatically
+    reverted at test exit."""
     monkeypatch.setenv("OPENCODE_EXPERIMENTAL_FILEWATCHER", "1")
     monkeypatch.delenv(
         "OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER", raising=False
     )
-    # Remove write permission to force mkdir to raise.
-    tmp_path.chmod(0o555)
-    try:
-        state = detect_watcher(
-            skills_dir=tmp_path, settle_seconds=0.0
-        )
-        assert state == WatcherState.WATCHER_UNDETECTABLE
-    finally:
-        # Restore so tmp_path cleanup (pytest fixture teardown)
-        # can remove the dir.
-        tmp_path.chmod(0o755)
+
+    original_mkdir = Path.mkdir
+
+    def _mkdir_raises_on_probe_dir(
+        self: Path, *args: object, **kwargs: object
+    ) -> None:
+        """Allow the ``skills_dir.mkdir(parents=True,
+        exist_ok=True)`` call (used by the probe to ensure the
+        parent exists) to succeed, but make the inner
+        ``probe_dir.mkdir(exist_ok=False)`` raise EACCES the way
+        a real read-only skills dir would."""
+        if self.name.startswith(".probe-"):
+            raise PermissionError(
+                13, "Permission denied (simulated)", str(self)
+            )
+        return original_mkdir(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "mkdir", _mkdir_raises_on_probe_dir)
+
+    state = detect_watcher(skills_dir=tmp_path, settle_seconds=0.0)
+    assert state == WatcherState.WATCHER_UNDETECTABLE
 
 
 # ----- Probe cleanup -----
