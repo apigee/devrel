@@ -171,6 +171,36 @@ _remove_dir() {
     return 1
 }
 
+_remove_file() {
+    # Mirror of _remove_dir for non-directory targets
+    # (.staging.lock + .recent-install). Uses `rm -f` rather
+    # than `rm -rf` so a symlink target is untouched: we only
+    # want to remove the link/file itself, not whatever it
+    # points to.
+    local path="$1"
+    local dry_run="$2"
+    local verbose="$3"
+    if [[ -e "$path" || -L "$path" ]]; then
+        local kind="file"
+        [[ -L "$path" ]] && kind="symlink"
+        if [[ "$dry_run" -eq 1 ]]; then
+            echo -e "${YELLOW}[cleanup] would remove ${kind}:${NC}  ${path}"
+        else
+            if rm -f "$path"; then
+                echo -e "${GREEN}[cleanup] removed ${kind}:${NC}        ${path}"
+            else
+                echo -e "${RED}[cleanup] FAILED to remove:${NC}    ${path}" >&2
+                return 1
+            fi
+        fi
+        return 0
+    fi
+    if [[ "$verbose" -eq 1 ]]; then
+        echo "[cleanup] already absent (file): ${path}"
+    fi
+    return 1
+}
+
 _usage() {
     cat <<USAGE
 Usage: bin/demo-cleanup.sh [-n|--dry-run] [-v|--verbose] [-h|--help]
