@@ -1,9 +1,41 @@
 # Publish and install walkthrough
 
 This walkthrough takes you from a fresh checkout to a signed,
-registered skill that an agent runtime can install from API hub. The
-examples use the bundled `skills/currency-converter` as the skill being
-published.
+registered skill that an agent runtime can install from API hub.
+The examples use the bundled `skills/currency-converter` as the
+skill being published.
+
+## For most people: use `bin/provision.sh`
+
+If you just want a working reference deployment, skip the rest
+of this document and read [`provisioning.md`](provisioning.md).
+The five-minute path is:
+
+```bash
+# 1. Install skill-finder on your machine
+curl -fsSL https://raw.githubusercontent.com/apigee/devrel/main/\
+references/apigee-skills-serving/bin/install-skill-finder.sh \
+  | bash -s -- --runtime gemini
+
+# 2. Clone the reference and provision your project
+git clone https://github.com/apigee/devrel.git
+cd devrel/references/apigee-skills-serving
+bash bin/provision.sh --project MY_PROJECT --yes
+```
+
+`provision.sh` runs everything in this walkthrough end to end:
+enables APIs, creates the GCS bucket, sets up the taxonomy,
+generates a fresh signing keypair on your machine, and publishes
+the three example skills. It is idempotent — re-run it any time
+to reconcile drift.
+
+**Keep reading this document if:**
+
+- You want to understand what `provision.sh` does under the hood.
+- You want to publish your own skill (not one of the bundled
+  examples). See especially section 6 (Pack) and section 7 (Sign)
+  for the per-skill inputs.
+- You are troubleshooting a failure at a specific step.
 
 ## 1. Prerequisites
 
@@ -187,38 +219,65 @@ You should see your `currency-converter` entry in the list.
 
 ## 11. Consumer side: install the skill
 
-A consumer (an agent runtime, or a developer running `pip install`
-analog for skills) performs the inverse flow:
+The consumer-side reference implementation lives at
+`skills/skill-finder/scripts/find_install.py`. It performs the
+inverse flow:
 
-1. Searches API hub by keyword overlap on the skill description, or
-   by attribute (e.g., "every skill with `skill-runtime-iam` containing
-   `apigee.proxies.create`").
-2. Fetches the chosen entry's manifest from API hub.
+1. Searches API hub for APIs where the `agentic_skill` attribute
+   is `"true"`, ranks results by keyword overlap on the user's
+   query, picks the top match.
+2. Fetches the chosen entry's manifest (base64-encoded in the
+   API hub Spec resource).
 3. Re-canonicalises the manifest (excluding signature fields),
-   verifies the Ed25519 signature against the publisher's known public
-   key.
-4. Downloads the `.skill` zip from `gs_uri`.
-5. Computes SHA-256 and matches it against `zip_sha256` from the
-   manifest.
-6. Extracts the `.skill` into the consumer's skills directory
-   (e.g., `~/.config/opencode/skills/{skill-name}/`).
+   verifies the Ed25519 signature against **every trust root**
+   under `~/.<runtime>/skills/skill-finder/keys/*.pem`. Accepts
+   the manifest if the `signing_key_id` matches any installed
+   trust root (multi-key model — see
+   [`architecture.md#multi-key-trust-roots`](architecture.md#multi-key-trust-roots)).
+4. Runs an IAM pre-flight against the skill's declared
+   `runtime_iam` permissions — fails fast if the caller lacks
+   any of them.
+5. Downloads the `.skill` zip from `gs_uri` via anonymous HTTPS
+   (the bucket must be public-read; see
+   [`architecture.md#trust-model`](architecture.md#trust-model)).
+6. Computes SHA-256 and matches it against `zip_sha256` from
+   the manifest.
+7. Extracts the `.skill` into the consumer's skills directory
+   (`~/.gemini/skills/{skill-name}/`,
+   `~/.config/opencode/skills/{skill-name}/`, or
+   `~/.gemini/antigravity/skills/{skill-name}/` per runtime).
 
-The consumer-side `find_install.py` reference implementation is **not**
-included in this PR; the contract it consumes is fully documented above
-and exercised by the test suite. See
-`tests/test_register_fetch_integration.py` for a stateful in-process
-example.
+The whole flow is emitted as a locked 16-line
+[Hyrum's Law contract](https://www.hyrumslaw.com/) on stdout so
+the agent runtime can surface each verification step to the user
+verbatim.
+
+To install skill-finder itself, use
+`bin/install-skill-finder.sh` (see
+[`provisioning.md`](provisioning.md)).
 
 ## Cleanup
 
-To remove the demo artifacts:
+To remove the demo artifacts installed by skill-finder:
 
 ```bash
 ./bin/demo-cleanup.sh
 ```
 
-This removes locally extracted skills under
+This removes locally extracted PAYLOAD skills under
 `~/.config/opencode/skills/{currency-converter,weather-lookup,
-apigee-policy-top10}/`. It does **not** delete anything from API hub
-or your GCS bucket — those are remote and the cleanup intentionally
-stays local to avoid surprising side-effects in shared projects.
+apigee-policy-top10}/`. It does **not** delete anything from API
+hub or your GCS bucket, and it does **not** remove skill-finder
+or skill-publisher themselves — those are meant to persist
+across demo runs.
+
+To remove skill-finder + skill-publisher too:
+
+```bash
+rm -rf ~/.gemini/skills/skill-finder ~/.gemini/skills/skill-publisher
+# or for opencode:
+rm -rf ~/.config/opencode/skills/skill-finder ~/.config/opencode/skills/skill-publisher
+```
+
+For a full teardown (including remote resources), see
+[`provisioning.md#remove-a-deployment`](provisioning.md#remove-a-deployment).

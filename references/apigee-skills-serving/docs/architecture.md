@@ -90,19 +90,68 @@ verifying one manifest but installing a different bundle.
 
 ### What the consumer verifies
 
-At install time, the consumer:
+The reference consumer implementation is the `skill-finder` skill
+(installed via `bin/install-skill-finder.sh`). At install time,
+`find_install.py` performs a locked 16-step contract:
 
 1. Fetches the manifest from API hub.
 2. Looks up the publisher's public key by the `signing_key_id`
-   fingerprint (typically out-of-band; the consumer is configured with
-   a list of trusted publisher keys).
+   fingerprint against **the trust roots installed on this
+   machine** (see "Per-deployment trust roots" below).
 3. Re-canonicalises the manifest (excluding signature fields).
 4. Verifies the Ed25519 signature.
 5. Downloads the `.skill` zip from `gs_uri`.
-6. Computes SHA-256 of the downloaded zip and compares it against the
-   manifest's `zip_sha256`.
-7. Only after both checks pass does the consumer extract the `.skill`
-   contents to the local skills directory.
+6. Computes SHA-256 of the downloaded zip and compares it against
+   the manifest's `zip_sha256`.
+7. Only after both checks pass does the consumer extract the
+   `.skill` contents to the local skills directory.
+
+### Per-deployment trust roots
+
+The trust root is **not** a shared, repo-baked public key. It is a
+per-deployment secret: each customer who runs `bin/provision.sh`
+generates a fresh Ed25519 keypair on their own machine, signs
+their catalog with it, and drops the corresponding public PEM into
+their local skill-finder install's `keys/` directory. The private
+key never leaves the customer's machine and is never committed to
+any repo (including `apigee/devrel`).
+
+Consequences:
+
+- **skill-finder itself is trusted by provenance**, not by
+  signature. The operator fetched skill-finder from a known-good
+  URL (`raw.githubusercontent.com/apigee/devrel/main/…`) over TLS
+  from the `apigee` GitHub organisation. There is no signature to
+  verify because the code that would verify it *is* skill-finder.
+
+- **Payload skills** (currency-converter, weather-lookup,
+  apigee-policy-top10, and anything a customer publishes on top)
+  ARE cryptographically verified against the per-deployment trust
+  root.
+
+### Multi-key trust roots
+
+skill-finder loads **every** `.pem` file under
+`~/.<runtime>/skills/skill-finder/keys/` as an accepted trust
+root. A downloaded manifest is accepted if its `signing_key_id`
+matches **any** installed key. This supports three operator
+workflows:
+
+- **Multi-publisher orgs**: Alice's team's key and Bob's team's
+  key can both be trusted simultaneously. Any skill signed by
+  either team installs cleanly.
+- **Zero-downtime key rotation**: add the new key alongside the
+  old one; publish new skills signed with the new key; wait for
+  callers to stop using the old key; remove the old key. No
+  install-time gap.
+- **Bootstrap onboarding**: `bin/provision.sh` drops a
+  `<fingerprint>.pem` into `keys/` after the initial key
+  generation, giving skill-finder its first trust root without a
+  separate configuration step.
+
+If `keys/` is empty at verify time, skill-finder emits
+`trust root: FAILED — no valid keys loaded from …` and refuses
+to install anything.
 
 ### Threat model
 
@@ -111,12 +160,27 @@ At install time, the consumer:
 | Compromised GCS bucket serves a wrong zip    | `zip_sha256` mismatch is detected before extraction.                       |
 | Modified manifest in API hub                 | Ed25519 signature mismatch is detected.                                    |
 | Replay of an old (vulnerable) skill version  | Consumer is responsible for tracking versions; manifest carries `version`. |
-| Compromised publisher signing key            | Out of scope; operator must rotate the trust root.                         |
+| Compromised publisher signing key            | Operator rotates by adding a new key to `keys/`, re-publishing all skills, then removing the old key. Multi-key support means no install-time gap. |
 | Malicious skill body (legitimate signature)  | Out of scope; agent runtime sandboxing is the boundary.                    |
+| Compromised skill-finder installer over TLS  | Out of scope for v1 (relies on TLS + apigee org provenance). Operators can pin `--ref <commit-sha>` in the installer invocation to reduce exposure. |
 
-The reference does **not** introduce a new sandbox. The agent runtime
-that loads the skill (OpenCode, Claude Code, etc.) is responsible for
-limiting what skill code can do once it runs.
+The reference does **not** introduce a new sandbox. The agent
+runtime that loads the skill (OpenCode, Gemini CLI, Antigravity,
+Claude Code, custom MCP hosts) is responsible for limiting what
+skill code can do once it runs.
+
+### Trust-root discovery in v2 (not implemented)
+
+A future iteration could store the trust root in API hub itself
+as a well-known attribute on a placeholder API resource. This
+would let skill-finder discover the trust root from the same
+catalog it queries for skills, eliminating the
+`bin/provision.sh`-drops-a-PEM step. The first fetch would be
+trust-on-first-use (TOFU) against a URL the operator provides;
+subsequent fetches would verify against the cached pubkey. This
+is a v2 design and is intentionally out of scope for v1: it
+requires new attribute conventions, taxonomy changes, and a
+bootstrap mode that would add several more moving parts.
 
 ## Canonical serialization
 
@@ -136,19 +200,27 @@ output for the same logical manifest, or signatures will not verify.
 
 API hub's typed attributes let consumers filter the catalog. This
 reference declares four user-defined attributes via
-`scripts/update_taxonomy.py`:
+`scripts/update_taxonomy.py`, plus one system-defined enum value
+patched in from `bin/provision.sh`:
 
-| Attribute               | Type   | Purpose                                                     |
-| ----------------------- | ------ | ----------------------------------------------------------- |
-| `skill-compatible`      | bool   | True for entries consumable as agent skills.                |
-| `skill-runtime-iam`     | string | Comma-separated list of IAM permissions the skill declares. |
-| `skill-signing-key-id`  | string | SHA-256 fingerprint of the publisher's signing key.         |
-| `skill-bundle-gs-uri`   | string | GCS URI of the signed `.skill` archive.                     |
+| Attribute          | Kind         | Type    | Purpose                                                                  |
+| ------------------ | ------------ | ------- | ------------------------------------------------------------------------ |
+| `agentic_skill`    | user-defined | bool    | True for entries consumable by the agent runtime.                        |
+| `keywords`         | user-defined | strings | Discovery keywords mirrored from the manifest (cardinality: up to 20).   |
+| `gs_uri`           | user-defined | string  | GCS URI of the signed `.skill` archive.                                  |
+| `signing_key_id`   | user-defined | string  | `sha256:<hex>` fingerprint of the publisher's signing public key.        |
+| `skill-spec`       | system enum  | —       | Value patched into the built-in `system-spec-type` enum (see note below).|
 
-These attributes are immutable once created (API hub does not support
-attribute schema migration). The `update_taxonomy.py` script is
-idempotent: it creates any missing attributes and leaves existing
-ones untouched.
+The four user-defined attributes are immutable once created (API hub
+does not support attribute schema migration). The `update_taxonomy.py`
+script is idempotent: it creates any missing attributes and leaves
+existing ones untouched.
+
+The `skill-spec` value on the built-in `system-spec-type` enum is
+added by a direct API hub `PATCH` from `bin/provision.sh` because
+`update_taxonomy.py` only manages user-defined attributes. Migrating
+that patch into `update_taxonomy.py` is a documented follow-up
+(see `docs/provisioning.md#step-4-api-hub-attribute-taxonomy`).
 
 ## Failure modes
 

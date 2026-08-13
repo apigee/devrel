@@ -52,9 +52,9 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # If you re-target the demo at a different GCP project, edit
 # these four lines. Everything else flows from here.
 
-readonly DEMO_APIHUB_PROJECT="apigee-product-demo"
+readonly DEMO_APIHUB_PROJECT="geirs-spaces-demo"
 readonly DEMO_APIHUB_LOCATION="us-west1"
-readonly DEMO_APIGEE_ORG="apigee-product-demo"
+readonly DEMO_APIGEE_ORG="geirs-spaces-demo"
 readonly DEMO_KEYWORD_OVERLAP="1"
 
 # ---- Color codes -----------------------------------------
@@ -185,7 +185,14 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-# ---- Step 1: prereq check + ADC --------------------------
+# ---- Step 1: ADC ----------------------------------------
+#
+# ADC is checked FIRST because check-prerequisites.sh also
+# checks it and we want a specific, actionable failure line
+# (`gcloud auth application-default login`) before the more
+# generic prereq output. If ADC is broken, the prereq check
+# would spend time on env-var checks whose answers don't
+# matter until ADC is fixed.
 
 echo "[setup] Verifying Application Default Credentials..."
 if gcloud auth application-default print-access-token \
@@ -199,24 +206,22 @@ else
     exit 1
 fi
 
-if [ "$skip_preflight" -eq 0 ]; then
-    echo
-    echo "[setup] Running pre-flight checker..."
-    if bash "${REPO_ROOT}/bin/check-prerequisites.sh"; then
-        _check "All required prerequisites met" 0
-    else
-        _check "Pre-flight failed" 1 \
-            "see [prereq] lines above"
-        echo
-        echo "Fix the failing prereqs, then re-run:"
-        echo "    ./bin/demo-setup.sh"
-        exit 1
-    fi
-else
-    echo "[setup] --skip-preflight given; pre-flight check skipped."
-fi
-
 # ---- Step 2: env export + persistent config --------------
+#
+# We MUST export the demo env vars BEFORE running the
+# pre-flight checker. The checker reads APIHUB_PROJECT,
+# APIHUB_LOCATION, APIGEE_ORG, and APIGEE_SKILLS_MIN_KEYWORD_OVERLAP
+# from the current process environment. In a fresh shell (the
+# common case -- an operator has just opened a terminal to
+# start the demo), none of those are set yet. If we ran the
+# checker before the export, it would fail on 3 of 4 required
+# variables and abort, even though the demo is fully
+# self-configuring and would work if we let it run.
+#
+# The persistent config file at ~/.config/apigee-skills-demo/
+# is written here for the same reason: subprocesses launched
+# without the exports still resolve the values via
+# scripts/common/config.py's fallback.
 
 _export_demo_env
 
@@ -231,6 +236,31 @@ echo "[setup] Writing persistent config file (read by"
 echo "[setup] scripts/common/config.py when env vars aren't set"
 echo "[setup] in the calling process)..."
 _write_demo_config_file
+echo
+
+# ---- Step 3: pre-flight checker -------------------------
+#
+# Runs AFTER the export so the checker sees the demo values.
+# The checker still enforces the invariant on behalf of an
+# operator who prefers to source env.sh manually -- it just
+# won't spuriously fail when the operator relied on this
+# script to configure the shell.
+
+if [ "$skip_preflight" -eq 0 ]; then
+    echo "[setup] Running pre-flight checker..."
+    if bash "${REPO_ROOT}/bin/check-prerequisites.sh"; then
+        _check "All required prerequisites met" 0
+    else
+        _check "Pre-flight failed" 1 \
+            "see [prereq] lines above"
+        echo
+        echo "Fix the failing prereqs, then re-run:"
+        echo "    ./bin/demo-setup.sh"
+        exit 1
+    fi
+else
+    echo "[setup] --skip-preflight given; pre-flight check skipped."
+fi
 echo
 
 # ---- Step 3: ready --------------------------------------

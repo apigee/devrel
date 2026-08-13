@@ -1,0 +1,43 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+
+# Source manifest for skill-publisher. The publishing pipeline
+# (scripts/sign_skill.py + scripts/upload_skill.py) populates the
+# gs_uri, zip_sha256, signature, and signing_key_id fields at
+# publish time. Do not commit those values back to the source
+# tree.
+author: apigee-devrel
+capabilities: []
+description: Publishes a local skill directory to the API hub catalog
+  and the GCS bundle store. Runs the four-step author pipeline end
+  to end, packing the source tree into a deterministic .skill zip,
+  signing the manifest with an ed25519 private key, uploading the
+  zip to GCS, and registering the signed manifest with API hub as
+  an API plus Version plus Spec triple along with its four attribute
+  values. Idempotent by design; re-running with identical inputs
+  produces byte-identical output. Includes a bootstrap mode for
+  first-time self-publication.
+keywords:
+  - publish
+  - skill
+  - apihub
+  - gcs
+  - sign
+  - ed25519
+  - author
+license: Apache-2.0
+manifest_schema_version: '1'
+name: skill-publisher
+runtime_iam: []
+version: 0.1.0

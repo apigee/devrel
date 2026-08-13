@@ -7,11 +7,12 @@ custom MCP hosts, etc.) can discover and install.
 
 This reference implementation shows how to:
 
-1. **Author** a skill (a `SKILL.md` + optional `scripts/`) and describe it
-   with a `manifest.yaml` against a locked schema.
+1. **Author** a skill (a `SKILL.md` + optional `scripts/`) and describe
+   it with a `manifest.yaml` against a locked schema.
 2. **Sign** the skill bundle with an Ed25519 key so consumers can verify
    integrity at install time.
-3. **Upload** the signed `.skill` archive to a Google Cloud Storage bucket.
+3. **Upload** the signed `.skill` archive to a Google Cloud Storage
+   bucket.
 4. **Register** the skill (and its API hub attribute taxonomy) so it is
    discoverable through API hub's search and attribute filters.
 5. **Install** a skill on the consumer side: search API hub, fetch the
@@ -20,6 +21,20 @@ This reference implementation shows how to:
 
 The whole loop runs on standard Apigee X / hybrid plus API hub — no
 custom infrastructure.
+
+Two ready-to-run agent skills wrap the reference implementation into
+a one-line install for end users:
+
+- **`skills/skill-finder/`** — consumer-side discovery client. Queries
+  API hub for signed skills, verifies their Ed25519 signatures against
+  locally-installed per-deployment trust roots, and installs matching
+  skills into the agent runtime's skills directory.
+- **`skills/skill-publisher/`** — author-side pipeline orchestrator.
+  Wraps pack → sign → upload → register into a single skill an agent
+  can invoke on a source skill directory.
+
+Both are installed by `bin/install-skill-finder.sh` (which installs
+both by default).
 
 ## Why Apigee API hub for skills?
 
@@ -48,12 +63,17 @@ references/apigee-skills-serving/
 ├── pytest.ini                   test configuration
 ├── docs/
 │   ├── architecture.md          design overview and trust model
-│   ├── publish-and-install.md   end-to-end walkthrough
+│   ├── provisioning.md          customer-onboarding runbook (five-minute path)
+│   ├── publish-and-install.md   detailed end-to-end walkthrough (under-the-hood)
 │   └── policy-skill-catalog.md  about the apigee-policy-top10 example
 ├── bin/
 │   ├── check-prerequisites.sh   pre-flight environment validator
-│   ├── demo-setup.sh            env export + readiness print
-│   └── demo-cleanup.sh          remove demo artifacts
+│   ├── demo-setup.sh            env export + readiness print (legacy)
+│   ├── demo-cleanup.sh          remove locally-installed skills
+│   ├── install-skill-finder.sh  one-line installer for skill-finder + skill-publisher
+│   ├── install-skill-publisher.sh  install skill-publisher only
+│   └── provision.sh             one-line customer bootstrap (APIs, bucket,
+│                                taxonomy, key gen, publish, trust root)
 ├── schema/
 │   └── skill-manifest.schema.yaml  locked v1 manifest schema
 ├── scripts/                     publisher-side toolchain
@@ -63,8 +83,10 @@ references/apigee-skills-serving/
 │   ├── register_skill.py        register the manifest with API hub
 │   ├── update_taxonomy.py       create/update API hub attribute taxonomy
 │   └── common/                  shared libraries (retry, IAM, schema)
-├── skills/                      example skills
-│   ├── apigee-policy-top10/     skill that documents Apigee policy patterns
+├── skills/                      shipped skills
+│   ├── skill-finder/            consumer-side discovery + install client
+│   ├── skill-publisher/         author-side pipeline orchestrator
+│   ├── apigee-policy-top10/     example skill that reports top Apigee policies
 │   ├── currency-converter/      minimal example
 │   └── weather-lookup/          minimal example
 ├── examples/
@@ -93,42 +115,54 @@ references/apigee-skills-serving/
 6. The roles `roles/apihub.editor` and `roles/storage.objectCreator` on
    the target project.
 
-## Quickstart
+## Quickstart (five minutes)
+
+The fast path uses two shell scripts:
 
 ```bash
-# 1. Clone and enter the reference
+# 1. Install skill-finder + skill-publisher on your machine.
+curl -fsSL https://raw.githubusercontent.com/apigee/devrel/main/\
+references/apigee-skills-serving/bin/install-skill-finder.sh \
+  | bash -s -- --runtime gemini      # or --runtime opencode / antigravity
+
+# 2. Clone the reference and provision your GCP project.
 git clone https://github.com/apigee/devrel.git
 cd devrel/references/apigee-skills-serving
-
-# 2. Install Python dependencies into a virtualenv
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-
-# 3. Set up environment variables (edit values to match your project)
-cp env.sh.example env.sh
-$EDITOR env.sh
-. ./env.sh
-
-# 4. Verify prerequisites
-./bin/check-prerequisites.sh
-
-# 5. (One-time) Create the API hub attribute taxonomy
-python3 scripts/update_taxonomy.py \
-  --project "$APIHUB_PROJECT" \
-  --location "$APIHUB_LOCATION"
-
-# 6. Pack, sign, upload, register a skill
-python3 scripts/pack_skill.py    skills/currency-converter   /tmp/cc.skill
-python3 scripts/sign_skill.py    /tmp/cc.skill   --key-file ./signing.key
-python3 scripts/upload_skill.py  /tmp/cc.skill   --bucket "$GCS_BUCKET"
-python3 scripts/register_skill.py \
-  --project "$APIHUB_PROJECT" --location "$APIHUB_LOCATION" \
-  --manifest /tmp/cc.skill
+bash bin/provision.sh --project MY_PROJECT --yes
 ```
 
-Full walkthrough: [`docs/publish-and-install.md`](docs/publish-and-install.md).
-Design rationale and trust model: [`docs/architecture.md`](docs/architecture.md).
+`provision.sh` enables the required GCP APIs, creates a GCS
+bucket, sets up the API hub attribute taxonomy, generates a
+fresh Ed25519 signing keypair on your machine (private key
+stays there), and publishes the three example skills. Every
+step is idempotent — re-run any time to reconcile drift.
+
+Full runbook (including troubleshooting and key rotation):
+[`docs/provisioning.md`](docs/provisioning.md).
+
+### Under the hood
+
+The scripts above chain the five underlying operations that
+this reference exists to demonstrate:
+
+```bash
+# For each skill:
+python3 -m scripts.pack_skill    --src skills/<name> --out /tmp/<name>.skill
+python3 -m scripts.upload_skill  --zip /tmp/<name>.skill --bucket "$GCS_BUCKET"
+python3 -m scripts.sign_skill    --manifest <patched-manifest> \
+                                 --zip /tmp/<name>.skill \
+                                 --priv-key <signing.raw> \
+                                 --out <signed-manifest>
+python3 -m scripts.register_skill --manifest <signed-manifest> \
+                                 --project "$APIHUB_PROJECT" \
+                                 --location "$APIHUB_LOCATION"
+```
+
+Full walkthrough:
+[`docs/publish-and-install.md`](docs/publish-and-install.md).
+
+Design rationale and trust model:
+[`docs/architecture.md`](docs/architecture.md).
 
 ## Running the tests
 
@@ -144,26 +178,41 @@ pytest -q
 `pipeline.sh` runs the same suite and is what apigee/devrel CI invokes
 nightly.
 
-## Example skills
+## Shipped skills
 
-| Skill                  | Purpose                                                                                             |
-| ---------------------- | --------------------------------------------------------------------------------------------------- |
-| `currency-converter`   | Minimal example. A `SKILL.md` plus a `manifest.yaml`. Useful as a copy-and-edit starting point.     |
-| `weather-lookup`       | Minimal example demonstrating a skill with API-key-based external HTTP calls.                       |
-| `apigee-policy-top10`  | A skill that documents the ten most useful Apigee policy patterns, with a script that enumerates    |
-|                        | the policies present in your org. See [`docs/policy-skill-catalog.md`](docs/policy-skill-catalog.md). |
-| `examples/apigee-proxy-skill` | A complete, production-shaped skill: 18 MCP tools, 25 Jinja2 policy templates, full manifest. |
+| Skill                         | Purpose                                                                                                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skill-finder`                | Consumer-side. Discovers, verifies, and installs signed skills from the customer's API hub. Multi-key trust root; per-deployment provisioning.                |
+| `skill-publisher`             | Author-side. Wraps pack → sign → upload → register into a single skill an agent can invoke on a source skill directory.                                       |
+| `currency-converter`          | Minimal example. A `SKILL.md` plus a `manifest.yaml`. Useful as a copy-and-edit starting point.                                                               |
+| `weather-lookup`              | Minimal example demonstrating a skill with API-key-based external HTTP calls.                                                                                 |
+| `apigee-policy-top10`         | A skill that documents the ten most useful Apigee policy patterns, with a script that enumerates the policies present in your org. See [`docs/policy-skill-catalog.md`](docs/policy-skill-catalog.md). |
+| `examples/apigee-proxy-skill` | A complete, production-shaped skill: 18 MCP tools, 25 Jinja2 policy templates, full manifest.                                                                 |
 
 ## Limitations and non-goals
 
-- The skill registry uses API hub's standard search; ranking is keyword
-  overlap, not semantic. For semantic ranking, integrate a vector
-  search component separately.
-- The publisher and consumer share an Ed25519 trust root. Key rotation
-  is a manual operator workflow; this reference does not implement
-  automatic rotation.
-- Skills are sandboxed by the consumer runtime (OpenCode, agent host).
-  This reference does not introduce additional sandboxing on top.
+- The skill registry uses API hub's standard search; ranking is
+  keyword overlap, not semantic. For semantic ranking, integrate
+  a vector search component separately.
+- The trust root is **per-deployment**, not shared. Each customer
+  who runs `provision.sh` generates their own Ed25519 keypair on
+  their machine. The `apigee/devrel` repo intentionally contains
+  no signing key material and no signed release bundles;
+  skill-finder itself is trusted by provenance (TLS + `apigee`
+  GitHub org). See
+  [`docs/architecture.md#trust-model`](docs/architecture.md#trust-model)
+  for the full rationale.
+- Key rotation is a supported operator workflow (multi-key
+  trust root; add-then-remove pattern with no install-time gap),
+  but is not automated. See
+  [`docs/provisioning.md#key-rotation-with-zero-downtime`](docs/provisioning.md#key-rotation-with-zero-downtime).
+- The GCS bucket for signed bundles must be public-read because
+  skill-finder downloads via anonymous HTTPS. This is a demo
+  choice; production would use signed URLs or an authenticated
+  consumer.
+- Skills are sandboxed by the consumer runtime (OpenCode, Gemini
+  CLI, Antigravity, custom MCP hosts). This reference does not
+  introduce additional sandboxing on top.
 
 ## License
 
