@@ -15,7 +15,7 @@
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1",
-    "apigeelint": "^2.15.0",
+    "apigeelint": "^2.84.6",
     "eslint": "^8.6.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.11.0"
