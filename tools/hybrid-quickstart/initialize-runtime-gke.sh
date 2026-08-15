@@ -51,11 +51,8 @@ create_gke_cluster
 # install certmanager
 install_certmanager
 
-# download the Apigeectl utility
-download_apigee_ctl
-
-# configure the Apigee override parameters
-prepare_resources
+# download helm charts
+download_helm_charts
 
 # create certificate for env group hostname
 create_cert "$ENV_GROUP_NAME"
@@ -65,6 +62,12 @@ create_sa
 
 # configure the Apigee runtime
 configure_runtime "$ENV_NAME" "$ENV_GROUP_NAME"
+
+# install the Apigee hybrid CRDs
+install_crds
+
+# deploy job to verify cluster readiness
+check_cluster_readiness
 
 # install the Apigee runtime
 install_runtime "$ENV_NAME" "$ENV_GROUP_NAME"
