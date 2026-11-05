@@ -344,7 +344,7 @@ gcloud compute instance-templates create "$MIG" \
   --no-address \
   --tags=https-server,apigee-network-proxy,gke-apigee-proxy \
   --machine-type "$PROXY_MACHINE_TYPE""$PREEMPTIBLE_FLAG" \
-  --image-family centos-7 \
+  --image-family centos-stream-9 \
   --image-project centos-cloud --boot-disk-size 20GB \
   --metadata ENDPOINT="$APIGEE_ENDPOINT",startup-script-url=gs://apigee-5g-saas/apigee-envoy-proxy-release/latest/conf/startup-script.sh --project "$PROJECT" --quiet
 
