@@ -1,4 +1,3 @@
-hybrid-files
-tools
+helm-charts
 .env*
 example-proxy/*.zip
